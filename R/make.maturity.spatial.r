@@ -4,12 +4,23 @@ make.maturity.spatial = function( distance=50 ) {
   require(MASS)
   require(doBy)
 
+    # sex codes
+    male = 0
+    female = 1
+    sex.unknown = 2
+
+    # maturity codes
+    immature = 0
+    mature = 1
+    mat.unknown = 2
+
+
   #  distance = seq(10,60,10)
   #  distance = 50
 
   #  subsample size-at-maturity estimates in a spatio-temporal context and then map it
   # mapping is continued in functions,figures.r and "map.maturity" in 2.figures.r
-  
+
   det = snowcrab.db("det.georeferenced")
   to.keep = c("trip", "set", "sex", "cw", "mass", "abdomen", "chela", "mat",
     "shell", "gonad", "eggcol", "eggPr", "durometer", "legs",
@@ -68,5 +79,5 @@ make.maturity.spatial = function( distance=50 ) {
   maturity = output[good,]
   return (maturity )
 }
-                  
+
 

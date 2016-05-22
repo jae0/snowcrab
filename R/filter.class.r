@@ -1,6 +1,17 @@
 
   filter.class = function(x, type) {
 
+    # sex codes
+    male = 0
+    female = 1
+    sex.unknown = 2
+
+    # maturity codes
+    immature = 0
+    mature = 1
+    mat.unknown = 2
+
+
     i=NULL
 
     if (type=="all") i = c(1:dim(x)[1])
@@ -24,15 +35,15 @@
       i = sort(unique(c(i,j,k)))
       # i = which(x$sex==male & x$mat==mature & x$cw>=95 & x$cw<200 & x$shell %in% c(3,4,5) )
     }
-    
+
     if (type=="R1"){  # terminally moulted soft-shells (new recruits), mature only
       i = which(x$sex==male & x$mat==mature & x$cw>=95 & x$cw<200 &  x$shell==1 )
       j = which(x$sex==male & x$mat==mature & x$cw>=95 & x$cw<200 &  x$shell==2 & x$durometer<68 )
       k = which(x$sex==male & x$mat==mature & x$cw>=95 & x$cw<200 & !is.finite(x$shell) & x$durometer<68)
-      i = sort(unique(c(i,j,k))) 
+      i = sort(unique(c(i,j,k)))
       # i = which(x$sex==male & x$mat==mature & x$cw>=95 & x$cw<200 & x$shell %in% c(1,2) )
     }
-    
+
     if (type=="R2") i = which(x$sex==male & x$mat==immature & x$cw>=mb(8) & x$cw<95 )
     if (type=="R3") i = which(x$sex==male & x$mat==immature & x$cw>=mb(7) & x$cw<mb(8) )
     if (type=="R4") i = which(x$sex==male & x$mat==immature & x$cw<=mb(6) & x$cw<mb(7))
@@ -128,19 +139,19 @@
     if (type=="fa10.senile") i = which(x$sex==female & x$mat==mature & x$cw>=fb(6) & x$shell >=4 & x$eggPr <=1  )
 
     if (type=="pre.recruit") i = which(x$sex==male & x$mat==immature & x$cw>56 & x$cw<95)  # Koeller's request
-     
+
     if (type=="f7" ) i = which(x$sex==female &x$cw>=fb(3) & x$cw<fb(4))
     if (type=="f8" ) i = which(x$sex==female &x$cw>=fb(4) & x$cw<fb(5))
     if (type=="f9" ) i = which(x$sex==female &x$cw>=fb(5) & x$cw<fb(6))
     if (type=="f10" ) i = which(x$sex==female &x$cw>=fb(6) )
-    
+
     if (type=="m7" ) i = which(x$sex==male &x$cw>=mb(4) & x$cw<mb(5))
     if (type=="m8" ) i = which(x$sex==male &x$cw>=mb(5) & x$cw<mb(6))
     if (type=="m9" ) i = which(x$sex==male &x$cw>=mb(6) & x$cw<mb(7))
     if (type=="m10" ) i = which(x$sex==male &x$cw>=mb(7) & x$cw<mb(8))
     if (type=="m11" ) i = which(x$sex==male &x$cw>=mb(8) & x$cw<mb(9))
     if (type=="m12" ) i = which(x$sex==male &x$cw>=mb(9) & x$cw<mb(10))
-    if (type=="m13" ) i = which(x$sex==male &x$cw>=mb(10) ) 
+    if (type=="m13" ) i = which(x$sex==male &x$cw>=mb(10) )
 
     if (type=="f.mat")   i = which(x$sex==female & x$mat==mature )
     if (type=="f.imm")   i = which(x$sex==female & x$mat==immature )
@@ -175,7 +186,7 @@
       j = which(x$sex==male & !is.finite(x$shell))
       i = sort(unique(c(i,j)))
     }
- 
+
     if (type=="male.small") i = which(x$sex==male & x$cw<mb(8) )
     if (type=="male.large") i = which(x$sex==male & x$cw>=mb(8) )
     if (type=="female.small") i = which(x$sex==female & x$cw<fb(4) )

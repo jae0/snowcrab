@@ -1,7 +1,11 @@
-  
+
   tripcode.to.chron = function(x, y) {
-    require( chron) 
-    # take a snowcrab trip code and time to create a chron object 
+    require( chron)
+
+    # default time format
+    dateformat.snow = c(dates="year-m-d", times="h:m:s")  # default date output format for chron objects
+
+    # take a snowcrab trip code and time to create a chron object
     z = nchar(x[1])
     yr = as.numeric(substring( x, z-3, z))
     mth = as.numeric(substring( x, z-5, z-4))

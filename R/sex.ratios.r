@@ -3,6 +3,11 @@
 
   sex.ratios = function(x, factors=c("trip", "set")) {
 
+    # sex codes
+    male = 0
+    female = 1
+    sex.unknown = 2
+
     mi = which(x$sex==male)
     nx = rep(1,dim(x[mi,])[1])
     m = as.data.frame(xtabs( nx ~ as.factor(trip) + as.factor(set), data=x[mi,] ) )

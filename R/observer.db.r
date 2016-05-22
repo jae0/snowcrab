@@ -1,8 +1,18 @@
   observer.db = function( DS, p=NULL, yrs=NULL ) {
-		
+
+    # sex codes
+    male = 0
+    female = 1
+    sex.unknown = 2
+
+    # maturity codes
+    immature = 0
+    mature = 1
+    mat.unknown = 2
+
 
     if (DS %in% c("odbc.redo", "odbc") ) {
-			
+
 			if (  Sys.info()["sysname"] == "Windows" ) {
 				.Library.site <- "D://R//library-local"
 				.libPaths("D://R//library-local")
@@ -10,7 +20,7 @@
 
 			fn.root =  file.path( project.datadirectory("snowcrab"), "data", "observer", "datadump" )
 			dir.create( fn.root, recursive = TRUE, showWarnings = FALSE )
-		
+
 			if (DS=="odbc") {
 				out = NULL
 				for ( YR in yrs ) {
@@ -31,7 +41,7 @@
       print ("Run on windows sessions as the linux odbc session is not happy")
       require(RODBC)
       con=odbcConnect(oracle.snowcrab.server , uid=oracle.snowcrab.user, pwd=oracle.snowcrab.password, believeNRows=F)
-      
+
 			for ( YR in yrs ) {
 				fny = file.path( fn.root, paste( YR,"rdata", sep="."))
 				odbq = paste(
@@ -51,7 +61,7 @@
 			}
 			odbcClose(con)
 			return (yrs)
-			
+
     }
 
     # ---------------------
@@ -66,7 +76,7 @@
       mod1 = allometry.snowcrab ( "cw.mass", "male")
       mod2 = allometry.snowcrab ( "chela.mass", "male")
       mod3 = allometry.snowcrab ( "cw.chela.mat", "male")
-      
+
       odb = observer.db( DS="odbc", yrs=1996:p$current.assessment.year )
       names(odb) = rename.snowcrab.variables( names(odb) )
 

@@ -1,6 +1,12 @@
 
 proportion.soft = function(odb, region, year) {
 
+  # sex codes
+    male = 0
+    female = 1
+    sex.unknown = 2
+
+
   out= NULL
 
 # Remove CW's outside norms and remove production (pre-sorted) samples

@@ -1,5 +1,12 @@
 
-  transition.matrices = function(p, sex=male, redo=F) {
+  transition.matrices = function(p, sex=0, redo=F) {
+
+# Global snow crab parameters
+# sex codes
+  male = 0
+  female = 1
+  sex.unknown = 2
+
     # a wrapper function to obtain transition matrices
     outfilename = file.path( p$annual.results, "transition.matrices.rdata" )
     if (!redo) {
@@ -11,7 +18,7 @@
     eps = 1e-4  # assume this is min resolution
     xTM =  array(data=NA, dim=c(p$nnodes,p$nnodes,p$nyears,p$nregions), dimnames=list(p$nodes,p$nodes,p$nodeyears,p$regions) )
     xFM =  array(data=NA, dim=c(p$nnodes,p$nyears,p$nregions), dimnames=list(p$nodes,p$nodeyears,p$regions) )
-    
+
     # create transition matrices
     for (region in p$regions) {
       # observer based landings broken down by size-mat classes
@@ -34,7 +41,7 @@
         # N.pre[t] = N.post[t] + N.fishing[t]
         # N.post[t] must be offset to be N.post[t-1] for transition matrix calculations
 
-        # fall surveys from 2003 to present 
+        # fall surveys from 2003 to present
         # spring surveys from 1998 to 2001
         # spring and fall surveys in 2002
         # correct timing of landings to account for change in survey season (by offsetting landings)
@@ -42,7 +49,7 @@
         for (y in 2001:1999)  fm[,,as.character(y)] = fm[,,as.character(y-1)]
         fm[,,"1998"] = fm[,,"1998"] * NA
 
-        N.pre  = k + fm  
+        N.pre  = k + fm
         N.post1 = offset.ageclass(k)
         N.post0 = k  # no offsets
 
@@ -52,42 +59,42 @@
         if (sex==male) {
 
           # imm->imm
-          ii = N.pre[,"imm", yc1] / N.post1[,"imm",yc0]  
+          ii = N.pre[,"imm", yc1] / N.post1[,"imm",yc0]
           ii = ifelse( !is.finite(ii) | ii < eps,  mean( ii[ ii > eps &  is.finite(ii) ]) , ii)
 
           # imm->sm; no offset in size as they do not change in size ("instar")
-          sm = N.pre[,"imm.sm",yc1] / N.post0[,"imm",yc0]  
+          sm = N.pre[,"imm.sm",yc1] / N.post0[,"imm",yc0]
           sm = ifelse( sm < eps | !is.finite(sm), mean( sm[ sm > eps & is.finite(sm) ]), sm)
 
           # fraction of imm -> imm.sm
           fraction.sm.imm = N.post1[,"imm.sm",yc0] / ( N.post1[,"imm",yc0] + N.post1[,"imm.sm",yc0] )
-          fraction.sm.imm = ifelse( fraction.sm.imm <= eps |  fraction.sm.imm >= 1 | !is.finite( fraction.sm.imm  ), 
-            mean( fraction.sm.imm [ which( fraction.sm.imm > eps & fraction.sm.imm < 1 & is.finite( fraction.sm.imm ) ) ]), 
+          fraction.sm.imm = ifelse( fraction.sm.imm <= eps |  fraction.sm.imm >= 1 | !is.finite( fraction.sm.imm  ),
+            mean( fraction.sm.imm [ which( fraction.sm.imm > eps & fraction.sm.imm < 1 & is.finite( fraction.sm.imm ) ) ]),
             fraction.sm.imm  )
 
           # imm->cc12  (assuming some fraction came from imm)
-          is = (1 - fraction.sm.imm) * N.pre[,"CC1to2",yc1] / N.post1[,"imm",yc0]  
+          is = (1 - fraction.sm.imm) * N.pre[,"CC1to2",yc1] / N.post1[,"imm",yc0]
           is = ifelse( (is <= eps |  is >= 1 | !is.finite(is) ), mean( is[ is > eps & is < 1 & is.finite(is) ]), is)
 
           # sm -> CC12 (" ..."  sm)
-          m0 = fraction.sm.imm * N.pre[,"CC1to2",yc1] / N.post1 [,"imm.sm",yc0]  
+          m0 = fraction.sm.imm * N.pre[,"CC1to2",yc1] / N.post1 [,"imm.sm",yc0]
           m0 = ifelse( (m0 <= eps | !is.finite(m0) ),  mean( m0[ m0 > eps & is.finite(m0) ]), m0)
-           
+
           # assume mortality 0.33 = 1/3yr (expected duration of the CC2to4 stage)
           expected.longevity.CC34.yr = 3 # assuming pseudo-steady-state (ie. 1/3 = 33% annual mortality)
-          
+
           # the mortality percent per year is expressed as passage into the CC5 category
-          loss.rate.CC34 = 1 / expected.longevity.CC34.yr  
+          loss.rate.CC34 = 1 / expected.longevity.CC34.yr
           transfer.rate.CC34 = 1 - loss.rate.CC34
           m2 = rep(transfer.rate.CC34, length(ii))  # cc34 -> cc34 ; assume unit catchability
           names(m2) = names(ii)
 
           # this is the fraction that is assumed to have come from CC12
-          difference = N.pre[,"CC3to4",yc1] - (transfer.rate.CC34 * N.post0[,"CC3to4",yc0])  
+          difference = N.pre[,"CC3to4",yc1] - (transfer.rate.CC34 * N.post0[,"CC3to4",yc0])
           phi = difference / N.post0[,"CC1to2",yc0] # cc12 -> cc34
           phi = ifelse( phi <= eps |  !is.finite(phi), mean( phi[ phi > eps & is.finite(phi) ]), phi)
 
-          # cc34 -> cc5 
+          # cc34 -> cc5
           mt = rep(loss.rate.CC34, length(ii) )
           names(mt) = names(ii)
 
@@ -136,10 +143,10 @@
 
           f.ii = fm[,"imm", yc1] / N.pre[,"imm",yc1]  # exploitation of imm
           f.ii = ifelse(  f.ii <= eps | f.ii >=1  | !is.finite(f.ii), mean( f.ii[ f.ii > eps & f.ii < 1 & is.finite(f.ii) ]), f.ii)
-          
+
           f.sm = fm[,"imm.sm", yc1] / N.pre[,"imm.sm",yc1]
           f.sm = ifelse(  f.sm <= eps | f.sm >=1  | !is.finite(f.sm), mean( f.sm[ f.sm > eps & f.sm < 1 & is.finite(f.sm) ]), f.sm)
-          
+
           f.is = fm[,"CC1to2", yc1] / N.pre[,"CC1to2",yc1]
           f.is = ifelse(  f.is <= eps  | f.is >=1 | !is.finite(f.is), mean( f.is[ f.is > eps & f.is < 1 & is.finite(f.is) ]), f.is)
 
@@ -171,9 +178,9 @@
           FM["CC5.11"] = f.mt["11"]
           FM["CC5.12"] = f.mt["12"]
           FM["CC5.13"] = f.mt["13"]
-        
+
         }
-            
+
         xTM[,,as.character(y),region] = TM
         xFM[,as.character(y),region] = FM
       }
@@ -182,7 +189,7 @@
     tmatrix = list(TM=xTM, FM=xFM)
     save( tmatrix, file=outfilename, compress=T )
     return(tmatrix)
-  } 
+  }
 
 
 

@@ -1,5 +1,10 @@
 
   proportion.legal = function(odb, region, year) {
+   # sex codes
+    male = 0
+    female = 1
+    sex.unknown = 2
+
 
     out= NULL
 

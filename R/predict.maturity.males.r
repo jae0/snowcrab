@@ -1,5 +1,11 @@
 
   predict.maturity.males = function(cw.mm, chela.mm) {
+
+    # maturity codes
+    immature = 0
+    mature = 1
+    mat.unknown = 2
+
     # to ID maturity of males using mm
     # usage: predict.maturiyt.males(cw.mm=.., chela.mm=..)
     test.male = -25.32404 * log(cw.mm) + 19.775707 * log(chela.mm) + 56.649941

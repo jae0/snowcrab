@@ -1,6 +1,17 @@
 
 make.evenness.spatial = function( distance=50 ) {
 
+    # sex codes
+    male = 0
+    female = 1
+    sex.unknown = 2
+
+    # maturity codes
+    immature = 0
+    mature = 1
+    mat.unknown = 2
+
+
   require(MASS)
   require(doBy)
 
@@ -9,7 +20,7 @@ make.evenness.spatial = function( distance=50 ) {
 
   #  subsample size-at-maturity estimates in a spatio-temporal context and then map it
   # mapping is continued in functions,figures.r and "map.maturity" in 2.figures.r
-  
+
   det = snowcrab.db("det.georeferenced")
   to.keep = c("trip", "set", "sex", "cw", "mass", "abdomen", "chela", "mat","lon", "lat", "yr", "sa","plon","plat")
   det = det[,to.keep]
@@ -45,8 +56,8 @@ make.evenness.spatial = function( distance=50 ) {
    for (sex in c(male, female)) {
         sexi = which(dji$sex == sex )
         out = inf = NULL
-        
-        ##to here December 11, 2013 
+
+        ##to here December 11, 2013
         out = est.size.at.maturity (dji[sexi,], sex)
 
         if (!is.null(out) ) {
@@ -68,5 +79,5 @@ make.evenness.spatial = function( distance=50 ) {
   maturity = output[good,]
   return (maturity )
 }
-                  
+
 

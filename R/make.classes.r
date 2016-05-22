@@ -1,6 +1,17 @@
 
   make.classes = function(sex) {
 
+    # sex codes
+    male = 0
+    female = 1
+    sex.unknown = 2
+
+    # maturity codes
+    immature = 0
+    mature = 1
+    mat.unknown = 2
+
+
       if (sex==male) {
         yclass = as.character( c( 5:13 ) )
         cats = c("imm", "imm.sm", "CC1to2", "CC3to4", "CC5")

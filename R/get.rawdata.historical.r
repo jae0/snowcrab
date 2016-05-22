@@ -10,6 +10,17 @@
 
   get.rawdata.historical = function(type) {
 
+    # sex codes
+    male = 0
+    female = 1
+    sex.unknown = 2
+
+    # maturity codes
+    immature = 0
+    mature = 1
+    mat.unknown = 2
+
+
     outfile=file.path( project.datadirectory("snowcrab"), "data", "observer", "odb.historical.datadump")
     directories = file.path( project.datadirectory("snowcrab"), "data", "observer", "archive", c(2001:2003))
     fl = list.files(path=directories, pattern="[*.txt]$", full.names=T, recursive=T)
@@ -121,7 +132,7 @@
       rawdata$comments =  gsub("[*]", "", rawdata$comments)
 
       # additional variables
-      rawdata$julian = chron( 
+      rawdata$julian = chron(
         dates.=paste( substr(rawdata$sdate,1,2), "-", substr(rawdata$sdate,3,4), "-", substr(rawdata$sdate,5,8), sep=""),
         format=c(dates="d-m-y"), out.format=c(dates="year-m-d") )
 

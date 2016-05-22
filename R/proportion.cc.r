@@ -1,9 +1,13 @@
 
   proportion.cc = function(odb, region, year) {
+    # sex codes
+    male = 0
+    female = 1
+    sex.unknown = 2
 
     out= NULL
 
-# Remove CW's outside norms and remove production (pre-sorted) samples
+    # Remove CW's outside norms and remove production (pre-sorted) samples
     i = which( odb$sex==male & odb$fishyr==year )  # --- fishing year is used and not the actual year caught
     r = filter.region.polygon(x=odb, region=recode.areas(region), planar=F)
 
