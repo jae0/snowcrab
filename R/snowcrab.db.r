@@ -581,7 +581,7 @@
 			mw = mw[which(is.finite(mw$meanweight)) ,]
 
 			# add groundfish data if it does not exist already
-			loadfunctions( "groundfish" )
+			ecomodLibrary( "groundfish" )
 			gs = groundfish.db( "cat" )
 			meanwgt = gs$totwgt / gs$totno
 			good = which( is.finite( meanwgt) & is.finite( 1/meanwgt ) )

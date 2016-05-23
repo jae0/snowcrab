@@ -1,7 +1,7 @@
 
   tagging.example.usage = function() {
-      
-    loadfunctions( "snowcrab" )
+
+    ecomodLibrary( "snowcrab" )
 
     marked.file = "tags.1996_2001.csv"
     recaps.file = "recaptures.csv"
@@ -11,7 +11,7 @@
     marked2 =  read.table( file.path(project.datadirectory("snowcrab"), "data", "tagging", "tags_summary1993_2005.csv"), sep=";", header=T, as.is=T)
 
     move = get.move () #  alternate:(DS="redo")
-      
+
 
     tmp0 = move[, c("lon0", "lat0")]
     names(tmp0) = c("lon", "lat")
@@ -21,7 +21,7 @@
     names(tmp1) = c("lon", "lat")
     ss1 = filter.region.polygon(tmp1, region=region)
 
-    ss = unique(c(ss0, ss1)) 
+    ss = unique(c(ss0, ss1))
     move = move[ ss, ]
 
   }

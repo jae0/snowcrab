@@ -1,9 +1,10 @@
 
-  snowcrab.external.db = function( p=NULL, DS="", vname="" ) {
+  snowcrab.external.db = function( p=NULL, DS="", vname="", year.current=NULL ) {
 
     if ( DS=="det.snowcrab.in.groundfish.survey" ) {
-      loadfunctions( "groundfish", functionname="current.year.r" )
-      loadfunctions( "groundfish", functionname="load.groundfish.environment.r" )
+
+      ecomodLibrary( "groundfish")
+      u = load.groundfish.environment( year.current )
 
       ct = groundfish.db( "det" )
       cti  = taxonomy.filter.taxa( ct$spec, taxafilter="snowcrab", outtype="groundfishcodes" )
@@ -59,8 +60,8 @@
         return (set)
       }
 
-      loadfunctions( "groundfish", functionname="current.year.r" )
-      loadfunctions( "groundfish", functionname="load.groundfish.environment.r" )
+      ecomodLibrary( "groundfish")
+      u = load.groundfish.environment( year.current )
 
       ct = snowcrab.external.db( DS="det.snowcrab.in.groundfish.survey", vname=vname )
       if (nrow(ct)==0) return()
