@@ -6,6 +6,7 @@ Installation:
 
 ```
 install.packages( "devtools", ask=F, dependencies=TRUE )   
+require ("devtools")
 install_github( "jae0/snowcrab" )
 ```
 
