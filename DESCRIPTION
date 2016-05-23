@@ -15,8 +15,8 @@ Imports:
   devtools,
   ecomodUtils,
   netmensuration,
-  substrate,
-  temperature
+ # substrate,
+ # temperature
 Suggests:
   groundfish
 License: MIT
