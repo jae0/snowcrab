@@ -13,12 +13,12 @@ Description: The snow crab assessment suite used by Maritimes Region in Canada. 
 Depends: R (>= 3.0.0)
 Imports:
   devtools,
-  ecomodUtils,
-  temperature
+  ecomodUtils
 Suggests:
   groundfish,
   netmensuration,
-  substrate
+  substrate,
+  temperature
 License: MIT
 LazyData: true
 URL: https://github.com/jae0/snowcrab/
