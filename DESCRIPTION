@@ -14,11 +14,11 @@ Depends: R (>= 3.0.0)
 Imports:
   devtools,
   ecomodUtils,
-  netmensuration,
- # substrate,
- # temperature
+  temperature
 Suggests:
-  groundfish
+  groundfish,
+  netmensuration,
+  substrate
 License: MIT
 LazyData: true
 URL: https://github.com/jae0/snowcrab/
