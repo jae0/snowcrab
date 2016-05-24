@@ -1,0 +1,220 @@
+model {
+  # -------------------  
+  # hyperpriors of precision terms 
+  # for lognormal precisions, target sd is obtained from:
+  # cv = sqrt(exp(sd^2) - 1) or,
+  # sd = sqrt(log(cv^2 + 1))
+  # curve( dnorm(x, mean=1, sd=1*0.5), from=0.1, to=4  )
+  # curve( dlnorm(x, meanlog=log(1), sdlog=1),  from=0.1, to=100  )
+  # curve( dbeta(x, 10, 10),  from=0.01, to=1  )
+
+
+  # -------------------  
+  # r-dynamics
+  # using observed index CV's -- these are already on the log scale 
+  
+   
+    for (j in 1:R) {
+      #cvr[j] ~ dunif( eps, cvR )
+      # q.r[j] ~ dnorm( 1, pow(1*cvr[j], -2) ) T(eps,) 
+      #q.rsd[j] ~ dnorm( 1, pow(1*cvr[j], -2) ) T(eps,)
+      q.ext1[j] ~ dunif( 1, 100)
+      q.ext2[j] ~ dunif( 1, 100)
+      q.exp[j] ~ dbeta( q.ext1[j], q.ext2[j] )  
+      r[j] <- 2 * q.exp[j]
+      #q.exp[j] ~ dnorm( 0, pow(1, -2 ) ) T(-3, 3 )  
+      #sd.rq[j] ~  dnorm( cvr[j], pow( cvr[j]*cvr[j]*cvr[j],-2) ) T(eps, ) # dunif( eps, 0.2*cv*2 ) # E(X) ~ 0.2 = cv  # on log scale 
+   
+      # r[1,j] ~ dnorm( r0x[j] + ( IREC[1,j]/ abs(IREC[1,j]) ) * pow( abs(IREC[1,j]), q.exp[j]) * q.r[j] , pow( sd.r[1,j], -2 ) ) T(eps, r0x[j]*3 ) 
+       #r[1,j] ~ dnorm( r0x[j] + IREC[1,j] * q.exp[j] * 2 , pow( sd.r[1,j], -2 ) ) T(eps, r0x[j]*2 ) 
+        # this extracts the sign of irec and then multiplies by irec^q.exp 
+      #sd.r[1,j] ~ dnorm( IRECcv[1,j] * q.rsd[j], pow( sd.rq[j],-2) ) T(eps, ) # quotient for adjusting scale of SD
+       
+      #for (i in 2:N) {
+        # r[i,j] ~ dnorm( r0x[j] + ( IREC[i-1,j]/ abs(IREC[i-1,j]) ) * pow( abs(IREC[i-1,j]), q.exp[j]) * q.r[j] , pow( sd.r[i-1,j], -2 ) ) T(eps, r0x[j]*3 ) 
+        #r[i,j] ~ dnorm( r0x[j] + IREC[i-1,j] * q.exp[j] * 2 , pow( sd.r[i-1,j], -2 ) ) T(eps, r0x[j]*2 ) 
+        # this extracts the sign of irec and then multiplies by irec^q.exp 
+        #sd.r[i,j] ~ dnorm( IRECcv[i-1,j] * q.rsd[j], pow( sd.rq[j],-2) ) T(eps, ) # quotient for adjusting scale of SD
+      #}
+    }
+    
+
+  # -------------------  
+   # q-dynamics
+    for (j in 1:R) {
+      # cvq[j] ~ dunif( eps, cvQ )
+      q.b1[j] ~ dunif( 1, 100)
+      q.b2[j] ~ dunif( 1, 100)
+      q.b[j] ~ dbeta( q.b1[j], q.b2[j] )  
+      q[j] <- 2*q.b[j]
+      # q[j] ~ dnorm( q0x[j], pow( sd.q[j], -2 ) ) T(eps, q0x[j]*2 )
+      # sd.q[j] ~ dnorm( q0x[j]*cvq[j], pow( q0x[j]*cvq[j]*cvq[j], -2) ) T(eps,q0x[j]*cvQ*2) # dunif( eps, q0x[j] * (cv)*2 ) 
+    }
+
+
+  # -------------------  
+   # K-dynamics
+   for (j in 1:R) {
+     cvk[j] ~ dunif( eps, cvK )
+     K[j] ~ dnorm( K0x[j], pow( sd.K[j], -2 ) ) T(eps, K0x[j] *2 )
+      sd.K[j] ~ dnorm( K0x[j]*cvk[j], pow( K0x[j]*cvk[j]*cvk[j], -2) ) T(eps, K0x[j] * (cvK)*2)  # dnorm( 1, 1 ) T(eps,) # dunif( eps, lncv ) # dunif( eps, K0x[j] * (cv)*2 ) 
+    }
+
+
+  # -------------------  
+   # b0-dynamics
+   for (j in 1:R) {
+     cvb0[j] ~ dunif( eps, cvB0 )
+     b0[j]  ~ dnorm( b0x[j],  pow( sd.b0[j], -2) ) T(eps, 1 * cvB*2)
+      sd.b0[j]~ dnorm( b0x[j]*cvb0[j], pow( b0x[j]*cvb0[j]*cvb0[j], -2) ) T(eps,) # dnorm( 1, 1 ) T(eps,) # dunif( eps, lncv ) # dunif( eps, 0.5 * cv*2 )  # E(X) = 0.2 to 0.8 
+    }
+
+ 
+  # -------------------  
+  # catch observation model, standardized to K
+  # total removals due to fishing, standardized to K: fishing + unaccounted catches  +  handling mortality, etc
+    for (j in 1:R) {
+      cvc[j] ~ dunif( eps, cvC )
+      # E.cr[j] ~ dnorm(er, pow( er*cvc[j], -2)) T(eps,)  # expected catch rate
+      # E.rem[j] <- E.cr[j]+0.05  # E.cr ~ 20% cheating rate ~ 20% of landings ~ .2*.2 = .04
+      bparam[j] ~ dunif( bparamA, bparamB ) # provides a modal solution < 0.5
+      for (i in 1:N){
+        catch[i,j] <- CAT[i,j]/K[j] ;
+        # ua[i,j] ~ dbeta( 2, bparam[j] ) T(eps,catch[i,j])  # unaccounted removals and handling mortality, :  curve( dbeta(x, 0.5, 1),  from=0.01, to=1  )
+        # sd.rem[i,j] ~ dnorm( E.rem[j]*cvc[j], pow(  E.rem[j]*cvc[j]*cvc[j], -2) ) T(eps,); # dunif( eps, 0.4 * cv *2 ) # E(rem)= 25% of landings  
+        sd.rem[i,j] ~ dnorm( 0.3 * cvc[j], pow( 0.3*cvc[j]*cvc[j], -2) ) T(eps,); # dunif( eps, 0.4 * cv *2 ) # E(rem)= 25% of landings  
+        # rem[i,j] ~ dnorm( catch[i,j] + ua[i,j] , pow(sd.rem[i,j], -2) ) T( eps, biomass[i,j] ); 
+        rem[i,j] ~ dnorm( catch[i,j], pow(sd.rem[i,j], -2) ) T( eps, biomass[i,j] ); 
+      }
+    }
+
+
+
+  # -------------------  
+  # biomass observation model 
+  #   require a fall / spring surveys correction
+  #   want B to represent the total biomass available in fishing year y
+  #   when surveys are conducted in fall, Btot(t) = Bsurvey(t) + removals(t) 
+  #   when surveys are conducted in spring, Btot(t) = Bsurvey(t) + removals(t-1) 
+  #   |...(t-2)...|.Ss..(t-1)...|...(t=2004)..Sf.|...(t+1).Sf..|...(t+2)..Sf.|...
+  #   corrections for spring surveys in 2003 and earlier for north and south 
+  #   assume BT = total biomass = catches(t-1) + biomass estimate(t; BE) 
+      
+    for (j in 1:R) {
+      cvo[j] ~ dunif( eps, cvO )
+      for (i in 1:N) {
+        sd.o[i,j] ~ dnorm( cvo[j], pow( cvo[j]*cvo[j]*cvo[j], -2)  ) T(eps,) # dunif( eps, lncv )  # lognormal error -- beyond 1.3 it is no longer modal
+      } 
+    }
+
+    eps2 <- 10^-2 # approximate limit of 
+
+    for (j in 1:(R-1)) {
+      # spring surveys from 1998 to 2003
+      IOA[1,j] ~ dlnorm( log( max( q[j] * K[j] * (biomass[1,j] - rem[1,j]) , eps2)), pow( sd.o[1,j] , -2 ) )  # approximation
+      for (i in 2:(ty-1)) { 
+        IOA[i,j] ~ dlnorm( log( max( q[j] * K[j] * (biomass[i,j]- rem[(i-1),j]), eps2)), pow( sd.o[i,j] , -2 ) )  ;
+      }
+      # transition year
+      IOA[ty,j] ~ dlnorm( log( max( q[j] * K[j] * (biomass[ty,j] - (rem[(ty-1),j] + rem[ty,j] )/2 ), eps2)), pow( sd.o[ty,j] , -2 ) ) ;  # approximation
+      # fall surveys    
+      for (i in (ty+1):N) {
+        IOA[i,j] ~ dlnorm( log( max( q[j] * K[j] * (biomass[i,j] - rem[i,j]), eps2)), pow( sd.o[i,j] , -2 ) ) ;
+      }
+    }
+
+    # Cfa 4X -- assume total biomass = catches(t-1) + biomass estimate(t)
+    # ie, similar to a spring fishery but no need for separate q's
+    IOA[1,cfa4x] ~ dlnorm( log( max( q[cfa4x] * K[cfa4x] * (biomass[1,cfa4x] - rem[1,cfa4x]), eps2)), pow( sd.o[1,cfa4x] , -2 ) ) ;  # approximation
+    for (i in 2:N) { 
+      IOA[i,cfa4x] ~ dlnorm( log( max( q[cfa4x] * K[cfa4x] * (biomass[i,cfa4x]- rem[(i-1),cfa4x]), eps2)), pow( sd.o[i,cfa4x] , -2 ) ) ;
+    }
+
+
+  # -------------------  
+  # biomass process model 
+    
+    epsb <- 0.01
+
+    for(j in 1:R) {
+      cvb[j] ~  dunif( eps, cvB )
+      biomass[1,j] <- b0[j] ;  # biomass at first year   
+      # using observed abundance index CV's -- these are already on the log scale 
+      sd.p[1,j] ~ dnorm( IOAcv[1,j] , pow( sd.pq[j],-2) ) T(eps, ) # q.sdB quotient for adjusting scale of SD
+      sd.pq[j] ~  dnorm( cvb[j], pow( cvb[j]*cvb[j]*cvb[j],-2) ) T(eps,) # dunif( eps, 0.2*cv*2 ) # E(X) < 0.1  # on log scale 
+      # sd.q.sdB[j] ~  dunif( eps, 1*cv ) # E(X) = 0.5 
+      # q.sdB[j] ~  dnorm( 1, pow( sd.q.sdB[j], -2) )  T(0,) # assume E(q.sdB) = 1 multiplier for CV of biomass
+
+      for(i in 2:N) {
+        biomass[i,j] ~ dlnorm( log( max(biomass[i-1,j]*( 1 + r[j]*(1-biomass[i-1,j])) - rem[i-1,j] , epsb)), pow( sd.p[i,j] , -2 ) )  T(epsb, 2) ;
+        sd.p[i,j] ~ dnorm( IOAcv[i,j] , pow( sd.pq[j],-2) ) # q.sdB quotient for adjusting scale of SD
+      }
+       
+      # forecasts
+      for(i in (N+1):(N+M)) {
+        biomass[i,j] ~ dlnorm( log( max(biomass[i-1,j]* (1 + ( r[j]) *(1-biomass[i-1,j])) - er * biomass[i-1,j], epsb)), pow( mean(sd.p[1:N,j]), -2 ) )  T(epsb, 2)   ; 
+      }
+    }
+
+
+  # -------------------  
+  # monitoring nodes and parameter estimates for output
+    for(j in 1:R) {
+      Bdrop[j]  <- 1 - step( biomass[N+1,j]-biomass[N,j] ) ; # test if biomass(t) >= biomass(t-1) 
+      BXMSY[j]  <- 1 - step( biomass[N+1,j]-0.5 ) ; # test if biomass >= BMSY
+      BX2MSY[j] <- 1 - step( biomass[N+1,j]-0.25 ) ; # test if biomass >= 1/2 BMSY
+      # MSY[j]    <- mean(r[N-10:N,j]) * K[j] / 4  # maximum height of of the latent productivity (yield)
+      MSY[j]    <- (r[j]) * K[j] / 4  # maximum height of of the latent productivity (yield)
+      BMSY[j]   <- K[j]/2  # biomass at MSY
+      FMSY[j]   <- 2 * MSY[j] / K[j] # fishing mortality at MSY
+      Fcrash[j] <- 4 * MSY[j] / K[j] # fishing mortality at which the stock will crash
+    }
+
+
+    # -------------------  
+    # fishing mortality
+    # force first year estimate assuming catches in year 0 to be similar to year 1 
+    for(j in 1:R) {
+      for(i in 1:N) {
+        F[i,j] <- -log( max(1 - rem[i,j] / biomass[i,j], eps))  
+      }
+      for(i in (N+1):(N+M)) {
+        F[i,j] <- -log( max(1 - er * biomass[i-1,j] / biomass[i,j], eps)) 
+      }
+    }
+
+
+    # -------------------  
+    # annual production
+    for(j in 1:R) {
+      p[1,j] <- biomass[2,j]- biomass[1,j] + rem[1,j] # approximation
+      for (i in 2:(N) ){
+        p[i,j] <- (biomass[i+1,j]- biomass[i-1,j])/2 + rem[i,j]  # linear interpolation cancels out the biomass[i,j] term
+      }
+      for(i in (N+1):(N+M-1)) {
+        p[i,j] <- (biomass[i+1,j]- biomass[i-1,j])/2 + er * biomass[i-1,j]   # linear interpolation cancels out the biomass[i,j] term
+      }
+      p[(N+M),j] <- (biomass[(N+M),j]- biomass[(N+M-1),j]) + er * biomass[(N+M-1),j]   # approximation
+    }
+  
+
+
+    # -------------------  
+    # recaled estimates
+    for(j in 1:R) {
+    for(i in 1:M) {
+      TAC[i,j] <- er*biomass[N+i-1,j]*K[j]
+      catch[N+i,j] <- TAC[i,j] / K[j]
+      rem[N+i,j] <- catch[N+i,j] # + mean(ua[1:N,j]) 
+    }}
+ 
+    for(j in 1:R) {
+    for(i in 1:(N+M)) {
+      B[i,j] <- biomass[i,j]*K[j]
+      P[i,j] <- p[i,j]*K[j]
+      C[i,j] <- catch[i,j]*K[j]
+      REM[i,j] <- rem[i,j]*K[j]
+    }}
+
+
+}

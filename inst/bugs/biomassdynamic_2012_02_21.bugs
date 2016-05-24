@@ -1,0 +1,204 @@
+model {
+
+  # -------------------  
+  # r : assume mean ~ sd 
+    rmin <- eps
+    rmax <- 4
+    for (j in 1:U) {
+      r[j] ~  dnorm( r.mu[j] , pow( r.sd[j], -2) ) T( rmin, rmax )
+   
+      r.mu[j] ~ dnorm( r0x[j], r.mu.tau[j] ) T( rmin, rmax)
+      r.mu.tau[j] ~ dgamma( p.g,  1/( sqrt(r0x[j] * rcv[j] ) * p.g) ) T(eps, )  # expected value is r0x 
+
+      r.sd[j] ~ dnorm( r.sd.mu[j], r.sd.tau[j] ) T( eps, rmax )  # assuming cv never > 1
+      r.sd.mu[j] ~ dunif( eps, rmax )
+      r.sd.tau[j] ~ dgamma( p.g, 1/ ( sqrt(r0x[j] * rcvh[j] ) * p.g))  T(eps, )
+      rcv[j] ~ dunif( eps, cv )
+      rcvh[j] ~ dunif( eps, cv )
+   }
+
+  # -------------------  
+  # q : assume mean ~ sd
+    qmin <- eps
+    qmax <- 2
+    for (j in 1:U) {
+      q[j] ~  dnorm( q.mu[j], pow( q.sd[j], -2)  ) T( qmin, qmax  )
+
+      q.mu[j] ~ dnorm( q0x[j], q.mu.tau[j] ) T( eps, qmax  )
+      q.mu.tau[j] ~ dgamma( p.g, 1/(sqrt( q0x[j] * qcv[j]) * p.g) ) T(eps, ) 
+
+      q.sd[j] ~ dnorm( q.sd.mu[j], q.sd.tau[j] ) T( eps, qmax ) # assuming cv never > 1
+      q.sd.mu[j] ~ dunif( eps, qmax ) 
+      q.sd.tau[j] ~ dgamma( p.g, 1/(sqrt( q0x[j] * qcvh[j] )* p.g ) ) T(eps,) 
+      qcv[j] ~ dunif( eps, cv )
+      qcvh[j] ~ dunif( eps, cv )
+    }
+
+  # -------------------  
+  # K : assume mean ~ sd
+    kmin <- eps
+    kmax <- 2
+    for (j in 1:U) {
+      K[j] ~ dnorm( K.mu[j], pow( K.sd[j], -2) ) T( K0x[j]*kmin, K0x[j]*kmax )
+
+      K.mu[j] ~ dnorm( K0x[j], K.mu.tau[j] ) T( K0x[j]*kmin, K0x[j]*kmax )
+      K.mu.tau[j] ~ dgamma( p.g, 1/(sqrt( K0x[j] * kcv[j] ) *p.g)) T(eps,)
+      
+      K.sd[j] ~ dnorm( K.sd.mu[j], K.sd.tau[j] ) T( eps, K0x[j]*kmax  )
+      K.sd.mu[j] ~ dunif( K0x[j]*kmin, K0x[j]*kmax )
+      K.sd.tau[j] ~ dgamma( p.g, 1/(sqrt(K0x[j] * kcvh[j] )* p.g) ) T(eps,)
+      kcv[j] ~ dunif(eps, cv)
+      kcvh[j] ~ dunif(eps, cv)
+    }
+
+
+  # -------------------  
+  # catch observation model, standardized to K
+    # ua.max <- 0.25 # in proportion of catch
+    for (j in 1:U) {
+      # rem.sd[j] ~ dgamma( p.g, (ua.max/2) * cv / p.g ) T(eps, )
+      for (i in 1:N){
+        catch[i,j] <- CAT[i,j]/K[j]
+        #ua[i,j] ~ dnorm( 0.1, pow( rem.sd[j], -2) ) T( eps, ua.max)  
+        # rem[i,j] <- catch[i,j] * (1+ua[i,j])  
+        rem[i,j] <- catch[i,j]
+      }
+    }
+
+
+  # -------------------  
+  # biomass observation model 
+  #   require a fall / spring surveys correction
+  #   want B to represent the total biomass available in fishing year y
+  #   when surveys are conducted in fall, Btot(t) = Bsurvey(t) + removals(t) 
+  #   when surveys are conducted in spring, Btot(t) = Bsurvey(t) + removals(t-1) 
+  #   |...(t-2)...|.Ss..(t-1)...|...(t=2004)..Sf.|...(t+1).Sf..|...(t+2)..Sf.|...
+  #   corrections for spring surveys in 2003 and earlier for north and south 
+  #   assume BT = total biomass = rem(t-1) + biomass estimate(t; BE) 
+    
+    for (j in 1:U) {
+      sdcv[j] ~ dunif( eps, cv )
+      sd.o.mu[j] ~ dnorm( 1, 1) T(eps, logsdmax )
+      sd.o.tau[j] ~ dgamma( p.g, 1/ (sqrt( 0.5 * sdcv[j]) * p.g) ) T(eps, )
+      for (i in 1:N) {
+        sd.o[i,j] ~ dnorm( sd.o.mu[j], sd.o.tau[j] )  T(eps, logsdmax)  # lognormal error -- beyond 1.3 it is no longer reasonable >> 1 order of magnitude 
+      } 
+    }
+
+
+    for (j in 1:(U-1)) {
+      # spring surveys from 1998 to 2003
+      IOA[1,j] ~ dlnorm( log( max( q[j] * K[j] * (biomass[1,j] - rem[1,j]) , epsIOA)), pow( sd.o[1,j] , -2 ) )  # approximation
+      for (i in 2:(ty-1)) { 
+        IOA[i,j] ~ dlnorm( log( max( q[j] * K[j] * (biomass[i,j]- rem[(i-1),j]), epsIOA)), pow( sd.o[i,j] , -2 ) )  ;
+      }
+      # transition year
+      IOA[ty,j] ~ dlnorm( log( max( q[j] * K[j] * (biomass[ty,j] - (rem[(ty-1),j] + rem[ty,j] )/2 ), epsIOA)), pow( sd.o[ty,j] , -2 ) ) ;  # approximation
+      # fall surveys    
+      for (i in (ty+1):N) {
+        IOA[i,j] ~ dlnorm( log( max( q[j] * K[j] * (biomass[i,j] - rem[i,j]), epsIOA)), pow( sd.o[i,j] , -2 ) ) ;
+      }
+    }
+
+    # Cfa 4X -- assume total biomass = rem(t-1) + biomass estimate(t)
+    # ie, similar to a spring fishery but no need for separate q's
+    IOA[1,cfa4x] ~ dlnorm( log( max( q[cfa4x] * K[cfa4x] * (biomass[1,cfa4x] - rem[1,cfa4x]), epsIOA)), pow( sd.o[1,cfa4x] , -2 ) ) ;  # approximation
+    for (i in 2:N) { 
+      IOA[i,cfa4x] ~ dlnorm( log( max( q[cfa4x] * K[cfa4x] * (biomass[i,cfa4x]- rem[(i-1),cfa4x]), epsIOA)), pow( sd.o[i,cfa4x] , -2 ) ) ;
+    }
+
+
+  # -------------------  
+  # biomass process model 
+  # b0 is the starting b which is infered as well
+    bmax <- 1.5
+    for(j in 1:U) {
+      # b0 
+        biomass[1,j] ~ dnorm( b0.mu[j], pow( sd.p[1,j], -2) ) T(eps, bmax ) ;  # biomass at first year   
+        b0.mu[j] ~ dnorm( b0x[j], pow( mean( sd.p[1:N,j] ), -2) ) T(eps, bmax )
+      
+      # using observed abundance index CV's -- these are already on the log scale 
+      for(i in 2:(N+M)) {
+        biomass[i,j] ~ dlnorm( log( max(biomass[i-1,j]*( 1 + r[j]*(1-biomass[i-1,j])) - rem[i-1,j] , eps)), pow( sd.p[i,j] , -2 ) ) T(eps, bmax) ;
+      }
+      
+      # forecasts
+      for(i in 1:M) {
+        rem[N+i,j] <- er*biomass[N+i-1,j]
+        catch[N+i,j] <- er*biomass[N+i-1,j]
+        # rem[N+i,j] <- (1+mean(ua[1:N,j]))*catch[N+i,j]
+        sd.p[N+i,j] <- mean(sd.p[1:N,j])
+      }
+    }
+
+    
+    # using observed abundance index CV's -- these are already on the log scale 
+    for(j in 1:U) {
+      cvb[j] ~ dnorm( 1, 1 ) T(eps, 2)
+      for(i in 1:N) {
+        sd.p[i,j] ~ dnorm( IOAcv[i,j] * cvb[j] , pow( sd(IOAcv[1:N,j] * cvb[j]), -2) ) T( eps, logsdmax ) # q.sdB quotient for adjusting scale of SD
+      }
+    }
+
+
+
+  # -------------------  
+  # monitoring nodes and parameter estimates for output
+    for(j in 1:U) {
+      Bdrop[j]  <- 1 - step( biomass[N+1,j]-biomass[N,j] ) ; # test if biomass(t) >= biomass(t-1) 
+      BXMSY[j]  <- 1 - step( biomass[N+1,j]-0.5 ) ; # test if biomass >= BMSY
+      BX2MSY[j] <- 1 - step( biomass[N+1,j]-0.25 ) ; # test if biomass >= 1/2 BMSY
+      MSY[j]    <- r[j]* K[j] / 4  # maximum height of of the latent productivity (yield)
+      BMSY[j]   <- K[j]/2  # biomass at MSY
+      FMSY[j]   <- 2 * MSY[j] / K[j] # fishing mortality at MSY
+      Fcrash[j] <- 4 * MSY[j] / K[j] # fishing mortality at which the stock will crash
+    }
+
+
+    # -------------------  
+    # fishing mortality
+    # force first year estimate assuming catches in year 0 to be similar to year 1 
+    for(j in 1:U) {
+      for(i in 1:N) {
+        F[i,j] <- -log( max(1 - rem[i,j] / biomass[i,j], eps))  
+      }
+      for(i in (N+1):(N+M)) {
+        F[i,j] <- -log( max(1 - er * biomass[i-1,j] / biomass[i,j], eps)) 
+      }
+    }
+
+
+    # -------------------  
+    # annual production
+    for(j in 1:U) {
+      p[1,j] <- biomass[2,j]- biomass[1,j] + rem[1,j] # approximation
+      for (i in 2:(N) ){
+        p[i,j] <- (biomass[i+1,j]- biomass[i-1,j])/2 + rem[i,j]  # linear interpolation cancels out the biomass[i,j] term
+      }
+      for(i in (N+1):(N+M-1)) {
+        p[i,j] <- (biomass[i+1,j]- biomass[i-1,j])/2 + er * biomass[i-1,j]   # linear interpolation cancels out the biomass[i,j] term
+      }
+      p[(N+M),j] <- (biomass[(N+M),j]- biomass[(N+M-1),j]) + er * biomass[(N+M-1),j]   # approximation
+    }
+  
+
+
+    # -------------------  
+    # recaled estimates
+  
+    for(j in 1:U) {
+      for(i in 1:(N+M)) {
+        B[i,j] <- biomass[i,j]*K[j]
+        P[i,j] <- p[i,j]*K[j]
+        REM[i,j] <- rem[i,j]*K[j]
+        C[i,j] <- catch[i,j]*K[j]
+      }
+      for(i in 1:M) {
+        TAC[i,j] <- catch[N+i,j]*K[j]
+      }
+    }
+
+}
+
+
+

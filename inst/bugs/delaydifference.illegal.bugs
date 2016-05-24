@@ -1,0 +1,178 @@
+model {
+  
+  # informative errors based upon biomass index
+  # observation model assuming illegal catches based upon an 
+  # expectation of ~ 20% with uniform variance from 10 to 30%
+
+  # -------------------  
+  # (Stochastic, exponential) Growth model
+    brodysd ~ dunif( brodysd0, sigma)  # hyperparamaters for sd of brody coefficient 
+    for (j in 1:R) {
+      Growth[j] ~ dnorm( brodycoef, pow(brodysd,-2) )  # growth rate
+    }
+
+
+  # -------------------  
+  # catch observation model, standardized to K
+  # Cr = prior for illegal catches
+    sd.Cr ~ dunif( 0.01, sigma )  
+    for (j in 1:R) {
+      Cr[j] ~ dunif( 0.001, 0.030 )  # cheating rate
+      for (i in 1:N){
+        catch[i,j] ~ dnorm( CAT[i,j] * (1 + Cr[j] ) / K[j] , pow( sd.Cr, -2 ) ) ;
+    }}
+
+
+  # -------------------  
+  # recruitment observation model and error 
+    for (j in 1:R) {
+      sd.oREC[j] ~ dunif( 0.01, sigma )  
+      sd.qREC[j] ~ dunif( 0.01, sigma )  
+      qREC[j] ~ dlnorm( log( qREC0), pow( sd.qREC[j] , -2 ) ) # catchability of recruitment
+    }
+    for (j in 1:R) {
+    for (i in 1:N) { 
+      rec[i,j] ~ dlnorm( log( max( qREC[j] * REC[i,j] / K[j] , eps) ), pow( sd.oREC[j] , -2 ) );
+    }}
+
+
+  # -------------------  
+  # biomass observation model and error 
+  #   fall / spring surveys correction
+  #   want B to represent the total biomass available in fishing year y
+  #   when surveys are conducted in fall, Btot(t) = Bsurvey(t) + catch(t) 
+  #   when surveys are conducted in spring, Btot(t) = Bsurvey(t) + catch(t-1) 
+  #   |...(t-2)...|.Ss..(t-1)...|...(t=2004)..Sf.|...(t+1).Sf..|...(t+2)..Sf.|...
+  #   corrections for spring surveys in 2003 and earlier for north and south 
+  #   assume BT = total biomass = catches(t-1) + biomass estimate(t; BE) 
+  
+    # set up hyperparameters, etc
+    for (j in 1:R) {
+      FB0[j]  ~ dunif( FB0x[j]*(1-cv), FB0x[j]*(1+cv) ) # starting biomass stochastic node
+      sd.q[j] ~ dunif( 0.01, sigma )  
+      sd.p.biomass[j]  ~ dunif( 0.01, sigma ) # uninformative process error where biomass scale is ~ 1 
+      sd.K[j]  ~ dunif( 0.01, sigma )  
+      q.biomass0[j] ~ dunif( q0x[j]*(1-cv), q0x[j]*(1+cv) )
+      q.biomass[j] ~ dlnorm( log( q.biomass0[j]), pow( sd.q[j] , -2 ) ) 
+      K0[j]  ~ dunif( K0x[j]*(1-cv), K0x[j]*(1+cv) )
+      K[j] ~ dlnorm( log(K0[j]), pow( sd.K[j] , -2 ) )    
+      sd.o.biomass[j]  ~ dunif( 0.01, sigmaB ) # informative observation error -- same scale as with K
+    }
+
+    for (j in 1:(R-1)) {
+      # spring surveys from 1998 to 2003
+      IOA[1,j] ~ dlnorm( log( max( q.biomass[j] * K[j] * (biomass[1,j] - catch[1,j]), eps) ), pow( sd.o.biomass[j] , -2 ) );  # approximation
+      for (i in 2:(ty-1)) { 
+        IOA[i,j] ~ dlnorm( log( max( q.biomass[j] * K[j] * (biomass[i,j]- catch[(i-1),j]), eps) ), pow( sd.o.biomass[j] , -2 ) );
+      }
+      IOA[ty,j] ~ dlnorm( log( max( q.biomass[j] * K[j] * (biomass[ty,j] - (catch[(ty-1),j] + catch[ty,j] )/2 ), eps) ), pow( sd.o.biomass[j] , -2 ) );  # approximation
+      # fall surveys    
+      for (i in (ty+1):N) {
+        IOA[i,j] ~ dlnorm( log( max( q.biomass[j] * K[j] * (biomass[i,j]- catch[i,j]), eps) ), pow( sd.o.biomass[j] , -2 ) );
+      }
+    }
+
+
+    # Cfa 4X -- assume total biomass = catches(t-1) + biomass estimate(t)
+    # ie, similar to a spring fishery
+    IOA[1,cfa4x] ~ dlnorm( log( max( q.biomass[cfa4x] * K[cfa4x] * (biomass[1,cfa4x] - catch[1,cfa4x]), eps) ), pow( sd.o.biomass[cfa4x] , -2 ) );  # approximation
+    for (i in 2:N) { 
+      IOA[i,cfa4x] ~ dlnorm( log( max( q.biomass[cfa4x] * K[cfa4x] * (biomass[i,cfa4x]- catch[(i-1),cfa4x]), eps) ), pow( sd.o.biomass[cfa4x] , -2 ) );
+    }
+
+
+
+  # -------------------  
+  # biomass process model and error 
+    Ztot ~ dnorm( MFB, pow(MFB.sd,-2) )
+    ZtotREC ~ dnorm( MREC, pow(MREC.sd,-2) )
+
+    for(j in 1:R) {
+      biomass[1,j] ~ dlnorm( log( max( FB0[j] , eps)), pow( sd.p.biomass[j], -2 ) ) ; # biomass at first year 
+      for(i in 2:N) {
+        biomass[i,j] ~ dlnorm( log( max(
+          exp(-Ztot) * ( biomass[i-1,j] - catch[i-1,j] ) + exp(-ZtotREC) * rec[i-1,j] * Growth[j] 
+        , eps) ), pow( sd.p.biomass[j] , -2 ) ) ; 
+    }}
+
+    
+
+  # -------------------  
+  # forecasts
+    # Recruitment -- stochastic
+    for(j in 1:R) {
+    for(i in (N+1):(N+M)) {
+      rec[i,j] ~ dnorm( max( mean((rec[1:N,j]) ) , 0.000001), pow( sd( (rec[1:N,j]) ), -2 ) ) ; 
+    }}
+    
+    # Fishable Biomass
+    for(j in 1:R) {
+    for(i in (N+1):(N+M)) {
+      biomass[i,j] ~ dlnorm( log( max(
+          exp(-Ztot) * ( biomass[i-1,j] - er * biomass[i-1,j] ) + exp(-ZtotREC) * rec[i-1,j] * Growth[j]
+      , eps)), pow( sd.p.biomass[j], -2 ) ) ; 
+    }}
+   
+
+
+  # -------------------  
+  # monitoring nodes and parameter estimates for output
+    for(j in 1:R) {
+      collapse[j] <- 1 - step( biomass[N+1,j]-0.1 ) ; # test if biomass >= 0.1; collapse defined as less than 10% of K
+    }
+
+
+    # -------------------  
+    # fishing mortality
+    # force first year estimate assuming catches in year 0 to be similar to year 1 
+    for(j in 1:R) {
+      for(i in 1:N) {
+        Zfish[i,j] <- -log( max(1 - catch[i,j] / biomass[i,j], eps ))
+      }
+      for(i in (N+1):(N+M)) {
+        Zfish[i,j] <- -log( max(1 - er * biomass[i-1,j] / biomass[i,j], eps)) 
+      }
+    }
+
+
+    # -------------------  
+    # natural vs total fishing mortality
+    for(j in 1:R) {
+      for(i in 1:N) {
+        Znat[i,j] <- Ztot - Zfish[i,j] 
+      }
+      for(i in (N+1):(N+M)) {
+        Znat[i,j] <- Ztot - Zfish[i,j] 
+      }
+    }
+
+
+    # -------------------  
+    # annual production
+    for(j in 1:R) {
+      PROD[1,j] <- biomass[2,j]- biomass[1,j] + catch[1,j] # approximation
+      for (i in 2:(N) ){
+        PROD[i,j] <- (biomass[i+1,j]- biomass[i-1,j])/2 + catch[i,j]  # linear interpolation cancels out the biomass[i,j] term
+      }
+      for(i in (N+1):(N+M-1)) {
+        PROD[i,j] <- (biomass[i+1,j]- biomass[i-1,j])/2 + er * biomass[i-1,j]   # linear interpolation cancels out the biomass[i,j] term
+      }
+      PROD[(N+M),j] <- (biomass[(N+M),j]- biomass[(N+M-1),j]) + er * biomass[(N+M-1),j]   # approximation
+    }
+    
+
+    # -------------------  
+    # recaled estimates
+    for(j in 1:R) {
+    for(i in 1:(N+M)) {
+      FBK[i,j] <- biomass[i,j]*K[j]
+      PK[i,j] <- PROD[i,j]*K[j]
+    }}
+
+    for(j in 1:R) {
+    for(i in 1:M) {
+      TAC[i,j] <- er*biomass[N+i-1,j] * K[j]
+    }}
+  
+}
+

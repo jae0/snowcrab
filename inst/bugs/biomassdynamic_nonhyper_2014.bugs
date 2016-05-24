@@ -1,0 +1,166 @@
+model {
+
+  # -------------------  
+  # define some marginally informative variance priors using CV's (coefficients of variation) as a simple approach
+  # uniform distribution seems most stable .. too uninformative?
+  # NOTE: eps = a small number non-zero number (essentially equivalent to zero but used to prevent infinity values)
+  # uninformative CV's associated with process (bp.) and observation (bo.) errors 
+ 
+  # NOTE for lognormals: CV = sqrt(exp( SD ^2) - 1)  and CV ~ SD where SD ~ < 0.5
+  # of SD = sqrt(log(1+CV^2)) and therefore, in terms of precision:
+  # TAU = 1/SD^2 = 1/log(1+CV^2)
+
+
+  for (j in 1:U) {
+    r[j] ~ dnorm( r.mu[j], pow( r.sd[j], -1 ) ) 
+  }
+
+
+  for (j in 1:U) {
+    #q.mu[j]  ~ dunif( q.min, q.max ) 
+    #q.sd[j]  ~ dunif( q.mu[j] * cv.normal.min, q.mu[j] *cv.normal.max )  # catchability coefficient (normal scale)
+    #q[j] ~ dnorm( q.mu[j], pow( q.sd[j], -2 ) )  T(q.min, q.max)
+    q[j] ~ dunif( q.min[j] , q.max[j] )
+  }
+
+
+  for (j in 1:U) {
+    K[j] ~ dlnorm( K.mu[j], pow( K.sd[j], -1 )) # T(K.min[j], K.max[j] )
+  }
+
+
+  # -------------------  
+  # removals (catch) observation model, standardized to K (assuming no errors in observation of catch!)
+    for (j in 1:U) {
+      for (i in 1:N){
+        rem[i,j] <- CAT[i,j]/K[j]
+      }
+    }
+
+
+  # -------------------  
+  # biomass observation model 
+  #   This is slightly complicated because a fall / spring survey correction is required:
+  #   B represents the total fishable biomass available in fishing year y
+  #     in fall surveys:    Btot(t) = Bsurveyed(t) + removals(t) 
+  #     in spring surveys:  Btot(t) = Bsurveyed(t) + removals(t-1) 
+  #   this is conceptualized in the following time line: 
+  #     "|" == start/end of each new fishing year
+  #     Sf = Survey in fall
+  #     Ss = Survey in spring
+  #     |...(t-2)...|.Ss..(t-1)...|...(t=2004)..Sf.|...(t+1).Sf..|...(t+2)..Sf.|...
+
+    for (j in 1:(U)) {
+      #bo.tau[j] ~ dunif( pow( log( 1 + pow( cv.lognormal.max, 2) ), -1 ), pow( log( 1 + pow( cv.lognormal.min, 2) ), -1 ) )  # min/max inverted because it is an inverse scale
+      bo.sd[j] ~ dlnorm(bo.mup[j],pow(bo.sdp[j],-1))
+      bo.tau[j]  <- pow( bo.sd[j], -2 )
+    }
+
+    for (j in 1:(U-1)) {
+      # spring surveys from 1998 to 2003
+      IOA[1,j] ~ dlnorm( log( max( q[j] * K[j] * (bm[1,j] - rem[1,j]) , eps)), bo.tau[j] )  # approximation
+      for (i in 2:(ty-1)) { 
+        IOA[i,j] ~ dlnorm( log( max( q[j] * K[j] * (bm[i,j]- rem[(i-1),j]), eps)), bo.tau[j] )  ;
+      }
+      # transition year
+      IOA[ty,j] ~ dlnorm( log( max( q[j] * K[j] * (bm[ty,j] - (rem[(ty-1),j] + rem[ty,j] )/2 ), eps)), bo.tau[j] ) ;  # approximation
+      # fall surveys    
+      for (i in (ty+1):N) {
+        IOA[i,j] ~ dlnorm( log( max( q[j] * K[j] * (bm[i,j] - rem[i,j]), eps)), bo.tau[j] ) ;
+      }
+    }
+
+    # Cfa 4X -- fall/winter fishery
+    # assume similar to a spring fishery but no need for separate q's
+    #    Btot(t) = Bsurveyed(t)+ removals(t-1)
+		#    NOTE: year designation in 4X is for the terminal year: ie. 2001-2002 => 2002
+    
+    IOA[1,cfa4x] ~ dlnorm( log( max( q[cfa4x] * K[cfa4x] * (bm[1,cfa4x] - rem[1,cfa4x]), eps)), bo.tau[cfa4x] ) ;  # approximation
+    for (i in 2:N) { 
+      IOA[i,cfa4x] ~ dlnorm( log( max( q[cfa4x] * K[cfa4x] * (bm[i,cfa4x]- rem[(i-1),cfa4x]), eps)), bo.tau[cfa4x] ) ;
+    }
+
+
+
+  # -------------------  
+  # biomass process model 
+        
+    for (j in 1:U) {
+     # bp.tau[j] ~ dunif( pow( log( 1 + pow( cv.lognormal.max, 2) ), -1 ), pow( log( 1 + pow( cv.lognormal.min, 2) ), -1 ) )  
+      #bp.sd[j]  <- pow( sqrt(bp.tau[j]), -1 )
+       bp.sd[j] ~ dlnorm(bp.mup[j],pow(bp.sdp[j],-1))
+      bp.tau[j]  <- pow( bp.sd[j], -2 )
+    }
+
+    for(j in 1:U) {
+      b0[j] ~ dunif( b0.min[j], b0.max[j] ) # starting b prior to first catch event 
+      bm[1,j] ~ dlnorm( log( max( b0[j], eps)), bp.tau[j] ) T(b.min, b.max ) ;  # biomass at first year   
+      for(i in 2:(N+M)) {
+        bm[i,j] ~ dlnorm( log( max(bm[i-1,j]*( 1 + r[j]*(1-bm[i-1,j])) - rem[i-1,j] , eps)), bp.tau[j] ) T(b.min, b.max) ;
+      }
+      
+      # forecasts
+      for(i in 1:M) {
+        rem[N+i,j] <- er*bm[N+i-1,j]
+      }
+    }
+
+
+  # -------------------  
+  # monitoring nodes and parameter estimates for output
+    for(j in 1:U) {
+      Bdrop[j]  <- 1 - step( bm[N+1,j]-bm[N,j] ) ; # test if bm(t) >= bm(t-1) 
+      BX2MSY[j] <- 1 - step( bm[N+1,j]-0.25 ) ; # test if bm >= 1/2 bmY
+      MSY[j]    <- r[j]* exp(K[j]) / 4  # maximum height of of the latent productivity (yield)
+      BMSY[j]   <- exp(K[j])/2  # biomass at MSY
+      FMSY[j]   <- 2 * MSY[j] / exp(K[j]) # fishing mortality at MSY
+      Fcrash[j] <- 4 * MSY[j] / exp(K[j]) # fishing mortality at which the stock will crash
+    }
+
+
+    # -------------------  
+    # fishing mortality
+    # force first year estimate assuming catches in year 0 to be similar to year 1 
+    for(j in 1:U) {
+      for(i in 1:N) {
+        F[i,j] <- -log( max(1 - rem[i,j] / bm[i,j], eps))  
+      }
+      for(i in (N+1):(N+M)) {
+        F[i,j] <- -log( max(1 - er * bm[i-1,j] / bm[i,j], eps)) 
+      }
+    }
+
+
+    # -------------------  
+    # annual production
+    for(j in 1:U) {
+      pd[1,j] <- bm[2,j]- bm[1,j] + rem[1,j] # approximation
+      for (i in 2:(N) ){
+        pd[i,j] <- (bm[i+1,j]- bm[i-1,j])/2 + rem[i,j]  # linear interpolation cancels out the bm[i,j] term
+      }
+      for(i in (N+1):(N+M-1)) {
+        pd[i,j] <- (bm[i+1,j]- bm[i-1,j])/2 + er * bm[i-1,j]   # linear interpolation cancels out the bm[i,j] term
+      }
+      pd[(N+M),j] <- (bm[(N+M),j]- bm[(N+M-1),j]) + er * bm[(N+M-1),j]   # approximation
+    }
+  
+
+
+    # -------------------  
+    # recaled estimates
+  
+    for(j in 1:U) {
+      for(i in 1:(N+M)) {
+        B[i,j] <- bm[i,j]*K[j]
+        P[i,j] <- pd[i,j]*K[j]
+        C[i,j] <- rem[i,j]*K[j]
+      }
+      for(i in 1:M) {
+        TAC[i,j] <- rem[N+i,j]*K[j]
+      }
+    }
+
+}
+
+
+
