@@ -13,7 +13,8 @@ Description: The snow crab assessment suite used by Maritimes Region in Canada. 
 Depends: R (>= 3.0.0)
 Imports:
   devtools,
-  ecomodUtils
+  ecomodUtils,
+  utilities
 Suggests:
   groundfish,
   netmensuration,
