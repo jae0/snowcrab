@@ -13,7 +13,7 @@
 	  K = K[ which(K$effort <= 300) ,]
 	  K = K[ which(K$cpue < 500),]
 
-	  polydir = file.path(project.datadirectory("polygons"), "data", "Basemaps", "Marine", "Coastline")
+	  polydir = file.path(project.datadirectory("ecomod_polygons"), "data", "Basemaps", "Marine", "Coastline")
 	  rasdir = file.path(project.datadirectory("snowcrab"), "maps", "rasters", "logbook")
 	  mapdir = file.path(project.datadirectory("snowcrab"), "maps", "images", "logbook", "currentyear")
 

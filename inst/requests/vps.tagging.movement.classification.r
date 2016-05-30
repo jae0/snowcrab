@@ -49,7 +49,7 @@ if(redo.base.data) {}
 
         filt.data = rbind(filt.data,oo1)
 
-        ecomodLibrary( 'ecomod_utilities','polygons')
+        ecomodLibrary( 'ecomod_utilities','ecomod_polygons')
 
         xx = range(oo$lon)
         yy = range(oo$lat)

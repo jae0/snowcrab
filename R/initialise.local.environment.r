@@ -19,8 +19,10 @@ initialize.local.environment = function( current.assessment.year=NULL, libs=NULL
       "vegan", "akima", "fields", "lattice", "gstat", "maptools",  "boot", "raster", "grid",
       "RColorBrewer", "rasterVis", "rgdal", "sp", "rgeos", "bigmemory" ) )
 
-  p$libs = unique( c( p$libs, ecomodLibrary( "snowcrab", "spacetime", "ecomod_utilities", "parallel", "polygons", "snowcrab", "groundfish", "netmensuration", "coastline",
-      "substrate", "temperature", "taxonomy", "habitat", "habitatsuitability", "bathymetry", "plottingmethods" )) )
+  p$libs = unique( c( p$libs, ecomodLibrary( "snowcrab", "ecomod_spacetime", "ecomod_utilities", "ecomod_parallel",
+      "ecomod_polygons", "groundfish", "netmensuration", "ecomod_coastline",
+      "ecomod_substrate", "ecomod_temperature", "ecomod_taxonomy", "ecomod_habitat", "ecomod_habitatsuitability",
+      "ecomod_bathymetry", "ecomod_plottingmethods" )) )
 
   if (!is.null(libs)) p$libs = unique( c(p$libs, RLibrary(libs) ) )
 

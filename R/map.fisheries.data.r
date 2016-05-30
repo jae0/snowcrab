@@ -7,7 +7,7 @@
     x = x[ which(x$effort <= 300) ,]
     x = x[ which(x$cpue < 500),]
 
-    polydir = file.path(project.datadirectory("polygons"), "data", "Basemaps", "Marine", "Coastline")
+    polydir = file.path(project.datadirectory("ecomod_polygons"), "data", "Basemaps", "Marine", "Coastline")
     shpdir = file.path(project.datadirectory("snowcrab"), "maps", "shapefiles", "logbook")
     rasdir = file.path(project.datadirectory("snowcrab"), "maps", "rasters", "logbook")
     mapdir = file.path(project.datadirectory("snowcrab"), "maps", "images", "logbook")
