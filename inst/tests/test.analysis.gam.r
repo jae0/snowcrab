@@ -1,41 +1,39 @@
 
 
 
-Test:     Biomass estimation via GAM / LME 
+Test:     Biomass estimation via GAM / LME
 
 
 
   require(mgcv)
   require(nlme4)
-  
-	loadfunctions( "snowcrab", functionname="initialise.local.environment.r") 
- 
 
-      
+  p = snowcrab::initialise.local.environment()
+
     p$model.type = "gam.full"
       # p$model.type = "gamm.full"
 
     # model habitat using GAM
-    
+
     # quantile at which to consider zero-valued abundance
-    p$habitat.threshold.quantile = 0.05 
-      
+    p$habitat.threshold.quantile = 0.05
+
     set = snowcrab.db( DS="set.logbook" )
     set$Y = set$R0.mass
 
     set$plon= jitter(set$plon)
     set$plat= jitter(set$plat)
- 
+
     Q = quantile( set$Y[ which(set$Y>0)],  p$habitat.threshold.quantile )
-    
+
     g =set
     g = g[ which(set$Y> p$habitat.threshold.quantile ) ,]
     g = g[ , c("Y", "yr", "cfa", "plon", "plat", "t", "tamp", "wmin", "z", "substrate.mean", "dZ", "ddZ"  ) ]
-    
+
     Vrange = NULL
     Vpsill = NULL
     Zannual = NULL
- 
+
     for ( iy in sort(unique(g$yr)) ) {
       ii = which(g$yr==iy)
 
@@ -50,29 +48,29 @@ Test:     Biomass estimation via GAM / LME
       Zannual = c( Zannual, Z )
 
     }
-    
-    Vrange = mean(Vrange[which(Vrange< 100)] , na.rm=T) 
+
+    Vrange = mean(Vrange[which(Vrange< 100)] , na.rm=T)
     Vpsill = mean(Vpsill[which(Vrange< 100)], na.rm=T)
 
-     
+
     # g = g[ which( g$yr %in% c(2008:2009)) ,]
         #  g = g[ sample(1:nrow(g), 1000 ) ,]
 
 
     # g$yr =  as.factor( g$yr )
     # g$cfa =  as.factor( g$cfa )
-   
+
     # rm(set); gc()
 
-    Q = gamm( 
-          formula = Y ~  yr + s(plon,plat) +  s(t)  + s( tamp) + s( wmin) +  s( z) +  s( dZ) +s(ddZ), 
-          correlation=corSpher(value=c( Vrange, Vpsill ), form=~plon+plat|yr, nugget=T ), 
+    Q = gamm(
+          formula = Y ~  yr + s(plon,plat) +  s(t)  + s( tamp) + s( wmin) +  s( z) +  s( dZ) +s(ddZ),
+          correlation=corSpher(value=c( Vrange, Vpsill ), form=~plon+plat|yr, nugget=T ),
           data=g, family=Gamma()
     )
 
-    Ql = gamm( 
-          formula = Y ~  s(yr) + s(plon,plat)  + s( tamp) + s( wmin) +  s(t)+ s( z) + s( dZ), 
-          correlation=corSpher(value=c( Vrange, Vpsill ), form=~plon+plat|yr, nugget=T ), 
+    Ql = gamm(
+          formula = Y ~  s(yr) + s(plon,plat)  + s( tamp) + s( wmin) +  s(t)+ s( z) + s( dZ),
+          correlation=corSpher(value=c( Vrange, Vpsill ), form=~plon+plat|yr, nugget=T ),
           data=g, family=Gamma("log")
     )
 
@@ -82,7 +80,7 @@ Test:     Biomass estimation via GAM / LME
 
     cor( predict( Q$gam, g, type="response"), g$Y, use="pairwise.complete.obs")^2 # = 0.038
 
-R = gls( Y ~  yr * cfa + ( bs( t )  + bs( tamp) + bs( wmin) ) + bs( z) + bs( substrate.mean) + bs( ddZ) +bs( dZ), 
+R = gls( Y ~  yr * cfa + ( bs( t )  + bs( tamp) + bs( wmin) ) + bs( z) + bs( substrate.mean) + bs( ddZ) +bs( dZ),
 correlation = corGaus(c( Vrange, Vpsill ), form=~plon+plat | yr, nugget=T ), data=g )
 cor( predict( R, g, type="response"), g$Y, use="pairwise.complete.obs")^2 # = 0.378962
 o = allEffects(R)
@@ -96,7 +94,7 @@ rm (C)
 ms.mass = paste( "ms.mass", S, sep="." )
 ms.no = paste( "ms.no", S, sep="." )
 
-other = c( "total.effort" ,"total.cpue" , "total.landings", "total.visits", "cpue", "landings", "visits" ) 
+other = c( "total.effort" ,"total.cpue" , "total.landings", "total.visits", "cpue", "landings", "visits" )
 hab = c( "substrate.mean" , "dZ", "ddZ" , "tmean" , "tamp", "wmin" , "thp" , "tsd.H", "t" , "tamp.cl" , "wmin.cl", "tsd" , "t" , "tsd", "z"  )
 crab = c( "cw.male.mat.mean","cw.fem.mat.mean","totmass.female.berried","totmass.female.primiparous","totmass.female.multiparous","mi123.no","mi4.no","mi5.no","mi6.no","mi7.no","mi8.no","mi9.no","mi10.no","mi11.no","mi12.no","fi1234.no", "fi5.no", "fi6.no" ,"fi7.no", "fi8.no", "fi9.no", "fi10.no", "R0.no", "R1.no", "R2.no", "R3.no", "R4.no", "R5p.no", "dwarf.no", "ma9.no", "ma10.no" ,"ma11.no", "ma12.no", "ma13.no", "fa7.no", "fa8.no" ,"fa9.no","fa10.no"  )
 

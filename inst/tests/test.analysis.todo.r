@@ -1,15 +1,15 @@
 
 
 # 1 .generate Z estimates and possibly relate them to changes in prey and pred abundance.
-  
-	loadfunctions( "snowcrab", functionname="initialise.local.environment.r") 
+
+	p = snowcrab::initialise.local.environment()
   q = get.population.projection.parameters( assessment.year = p$current.assessment.year )
-  
+
   scenario = "mature.only"
-  
+
   sizes = mean.weights.by.category( p )
-  tmatrix = make.transition.matrices(p) 
- 
+  tmatrix = make.transition.matrices(p)
+
 #  fp = forward.project.main ( p, q, scenario, exploit.rate, start.projection.year, nyears.projection, good.years, source="file" )  # load the saved version
 
   eps = 1e-4  # assume this is min resolution
@@ -18,27 +18,27 @@
     nnodes = length(nodes)
     fall.surveys = c(2003)
     spring.surveys = c(1998:2001)
-  
-    
-    sex = "male"    
+
+
+    sex = "male"
     region=  q$regions[1]
 
 
-    
+
     sur = get.annual.timeseries( p, sex=sex, outtype="yearclass", region=region)
 
     fm = landings.decomposed ( p, q, sex=sex, region )
-   
+
     # correct timing of landings to account for change in survey season (by offsetting landings)
     fm[,,"2002"] = fm[,,"2002"] + fm[,,"2001"]
     for (y in 2001:1999)  fm[,,as.character(y)] = fm[,,as.character(y-1)]
     fm[,,"1998"] = fm[,,"1998"] * NA
 
 
-    N.pre = sur$TS + fm   # ... need to fix this 
+    N.pre = sur$TS + fm   # ... need to fix this
     N.pre[ N.pre < eps ] = 0
-    N.post = sur$TS 
-  
+    N.post = sur$TS
+
 ##################
 
     cl = make.classes (sex)
@@ -49,18 +49,18 @@
 
     k = get.cohort.data (yclass, yrs, cats, varmap, N.pre, outvar="total")
     l = get.cohort.data (yclass, yrs, cats, varmap, N.post, outvar="total")
-    
+
 
     plot(rowSums(k[,,"1998"]))
     lines(rowSums(l[,,"1998"]))
- 
+
 #################
 
     for (i in q$nodeyears) {
         k2 = apply(k,c(1,3), sum, na.rm=T)
         k2[ which(k2==0) ] = NA
-        
-        k3 = apply(k2, 1, mean, na.rm=T) 
+
+        k3 = apply(k2, 1, mean, na.rm=T)
 
         plot ( as.numeric(as.character(rownames(k2))), k2[,"1998"])
 
@@ -71,7 +71,7 @@
 
 
 
-# 2. try a vpa 
+# 2. try a vpa
 
 
 ###################
@@ -103,7 +103,7 @@
   # -------------------------------------------------------------------------------------
   # source required functions
 
-	loadfunctions( "snowcrab", functionname="initialise.local.environment.r") 
+  p = snowcrab::initialise.local.environment()
 
 
   # -------------------------------------------------------------------------------------

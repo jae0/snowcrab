@@ -1,30 +1,30 @@
 #Emera Tagging
-        
-loadfunctions( "snowcrab", functionname="initialise.local.environment.r") 
+
+p = snowcrab::initialise.local.environment()
 
 dn = file.path(project.datadirectory('snowcrab'),'data','tagging','Emera')
 
-if(redo.base.data) {} 
+if(redo.base.data) {}
         a = dir(dn)
-        a = a[grep('crab',a)] 
+        a = a[grep('crab',a)]
 
         out = NULL
                 for(i in a) {
                          h = read.csv(file.path(dn,i),header=T)
                          out = rbind(h,out)
                         }
-         
+
         names(out) = tolower(names(out))
         out$dt = strptime(out$datetime, format= "%m/%d/%Y %H:%M")
-         
+
         #N Animals detects
                         b= unique(out$transmitter) #58
                          lonlat2planar(oo)
         #N Detects per anmimal
                         a = aggregate(detectedid~transmitter,data=out,FUN=length)
-         
 
-        #each animal Filter to reasonable speeds 
+
+        #each animal Filter to reasonable speeds
         filt.data = NULL
         #hpe is the error of the data points <8 is good #need to implement
         for(i in 1:length(b)) {
@@ -41,14 +41,16 @@ if(redo.base.data) {}
                                         io = which.max(oo1$speed)
                                         oo1 = oo1[-io,]
                                 } else {
-                                 dt=0       
+                                 dt=0
                                 }
                             }
                 hist(oo1$speed,'fd',main=b[i])
         savePlot(file.path(dn,paste('hist.of.speed',b[i],"png",sep=".")),type='png')
-                                        
-        filt.data = rbind(filt.data,oo1)                
-        loadfunctions(c('utility','polygons'))
+
+        filt.data = rbind(filt.data,oo1)
+
+        ecomodLibrary( 'ecomod_utilities','polygons')
+
         xx = range(oo$lon)
         yy = range(oo$lat)
         xx[1] = xx[1]-0.02; xx[2] = xx[2] +0.02

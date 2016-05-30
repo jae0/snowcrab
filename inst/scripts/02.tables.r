@@ -1,7 +1,9 @@
 
   # Tables based upon data created by "1.snowcrab.r"
-	
-	loadfunctions( "snowcrab", functionname="initialise.local.environment.r") 
+
+p = snowcrab::initialise.local.environment( current.assessment.year=2016)
+
+
   library("xtable")
   library("R2HTML")
 
@@ -14,7 +16,7 @@
   tabledir = file.path(project.datadirectory("snowcrab"), "data", "fisheries")
   outtabledir= file.path(project.datadirectory("snowcrab"), "assessments", "2015", "tables", "logbook")
   setwd(tabledir)
-  
+
   NFS <- xtable(read.csv("NENS_FisherySummary.csv"))
   SFS <- xtable(read.csv("SENS_FisherySummary.csv"))
   Fx <- xtable(read.csv("4x_FisherySummary.csv"))
@@ -22,13 +24,13 @@
   setwd(outtabledir)
   print.xtable(NFS, type="latex", file="NENS_FisherySummary.tex")
   print.xtable(NFS, type="html", file="NENS_FisherySummary.html")
-  
+
   print.xtable(SFS, type="latex", file="SENS_FisherySummary.tex")
   print.xtable(SFS, type="html", file="SENS_FisherySummary.html")
 
   print.xtable(Fx, type="latex", file="4x_FisherySummary.tex")
   print.xtable(Fx, type="html", file="4x_FisherySummary.html")
-  
+
   #regions = c("cfaall")
    #regions = c("cfanorth", "cfasouth", "cfa4x")
    regions = c("cfanorth", "cfa23", "cfa24", "cfa4x")
@@ -43,13 +45,13 @@
       }
 # ----------------------------------------
 #  Carapace condition from observed data  < 95mm CW
-   
+
     outtabledir= file.path(project.datadirectory("snowcrab"), "assessments", "2015", "tables", "observer")
 
     odb = odb0
-    odb = odb[ which( odb$cw < 95 & odb$prodcd_id=="0" ) ,] 
+    odb = odb[ which( odb$cw < 95 & odb$prodcd_id=="0" ) ,]
     regions = c("cfanorth", "cfasouth", "cfa4x")
-    nregions = length(regions) 
+    nregions = length(regions)
     years = sort( unique( odb$fishyr ) )
 
     res = NULL
@@ -134,10 +136,10 @@
     HTML(Rx, file="table.CC.large.4x.obs.html")
 
 # ----------------------------------------
-#  Percent soft from observed data  
-  
+#  Percent soft from observed data
+
     odb = odb0
-    odb = odb[ which( odb$cw > 95 & odb$cw < 170 & odb$prodcd_id=="0" ) ,]  # commercial crab 
+    odb = odb[ which( odb$cw > 95 & odb$cw < 170 & odb$prodcd_id=="0" ) ,]  # commercial crab
     years = sort( unique( odb$fishyr ) )
 
 
@@ -173,7 +175,7 @@
 
 # growth increment (assumming average weight in the midpoint of each increment)
   growth.11.to.12 =  predict.mass.g.from.CW.mm( mean(CW.interval.male(12)) ) - predict.mass.g.from.CW.mm (mean(CW.interval.male(11)) )
- 
+
   # = 419 g
 #  12to13 = ~450
 
@@ -187,15 +189,15 @@
     for (r in regions) {
     for (y in years) {
       res = proportion.legal (odb, region=r, year=y)
-      out = rbind(out, cbind( r, y, res[1], res[2], res[3] ) ) 
+      out = rbind(out, cbind( r, y, res[1], res[2], res[3] ) )
     } }
     out
 
 
 
-# ---------------------------------------- USED 
+# ---------------------------------------- USED
 #  Carapace condition from trawl data  >= 95mm CW  ... not kriged .. simple proportions
-  
+
     det0 = snowcrab.db( DS="det.georeferenced" )
     det0$fishyr = det0$yr  ## the counting routine expectes this variable
 
@@ -299,7 +301,7 @@ abline(h=50)
 
 # ----------------------------------------   NOT USED ____________
 #  Carapace condition from trawl data  < 95mm CW  ... not kriged .. simple proportions
-  
+
     det0 = snowcrab.db( DS="det.georeferenced" )
     det0$fishyr = det0$yr  ## the counting routine expectes this variable
 

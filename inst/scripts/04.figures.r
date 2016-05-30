@@ -1,11 +1,7 @@
 
+p = snowcrab::initialise.local.environment( current.assessment.year=2016)
 
-  RLibrary( "mgcv", "chron", "lattice"  )
-  ecomodLibrary( "snowcrab")
-
-#	loadfunctions( "snowcrab", functionname="initialise.local.environment.r")
-  p = initialise.local.environment( 2016)
-
+#  RLibrary( "mgcv", "chron", "lattice"  )
 
       # ------------------------------------------
       # Time-series: all interpolated data estimated from interpolated analysis

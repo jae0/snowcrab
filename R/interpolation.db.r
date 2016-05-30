@@ -1,7 +1,8 @@
 
   interpolation.db = function( ip=NULL, DS, p=NULL ) {
 
-    if ( DS %in% c( "interpolation.redo", "interpolation", "interpolation.simulation", "interpolation.simulation.redo", "interpolation.simulation.complete", "interpolation.simulation.PS" ) ) {
+    if ( DS %in% c( "interpolation.redo", "interpolation", "interpolation.simulation", "interpolation.simulation.redo",
+                    "interpolation.simulation.complete", "interpolation.simulation.PS" ) ) {
 
       basedir = file.path( project.datadirectory("snowcrab"), "R", "gam" )
 
@@ -29,11 +30,6 @@
         return (PS)
       }
 
-      if (exists( "init.files", p)) {
-        p0 = p
-        LoadFiles( p0$init.files )
-        p=p0
-      }
       if (exists( "libs", p)) RLibrary( p$libs )
       if (is.null(ip)) ip = 1:p$nruns
 

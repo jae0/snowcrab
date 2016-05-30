@@ -172,13 +172,6 @@
         return(Q)
       }
 
-      if (exists( "init.files", p)) {
-        p0 = p; # copy as the next alters p and we do not want to lose it
-        LoadFiles( p0$init.files )
-        p=p0
-        }
-
-
       if (exists( "libs", p)) RLibrary( p$libs )
       if (is.null(ip)) ip = 1:p$nruns
 
@@ -289,11 +282,6 @@
         return(Q)
       }
 
-      if (exists( "init.files", p)) {
-        p0 = p
-        LoadFiles( p0$init.files )
-        p = p0
-      }
       if (exists( "libs", p)) RLibrary( p$libs )
 
       if (is.null(p$optimizers) ) p$optimizers = c( "nlm", "perf", "bfgs", "newton", "optim", "nlm.fd")

@@ -2,7 +2,8 @@
 # March 18th, 2016
 # Michelle Greenlaw
 
-loadfunctions( "snowcrab", functionname="initialise.local.environment.r") 
+
+p = snowcrab::initialise.local.environment()
 
 set = snowcrab.db( DS ="set.complete", p=p )
 head(set)

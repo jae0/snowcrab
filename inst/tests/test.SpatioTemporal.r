@@ -1,47 +1,42 @@
+  RLibrary( "geostatsinla", "geostatsp", "mgcv", "nlme4" )
 
-  p= list()
-	p$init.files = loadfunctions( "snowcrab", functionname="initialise.local.environment.r") 
-  p$init.files = c( p$init.files, loadfunctions( c( "spacetime", "utility", "parallel", "bathymetry", "temperature" ) ) )
-
-  p$libs = RLibrary( "mgcv", "lubridate", "lattice", "lattice", "grid", "fields", "parallel", 
-                         "sp", "INLA", "geostatsinla", "geostatsp", "raster"  ) 
-  
+  p = snowcrab::initialise.local.environment()
 
   p$regions = c("cfa4x", "cfanorth","cfasouth" )
   p$vars.to.model = c("R0.mass")
 
-  p$auxilliary.data = c( 
-            "t", "tmean", "tmean.cl", "tamp", "wmin", 
-            "z", "substrate.mean", "dZ", "ddZ", 
-            "ca1", "ca2", 
-            "nss.rsquared", "nss.shannon", 
+  p$auxilliary.data = c(
+            "t", "tmean", "tmean.cl", "tamp", "wmin",
+            "z", "substrate.mean", "dZ", "ddZ",
+            "ca1", "ca2",
+            "nss.rsquared", "nss.shannon",
             "smr", "Ea", "A", "qm", "mass",
-            "Z", "Npred" ) 
+            "Z", "Npred" )
 
   p$habitat.threshold.quantile  = 0.05
- 
+
   set0 = habitat.model.db( DS="basedata", p=p, v="R0.mass" )
-  
+
   set = set0[ which(set0$yr %in% c( 2008:2013)) , ]
-  
+
 
 
   require(SpatioTemporal)
-  
+
   # FORMATTING REQUIRED for SpatioTemporal
-  obs = data.frame( 
-    obs = set$R0.mass, 
+  obs = data.frame(
+    obs = set$R0.mass,
     date = set$yr + set$julian/365,
     ID = 1:nrow(set)
   )
 
-  covars = 
-  st.covars = 
+  covars =
+  st.covars =
 
   st  = createSTdata( obs=obs, covars=covars, transform.obs="log", SpatioTemporal=st.covars )
 
- 
-  coordinates( set ) = ~ plon + plat 
+
+  coordinates( set ) = ~ plon + plat
   proj4string( set ) = CRS("+proj=utm +zone=20 +datum=WGS84")  # CRS("+proj=longlat +ellps=WGS84 +datum=WGS84")
 
 

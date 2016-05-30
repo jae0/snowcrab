@@ -1,12 +1,12 @@
 
 parameter.list.snowcrab = function ( p=NULL, set="default" ) {
-   
+
   if (is.null( p) ) p = list()
 
   if ( set =="default" ) {
 
-    if (!exists("annual.results", p ) ) p$annual.results = file.path( project.datadirectory("snowcrab"), "assessments", current.assessment.year ) # output location for year-specific results
-    
+    if (!exists("annual.results", p ) ) p$annual.results = file.path( project.datadirectory("snowcrab"), "assessments", p$current.assessment.year ) # output location for year-specific results
+
     if (!exists("spatial.domain", p ) ) p$spatial.domain = "snowcrab"
 
     if (!exists("ext2", p ) ) p$ext2 = extent(matrix(c(-66.4, 42.2, -57.2, 47.4), nrow=2, ncol=2)) #MG extent of mapping frame
@@ -22,16 +22,16 @@ parameter.list.snowcrab = function ( p=NULL, set="default" ) {
    #    p$clusters = c( rep("localhost",8) )  # use local cluster to make file usage easier without refreshing each filesystem contantly
     if (!exists("clusters", p ) )     p$clusters = c( rep("localhost",1) )  # use local cluster to make file usage easier without refreshing each filesystem contantly
 
-    if (!exists("fisheries.grid.resolution", p ) )   p$fisheries.grid.resolution = 2 
+    if (!exists("fisheries.grid.resolution", p ) )   p$fisheries.grid.resolution = 2
 
     ## these are kriging related parameters:: the method is deprecated
     if (!exists("ofname", p ) )   p$ofname = file.path(p$annual.results, paste("TSresults", p$current.assessment.year, "rdata", sep=".") )
     if (!exists("regions.to.model", p ) )   p$regions.to.model = c( "cfanorth", "cfasouth", "cfa4x", "cfaall" )
-    
+
     if (!exists("vars.to.model", p ) )   p$vars.to.model = variable.list.expand("all.to.model")
     if (!exists("years.to.model", p ) )   p$years.to.model = c(1998:p$current.assessment.year)
-      
-    if (!exists("yearswithTdata", p ) )   p$yearswithTdata = c(1950:p$current.assessment.year)  
+
+    if (!exists("yearswithTdata", p ) )   p$yearswithTdata = c(1950:p$current.assessment.year)
     if (!exists("recode.data", p ) )  p$recode.data = TRUE
     if (!exists("map.results", p ) )   p$map.results=TRUE
 
@@ -39,7 +39,7 @@ parameter.list.snowcrab = function ( p=NULL, set="default" ) {
 
     if (!exists("nw", p ) )  p$nw = 10  # from temperature.r, number of intervals in a year
     if (!exists("default.spatial.domain", p ) )     p$default.spatial.domain = "canada.east"  # for temperature/habitat lookups
-    
+
       # p$kformula = as.formula( "kv ~ z + t + total.cpue" )  # model in 2006-2008
       # p$kformula = as.formula( "kv ~ z + t + tamp + wmin + dZ + ddZ + substrate.mean + total.cpue" )  # model in 2006-2008
      if (!exists("kformula", p ) )  p$kformula = as.formula( "kv ~ z + t + tamp + wmin + dZ + ddZ + substrate.mean" )  # model in 2006-2008

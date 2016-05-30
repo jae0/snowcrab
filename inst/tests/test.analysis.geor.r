@@ -1,23 +1,20 @@
 
+p = snowcrab::initialise.local.environment()
+
 require(geoR)
 require(geoRglm)
 
+vg = variog( coords=Q[,c("plon", "plat")], data=Q$t, max.dist=100 )
+vgm = variofit(vg); rm(vg) ;gc()
+
+# requires 32 GB
+pred.grid = expand.grid( plon=p$plons, plat=p$plats)
+inside = filter.region.polygon( pred.grid[,c(1:2)], region="cfaall", planar=T,  proj.type=p$internal.projection )
+pred.grid = pred.grid [ inside ,]
+rm(inside); gc()
 
 
-      vg = variog( coords=Q[,c("plon", "plat")], data=Q$t, max.dist=100 )
-        vgm = variofit(vg); rm(vg) ;gc()
-
-        # requires 32 GB
-        pred.grid = expand.grid( plon=p$plons, plat=p$plats)
-        inside = filter.region.polygon( pred.grid[,c(1:2)], region="cfaall", planar=T,  proj.type=p$internal.projection )
-        pred.grid = pred.grid [ inside ,]
-        rm(inside); gc()
-       
-
-        ee = krige.conv( coords=Q[,c("plon", "plat")], data=Q$t, locations=pred.grid, krige = krige.control( obj.model = vgm) )
-
-
-
+ee = krige.conv( coords=Q[,c("plon", "plat")], data=Q$t, locations=pred.grid, krige = krige.control( obj.model = vgm) )
 
 
 data(elevation)
@@ -43,9 +40,9 @@ names(ca20)
 
 
 # ----------------------
-  
-	loadfunctions( "snowcrab", functionname="initialise.local.environment.r") 
- 
+
+	p=initialise.local.environment()
+
 kvar = "R0.mass"
 kyear = 2007
 
@@ -67,7 +64,7 @@ PS = formatted.data$PS
 totalsurfacearea = dim(PS)[1]
 psnames = names( PS )
 pscoords = c( which(psnames=="plon"), which( psnames=="plat") )
-pscovars = c( which(psnames=="z"), which(psnames=="t")) 
+pscovars = c( which(psnames=="z"), which(psnames=="t"))
 PS = as.geodata( PS, coords.col=pscoords, covar.col=pscovars, covar.names=c("z","t"), na.action="ifany", rep.data.action=mean )
 rm(pscoords, pscovars)
 rm(formatted.data); gc()
@@ -85,7 +82,7 @@ vgm1 = variog( CC, trend="1st", uvec=uvec, option="bin", estimator="classical", 
 lines(vgm1, lty=1, col="orange")
 
 # 2nd = mean is a second order polynomial of the coords
-# mean ~ x1 + x2 + I(x1^2) + I(x2^2) + I(x1*x2) 
+# mean ~ x1 + x2 + I(x1^2) + I(x2^2) + I(x1*x2)
 vgm2 = variog( CC, trend="2nd", uvec=uvec, option="bin", estimator="classical", max.dist=150, pairs.min=3 )
 lines(vgm2, lty=2, col="blue")
 
@@ -123,8 +120,8 @@ vm1.prof = proflik(vm1, CC, uni.only = T)
 
 ocontrol = output.control(n.posterior=10, moments=T, mean.var=T, quantile=c(0.025, 0.5, 0.975) )
 
-kcontrol = krige.control(type.krige = "sk", 
-  trend.d =~CC$coords+CC$covar$t+CC$covar$z, 
+kcontrol = krige.control(type.krige = "sk",
+  trend.d =~CC$coords+CC$covar$t+CC$covar$z,
   trend.l = ~PS$coords+PS$covar$t+PS$covar$z,
   obj.model = vm0,
   lambda=1
@@ -137,15 +134,15 @@ k = ksline( geodata=CC, locations=PS$coords, borders=NULL, cov.pars=vm0$cov.pars
 
 
 
-set.seed(1) 
+set.seed(1)
 
 
-krige.glm.control( type.krige = "sk", 
-  trend.d =~CC$coords+CC$covar$t, 
-  trend.l= ~PS$coords+PS$t+..., 
+krige.glm.control( type.krige = "sk",
+  trend.d =~CC$coords+CC$covar$t,
+  trend.l= ~PS$coords+PS$t+...,
   obj.model = NULL, beta, cov.model, cov.pars, kappa,
-  nugget, micro.scale, dist.epsilon = 1e-10, 
-  aniso.pars, lambda 
+  nugget, micro.scale, dist.epsilon = 1e-10,
+  aniso.pars, lambda
 )
 
 

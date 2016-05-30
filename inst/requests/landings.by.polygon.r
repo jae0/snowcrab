@@ -1,10 +1,12 @@
 #area of fishery foot print represented in the emera line
-loadfunctions( "snowcrab", functionname="initialise.local.environment.r") 
+
+p = snowcrab::initialise.local.environment()
+
 a = logbook.db('logbook')
 a = a[which(a$cfa0=='cfanorth'),]
 a = a[complete.cases(a[,c('lon','lat')]),]
 a = makePBS(a,polygon=F)
-pp = importShapefile(find.ecomod.gis('emera')) 
+pp = importShapefile(find.ecomod.gis('emera'))
 
 g = findPolys(a,pp)
 g = a[which(a$EID %in% g$EID),]

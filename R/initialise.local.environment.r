@@ -8,17 +8,23 @@
   #       Copying the following into each relevent file is not a solution as it is error prone and  repetitive.
   # ----------------------------------------------------------------------------------
 
-initialize.local.environment = function( current.assessment.year=as.numeric( substring(Sys.Date(),1,4)) ) {
+initialize.local.environment = function( current.assessment.year=NULL, libs=NULL, p=NULL ) {
 
-  p = list( project.name = "snowcrab" )
+  if (is.null(p)) p = list()
+
+  p$project.name = "snowcrab"
   p$project.outdir.root = project.datadirectory( p$project.name, "R" ) #required for interpolations and mapping
+
   p$libs = RLibrary ( c( "geosphere", "lubridate", "mgcv", "parallel", "DBI", "Cairo", "Hmisc", "chron",
       "vegan", "akima", "fields", "lattice", "gstat", "maptools",  "boot", "raster", "grid",
       "RColorBrewer", "rasterVis", "rgdal", "sp", "rgeos", "bigmemory" ) )
 
-  p$libs.ecomod = ecomodLibrary( c("snowcrab", "spacetime", "utility", "parallel", "polygons", "snowcrab", "groundfish", "netmensuration", "coastline",
-      "substrate", "temperature", "taxonomy", "habitat", "habitatsuitability", "bathymetry", "plottingmethods" ))
+  p$libs = unique( c( p$libs, ecomodLibrary( "snowcrab", "spacetime", "ecomod_utilities", "parallel", "polygons", "snowcrab", "groundfish", "netmensuration", "coastline",
+      "substrate", "temperature", "taxonomy", "habitat", "habitatsuitability", "bathymetry", "plottingmethods" )) )
 
+  if (!is.null(libs)) p$libs = unique( c(p$libs, RLibrary(libs) ) )
+
+  if (is.null(current.assessment.year) ) current.assessment.year=as.numeric( substring(Sys.Date(),1,4))
   p$current.assessment.year = current.assessment.year
 
   p = parameter.list.snowcrab ( p=p )

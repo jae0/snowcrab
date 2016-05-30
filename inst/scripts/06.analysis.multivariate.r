@@ -1,11 +1,9 @@
 
  ...  incomplete
 
-#   source(file.path(ordination.package, "ordination.package.r"))
-	loadfunctions( "sorted.ordination") 
-	loadfunctions( "snowcrab", functionname="initialise.local.environment.r") 
-	
+p = snowcrab::initialise.local.environment( current.assessment.year=2016)
 
+	ecomodLibrary( "sorted.ordination")
 
   set = snowcrab.db("set.with.cat")
   allvars = c(
@@ -49,6 +47,6 @@
     x$uniqueid = NULL
     p = pca.modified(x)
 
- 
+
 
 

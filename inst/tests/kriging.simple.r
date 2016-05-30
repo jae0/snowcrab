@@ -1,13 +1,6 @@
 
-  	
-	loadfunctions( "snowcrab", functionname="initialise.local.environment.r") 
- 
-  require(sp)
-  
-  
-  o = snowcrab.db( DS ="set.complete", p=p )   
-  
-  p = list()
+
+  p = snowcrab::initialise.local.environment()
   p$interval = 5
   p$drange=120
   p$nmax=0
@@ -17,18 +10,20 @@
 
   v = "totmass.male.com"
 
+  o = snowcrab.db( DS ="set.complete", p=p )
+
   ow = o[ , c(v, "plon", "plat", "z", "t", "yr" ) ]
   names (ow)[ which( names(ow)==v ) ] = "Y"
- 
+
 
 
   require(MASS)
   nb.start = list(size=mean(ow$Y)^2/(var(ow$Y) - mean(ow$Y) ), mu=mean(ow$Y) )
   nb.start = list(size=1, mu=1.5 )
   of = fitdistr( ceiling(ow$Y), "Negative Binomial", start=nb.start )
-  
+
   # mean to variance
-  Ym = tapply( ceiling(ow$Y), ow$yr, fitdistr, 
+  Ym = tapply( ceiling(ow$Y), ow$yr, fitdistr,
       densfun="Negative Binomial", start=list( mu=of$estimate[["mu"]], size=of$estimate[["size"]] ) )
   Ymm = t( matrix(  unlist( Ym ), ncol=length(Ym ) ))
   colnames(Ymm) = names( unlist(Ym[[1]]) )
@@ -61,35 +56,35 @@
 
   regions= c("cfanorth", "cfasouth", "cfa4x" )
 
-  for (y in yrs ) { 
-  for (r in regions) {  
-    
+  for (y in yrs ) {
+  for (r in regions) {
+
     ir = filter.region.polygon(x=ow[ , c("plon", "plat")], region=r, planar=T)
     it = which(ow$yr==y )
     iy = intersect( ir, it )
     if (length(iy) < 10)  next()
     oy = ow[ iy , c("Y", "plon", "plat" ) ]
-    
+
     oz = empirical.variogram( oy, p )
     ozp = oz[[1]]
     ozp$yr = y
     ozp$region = r
     out = rbind( out, ozp )
-    
+
     ozq = c( unlist( c(oz[[2]][["psill"]], oz[[2]][["range"]] )) , r, y, min(ozp$gamma), max(ozp$gamma) )
     names(ozq) = c( "nugget", "psill","dummy", "range", "region", "yr", "gamma.min", "gamma.max" )
-    
+
     params = rbind( params, ozq)
   }}
 
   params = as.data.frame( params, stringsAsFactors=F )
   rownames( params ) = NULL
   for (i in setdiff(names(params), "region") ) params[,i] = as.numeric( params[,i]  )
-  
+
   params$ratio  = params$gamma.min / params$gamma.max
   xyplot(ratio ~ yr | region, data=params, type="b" )
 
-  
+
   params$nugget2  = params$nugget / params$gamma.max
   plot(params$nugget2 ~yrs, type="b" )
 
@@ -125,7 +120,7 @@
   sp.cor = corSpher(c( vg.fit$range[2], vg.fit$psill[1] /vg.fit$psill[2] ), form= ~plon+plat | yr, nugget=TRUE )
 
   sp.cor = Initialize( sp.cor, oy )
-  
+
   plot( Variogram( sp.cor, distance=p$vgm.dist  ))
 
   sp.cor = corSpher( form= ~plon+plat | yr )

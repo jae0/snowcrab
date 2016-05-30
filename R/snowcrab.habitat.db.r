@@ -20,7 +20,7 @@
       return (K)
     }
 
-    if (!is.null(p$init.files)) for( i in p$init.files ) source (i)
+    if (!is.null(p$libs)) for( i in p$libs ) require(i)
     if (is.null(ip)) ip = 1:p$nruns
 
     for ( iip in ip ) {

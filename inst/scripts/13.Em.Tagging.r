@@ -1,5 +1,7 @@
 #Emera Tagging
 
+ecomodLibrary( 'ecomod_utilities','polygons', 'snowcrab')
+
 dn = file.path(project.datadirectory("snowcrab"),'data','tagging','Emera')
 
 a = dir(dn)
@@ -29,8 +31,7 @@ for(i in 1:length(b)) {
 	oo = oo[order(oo$dt),]
 	ll = nrow(oo)
 	oo$ms = c(0,oo$dt[2:(ll)]-oo$dt[1:(ll-1)])
- loadfunctions(c('utility','polygons'))
- makeMap(xlim=c(-60.3,-60.1),ylim=c(46.5,46.6))
+  makeMap(xlim=c(-60.3,-60.1),ylim=c(46.5,46.6))
 	with(oo,plot(lon,lat,type='l',lwd=0.4))
 title(paste(b[i],'N days =', round(as.numeric(max(oo$dt)-min(oo$dt)[1]),1)	))
 savePlot(file.path(dn,paste('tag',b[i],".pdf",sep=".")),type='pdf')

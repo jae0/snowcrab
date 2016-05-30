@@ -1,4 +1,7 @@
-set = snowcrab.db( DS ="set.complete", p=p )   
+
+p = snowcrab::initialise.local.environment()
+
+set = snowcrab.db( DS ="set.complete", p=p )
 
 set = set [ , c("trip", "set", "station", "yr", "lon", "lat", "t", "R0.mass", "R0.no" ) ]
 
@@ -13,6 +16,6 @@ shpdir = file.path(project.datadirectory("snowcrab"), "maps", "shapefiles", "sur
 setwd(shpdir)
 
 writeOGR(sdf.set, ".", "SurveyDataR0.mass", driver="ESRI Shapefile", overwrite=T)
-setwd("/home/michelle/tmp")  
+setwd("/home/michelle/tmp")
 shp.path <- paste("SurveyDataUpdate shapefile created at", shpdir, sep=" ")
 print(shp.path)

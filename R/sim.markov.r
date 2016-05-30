@@ -1,7 +1,6 @@
 
   sim.markov = function( ip=NULL, p, DS="file" ) {
 
-    if (exists( "init.files", p)) LoadFiles( p$init.files )
     if (exists( "libs", p)) RLibrary( p$libs )
     if (is.null(ip)) ip = 1:p$nruns
 

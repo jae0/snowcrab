@@ -8,9 +8,8 @@
   # ----------------------------------------------------------------------------------
 
   # load required functions and parameters
-  ecomodLibrary( "snowcrab" )
-  p = initialise.local.environment( 2016 )
 
+  p = snowcrab::initialise.local.environment( current.assessment.year=2016)
 
   debug = FALSE
   if (debug) {
@@ -118,7 +117,7 @@
 # -------------------------------------------------------------------------------------
 # External Dependencies: (must be completed before the final lookup/mathcing phase)
 
-  loadfunctions( "snowcrab", functionname="initialise.local.environment.r")
+  p=initialise.local.environment()
 
 # Bathymetry data ::
   loadfunctions("bathymetry", functionname="bathymetry.r" ) # if necessary
@@ -155,7 +154,7 @@
 # -------------------------------------------------------------------------------------
 # Final data lookup/matching .. AFTER refreshing all above tables (where relevent/possible)
 
-  loadfunctions( "snowcrab", functionname="initialise.local.environment.r")
+  p=initialise.local.environment()
 
 
   logbook.db( DS  ="fisheries.complete.redo", p=p )

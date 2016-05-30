@@ -1,8 +1,6 @@
 
 
-  loadfunctions( "snowcrab", functionname="initialise.local.environment.r") 
-
-
+p = snowcrab::initialise.local.environment( current.assessment.year=2016)
 
 # Tables for the SSR/RESDOC
 # ---------------------------------------------
@@ -55,13 +53,13 @@
 # ---------------------------------------------
   # Tables of fishable biomass from trawl surveys
 
- 
+
   outvars = c("yr", "region", "vars", "total", "lbound", "ubound")
   yy = c(1999:p$current.assessment.year)
   rr = c("cfasouth", "cfanorth", "cfa4x")
   vv = c( "totmass.male.com", "R0.mass", "R0.no", "R1.no", "R2.no", "R3.no", "totno.male.imm", "totno.male.com.CC1to2", "totno.male.com.CC3to4",
           "totno.male.com.CC5" )
- 
+
   p = make.list( list(y=yy, v=vv ), Y=p )
   L = interpolation.db( DS="interpolation.simulation", p=p )
   # L = K[K$yr %in% yy & K$vars %in% vv & K$region %in% rr, outvars]

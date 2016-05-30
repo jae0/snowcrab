@@ -1,23 +1,23 @@
 
 
-  # For details see 
+  # For details see
   # http://www.ci.tuwien.ac.at/~gruen/BayesMix/bayesmix-intro.pdf
-            
-  #          K                          
+
+  #          K
   # P(yi ) = [SUM]  k Normal(yi | µk , sigma(k)^2 )
   #          k=1
- 
+
   require(coda)
   require(rjags)
   rjags::load.module("dic")
   rjags::load.module("glm")
 
-  loadfunctions( "bayesian" )
-  loadfunctions( "snowcrab", functionname="initialise.local.environment.r") 
- 
+  ecomodLibrary( "bayesian" )
+  p = snowcrab::initialise.local.environment()
+
 
   data( fish, package="bayesmix")
-  
+
   fdat = list(
     y = as.vector(fish$fish),
     b0 = 5.625,
@@ -31,7 +31,7 @@
     e = c(1, 1, 1, 1)
   )
 
-  
+
   model.fish = "
 model {
   for (i in 1:N) {
@@ -44,7 +44,7 @@ model {
   }
   S0 ~ dgamma(g0Half,g0G0Half)
   eta ~ ddirch(e[])
-} 
+}
 "
 
 # jags.module(names, path)
@@ -89,9 +89,9 @@ gelman.plot(yc[1])
 
 # ----------------------
 # using snowcrab data
- 
-  det = snowcrab.db( DS ="det.georeferenced" ) 
-  
+
+  det = snowcrab.db( DS ="det.georeferenced" )
+
   hvar="cw" #!
   base = 2
   s0 = 10  # ~ ln(10)
@@ -100,8 +100,8 @@ gelman.plot(yc[1])
 
   # ii = which(det$sex==0 & det$mat=="1" & as.numeric(substring(as.character(det$trip),6,9))==2008)
   ii = which(det$sex==0 )
-  
-   
+
+
   model.snowcrab = "
 model {
   for (i in 1:N) {
@@ -114,7 +114,7 @@ model {
   }
   S0 ~ dgamma(g0Half,g0G0Half)
   eta ~ ddirch(e[])
-} 
+}
 "
 
 
@@ -131,7 +131,7 @@ model {
     e = c(1, 1, 1, 1)
   )
 
-  m = jags.model( file=jags.setup( model.snowcrab ), data=fdat, n.chains=3, n.adapt=5000 )  
+  m = jags.model( file=jags.setup( model.snowcrab ), data=fdat, n.chains=3, n.adapt=5000 )
 
   # lapply(x, FUN=function(x) apply(x, MARGIN=c(1), FUN=mean) )
   # lapply(x, FUN=function(x) apply(x, MARGIN=c(1), FUN=sd) )

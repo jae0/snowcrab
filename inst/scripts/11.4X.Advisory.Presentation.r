@@ -1,12 +1,13 @@
 #logbook 4X
-loadfunctions( "snowcrab", functionname="initialise.local.environment.r") 
+p = snowcrab::initialise.local.environment( current.assessment.year=2016)
+
 require(chron)
 outdir = file.path(project.datadirectory('snowcrab'),'4X')
 dir.create(outdir,showWarnings=F)
-#Map the Area  	
+#Map the Area
 if(map.logs) {
     require(PBSmapping)
-    loadfunctions(c('spacetime','utility','polygons'))
+    ecomodLibrary ( 'spacetime','ecomod_utilities','polygons' )
     logs = logbook.db('logbook')
     logs$yr = logs$yr -1 # to make fishing year start of season ie march 2015 is fishing year 2014
     logs = makePBS(logs,polygon=F)
@@ -16,7 +17,7 @@ if(map.logs) {
   	yy=unique(lp$yr)
    	for( y in yy) {
    				x11()
-   				makeMap(area='4X',addSummerStrata=F)	
+   				makeMap(area='4X',addSummerStrata=F)
 		   		b=lp[which(lp$yr==y),]
 addPoints(b,pch=16, col='red')
 		   		title(y)
@@ -31,7 +32,7 @@ addPoints(b,pch=16, col='red')
 
 if(map.logs.cpue) {
     require(PBSmapping)
-    loadfunctions(c('spacetime','utility','polygons'))
+    ecomodLibrary( 'spacetime','ecomod_utilities','polygons' )
     logs = logbook.db('logbook')
 
     res.lat = 0.045855 # = 2km on SS
@@ -54,7 +55,7 @@ if(map.logs.cpue) {
   	yy=unique(lp$yr)
    	for( y in yy) {
    				x11()
-   				makeMap(area='4X',addSummerStrata=F)	
+   				makeMap(area='4X',addSummerStrata=F)
 		   		b=lp[which(lp$yr==y),]
 			    fp = findCells(b,grr)
 		        pdata = combineEvents(b,fp,FUN=mean)
@@ -62,7 +63,7 @@ if(map.logs.cpue) {
 		   		addPolys(grr,polyProps = na.omit(pp), border=NULL)
 		   		title(y)
 	   			savePlot(file.path(outdir,paste('logbook.locations',y,'.png',sep=".")),type='png')
-	
+
 		   			}
 		 	}
 
@@ -85,7 +86,7 @@ if(map.logs.cpue) {
 		yrs=as.character(sort(as.numeric(unique(logs$yr))))
 		logs$kg=logs$pro_rated_slip_wt_lbs/2.204626
 
- 
+
 		mts= c("October","November", "December", "January", "February", "March", "April","May")
 		logs$month=as.character(months(logs$date_landed))  #populate month field
 		logs=logs[logs$month %in% mts,]  #remove any data not within expected months
@@ -105,7 +106,7 @@ if(map.logs.cpue) {
 			points(yearly$mt, col="red", pch=20)
 			lines(yearly$mt, col="red")
 	savePlot(file.path(outdir,paste('annual.landings.png',sep=".")),type='png')
-	
+
 #determine monthly landings by year
 			monthly = aggregate(kg~month+yr,data=logs,FUN=sum)
 			monthly$fm = recode(monthly$month,"'November'=1;'December'=2;'January'=3;'February'=4;'March'=5;'April'=6")
@@ -130,7 +131,7 @@ if(map.logs.cpue) {
 			}
 		legend( "bottomright",legend=yrs,bty="n",lty=c(1,2),lwd=2, col=cols)
 	savePlot(file.path(outdir,paste('monthly.landings.png',sep=".")),type='png')
-	
+
 #Plot annual EFFORT
 	x11()
 	traps = aggregate(num_of_traps~yr,data=logs,FUN=sum)
@@ -158,8 +159,8 @@ if(map.logs.cpue) {
 	    logs.fixed[which(logs.fixed$lon> -64) , 'area'] <- 'East'
 		logs.fixed[which(logs.fixed$lon<= -64 & logs.fixed$lon> -64.7) , 'area'] <- 'Central'
 		logs.fixed[which(logs.fixed$lon<= -64.7) , 'area'] <- 'West'
-		
-	
+
+
 cpue = jackknifeCPUE(logs.fixed[,c('yr','catch','effort')],grouping=c('yr','area'))
 cpue = cpue[which(cpue$area=='East'),]
 # calculate mean catch rates for the season by CFA
@@ -169,23 +170,23 @@ cpue = cpue[which(cpue$area=='East'),]
 		plot(cpue$yr, cpue$cpue,type="n", ylim=ylims, ylab="Lbs / Trap", main="Sambro", xlab="Year" )
 		with(cpue,points(yr,cpue, col="red", pch=20,type='b'))
 		with(cpue,arrows(x0=as.numeric(yr),y0=cpue-cpue.var,y1=(cpue+cpue.var), col="red", length=0))
-		
-savePlot(file.path(outdir,paste('yearly.cpue.sambro.png',sep=".")),type='png') 
+
+savePlot(file.path(outdir,paste('yearly.cpue.sambro.png',sep=".")),type='png')
 
 ##--
 ##standardized catch rates adam catch rates by Month, by vessel, by year
 standardized.catch.rates=T
 if(standardized.catch.rates) {
-						cp = logs.fixed		
+						cp = logs.fixed
 						cp$cp <- cp$pro_rated_slip_wt_lbs/cp$num_of_traps
 						cp$logcp <- log(cp$cp)
 						ssp = cp[,c('cp','logcp','yr','moy','area','vr_number')]
 						ssp = ssp[complete.cases(ssp),]
-						
+
 						pred.grid <- expand.grid(yr=as.factor(unique(ssp$yr)),moy=as.factor(unique(ssp$moy)),
-							vr_number=as.factor(unique(ssp$vr_number)),area=as.factor(unique(ssp$area)))	
-					
-				linear.model=F	
+							vr_number=as.factor(unique(ssp$vr_number)),area=as.factor(unique(ssp$area)))
+
+				linear.model=F
 					if(linear.model) {
 							glm.cpue <- glm(log(cp)~yr+as.factor(moy)+as.factor(vr_number)+as.factor(area),data=ssp)
 							preds <-predict(glm.cpue,pred.grid,se=T,type='response')
@@ -205,19 +206,19 @@ if(standardized.catch.rates) {
 							SE <- sqrt(preds+exp(predvar))
 							preds = list(fit=preds,se.fit=SE)
 						}
-							
+
 				#estimates for plot with 95%CI
 					preds.m <-	aggregate(preds$fit,by=list(pred.grid$yr),FUN=mean)
 					preds.s <- aggregate(preds$se.fit,by=list(pred.grid$yr),FUN=mean)
-					
+
 					plot(2002:2014,preds.m$x,type='b',lwd=2,xlab='Year',ylab=paste(expression(CPUE, 'lbs/trap')),ylim=c(0,140))
 					arrows(x0=2002:2014,x1=2002:2014,y0=preds.m$x,y1=preds.m$x+preds.s$x,angle=90,length=0.03)
 					arrows(x0=2002:2014,x1=2002:2014,y0=preds.m$x,y1=preds.m$x-preds.s$x,angle=90,length=0.03)
 						savePlot(file.path(outdir,paste('standardized.catch.rate.png',sep=".")),type='png')
-	}			
+	}
 
 
-#Delury 
+#Delury
 	if(Delury) {
 				logs.fixed$weekno = as.numeric(round((logs.fixed$date_fished - as.POSIXct(paste(logs.fixed$yr,11,1,sep="-")))/604800)+1)
 				logs.fixed$landings  = logs.fixed$catch
@@ -242,10 +243,10 @@ if(standardized.catch.rates) {
 			}
 			}
 }
-		
+
 il = length(outl)
 
-	
+
  ##########- Following script calculates monthly catch rates by area (in lbs)
 
 #sep log data into east and west
@@ -269,22 +270,22 @@ il = length(outl)
 		}
 		legend('topleft',legend=ny,col=cols,lty=rep(1,4),pch=rep(1,4),bty='n')
 	savePlot(file.path(outdir,'monthly.landings.by.year.png'),type='png')
-			
+
 
 if(map.logs.month) {
     require(PBSmapping)
-    loadfunctions(c('spacetime','utility','polygons'))
+    ecomodLibrary(c('spacetime','ecomod_utilities','polygons'))
    logs = logs.fixed
     logs = makePBS(logs,polygon=F)
     logs$fm = recode(logs$month,"'November'=1;'December'=2;'January'=3;'February'=4;'March'=5;'April'=6")
-	
+
      lp = logs[,c('X','Y','EID','yr','fm','month')]
      lp = na.omit(lp)
      lp = lp[which(lp$yr==2014),]
   	yy=unique(lp$month)
    	for( y in yy) {
    				x11()
-   				makeMap(area='4X',addSummerStrata=F)	
+   				makeMap(area='4X',addSummerStrata=F)
 		   		b=lp[which(lp$month==y),]
 addPoints(b,pch=16, col='red')
 		   		title(y)
@@ -408,7 +409,7 @@ savePlot(file.path(outdir,paste('cc.histogram.2013','png',sep=".")),type='png')
 
 # Format to allow conversion to EventData for pbsMapping
 #--------------------------------------
-makeMap(area='4X',addSummerStrata=F)	
+makeMap(area='4X',addSummerStrata=F)
 lp = makePBS(logs.fixed,polygon=F)
 lp = na.omit(lp[,c('X','Y','EID','yr')])
 addPoints(lp[which(lp$yr==2014),],col='red',pch=16)
@@ -425,7 +426,7 @@ obs=l
 		obs$yr=as.character(years(as.chron(obs$landing_date)))        #determine year
 		obs$landing_date=obs$landing_date-8035200 #subtract 61 days
 		obs$yr=as.character(as.numeric(obs$yr)-1) # subtract one year to give starting year of season rather than end year
-  
+
 # Format to allow conversion to EventData for pbsMapping
 #--------------------------------------
 
@@ -447,7 +448,7 @@ savePlot(file.path(outdir,paste('observer.map.2014','png',sep=".")),type='png')
 
 #survey Index
 
-set = snowcrab.db('set.complete')   
+set = snowcrab.db('set.complete')
 
 st = unique(set[,c('yr','lon','lat','station')])
 st2013 = st[which(st$yr==2013),]

@@ -1,6 +1,6 @@
 
-	loadfunctions( "snowcrab", functionname="initialise.local.environment.r") 
-  
+  p = snowcrab::initialise.local.environment()
+
   det = snowcrab.db("det.georef")
 
   hvar="cw" #!

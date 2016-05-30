@@ -1,4 +1,6 @@
-#nens landings pre may 15 
+#nens landings pre may 15
+
+p = snowcrab::initialise.local.environment()
 
 a = logbook.db('logbook')
 

@@ -10,6 +10,6 @@ require ("devtools")
 install_github( "jae0/snowcrab" )
 ```
 
-Setup environment: https://github.com/jae0/ecomodUtils
+Setup environment: https://github.com/jae0/ecomod_base
 
 

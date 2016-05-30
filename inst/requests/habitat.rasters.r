@@ -1,16 +1,12 @@
-p = list()
-p$init.files = loadfunctions( "snowcrab", functionname="initialise.local.environment.r") 
-  p$libs = RLibrary( "mgcv", "chron", "lattice", "lattice", "grid", "fields", "parallel"  ) 
 
 
-loadfunctions(c('snowcrab','spacetime'))
-   basedir = file.path( project.directory("snowcrab"), "R", "gam" )
+p = snowcrab::initialise.local.environment()
 
-      loc.map = file.path( basedir, "maps" )
-      loc.sol = file.path( basedir, "predictions" )
-      loc.res = file.path( basedir, "results" )
-  
+basedir = file.path( project.directory("snowcrab"), "R", "gam" )
 
+loc.map = file.path( basedir, "maps" )
+loc.sol = file.path( basedir, "predictions" )
+loc.res = file.path( basedir, "results" )
 
 makeRaster  <- function(yr) {
 require(raster)

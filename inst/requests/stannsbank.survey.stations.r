@@ -1,5 +1,6 @@
 
-loadfunctions( "snowcrab", functionname="initialise.local.environment.r") 
+
+p = snowcrab::initialise.local.environment()
 
 dat = snowcrab.db('set.complete')
 pp = read.csv(find.ecomod.gis('StAnnsMPA.csv'))

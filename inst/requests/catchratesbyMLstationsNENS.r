@@ -1,13 +1,13 @@
-loadfunctions( "snowcrab", functionname="initialise.local.environment.r") 
 
+p = snowcrab::initialise.local.environment()
 
 makeMap(area='NENS',addSurvey=T,addEmera=T)
 makeMap(addSurvey=T)
- 
-  
- areas =  "cfanorth" 
+
+
+ areas =  "cfanorth"
  regions =  "N-ENS"
-    
+
     n.regions = length(regions)
     n.areas = length(areas)
     varnames = names(set)
@@ -21,22 +21,22 @@ fdir <-file.path( project.directory("snowcrab"), "R", "gam","habitat" )
         lo <- rbind(lo,K)
         rm(K)
         }
-        
+
         areas=c("cfanorth")
-        
+
         td = lo[ which( lo$region %in% areas & lo$yr>1995) , c('yr','region','sa.region') ]
         td1 =data.frame(yr=rep(2013,3),region=c('cfa4x','cfanorth','cfasouth'),sa.region=aggregate(sa.region~region,data=td[which(td$yr>2008),],FUN=mean)[2])
-        
+
         td = rbind(td,td1)
         td$year =td$yr
         td$sa.region = td$sa.region/1000
         load(file.path(project.directory('snowcrab'),"R","ts.rdata"))
     ts1 <- ts[which(ts$variable=='totno.male.com' & ts$region %in% areas & ts$year > 2003),c('year','region','mean','ub','lb')]
       td1 <- merge(ts1,td, by=c('year','region'),all.x=T)
-    
+
      ylim=c(0,max(c(td1$mean+td1$ub,td1$mean-td1$lb), na.rm=T))
- 
-pdf('NumberCommercial.pdf')    
+
+pdf('NumberCommercial.pdf')
 with(td1,plot(year,mean,ylim=ylim,ylab='Number Commerical per km2',pch=16))
 with(td1,arrows(x0=year,y0=mean-lb,y1=mean+ub,length=0))
 dev.off()

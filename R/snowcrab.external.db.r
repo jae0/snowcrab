@@ -3,10 +3,7 @@
 
     if ( DS=="det.snowcrab.in.groundfish.survey" ) {
 
-      ecomodLibrary( "groundfish")
-      u = load.groundfish.environment( year.current )
-
-      ct = groundfish.db( "det" )
+      ct = groundfish::groundfish.db( "det" )
       cti  = taxonomy.filter.taxa( ct$spec, taxafilter="snowcrab", outtype="groundfishcodes" )
       if (length(cti)> 0 ) ct = ct[cti,]
 
@@ -60,16 +57,13 @@
         return (set)
       }
 
-      ecomodLibrary( "groundfish")
-      u = load.groundfish.environment( year.current )
-
       ct = snowcrab.external.db( DS="det.snowcrab.in.groundfish.survey", vname=vname )
       if (nrow(ct)==0) return()
 
       uu = sum.data( ct, factors="id", variable="number" )
       names(uu) =c( "id", "n" )
 
-      set = groundfish.db( "set.base" )
+      set = groundfish::groundfish.db( "set.base" )
       set = lonlat2planar( set, proj.type=p$internal.projection )  # utm20, WGS84 (snowcrab geoid)
       set$plon = grid.internal( set$plon, p$plons )
       set$plat = grid.internal( set$plat, p$plats )

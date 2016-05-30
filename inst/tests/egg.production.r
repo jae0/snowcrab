@@ -1,4 +1,4 @@
- 
+
   # moved into the main body of the snow crab analytical routines
   # look at:
   #
@@ -9,35 +9,32 @@
   #
   # 4.figures.r
 
-   	
-	loadfunctions( "snowcrab", functionname="initialise.local.environment.r") 
-  
+  p = snowcrab::initialise.local.environment()
 
-  
   # ------------------------------------------
   # krige relevant variable to whole-shelf scale
-   
+
    p$do.parallel = T
    p$vars.to.model =  c(
-    "f7.no","m7.no", 
-    "f8.no","m8.no", 
-    "f9.no","m9.no", 
-    "f10.no","m10.no", 
-    "totno.female.primiparous", "totno.female.multiparous", 
-    "fecundity" 
+    "f7.no","m7.no",
+    "f8.no","m8.no",
+    "f9.no","m9.no",
+    "f10.no","m10.no",
+    "totno.female.primiparous", "totno.female.multiparous",
+    "fecundity"
    )
    p$regions.to.model = "cfaall"
 
    p$ofname = file.path( project.datadirectory("snowcrab"), "R", "egg.production.rdata" )
-   
+
    p = make.list( list(p$vars.to.model, p$years.to.model), Y=p)
 
 
   ###################
   # krige
-    krige.ordinary( p, init.files=init.files  )  # ~ 6 hr on "io X 8"
-    K = krige.block ( p, init.files=init.files  ) # to est CI and get data summaries ~ 2 days
-    krige.map ( p, init.files=init.files  )  # ~ 1 day?
+    krige.ordinary( p )  # ~ 6 hr on "io X 8"
+    K = krige.block ( p  ) # to est CI and get data summaries ~ 2 days
+    krige.map ( p  )  # ~ 1 day?
     gmt.cleanup() # clean up any stragglers
     cmd( "rsync -avzn tethys:/home/jae/ecomod/snowcrab/R /home/jae/ecomod/snowcrab/" )
 
@@ -51,11 +48,11 @@
  # ------------------------------------------
   # Fecundity estimated directly via kriging and individual-based fecundity estimate
   # p$ofname="/home/jae/ecomod/snowcrab/R/females.kriged.results.rdata"
-  
+
   fec.krig = figure.timeseries.fecundity(p,  outdir=file.path( p$annual.results, "timeseries",  "kriged"  ) )
-  fec.krig2 = tapply( fec.krig$total, fec.krig$yr, sum, na.rm=T) 
+  fec.krig2 = tapply( fec.krig$total, fec.krig$yr, sum, na.rm=T)
   fec.krig2l = tapply( fec.krig$lbound, fec.krig$yr, max, na.rm=T)   # this ignores the other areas .. but a good approximation
-  fec.krig2u = tapply( fec.krig$ubound, fec.krig$yr, sum, na.rm=T) 
+  fec.krig2u = tapply( fec.krig$ubound, fec.krig$yr, sum, na.rm=T)
 
   out.k = as.data.frame(cbind( fec.krig2, fec.krig2l, fec.krig2u ))
   out.k = out.k * 10^6  # return from millions to unit of numbers converted in functions.trawl at add.to.set
@@ -67,19 +64,19 @@
   plot(out$yr, out$total.egg.kriged)
 
 
-  ############ estimation of natural mortality from egg stage to Instar 8  
+  ############ estimation of natural mortality from egg stage to Instar 8
   # ... there exist catachability issues with Instar 8 (20-40% undersampled) and so these estimates are conservative
 
   # Assumption: egg released in year Y are captured as instar 8 crab in year Y+7 (assumes 1 year of egg retention/development by females)
   # Assumption catachbility of Instar 8 = 1
   # Assumption exponential rate of mortality
-    
+
 
   A = fecundity.indirect(  outdir=file.path( p$annual.results, "timeseries", "survey" ) )
   A$yr = A$years + 7
   A = A[ which(A$years >= 1997) ,]
   #   p$ofname = "/home/jae/ecomod/snowcrab/R/instar8.rdata"
- 
+
   load (p$ofname)
   B = K
 
@@ -92,22 +89,22 @@
   plot( fem$total.egg.all, fem$total)
   lines( mal$total.egg.all, mal$total, pch=21  )
 
-  
+
   plot( mal$yr, mal$total.egg.all/max(mal$total.egg.all), type="b", ylim=c(0,1) )
   lines ( mal$yr, mal$total/max(mal$total), col="blue" )
   lines( fem$yr, fem$total/max(fem$total), col="red" )
- 
+
 
   plot( A$years, A$total.egg.all, type="b", ylim=c(0,4e8))
   lines ( mal$yr, mal$total, col="blue" )
   lines( fem$yr, fem$total, col="red" )
 
 
- 
+
   plot( A$years, A$total.egg.all/max(A$total.egg.all), type="b", ylim=c(0,1) )
 #   lines ( mal$yr, mal$total/max(mal$total), col="blue" )
   lines( fem$yr, fem$total/max(fem$total), col="red" )
- 
+
  hh = fem[ , c("yr", "total", "lbound", "ubound")]
  ii = A[,c("years", "total.egg.all","total.egg.all.sd", "upper", "lower" )]
 
@@ -125,7 +122,7 @@
 
 
 # mortality rates estimates crude:
- lep = 190000; rt=4; mt=8.5 
+ lep = 190000; rt=4; mt=8.5
  Z=(log( lep/2 ) - log(1) )/ (rt + mt - 1)
  S = exp(-Z)
  A = 1-S
@@ -142,8 +139,8 @@ exp( mean(A))
 
 
 yr
-   1997    1998    1999    2000 
-1.70772 1.68391 1.60439 1.59819 
+   1997    1998    1999    2000
+1.70772 1.68391 1.60439 1.59819
 
 > mean ((log(fem$total.egg.all/2 ) - log(fem$total)) / 7)
 [1]  1.64855
@@ -167,7 +164,7 @@ u = rlnorm( 1000, f8$mean, f8$sd )
 
 out = NULL
 for (i in 1: nrows(fem) {
-  
+
 
 
 }

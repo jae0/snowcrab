@@ -1,11 +1,7 @@
 
   # Figures obtained after completion of data assimilation and processing up to the end of "1.snowcrab.r"
 
-  RLibrary( "mgcv", "chron", "lattice"  )
-  ecomodLibrary( "snowcrab")
-
-#	loadfunctions( "snowcrab", functionname="initialise.local.environment.r")
-  p = initialise.local.environment( 2016)
+  p = snowcrab::initialise.local.environment( current.assessment.year=2016)
 
 
    # Think this is fixed now .. ?
@@ -128,7 +124,7 @@
     map.cat.information( p, outdir=file.path( project.datadirectory("snowcrab"), "R", "maps", "species" ) )
 
   # ------------------------------------------
-  loadfunctions( "snowcrab", functionname="initialise.local.environment.r")
+  p=initialise.local.environment()
   # Map:Fisheries logbook data (Effort, CPUE, Landings)
   # MG: This is not working properly, you must open the script and run through once by hand???
   # MG: To fix
@@ -195,6 +191,6 @@
 
   # ------------------------------------------
   # Map: Larval distributions from the Scotian Shelf Ichtyoplankton Program data
-    map.larvae( p, outdir=file.path(project.datadirectory("snowcrab"), "R", "maps", "larvae"), conversions=conversions, init.files=p$init.files )
+    map.larvae( p, outdir=file.path(project.datadirectory("snowcrab"), "R", "maps", "larvae"), conversions=conversions, libs=p$libs )
 
 

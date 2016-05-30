@@ -1,15 +1,15 @@
 
 
-	
-	loadfunctions( "snowcrab", functionname="initialise.local.environment.r") 
- 
+
+p = snowcrab::initialise.local.environment()
+
 
   # white hake
   wh2 = snowcrab.db( DS="cat.georeferenced" )
   wh2$id = paste(wh2$trip, wh2$set, wh2$yr )
-  
+
   wh = wh2[ -which(duplicated(wh2$id)) , c( "id", "lon", "lat", "yr" )]
-  
+
   wh2 = wh2[ which (wh2$spec == 12 ) , ]
   wh = merge( wh, wh2[, c("id", "totno", "totmass") ], by="id", all.x=T, all.y=F )
   wh = wh[ which(wh$yr>= 2004 ) ,]
@@ -52,9 +52,10 @@
   # ----------------------------------------------------------
   # Peter Koeller -- N immature male > 56 mm CW in areas 23ab and 24ab
   #  == R2 + R3 + R4
-     
-  loadfunctions( "snowcrab", functionname="initialise.local.environment.r")
-  
+
+
+p = snowcrab::initialise.local.environment()
+
   set = snowcrab.db("set.complete")
   # overrides:
   p$regions.to.model = "cfa.23ab.24ab"
@@ -69,10 +70,10 @@
   xs = set[ i, ]
   xs$dummy = 1
 
-  res = tapply( xs$pre.recruit.no, INDEX=xs$yr, FUN=mean, na.rm=T ) 
-  res2 = tapply( xs$pre.recruit.no, INDEX=xs$yr, FUN=sd, na.rm=T ) 
-  res3 = tapply( xs$dummy, INDEX=xs$yr, FUN=sum, na.rm=T ) 
-   
+  res = tapply( xs$pre.recruit.no, INDEX=xs$yr, FUN=mean, na.rm=T )
+  res2 = tapply( xs$pre.recruit.no, INDEX=xs$yr, FUN=sd, na.rm=T )
+  res3 = tapply( xs$dummy, INDEX=xs$yr, FUN=sum, na.rm=T )
+
   res = as.data.frame( cbind(res, res2, res3 ) )
   names(res) = c("mean", "sd", "n")
   res$se = res$sd/ sqrt(res$n+1)
@@ -81,7 +82,7 @@
   out$year = as.numeric(rownames(out))
   rownames(out)=NULL
   write.table ( out, file="~/tmp/snowcrab.recruitment.index.csv", sep="\t" )
-      
+
   plot(  res[, c("mean")], ylim=c(0, max(res$mean, na.rm=T)*1.1))
 
 
@@ -89,11 +90,12 @@
   # Glace Bay Hole ... briefing note
 
   # for Glace Bay comparisons: override with ..
-  
+
   # reulsts in: ~/ecomod/snowcrab/issues/briefing.note.glace.bay/2005
-  
-  loadfunctions( "snowcrab", functionname="initialise.local.environment.r")
-  
+
+
+p = snowcrab::initialise.local.environment()
+
   set = snowcrab.db("set")
 
   # overrides:
@@ -104,7 +106,7 @@
   p$krige.ordinary = F
   p$krige.block = T
   p$clusters=rep("tethys",4)  # using all 8 will make it run out of memory
- 
+
   K = krige.block ( p ) # krige ordinary should already have been done
 
 
@@ -126,16 +128,17 @@
   # ------------------------
   # size freq distributions
 
-	loadfunctions( "snowcrab", functionname="initialise.local.environment.r")
-     
+
+p = snowcrab::initialise.local.environment()
+
   loc = file.path(p$annual.results, "size.data")
- 
+
   dir.create(path=loc, recursive=T, showWarnings=F)
   outfilename = paste( c("mi", "mm", "fi", "fm"), "rdata", sep=".")
   outfile = file.path(loc, paste(outfilename))
 
   if (!redo.data) {
-     
+
      for (f in  outfile) load(f)
 
   } else if (redo.data) {
@@ -183,7 +186,7 @@
   # ylim=c(0,400) # for 4X
   ylim=c(0,1200)
   xlim=c(0,140)
-   
+
 
   cols = c("gray40", "gray100" )
 
@@ -237,7 +240,7 @@
 
   # --------------------------
   # females
-  
+
   ncols = length(areas)
   nrows = length(years)
   pl = layout( matrix( c(1:(ncols*nrows)), nrow=nrows, ncol=ncols, byrow=F ) )
@@ -346,7 +349,8 @@ observer.data.request.oracle = function () {
 # Hebert: mean size of mature females
 
 
-		loadfunctions( "snowcrab", functionname="initialise.local.environment.r")
+
+p = snowcrab::initialise.local.environment()
 
     det = snowcrab.db("det.georef")  # this contains year
     det = det[ which(det$mat ==1 & det$sex==2) ,]
@@ -364,10 +368,10 @@ observer.data.request.oracle = function () {
     n$yr = as.numeric( as.character( n$yr) )
 
     res=NULL
-    res = merge(means, sd, by="yr" ) 
+    res = merge(means, sd, by="yr" )
     res = merge(res, n, by="yr" )
     res = res[res$yr > 1996 , ]
-    
+
     plot( res$yr, res$cw.mean)
 
 
@@ -375,7 +379,8 @@ observer.data.request.oracle = function () {
 # ----------------------------------
 # Gordon MacDonald: CFA 23/24 partitionning
 
-	loadfunctions( "snowcrab", functionname="initialise.local.environment.r")
+
+p = snowcrab::initialise.local.environment()
 
   set = snowcrab.db("set")
 
@@ -391,20 +396,20 @@ observer.data.request.oracle = function () {
   p$do.parallel = F
 
   # p$clusters=rep("io",7)  # using all 8 will make it run out of memory
-  
+
   if (p$krige.ordinary) krige.ordinary( p )  # ~ 6 hr on "io X 8"
   if (p$krige.block)    K = krige.block ( p ) # to est CI and get data summaries ~ 2 days
 
-  # cmd("sync.jae io") 
+  # cmd("sync.jae io")
 
-  K = krige.block(p, source="file") # load 
+  K = krige.block(p, source="file") # load
 
   v = p$vars.to.model
   r = p$regions.to.model
 
   print( K[, c("vars", "region", "yr", "total", "lbound", "ubound")])
- 
- 
+
+
   cex.main = 1.4
   cex.lab = 1.3
   cex.axis = 1.3
@@ -427,13 +432,13 @@ observer.data.request.oracle = function () {
 
   tt = "Fishable biomass"
   td = K
-  
+
   yy = expression(paste( "Biomass (X ", 10^3, " t)"))
   convert = 1 # no conversion
   eps = 1e-6
 
   varstocheck = c("total", "ubound", "lbound")
-  
+
   for (vs in varstocheck) {
         td[,vs] = td[,vs] / convert
         kk = which(td[,vs] <= eps)
@@ -482,14 +487,15 @@ observer.data.request.oracle = function () {
 
 # ----------------------------------
 # MacMullin: GBH vs NENS partitionning
- 
+
   # results location: ~/ecomod/snowcrab/issues/briefing.note.glace.bay/2006
-  
-	loadfunctions( "snowcrab", functionname="initialise.local.environment.r")
+
+
+p = snowcrab::initialise.local.environment()
 
   set = snowcrab.db("set")
 
-  # overrides:  
+  # overrides:
   p$regions.to.model = c( "cfanorth", "cfasouth", "cfa22outer", "cfa23a", "cfanorth.not.glace.bay" )
   p$vars.to.model = "R0.mass"
   p$years.to.model = p$years.to.model[ which(p$years.to.model>2000) ]
@@ -501,20 +507,20 @@ observer.data.request.oracle = function () {
   p$do.parallel = F
 
   # p$clusters=rep("io",7)  # using all 8 will make it run out of memory
-  
+
   if (p$krige.ordinary) krige.ordinary( p )  # ~ 6 hr on "io X 8"
   if (p$krige.block)    K = krige.block ( p ) # to est CI and get data summaries ~ 2 days
 
-  # cmd("sync.jae io") 
+  # cmd("sync.jae io")
 
-  K = krige.block(p, source="file") # load 
+  K = krige.block(p, source="file") # load
 
   v = p$vars.to.model
   r = p$regions.to.model
 
   print( K[, c("vars", "region", "yr", "total", "lbound", "ubound")])
- 
- 
+
+
   cex.main = 1.4
   cex.lab = 1.3
   cex.axis = 1.3
@@ -537,13 +543,13 @@ observer.data.request.oracle = function () {
 
   tt = "Fishable biomass"
   td = K
-  
+
   yy = expression(paste( "Biomass (X ", 10^3, " t)"))
   convert = 1 # no conversion
   eps = 1e-6
 
   varstocheck = c("total", "ubound", "lbound")
-  
+
   for (vs in varstocheck) {
         td[,vs] = td[,vs] / convert
         kk = which(td[,vs] <= eps)
@@ -587,13 +593,13 @@ observer.data.request.oracle = function () {
 
 # Sherrylynn Rowe: sea cucumber and whelks in surveys:
 
-	loadfunctions( "snowcrab", functionname="initialise.local.environment.r")
+p = snowcrab::initialise.local.environment()
 
 	load(file.path( project.datadirectory("snowcrab"), "R", "cat_georef.rdata"))
-   
-whelks = c(4210, 4211, 4212, 4227, 4228)  # Family Buccinidae 
+
+whelks = c(4210, 4211, 4212, 4227, 4228)  # Family Buccinidae
 cucumbers = c(6600, 6600, 6611, 6700 , 6705, 6710 , 6711 , 6712, 6713, 6714, 6715, 6716, 6717, 6718, 6719, 6720 ) # class Holothuroidea
-to.extract = c("lon", "lat", "totno", "yr", "spec") 
+to.extract = c("lon", "lat", "totno", "yr", "spec")
 
 W = cat[ cat$spec %in% whelks, to.extract ]
 C = cat[ cat$spec %in% cucumbers, to.extract ]
@@ -611,13 +617,12 @@ write.table( out, file="temp.csv", sep =";")
 
 
 # ---------------- Zwanenburg / MPAs etc
- 
 
-loadfunctions( "snowcrab", functionname="initialise.local.environment.r")
-     
+p = snowcrab::initialise.local.environment()
+
 load(file.path( project.datadirectory("snowcrab"), "R", "cat.georef.rdata"))
 cat$totno = cat$totno * cat$sa
-to.extract = c("lon", "lat", "yr", "totno", "spec") 
+to.extract = c("lon", "lat", "yr", "totno", "spec")
 yrs = which(cat$yr > 2003)
 out = cat[ yrs, to.extract ]
 write.table( out, file="temp.csv", sep =";")
@@ -626,9 +631,9 @@ write.table( out, file="temp.csv", sep =";")
 
 
 # 4X trawl locations
-#
-loadfunctions( "snowcrab", functionname="initialise.local.environment.r")
-     
+
+p = snowcrab::initialise.local.environment()
+
   set = snowcrab.db("setInitial")
   ii = filter.region.polygon(set, region="cfa4x")
   set = set[ ii, ]
@@ -638,12 +643,13 @@ loadfunctions( "snowcrab", functionname="initialise.local.environment.r")
 
 
 # wolf fish extraction for Jim Simon
-loadfunctions( "snowcrab", functionname="initialise.local.environment.r")
-  
+
+p = snowcrab::initialise.local.environment()
+
 Y = snowcrab.db( DS="cat.georeferenced" )
 spec = taxonomy.recode( from="taxa", to="spec", tolookup="wolffish")
 taxonomy.recode( from="spec", to="taxa", tolookup=spec )
-                 
+
 spec = c(50, 51, 52)
 
 Y = Y[ which( Y$spec %in% spec & Y$yr %in% c(2009:2011) ) , ]
@@ -656,9 +662,10 @@ write.csv( Y, file="~/tmp/jim.csv" )
 
 
 
----- 
+----
 # skate purse extraction for Jim Simon
-loadfunctions( "snowcrab", functionname="initialise.local.environment.r")
+
+p = snowcrab::initialise.local.environment()
 
 yrs = c(2005:2012)
 Z = snowcrab.db( DS="set.complete" )
@@ -685,7 +692,8 @@ write.csv( Y, file="~/tmp/jim.csv" )
 # ------
 # NENS data request WRT EMERA power line
 
-loadfunctions( "snowcrab", functionname="initialise.local.environment.r")
+
+p = snowcrab::initialise.local.environment()
 set = snowcrab.db("set")
 set = set[,c( "yr", "lon", "lat", "t", "sa", "R0.mass", "totmass.female.mat", "totmass.male.imm", "totmass.female.imm" )]
 nens = filter.region.polygon( set, region="cfanorth" )

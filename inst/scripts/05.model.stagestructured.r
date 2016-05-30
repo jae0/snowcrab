@@ -1,18 +1,18 @@
 
   # -------------------------
   # forward projection
-  
+
   # ++++++++++ must check timing of 4X to make sure that the season is not an issue ++++++++++
-  p=list()
-  p$init.files = loadfunctions( "snowcrab", functionname="initialise.local.environment.r") 
- 
+p = snowcrab::initialise.local.environment( current.assessment.year=2016)
+
+
   p$clusters = "localhost"
   # p$clusters = rep("localhost",2)
   # p$clusters = rep("tethys",8)
-  # p$clusters = rep( c("kaos", "nyx", "tartarus") ,24) 
+  # p$clusters = rep( c("kaos", "nyx", "tartarus") ,24)
 
   p = get.population.projection.parameters( p )
-  
+
 # start.projection.year = 2004
   p$start.projection.year = 2009
   p$nyears.projection = 6
@@ -28,21 +28,21 @@
   # mean sizes from trawl surveys ... slow worth parallelizing in future
   update.files=F # redo transition matrices, and size estimates?
   if (update.files) {
-    sizes = mean.weights.by.category( p, redo=T ) 
-    tmatrix = transition.matrices( p, redo=T) 
+    sizes = mean.weights.by.category( p, redo=T )
+    tmatrix = transition.matrices( p, redo=T)
   }
 
   p = make.list( list( er = 1:length(p$exploit.rate))  , Y=p )
-  parallel.run( sim.markov, p=p, DS="redo" ) 
-  sim.markov( p=p, DS="redo" ) 
- 
+  parallel.run( sim.markov, p=p, DS="redo" )
+  sim.markov( p=p, DS="redo" )
+
   fp = sim.markov( p=p, DS="collect" )
   fp = sim.markov( p=p, DS="saved" )
 
 
 
   td = create.projection.summary( p, fp$FB, rescale.results=F )
- 
+
   for (ir in 1:length(p$regions)) {
     x11()
     regs= p$regions[ir]
@@ -56,15 +56,15 @@
 
 # the mean size by instar
   sizes = mean.weights.by.category( p )  # use the previously saved file
-  
+
   latex( round( apply(sizes[,"cw.mean",,],c(1,3),mean, na.rm=T),1), file="", title="", label="", rowlabel="Stage", cgroup="Mean carapace width (cm)", na.blank=T, caption="Caption cw")
   latex( round( apply(sizes[,"mass.mean",,],c(1,3),mean, na.rm=T),1), file="", title="", label="", rowlabel="Stage", cgroup="cg", na.blank=T, caption="Caption cwsd")
 
 
-  tmatrix = make.transition.matrices(p) 
-  
+  tmatrix = make.transition.matrices(p)
 
-# fishing mortality  
+
+# fishing mortality
   eps = 0.001
   FM = tmatrix$FM
   FM[ which(!is.finite(FM)) ] = NA
@@ -89,9 +89,9 @@ latex(fm.sd , file="", title="", label="", rowlabel="Stage", collabel="Stage", n
 # transition matrices
 
   TM = tmatrix$TM[,, p$good.years ,] # good TM estimates
-  tm.n = choose.transition.matrix( TM, region="cfanorth", threshold.to.delete=3 )$XM # threshold.to.delete is the upper bound of a TM to believe ..  this is what is used for projection 
-  tm.s = choose.transition.matrix( TM, region="cfasouth", threshold.to.delete=3 )$XM # threshold.to.delete is the upper bound of a TM to believe ..  this is what is used for projection 
-  tm.x = choose.transition.matrix( TM, region="cfa4x", threshold.to.delete=3 )$XM # threshold.to.delete is the upper bound of a TM to believe ..  this is what is used for projection 
+  tm.n = choose.transition.matrix( TM, region="cfanorth", threshold.to.delete=3 )$XM # threshold.to.delete is the upper bound of a TM to believe ..  this is what is used for projection
+  tm.s = choose.transition.matrix( TM, region="cfasouth", threshold.to.delete=3 )$XM # threshold.to.delete is the upper bound of a TM to believe ..  this is what is used for projection
+  tm.x = choose.transition.matrix( TM, region="cfa4x", threshold.to.delete=3 )$XM # threshold.to.delete is the upper bound of a TM to believe ..  this is what is used for projection
 
 eps =0.001
 tm.n = round( tm.n,2); tm.n[ tm.n < eps] = "-"
@@ -102,9 +102,9 @@ tm.x = round( tm.x,2); tm.x[ tm.x < eps] = "-"
 latex(tm.n , file="", title="", label="", rowlabel="Stage", collabel="Stage", na.blank=T, caption="Pseudo-Markov transition matrix used for projections in N-ENS")
 latex(tm.s , file="", title="", label="", rowlabel="Stage", collabel="Stage", na.blank=T, caption="Pseudo-Markov transition matrix used for projections in S-ENS")
 latex(tm.x , file="", title="", label="", rowlabel="Stage", collabel="Stage", na.blank=T, caption="Pseudo-Markov transition matrix used for projections in 4X")
- 
 
-# scenarios 
+
+# scenarios
   i = c(1:10)
   n = array(data=NA, dim=length(i))
   n[1] = 100

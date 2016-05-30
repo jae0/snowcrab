@@ -3,9 +3,9 @@
 #####
 #####Notes this was run to produce the interpolated survey maps for EMERA fixed link November 15, 2013 12:27:44 PM Maritime Link
 
-	#  source( file.path( project.directory("snowcrab"), "src", "initialise.local.environment.r" ) )
-	 # loadfunctions(c('snowcrab','common'))
-	  
+
+p = snowcrab::initialise.local.environment()
+
 	  do.interpolation=F
 
 if(do.interpolation) {
@@ -21,10 +21,10 @@ if(do.interpolation) {
 	for(i in 1:length(gps)) {
 		de 				<- det[,c('station',gps[i],'plat','plon','trip','set')]
 		names(de)[2] 	<- 'gg'
-		
+
 		if(!geo.mean) dp 	<- aggregate(cbind(gg,plat,plon)~station,data=de,FUN=mean)
-		if(geo.mean)  dp	<- aggregate(cbind(gg,plat,plon)~station,data=de,FUN=function(x) exp(mean(log(x+1)))-1)			
-		
+		if(geo.mean)  dp	<- aggregate(cbind(gg,plat,plon)~station,data=de,FUN=function(x) exp(mean(log(x+1)))-1)
+
 		dp$limm 		<- log(dp[,'gg']+1)
 		params 			<- list(nmax=15,drange=15,power=0.8)
 		fp 				<- interpol.grid(dp[,c('plon','plat','limm')],locs=expand.grid(x=p$plons,y=p$plats),method='inv.dist.gstat',params=params,outfile='iminterp.dat')
@@ -36,12 +36,12 @@ if(do.interpolation) {
         fo 				<- file.path("C:","~","ecomod","snowcrab","Adam","Emera","abundance maps","global average")
         if(geo.mean) fo 				<- file.path("C:","~","ecomod","snowcrab","Adam","Emera","abundance maps","global average","geomean")
         if(!geo.mean) fo 				<- file.path("C:","~","ecomod","snowcrab","Adam","Emera","abundance maps","global average","arithmean")
-        
+
         dir.create(fo,recursive=T,showWarnings=F)
         map( fp[,1:3], xyz.coords="planar", cfa.regions=T, depthcontours=T, fn=gps[i], loc=fo, at=datarange , col.regions=cols(length(datarange)+1), colpts=T, corners=p$planar.corners,annot=gps[i] )
-        
+
         ras 			<- rasterFromXYZ(fp[,c('plon','plat','z')],crs=lookup.projection.params(p$internal.projection))
-        
+
         writeRaster(ras,filename=file.path(fo,paste(gps[i],".asc",sep="")), format="ascii", overwrite=TRUE)
         }
 
