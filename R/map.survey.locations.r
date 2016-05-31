@@ -43,7 +43,7 @@
 
     if (map.method=="googleearth" ) {
 
-      ecomodLibrary( "plottingmethods" )
+      bioLibrary( "bio.utilities" )
 
       outfile =  file.path( basedir, "survey.locations.googleearth.kml" )
       set$desc = paste(

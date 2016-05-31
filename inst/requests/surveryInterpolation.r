@@ -33,9 +33,9 @@ if(do.interpolation) {
         corners 		<- data.frame(rbind( cbind( plon=c(220, 990), plat=c(4750, 5270) )))
         cols 			<- colorRampPalette(c("darkblue","cyan","green", "yellow", "orange","darkred", "black"), space = "Lab")
         names(fp)[1:3] 	<- c('plon','plat','z')
-        fo 				<- file.path("C:","~","ecomod","snowcrab","Adam","Emera","abundance maps","global average")
-        if(geo.mean) fo 				<- file.path("C:","~","ecomod","snowcrab","Adam","Emera","abundance maps","global average","geomean")
-        if(!geo.mean) fo 				<- file.path("C:","~","ecomod","snowcrab","Adam","Emera","abundance maps","global average","arithmean")
+        fo 				<- file.path("C:","~","bio","snowcrab","Adam","Emera","abundance maps","global average")
+        if(geo.mean) fo 				<- file.path("C:","~","bio","snowcrab","Adam","Emera","abundance maps","global average","geomean")
+        if(!geo.mean) fo 				<- file.path("C:","~","bio","snowcrab","Adam","Emera","abundance maps","global average","arithmean")
 
         dir.create(fo,recursive=T,showWarnings=F)
         map( fp[,1:3], xyz.coords="planar", cfa.regions=T, depthcontours=T, fn=gps[i], loc=fo, at=datarange , col.regions=cols(length(datarange)+1), colpts=T, corners=p$planar.corners,annot=gps[i] )

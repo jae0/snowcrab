@@ -1,26 +1,55 @@
 Package: snowcrab
-Title: Snow crab assessment suite for ecomod and associated projects. 
+Title: Snow crab assessment suite for bio and associated projects. 
 Version: 0.1
 Authors@R: c(
-  person("Jae", "Choi", email = "Jae.Choi@dfo-mpo.gc.ca", role = c("aut", "cre")),
+  person("Jae", "Choi", email = "choijaeseok@gmail.com", role = c("aut", "cre")),
   person("Michelle", "Greenlaw", email = "Michelle.Greenlaw@dfo-mpo.gc.ca", role = c("aut")),
   person("Brad", "Hubley", email = "Brad.Hubley@dfo-mpo.gc.ca", role = c("aut")),
   person("Brent", "Cameron", email = "Brent.Cameron@dfo-mpo.gc.ca", role = c("aut")),
   person("Ben", "Zisserson", email = "Ben.Zisserson@dfo-mpo.g.ca", role = c("aut")),
   person("Adam", "Cook", email = "Adam.Cook@dfo-mpo.gc.ca", role = c("aut")) ) 
 Description: The snow crab assessment suite used by Maritimes Region in Canada. It is  
-  designed to be used as part of the ecomod project. 
+  designed to be used as part of the bio project. 
 Depends: R (>= 3.0.0)
 Imports:
+  akima, 
+  bigmemory,
+  boot, 
+  Cairo, 
+  chron,
+  DBI, 
   devtools,
+  fields, 
+  gstat, 
+  geosphere, 
+  grid,
+  Hmisc, 
+  lattice, 
   lubridate,
-  ecomod_base,
-  ecomod_utilities
+  maptools,  
+  mgcv, 
+  parallel, 
+  raster, 
+  RColorBrewer, 
+  rasterVis, 
+  rgdal, 
+  rgeos, 
+  sp, 
+  vegan, 
+  bio.base,
+  bio.bathymetry, 
+  bio.coastline,
+  bio.parallel, 
+  bio.polygons,
+  bio.spacetime, 
+  bio.utilities 
 Suggests:
   groundfish,
   netmensuration,
-  substrate,
-  temperature
+  bio.habitat,
+  bio.habitatsuitability,
+  bio.substrate,
+  bio.temperature
 License: MIT
 LazyData: true
 URL: https://github.com/jae0/snowcrab/

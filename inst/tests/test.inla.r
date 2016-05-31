@@ -137,7 +137,7 @@ inla.setOption(scale.model.default = TRUE)  # better numerical performance of IG
   bubble(set, "B")
   spplot(set, "B")
 
-  bb = read.table( find.ecomod.gis( "snowcrab.boundingbox") )
+  bb = read.table( find.bio.gis( "snowcrab.boundingbox") )
   names(bb) =c("lon", "lat" )
   bb = lonlat2planar( bb, p$internal.projection )
 

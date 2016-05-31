@@ -12,7 +12,7 @@
   rjags::load.module("dic")
   rjags::load.module("glm")
 
-  ecomodLibrary( "bayesian" )
+  bioLibrary( "bayesian" )
   p = snowcrab::initialise.local.environment()
 
 

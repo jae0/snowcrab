@@ -1,6 +1,6 @@
 #Emera Tagging
 
-ecomodLibrary( 'ecomod_utilities','ecomod_polygons', 'snowcrab')
+bioLibrary( 'bio.utilities','bio.polygons', 'snowcrab')
 
 dn = file.path(project.datadirectory("snowcrab"),'data','tagging','Emera')
 

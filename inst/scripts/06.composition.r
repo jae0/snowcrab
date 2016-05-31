@@ -3,7 +3,7 @@
 
 p = snowcrab::initialise.local.environment( current.assessment.year=2016)
 
-  ecomodLibrary( "sorted.ordination")
+  bioLibrary( "sorted.ordination")
 
 
   C = snowcrab.db( DS="cat.georeferenced" )

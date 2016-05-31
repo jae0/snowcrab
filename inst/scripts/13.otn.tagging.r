@@ -1,7 +1,7 @@
 redo=F
 if(redo) {
 
-ecomodLibrary('snowcrab')
+bioLibrary('snowcrab')
 
 options(stringsAsFactors=F)
 t13 = read.csv(file.path(project.datadirectory('snowcrab'),'data','tagging','OTN_cabotline_detections_2013.csv'),header=T)

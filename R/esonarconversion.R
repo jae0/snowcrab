@@ -15,7 +15,7 @@ esonar2netmind = function(fn = NULL){
        esonar = read.csv(fn, skip = 8, colClasses = c("character"))
     colnames(esonar) = c("CPUDateTime","GPSDate","GPSTime","Latitude","Longitude","Speed","Heading","Validity","TransducerName","SensorName","SensorValue","ErrorCode","Hydrophone","SignalStrength")
     
-   #if(fn== "/home/ecomod_data/snowcrab/data/netmind/archive/2015/ep078.txt") browser()
+   #if(fn== "/home/bio.data/snowcrab/data/netmind/archive/2015/ep078.txt") browser()
     #Format time
     ir = which(esonar$GPSTime[1:20] == '')
     if(length(ir>0)) esonar = esonar[-ir,]

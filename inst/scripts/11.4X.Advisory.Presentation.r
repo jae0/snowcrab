@@ -7,7 +7,7 @@ dir.create(outdir,showWarnings=F)
 #Map the Area
 if(map.logs) {
     require(PBSmapping)
-    ecomodLibrary ( 'spacetime','ecomod_utilities','ecomod_polygons' )
+    bioLibrary ( 'spacetime','bio.utilities','bio.polygons' )
     logs = logbook.db('logbook')
     logs$yr = logs$yr -1 # to make fishing year start of season ie march 2015 is fishing year 2014
     logs = makePBS(logs,polygon=F)
@@ -32,7 +32,7 @@ addPoints(b,pch=16, col='red')
 
 if(map.logs.cpue) {
     require(PBSmapping)
-    ecomodLibrary( 'spacetime','ecomod_utilities','ecomod_polygons' )
+    bioLibrary( 'spacetime','bio.utilities','bio.polygons' )
     logs = logbook.db('logbook')
 
     res.lat = 0.045855 # = 2km on SS
@@ -274,7 +274,7 @@ il = length(outl)
 
 if(map.logs.month) {
     require(PBSmapping)
-    ecomodLibrary(c('spacetime','ecomod_utilities','ecomod_polygons'))
+    bioLibrary(c('spacetime','bio.utilities','bio.polygons'))
    logs = logs.fixed
     logs = makePBS(logs,polygon=F)
     logs$fm = recode(logs$month,"'November'=1;'December'=2;'January'=3;'February'=4;'March'=5;'April'=6")

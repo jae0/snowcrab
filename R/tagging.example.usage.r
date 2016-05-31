@@ -1,7 +1,7 @@
 
   tagging.example.usage = function() {
 
-    ecomodLibrary( "snowcrab" )
+    bioLibrary( "snowcrab" )
 
     marked.file = "tags.1996_2001.csv"
     recaps.file = "recaptures.csv"

@@ -13,7 +13,7 @@
 	  K = K[ which(x$effort <= 300) ,]
 	  K = K[ which(x$cpue < 500),]
 
-	  polydir = file.path(project.datadirectory("ecomod_polygons"), "data", "Basemaps", "Marine", "Coastline")
+	  polydir = file.path(project.datadirectory("bio.polygons"), "data", "Basemaps", "Marine", "Coastline")
 	  shpdir = file.path(project.datadirectory("snowcrab"), "maps", "shapefiles", "logbook")
 	  rasdir = file.path(project.datadirectory("snowcrab"), "maps", "rasters", "logbook")
 	  mapdir = file.path(project.datadirectory("snowcrab"), "maps", "images", "logbook")
@@ -26,7 +26,7 @@
 		geog.proj <- CRS("+proj=longlat +ellps=WGS84")
 		seis <- colorRampPalette(c("darkblue","blue3", "green", "yellow", "orange","red3", "darkred"), space = "Lab")
 
-    ecomodLibrary("ecomod_bathymetry")
+    bioLibrary("bio.bathymetry")
 		# in meters
 		ib = isobath.db( depths=c(100, 200)
 		                 #, return.lonlat=TRUE

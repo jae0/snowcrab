@@ -22,6 +22,6 @@ require(gstat)
 mod = gstat(id = 'means', formula = z~1,locations= ~x+y,data=d, nmax = 10, set=list(idp= 0.5),maxdist=0.01)
 x = interpolate(r, mod)
 
-writeRaster(x, filename=paste("/home/adam/ecomod/snowcrab/R/Requests/CommercialMaleHabitat",yr,".tif",sep=""), format="GTiff", overwrite=TRUE)
+writeRaster(x, filename=paste("/home/adam/bio/snowcrab/R/Requests/CommercialMaleHabitat",yr,".tif",sep=""), format="GTiff", overwrite=TRUE)
 return('Done')
 }

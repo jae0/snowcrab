@@ -3,7 +3,7 @@ p = snowcrab::initialise.local.environment( current.assessment.year=2016)
 
   require(chron)
 
-	ecomodLibrary( c( "spacetime", "ecomod_utilities", "parallel", "sorted.ordination", "indicators") )
+	bioLibrary( c( "spacetime", "bio.utilities", "parallel", "sorted.ordination", "indicators") )
 
   setwd( project.datadirectory("indicators") )
 

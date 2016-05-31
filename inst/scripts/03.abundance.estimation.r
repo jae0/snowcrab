@@ -79,8 +79,8 @@ p = snowcrab::initialise.local.environment(
             # "smr", "Ea", "A", "qm", "mass",
             # "Z", "Npred" )
 
-      print( "Make sure variable list here matches those in ecomod/habitat/src/habitat.complete.r ")
-      print( "and in the model statement in ecomod/snowcrab/_Rfunctions/analysis/model.formula.r")
+      print( "Make sure variable list here matches those in bio/habitat/src/habitat.complete.r ")
+      print( "and in the model statement in bio/snowcrab/_Rfunctions/analysis/model.formula.r")
 
       # p$model.type = "gam.full" # choose method for habitat model :
       # p$model.type = "gam.simple" # choose method for habitat model :

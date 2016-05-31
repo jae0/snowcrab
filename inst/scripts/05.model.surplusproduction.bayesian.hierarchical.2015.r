@@ -8,7 +8,7 @@ p = snowcrab::initialise.local.environment( current.assessment.year=2016)
     rjags::load.module("glm")
 
 
-  	ecomodLibrary( "bayesian" )
+  	bioLibrary( "bayesian" )
 
     ###  all data follow this sequence: c("cfanorth", "cfasouth", "cfa4x")
 

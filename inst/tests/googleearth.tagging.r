@@ -1,7 +1,6 @@
 
 
   p = snowcrab::initialise.local.environment()
-	ecomodLibrary( "plottingmethods" )
 
   workdir = file.path( project.datadirectory("snowcrab"), "R" )
 

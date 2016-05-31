@@ -3,7 +3,7 @@
 p = snowcrab::initialise.local.environment()
 
 dat = snowcrab.db('set.complete')
-pp = read.csv(find.ecomod.gis('StAnnsMPA.csv'))
+pp = read.csv(find.bio.gis('StAnnsMPA.csv'))
 require(PBSmapping)
 
 dat$X = dat$lon
@@ -25,10 +25,10 @@ dal = Filter(function(x)!all(is.na(x)),dal)
 dal$yr = NULL
 
 #species data
-write.csv(dal,file='/home/ecomod_data/snowcrab/R/Requests/StAnnsSCSurveySpeciesData.csv',row.names=F)
+write.csv(dal,file='/home/bio.data/snowcrab/R/Requests/StAnnsSCSurveySpeciesData.csv',row.names=F)
 
 dal$NSp = apply(dal[,5:ncol(dal)],1,function(x) length(x[!is.na(x)]))
 
 x = dal[,c('lon','lat','distance','chron','Nsp')]
 xx = x[which(years(x$chron)>2003),]
-write.csv(xx,'/home/adam/ecomod/snowcrab/R/Requests/StAnnsSnowCrabSurvey.csv',row.names=F)
+write.csv(xx,'/home/adam/bio/snowcrab/R/Requests/StAnnsSnowCrabSurvey.csv',row.names=F)

@@ -91,7 +91,7 @@ p = snowcrab::initialise.local.environment()
 
   # for Glace Bay comparisons: override with ..
 
-  # reulsts in: ~/ecomod/snowcrab/issues/briefing.note.glace.bay/2005
+  # reulsts in: ~/bio/snowcrab/issues/briefing.note.glace.bay/2005
 
 
 p = snowcrab::initialise.local.environment()
@@ -488,7 +488,7 @@ p = snowcrab::initialise.local.environment()
 # ----------------------------------
 # MacMullin: GBH vs NENS partitionning
 
-  # results location: ~/ecomod/snowcrab/issues/briefing.note.glace.bay/2006
+  # results location: ~/bio/snowcrab/issues/briefing.note.glace.bay/2006
 
 
 p = snowcrab::initialise.local.environment()

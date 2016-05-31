@@ -11,7 +11,7 @@
 # Created and tested with R version 2.10.1 in Microsoft Windows Vista Business SP2
 
 # REFERENCES
-# * R code provided by Jae Choi found in ecomod/common and ecomod/snowcrab/src directories  
+# * R code provided by Jae Choi found in bio/common and bio/snowcrab/src directories  
 # * Tutorials and ref card found at http://cran.r-project.org/
 # * Tutorials found at http://www.sqlite.org/
 # * Program used for quick database views http://sqliteman.com/
