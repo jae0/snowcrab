@@ -39,15 +39,14 @@ Imports:
   bio.base,
   bio.bathymetry, 
   bio.coastline,
-  bio.parallel, 
   bio.polygons,
-  bio.spacetime, 
   bio.utilities 
 Suggests:
   groundfish,
   netmensuration,
   bio.habitat,
   bio.habitatsuitability,
+  bio.spacetime, 
   bio.substrate,
   bio.temperature
 License: MIT
