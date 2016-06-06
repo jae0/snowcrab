@@ -2,7 +2,7 @@
 
 p = bio.snowcrab::initialise.local.environment()
 
-basedir = file.path( project.directory("bio.snowcrab"), "R", "gam" )
+basedir = file.path( project.datadirectory("bio.snowcrab"), "R", "gam" )
 
 loc.map = file.path( basedir, "maps" )
 loc.sol = file.path( basedir, "predictions" )

@@ -1,24 +1,24 @@
 
   fishery.model.jags = function( DS="", yr=NULL ) {
     out = NULL
-    
+    bugsdir= system.file( "bugs", package="bio.snowcrab" )
     if (DS=="biomass.dynamic" ) {
-      out = file.path( project.codedirectory("snowcrab"), "src", "bugs", "biomassdynamic.bugs" )    
+      out = file.path( bugsdir, "biomassdynamic.bugs" )
     }
     if (DS=="biomass.dynamic.illegal") {
-      out = file.path( project.codedirectory("snowcrab"), "src", "bugs", "biomassdynamic.illegal.bugs" )    
+      out = file.path( bugsdir, "biomassdynamic.illegal.bugs" )
     }
     if (DS=="delay.difference") {
-      out = file.path( project.codedirectory("snowcrab"), "src", "bugs", "delaydifference.bugs" )   
+      out = file.path( bugsdir, "delaydifference.bugs" )
     }
     if (DS=="delay.difference.illegal") {
-      out = file.path( project.codedirectory("snowcrab"), "src", "bugs", "delaydifference.illegal.bugs" )   
+      out = file.path( bugsdir, "delaydifference.illegal.bugs" )
     }
     if (DS=="biomass.dynamic.candidate" ) {
-      out = file.path( project.codedirectory("snowcrab"), "src", "bugs", paste("biomassdynamic_",yr,"_candidate.bugs",sep="") )    
+      out = file.path( bugsdir, paste("biomassdynamic_",yr,"_candidate.bugs",sep="") )
     }
-    
-    if (is.null(out)) out = file.path( project.codedirectory("snowcrab"), "src", "bugs", DS )
+
+    if (is.null(out)) out = file.path( bugsdir, DS )
     return(out)
   }
 

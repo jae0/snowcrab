@@ -3,32 +3,32 @@ p = bio.bio.snowcrab::initialise.local.environment( current.assessment.year=2016
 
   require(chron)
 
-	bioLibrary( c( "spacetime", "bio.utilities", "parallel", "sorted.ordination", "indicators") )
+	bioLibrary( c( "spacetime", "bio.utilities", "parallel", "sorted.ordination", "bio.indicators") )
 
-  setwd( project.datadirectory("indicators") )
+  setwd( project.datadirectory("bio.indicators") )
 
   # not all are fully refreshed automatically .. they are just place holders for now
 
-      groundfish = indicators.db( db="groundfish.timeseries.redo" )
-      bio.snowcrab = indicators.db( db="bio.snowcrab.timeseries.redo")
-      climate = indicators.db (db="climate.redo" )
-      shrimp = indicators.db( db="shrimp.timeseries.redo")
+      groundfish = bio.indicators.db( db="groundfish.timeseries.redo" )
+      bio.snowcrab = bio.indicators.db( db="bio.snowcrab.timeseries.redo")
+      climate = bio.indicators.db (db="climate.redo" )
+      shrimp = bio.indicators.db( db="shrimp.timeseries.redo")
 
-      sar = indicators.db( db="species.area.redo" )
-      nss = indicators.db( db="sizespectrum.redo" )
-      metab = indicators.db( db="metabolism.redo" )
-      sc = indicators.db( db="species.composition.redo" )
+      sar = bio.indicators.db( db="species.area.redo" )
+      nss = bio.indicators.db( db="sizespectrum.redo" )
+      metab = bio.indicators.db( db="metabolism.redo" )
+      sc = bio.indicators.db( db="species.composition.redo" )
 
-      economics = indicators.db( db="economic.data.redo" )
+      economics = bio.indicators.db( db="economic.data.redo" )
 
       # hand constructed and updated .. TODO :: find solutions!
-      #plankton = indicators.db( db="plankton.timeseries.redo" )
-      human = indicators.db( db="demographics.redo" )
+      #plankton = bio.indicators.db( db="plankton.timeseries.redo" )
+      human = bio.indicators.db( db="demographics.redo" )
 
 
-      #seals = indicators.db( db="seal.timeseries.redo" )
-      landedvalue = indicators.db( db="landedvalue.annual.redo", ref.year=2008 )
-      landings = indicators.db( db="landings.annual.redo" )
+      #seals = bio.indicators.db( db="seal.timeseries.redo" )
+      landedvalue = bio.indicators.db( db="landedvalue.annual.redo", ref.year=2008 )
+      landings = bio.indicators.db( db="landings.annual.redo" )
 
 
 
@@ -49,8 +49,8 @@ p = bio.bio.snowcrab::initialise.local.environment( current.assessment.year=2016
 
 
 
-  indic = indicators.db( db="indicators.all.glue" )  # glue all time-series together
-  # indic = indicators.db( db="indicators.all" ) # load the glued version
+  indic = bio.indicators.db( db="bio.indicators.all.glue" )  # glue all time-series together
+  # indic = bio.indicators.db( db="bio.indicators.all" ) # load the glued version
 
 
  # indic$data$Nwells.drilled = cumsum.jae(indic$data$Nwells.drilled)
@@ -62,12 +62,12 @@ p = bio.bio.snowcrab::initialise.local.environment( current.assessment.year=2016
   t1 = 2015
 
   # ordination of selected key factors
-  indic = indicators.db( db="indicators.all" )
+  indic = bio.indicators.db( db="bio.indicators.all" )
 
-  d = indicators.subset ( indic, type="keyfactors" )
+  d = bio.indicators.subset ( indic, type="keyfactors" )
 #  save( d, file="/home/adam/tmp/ordin.rdata", compress=TRUE )
 
-  Y = pca.analyse.data(d, t0, t1, fname=file.path(project.datadirectory("indicators"), "keyfactors" ) )
+  Y = pca.analyse.data(d, t0, t1, fname=file.path(project.datadirectory("bio.indicators"), "keyfactors" ) )
 
 
   sub = indic$data[, c("T_bottom_misaine", "SST_halifax", "ice_coverage.km.2", "Gulf.Stream.front.Ref.62lon", "T_sable_annual", "bio.snowcrab.bottom.habitat.area", "bio.snowcrab.kriged.R0.mass", "bio.snowcrab.fishery.landings", "bio.snowcrab.fishery.cpue", "groundfish.stratified.mean.temp" )]
@@ -88,31 +88,31 @@ for (i in .keyfactors) {
   # human
   .human = c(indic$landings.totals.NS, indic$landedvalue.totals.NS, indic$human )
   .human = setdiff( .human, "No.Fish.processors" ) # this has no data yet
-  Y = pca.analyse.data( indic$data, .human, t0, t1, fname=file.path(project.datadirectory("indicators"), "human") )
+  Y = pca.analyse.data( indic$data, .human, t0, t1, fname=file.path(project.datadirectory("bio.indicators"), "human") )
 
   # fishery landings
   .fishery = c(indic$landings.NS, indic$landings.totals.NS )
-  Y = pca.analyse.data( indic$data, .fishery, t0, t1, fname=file.path(project.datadirectory("indicators"), "fishery" ))
+  Y = pca.analyse.data( indic$data, .fishery, t0, t1, fname=file.path(project.datadirectory("bio.indicators"), "fishery" ))
 
   # fishery landed value
   .fishery.value = c(indic$landedvalue.NS, indic$landedvalue.totals.NS )
-  Y = pca.analyse.data( indic$data, .fishery.value, t0, t1, fname=file.path(project.datadirectory("indicators"), "landedvalue" ))
+  Y = pca.analyse.data( indic$data, .fishery.value, t0, t1, fname=file.path(project.datadirectory("bio.indicators"), "landedvalue" ))
 
   # fishery -- overall
   .fishery = c(indic$landedvalue.NS, indic$landedvalue.totals.NS, indic$landings.NS, indic$landings.totals.NS )
-  Y = pca.analyse.data( indic$data, .fishery, t0=1970, t1, fname=file.path(project.datadirectory("indicators"), "fishery.overall" ))
+  Y = pca.analyse.data( indic$data, .fishery, t0=1970, t1, fname=file.path(project.datadirectory("bio.indicators"), "fishery.overall" ))
 
   # bio.snowcrab
   .bio.snowcrab = c(indic$bio.snowcrab, "groundfish.stratified.mean.totwgt.bio.snowcrab", "groundfish.stratified.mean.totno.bio.snowcrab" )
-  Y = pca.analyse.data(indic$data, .bio.snowcrab, t0, t1, fname=file.path(project.datadirectory("indicators"), "bio.snowcrab" ))
+  Y = pca.analyse.data(indic$data, .bio.snowcrab, t0, t1, fname=file.path(project.datadirectory("bio.indicators"), "bio.snowcrab" ))
 
   # climate
   .climate = c( indic$climate )
-  Y = pca.analyse.data(indic$data, .climate, t0, t1, fname=file.path(project.datadirectory("indicators"), "climate" ))
+  Y = pca.analyse.data(indic$data, .climate, t0, t1, fname=file.path(project.datadirectory("bio.indicators"), "climate" ))
 
   # ecosystem
   .ecosystem = c( indic$ecosystem )
-  Y = pca.analyse.data(indic$data, .ecosystem, t0, t1, fname=file.path(project.datadirectory("indicators"), "ecosystem" ))
+  Y = pca.analyse.data(indic$data, .ecosystem, t0, t1, fname=file.path(project.datadirectory("bio.indicators"), "ecosystem" ))
 
 
 
