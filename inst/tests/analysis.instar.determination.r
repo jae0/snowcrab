@@ -1,5 +1,5 @@
 
-  p = snowcrab::initialise.local.environment()
+  p = bio.snowcrab::initialise.local.environment()
 
   det = snowcrab.db("det.georef")
 

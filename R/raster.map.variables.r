@@ -14,9 +14,9 @@
 	  K = K[ which(x$cpue < 500),]
 
 	  polydir = file.path(project.datadirectory("bio.polygons"), "data", "Basemaps", "Marine", "Coastline")
-	  shpdir = file.path(project.datadirectory("snowcrab"), "maps", "shapefiles", "logbook")
-	  rasdir = file.path(project.datadirectory("snowcrab"), "maps", "rasters", "logbook")
-	  mapdir = file.path(project.datadirectory("snowcrab"), "maps", "images", "logbook")
+	  shpdir = file.path(project.datadirectory("bio.snowcrab"), "maps", "shapefiles", "logbook")
+	  rasdir = file.path(project.datadirectory("bio.snowcrab"), "maps", "rasters", "logbook")
+	  mapdir = file.path(project.datadirectory("bio.snowcrab"), "maps", "images", "logbook")
 
 	  plottimes = p$plottimes
 		extent=p$extUTM

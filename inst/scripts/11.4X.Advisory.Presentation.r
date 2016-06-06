@@ -1,8 +1,8 @@
 #logbook 4X
-p = snowcrab::initialise.local.environment( current.assessment.year=2016)
+p = bio.bio.snowcrab::initialise.local.environment( current.assessment.year=2016)
 
 require(chron)
-outdir = file.path(project.datadirectory('snowcrab'),'4X')
+outdir = file.path(project.datadirectory('bio.snowcrab'),'4X')
 dir.create(outdir,showWarnings=F)
 #Map the Area
 if(map.logs) {
@@ -448,7 +448,7 @@ savePlot(file.path(outdir,paste('observer.map.2014','png',sep=".")),type='png')
 
 #survey Index
 
-set = snowcrab.db('set.complete')
+set = bio.snowcrab.db('set.complete')
 
 st = unique(set[,c('yr','lon','lat','station')])
 st2013 = st[which(st$yr==2013),]

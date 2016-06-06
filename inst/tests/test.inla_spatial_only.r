@@ -12,7 +12,7 @@
 
 # DATA
   # convert snow crab data into a spatial data frame
-	p = snowcrab::initialise.local.environment( libs=c("mgcv", "lubridate", "lattice", "lattice", "grid", "fields", "parallel",
+	p = bio.snowcrab::initialise.local.environment( libs=c("mgcv", "lubridate", "lattice", "lattice", "grid", "fields", "parallel",
                          "sp", "INLA", "geostatsinla", "geostatsp", "raster"  ) )
 
   p$regions = c("cfa4x", "cfanorth","cfasouth" )

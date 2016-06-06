@@ -8,7 +8,7 @@ Test:     Biomass estimation via GAM / LME
   require(mgcv)
   require(nlme4)
 
-  p = snowcrab::initialise.local.environment()
+  p = bio.bio.snowcrab::initialise.local.environment()
 
     p$model.type = "gam.full"
       # p$model.type = "gamm.full"
@@ -18,7 +18,7 @@ Test:     Biomass estimation via GAM / LME
     # quantile at which to consider zero-valued abundance
     p$habitat.threshold.quantile = 0.05
 
-    set = snowcrab.db( DS="set.logbook" )
+    set = bio.snowcrab.db( DS="set.logbook" )
     set$Y = set$R0.mass
 
     set$plon= jitter(set$plon)
@@ -75,7 +75,7 @@ Test:     Biomass estimation via GAM / LME
     )
 
 
-    save( Ql, file=file.path( project.datadirectory("snowcrab"), "test.Ql.gam.rdata", compress=T )
+    save( Ql, file=file.path( project.datadirectory("bio.snowcrab"), "test.Ql.gam.rdata", compress=T )
 
 
     cor( predict( Q$gam, g, type="response"), g$Y, use="pairwise.complete.obs")^2 # = 0.038
@@ -87,7 +87,7 @@ o = allEffects(R)
 
 
 
-C = snowcrab.db( DS="cat.initial" )
+C = bio.snowcrab.db( DS="cat.initial" )
 S = sort( unique( C$spec ) )
 rm (C)
 

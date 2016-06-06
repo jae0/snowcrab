@@ -1,9 +1,9 @@
-figure.crab.groundfish.survey <- function(species , outdir=file.path(project.datadirectory('snowcrab'), 
+figure.crab.bio.groundfish.survey <- function(species , outdir=file.path(project.datadirectory('bio.snowcrab'), 
 	"assessments",p$current.assessment.year)) {
 		require(latticeExtra)
     require(boot)
       areas.crab = c("cfa4x", "cfasouth", "cfanorth" )
-      areas.groundfish = list(cfa4x = c(470,483),cfasouth = c(443,467),cfanorth=c(440,442))
+      areas.bio.groundfish = list(cfa4x = c(470,483),cfasouth = c(443,467),cfanorth=c(440,442))
       regions = c("4X", "S-ENS", "N-ENS")
       n.regions = length(regions)
       n.areas = length(areas.crab)
@@ -15,12 +15,12 @@ figure.crab.groundfish.survey <- function(species , outdir=file.path(project.dat
 		
 #	      species = c( "cod", "skates", "thornyskate", "northernshrimp",
 #	                   "brittlestar", "basketstar",
-#	                   "snowcrab",  "hermitcrab", "jonahcrab",
+#	                   "bio.snowcrab",  "hermitcrab", "jonahcrab",
 #	                   "lessertoadcrab", "northernstonecrab", "porcupinestonecrab", "portlyspidercrab",
-#	                   "redcrab", "atlanticrockcrab", "toadcrab", "snowcrab",'atlanticwolffish','halibut','smoothskate','winterskate')
+#	                   "redcrab", "atlanticrockcrab", "toadcrab", "bio.snowcrab",'atlanticwolffish','halibut','smoothskate','winterskate')
 	      #cod, halibut, thornyskate, wolfish, lessertoadcrab, jonahcrab, smoothskate, winterskate, northernshrimp, 
 	      species = c(10, 30, 201, 50, 2521, 2511, 202, 204, 2211) 
- set = snowcrab.db( DS="set.complete")
+ set = bio.snowcrab.db( DS="set.complete")
  set = set[which(set$yr>2003),]
  ii  = names(set)[grep(paste("^ms.mass.",species,"$",sep=""),names(set))]
   
@@ -31,7 +31,7 @@ figure.crab.groundfish.survey <- function(species , outdir=file.path(project.dat
 		 ou = ou[order(ou$cfa,ou$yr),]
 		 ou$mean = ou$upper = ou$lower = 0
 		 boot.mean <- function(x,i){mean(x[i])}
-     #get the bs estimates for snowcrab
+     #get the bs estimates for bio.snowcrab
      
 		 for(j in 1:nrow(ou)) {
   	  lp = set[which(set$yr==ou[j,'yr'] & set$cfa==ou[j,'cfa']),'mass']
@@ -44,11 +44,11 @@ figure.crab.groundfish.survey <- function(species , outdir=file.path(project.dat
       ou = NULL
       }
 
- gr.dir = file.path(project.datadirectory('groundfish'),'analysis')
+ gr.dir = file.path(project.datadirectory('bio.groundfish'),'analysis')
  gr.list = list()
 
  for(i in 1:n.regions) {
- 		io = paste('stratified',species,'summer.strata',areas.groundfish[[c(i,1)]],areas.groundfish[[c(i,2)]],sep=".")
+ 		io = paste('stratified',species,'summer.strata',areas.bio.groundfish[[c(i,1)]],areas.bio.groundfish[[c(i,2)]],sep=".")
  		ioi = grep(io,dir(gr.dir))
  		if(length(ioi)==0) stop(paste(paste(gr.dir,io,sep="/"),'not found'))
  		if(length(ioi)>1) stop(paste(paste(gr.dir,io,sep="/"),'has multiple entries'))
@@ -62,8 +62,8 @@ figure.crab.groundfish.survey <- function(species , outdir=file.path(project.dat
  		gr.list[[i]] = out
  		}
 gr.list = do.call(rbind,gr.list) 
-gr.list$grp = 'groundfish'
-ou$grp = 'snowcrab'
+gr.list$grp = 'bio.groundfish'
+ou$grp = 'bio.snowcrab'
 
 xlim=c(1968,p$current.assessment.year+2)
 oi = gr.list
@@ -74,7 +74,7 @@ oi = gr.list
 for(l in areas.crab) {
 
 ooi = oi[oi$cfa==l,]
-     fn = file.path( outdir, paste( "groundfish.snowcrab.survey.species.one.axis",species,l, "png", sep="." ) )
+     fn = file.path( outdir, paste( "bio.groundfish.bio.snowcrab.survey.species.one.axis",species,l, "png", sep="." ) )
 
     x11()
     browser()

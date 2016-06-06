@@ -1,14 +1,14 @@
 
 
-  p = snowcrab::initialise.local.environment()
+  p = bio.bio.snowcrab::initialise.local.environment()
 
-  workdir = file.path( project.datadirectory("snowcrab"), "R" )
+  workdir = file.path( project.datadirectory("bio.snowcrab"), "R" )
 
   redo.background.kml = F
   if ( redo.background.kml ) {
     # make snow crab background layers to a separate file
-    backgroundfile = file.path( workdir, "snowcrab_layers.kml" )
-    kml.snowcrab.background( backgroundfile )
+    backgroundfile = file.path( workdir, "bio.snowcrab_layers.kml" )
+    kml.bio.snowcrab.background( backgroundfile )
   }
 
   outfile =  file.path( workdir, "mark.recaptures.kml" )
@@ -48,9 +48,9 @@
 
     # define point styles/colours, etc
     kml.placemark.make( con, item="style", style.id="pin.red", colour="c0ffffff", scale=0.2,
-      href='http://nssnowcrab.googlepages.com/reddot.png' )  # red dot
+      href='http://nsbio.snowcrab.googlepages.com/reddot.png' )  # red dot
     kml.placemark.make( con, item="style", style.id="pin.yellow", colour="a0ffffff", scale=0.15,
-      href='http://nssnowcrab.googlepages.com/yellowdot.png' )  # yellow dot
+      href='http://nsbio.snowcrab.googlepages.com/yellowdot.png' )  # yellow dot
     kml.line.make( con, item="style", style.id="line.movement", line.colour="88ffffff", line.width=2 )
 
 

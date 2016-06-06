@@ -78,7 +78,7 @@
 
   # convert snow crab data into a spatial data frame
 
-p = snowcrab::initialise.local.environment( libs=c("mgcv", "chron", "grid", "fields", "parallel",
+p = bio.snowcrab::initialise.local.environment( libs=c("mgcv", "chron", "grid", "fields", "parallel",
                          "sp", "INLA", "geostatsinla", "geostatsp", "raster"  ))
 
 inla.setOption(scale.model.default = TRUE)  # better numerical performance of IGMRF models and less dependnence upon hyperpriors
@@ -1000,7 +1000,7 @@ abline(0:1, col=gray(.7))
 
   # convert snow crab data into a spatial data frame
 
-	p = snowcrab::initialise.local.environment()
+	p = bio.snowcrab::initialise.local.environment()
 
   p$regions = c("cfa4x", "cfanorth","cfasouth" )
   p$vars.to.model = c("R0.mass")

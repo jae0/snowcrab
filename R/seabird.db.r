@@ -4,7 +4,7 @@
   seabird.db = function( DS="", Y=NULL, plotdata=FALSE ){
 
     tzone = "America/Halifax"
-    sb.dir = project.datadirectory("snowcrab", "data", "seabird" )
+    sb.dir = project.datadirectory("bio.snowcrab", "data", "seabird" )
     seabird.rawdata.location = file.path( sb.dir, "archive" )
 
     if (!is.null(Y)) {
@@ -66,7 +66,7 @@
       }
       filelist = filelist[ which( !is.na( filelist[,1] ) ) , ]
 
-      set = snowcrab.db( DS="setInitial" )
+      set = bio.snowcrab.db( DS="setInitial" )
 
       for ( yr in Y ) {
         print(yr)

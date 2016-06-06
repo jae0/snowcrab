@@ -4,7 +4,7 @@
     if ( DS %in% c( "interpolation.redo", "interpolation", "interpolation.simulation", "interpolation.simulation.redo",
                     "interpolation.simulation.complete", "interpolation.simulation.PS" ) ) {
 
-      basedir = file.path( project.datadirectory("snowcrab"), "R", "gam" )
+      basedir = file.path( project.datadirectory("bio.snowcrab"), "R", "gam" )
 
       loc.map = file.path( basedir, "maps" )
       loc.sol = file.path( basedir, "predictions" )
@@ -80,7 +80,7 @@
 
         print ( p$runs[iip,] )
 
-        qs = empirical.ranges( db="snowcrab", v, probs=c(p$habitat.threshold.quantile, 0.95), remove.zeros=T )
+        qs = empirical.ranges( db="bio.snowcrab", v, probs=c(p$habitat.threshold.quantile, 0.95), remove.zeros=T )
 
         PS = habitat.db ( DS="complete", year=y, p=p )
 				PS$dyear = p$prediction.dyear  # must be same as above

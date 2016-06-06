@@ -1,7 +1,7 @@
 
-p = snowcrab::initialise.local.environment( libs=c("arm", "car", "effects", "splines") )
+p = bio.bio.snowcrab::initialise.local.environment( libs=c("arm", "car", "effects", "splines") )
 
-data.file = file.path(  project.datadirectory("snowcrab"), "R", "det_georef.rdata" )
+data.file = file.path(  project.datadirectory("bio.snowcrab"), "R", "det_georef.rdata" )
 load( data.file )
 
 det = det[ which(det$yr >= 1998),]  # data of limited spatial extent prior to 1998

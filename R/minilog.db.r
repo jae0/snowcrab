@@ -1,7 +1,7 @@
 
   minilog.db = function( DS="", Y=NULL ){
 
-    minilog.dir = project.datadirectory("snowcrab", "data", "minilog" )
+    minilog.dir = project.datadirectory("bio.snowcrab", "data", "minilog" )
     minilog.rawdata.location = file.path( minilog.dir, "archive" )
 
     if (!is.null(Y)) {
@@ -67,7 +67,7 @@
       }
       filelist = filelist[ which( !is.na( filelist[,1] ) ) , ]
 
-      set = snowcrab.db( DS="setInitial" )  # set$chron is in local time America/Halifax
+      set = bio.snowcrab.db( DS="setInitial" )  # set$chron is in local time America/Halifax
 
       for ( yr in Y ) {
         print(yr)

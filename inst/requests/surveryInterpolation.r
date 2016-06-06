@@ -4,7 +4,7 @@
 #####Notes this was run to produce the interpolated survey maps for EMERA fixed link November 15, 2013 12:27:44 PM Maritime Link
 
 
-p = snowcrab::initialise.local.environment()
+p = bio.snowcrab::initialise.local.environment()
 
 	  do.interpolation=F
 

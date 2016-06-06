@@ -1,7 +1,7 @@
 
-  snowcrab.habitat.db = function( ip=NULL, DS="", p, v=NULL, y=NULL ) {
+  bio.snowcrab.habitat.db = function( ip=NULL, DS="", p, v=NULL, y=NULL ) {
 
-    outdir = file.path( project.datadirectory("snowcrab"), "R", "gam", "habitat" )
+    outdir = file.path( project.datadirectory("bio.snowcrab"), "R", "gam", "habitat" )
     dir.create(path=outdir, recursive=T, showWarnings=F)
 
     if (DS=="PS" ) {

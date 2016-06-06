@@ -2,8 +2,8 @@
   get.time.series = function(x=NULL, regions=NULL, vars=NULL, trim=0, from.file=F, outfile=NULL,reduced.stations=F) {
 
  #browser()
-    if (is.null(outfile) & !reduced.stations) outfile = file.path( project.datadirectory("snowcrab"), "R", "ts.rdata" )
-    if (is.null(outfile) & reduced.stations) outfile = file.path( project.datadirectory("snowcrab"), "R", "ts.reduced.rdata" )
+    if (is.null(outfile) & !reduced.stations) outfile = file.path( project.datadirectory("bio.snowcrab"), "R", "ts.rdata" )
+    if (is.null(outfile) & reduced.stations) outfile = file.path( project.datadirectory("bio.snowcrab"), "R", "ts.reduced.rdata" )
     
    ts= NULL
 
@@ -43,13 +43,13 @@
               #xi = x[which(x$trip == 'S01122015' & x$set==1),]
               #print(xi$R0.mass)
               #if(v=='t' & yrs==2003) 
-              a = variable.recode( y[,v], v, direction="forward", db="snowcrab" ) # transform variables where necessary
+              a = variable.recode( y[,v], v, direction="forward", db="bio.snowcrab" ) # transform variables where necessary
               m =  mean (a, trim=trim, na.rm=T)
               n = length(a)
               se = sd(a, na.rm=T)/ sqrt(n-1)
-              meanval = variable.recode (m , v,  direction="backward", db="snowcrab" )
-              ub = variable.recode ( m+se*1.96, v,  direction="backward", db="snowcrab" )
-              lb = variable.recode ( m-se*1.96, v,  direction="backward", db="snowcrab" )
+              meanval = variable.recode (m , v,  direction="backward", db="bio.snowcrab" )
+              ub = variable.recode ( m+se*1.96, v,  direction="backward", db="bio.snowcrab" )
+              lb = variable.recode ( m-se*1.96, v,  direction="backward", db="bio.snowcrab" )
               j = as.data.frame(cbind(r, yrs, v, meanval, se, ub, lb, n))
               #print(j)
               write.table(j, file=tmpfile, append=T, row.names=F, col.names=F, quote=F, sep=";")

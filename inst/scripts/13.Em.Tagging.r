@@ -1,8 +1,8 @@
 #Emera Tagging
 
-bioLibrary( 'bio.utilities','bio.polygons', 'snowcrab')
+bioLibrary( 'bio.utilities','bio.polygons', 'bio.snowcrab')
 
-dn = file.path(project.datadirectory("snowcrab"),'data','tagging','Emera')
+dn = file.path(project.datadirectory("bio.snowcrab"),'data','tagging','Emera')
 
 a = dir(dn)
 b = a[grep('tags',a)]

@@ -7,7 +7,7 @@
     b = logbook.db( DS="logbook" ) # modern data:  mass in kg  -- must use all data and not postionally filtered data to get accurate totals
     b = b[b$yr >= threshold.year, ] 
     
-    a = read.table(file.path(  project.datadirectory("snowcrab"), "data", "fisheries", "annual.landings.csv"), sep=",", as.is=T)
+    a = read.table(file.path(  project.datadirectory("bio.snowcrab"), "data", "fisheries", "annual.landings.csv"), sep=",", as.is=T)
     names(a) = c("yr","cfa","nlicences","tac.tons","landings.tons","cpue.kg.trap","effort.100traps")
     numerics = c("yr","nlicences","tac.tons","landings.tons","cpue.kg.trap","effort.100traps")
     a = factor2number(a, numerics)

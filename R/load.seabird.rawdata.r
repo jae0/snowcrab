@@ -131,7 +131,7 @@
         print( setx)
           if(plot){
             setinfo = set[setxi,]
-            fp =  file.path( project.datadirectory("snowcrab"), "data", "seabird", "mismatches", yr)
+            fp =  file.path( project.datadirectory("bio.snowcrab"), "data", "seabird", "mismatches", yr)
             dir.create( fp, recursive = TRUE, showWarnings = FALSE )
             pdf(file.path(fp,paste(setinfo$trip[1],'pdf',sep='.') ),12,8)
             plot(seabird$chron,-seabird$pressure,type='l',main=setinfo$trip[1])

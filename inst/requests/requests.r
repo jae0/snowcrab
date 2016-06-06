@@ -1,11 +1,11 @@
 
 
 
-p = snowcrab::initialise.local.environment()
+p = bio.bio.snowcrab::initialise.local.environment()
 
 
   # white hake
-  wh2 = snowcrab.db( DS="cat.georeferenced" )
+  wh2 = bio.snowcrab.db( DS="cat.georeferenced" )
   wh2$id = paste(wh2$trip, wh2$set, wh2$yr )
 
   wh = wh2[ -which(duplicated(wh2$id)) , c( "id", "lon", "lat", "yr" )]
@@ -20,7 +20,7 @@ p = snowcrab::initialise.local.environment()
 
  # Fred Kennedy's request
  # Carapace condition breakdown by year
-  set = snowcrab.db("set.with.det")
+  set = bio.snowcrab.db("set.with.det")
   x = set[ filter.region(set$cfa, "cfa23"), ]
 
   vars = c("totmass.male.com.CC1", "totmass.male.com.CC2", "totmass.male.com.CC3", "totmass.male.com.CC4", "totmass.male.com.CC5")
@@ -42,7 +42,7 @@ p = snowcrab::initialise.local.environment()
 
   # ----------------------------------------------------------
   # Roger Pettipas .. bottom temperatures of Scotian shelf
-  set = snowcrab.db( "set.merge.det" )
+  set = bio.snowcrab.db( "set.merge.det" )
   varstoextract = c("t0", "lon", "lat", "z", "zsd", "t", "tsd")
   t = set[ which(set$yr==2012), varstoextract]
 
@@ -54,9 +54,9 @@ p = snowcrab::initialise.local.environment()
   #  == R2 + R3 + R4
 
 
-p = snowcrab::initialise.local.environment()
+p = bio.bio.snowcrab::initialise.local.environment()
 
-  set = snowcrab.db("set.complete")
+  set = bio.snowcrab.db("set.complete")
   # overrides:
   p$regions.to.model = "cfa.23ab.24ab"
   p$vars.to.model = "pre.recruit.no"
@@ -81,7 +81,7 @@ p = snowcrab::initialise.local.environment()
   out = res[, c("mean", "se")]
   out$year = as.numeric(rownames(out))
   rownames(out)=NULL
-  write.table ( out, file="~/tmp/snowcrab.recruitment.index.csv", sep="\t" )
+  write.table ( out, file="~/tmp/bio.snowcrab.recruitment.index.csv", sep="\t" )
 
   plot(  res[, c("mean")], ylim=c(0, max(res$mean, na.rm=T)*1.1))
 
@@ -91,12 +91,12 @@ p = snowcrab::initialise.local.environment()
 
   # for Glace Bay comparisons: override with ..
 
-  # reulsts in: ~/bio/snowcrab/issues/briefing.note.glace.bay/2005
+  # reulsts in: ~/bio/bio.snowcrab/issues/briefing.note.glace.bay/2005
 
 
-p = snowcrab::initialise.local.environment()
+p = bio.bio.snowcrab::initialise.local.environment()
 
-  set = snowcrab.db("set")
+  set = bio.snowcrab.db("set")
 
   # overrides:
   p$regions.to.model = c( "cfanorth", "cfasouth", "cfa22outer", "cfa23a", "cfanorth.not.glace.bay" )
@@ -120,7 +120,7 @@ p = snowcrab::initialise.local.environment()
     ubound = XX$ubound
     surfacearea = XX$surfacearea
 
-    ts.plotandsave(xx, yy, lbound, ubound, surfacearea, action="save", title="Biomass (x 1000 t)", filename=paste(v,r,sep="."), outdir=file.path(project.datadirectory("snowcrab"), "R", "Requests") )
+    ts.plotandsave(xx, yy, lbound, ubound, surfacearea, action="save", title="Biomass (x 1000 t)", filename=paste(v,r,sep="."), outdir=file.path(project.datadirectory("bio.snowcrab"), "R", "Requests") )
 
   }
   }
@@ -129,7 +129,7 @@ p = snowcrab::initialise.local.environment()
   # size freq distributions
 
 
-p = snowcrab::initialise.local.environment()
+p = bio.bio.snowcrab::initialise.local.environment()
 
   loc = file.path(p$annual.results, "size.data")
 
@@ -143,8 +143,8 @@ p = snowcrab::initialise.local.environment()
 
   } else if (redo.data) {
 
-    det = snowcrab.db("det")
-    set = snowcrab.db("set.netmind.sanity.checked")
+    det = bio.snowcrab.db("det")
+    set = bio.snowcrab.db("set.netmind.sanity.checked")
     v = c( "male", "female")
     varstokeep = c("lon", "lat", "trip", "set", "yr", "cw", "sa.x", "sex", "shell", "durometer", "mat", "stage.fmat", "eggPr")
 
@@ -350,9 +350,9 @@ observer.data.request.oracle = function () {
 
 
 
-p = snowcrab::initialise.local.environment()
+p = bio.bio.snowcrab::initialise.local.environment()
 
-    det = snowcrab.db("det.georef")  # this contains year
+    det = bio.snowcrab.db("det.georef")  # this contains year
     det = det[ which(det$mat ==1 & det$sex==2) ,]
 
     means = as.data.frame.table( tapply( det$cw, det$yr, mean, na.rm=T)  )
@@ -380,9 +380,9 @@ p = snowcrab::initialise.local.environment()
 # Gordon MacDonald: CFA 23/24 partitionning
 
 
-p = snowcrab::initialise.local.environment()
+p = bio.bio.snowcrab::initialise.local.environment()
 
-  set = snowcrab.db("set")
+  set = bio.snowcrab.db("set")
 
   # overrides:
   p$regions.to.model = c("cfa23", "cfa24")
@@ -488,12 +488,12 @@ p = snowcrab::initialise.local.environment()
 # ----------------------------------
 # MacMullin: GBH vs NENS partitionning
 
-  # results location: ~/bio/snowcrab/issues/briefing.note.glace.bay/2006
+  # results location: ~/bio/bio.snowcrab/issues/briefing.note.glace.bay/2006
 
 
-p = snowcrab::initialise.local.environment()
+p = bio.bio.snowcrab::initialise.local.environment()
 
-  set = snowcrab.db("set")
+  set = bio.snowcrab.db("set")
 
   # overrides:
   p$regions.to.model = c( "cfanorth", "cfasouth", "cfa22outer", "cfa23a", "cfanorth.not.glace.bay" )
@@ -593,9 +593,9 @@ p = snowcrab::initialise.local.environment()
 
 # Sherrylynn Rowe: sea cucumber and whelks in surveys:
 
-p = snowcrab::initialise.local.environment()
+p = bio.bio.snowcrab::initialise.local.environment()
 
-	load(file.path( project.datadirectory("snowcrab"), "R", "cat_georef.rdata"))
+	load(file.path( project.datadirectory("bio.snowcrab"), "R", "cat_georef.rdata"))
 
 whelks = c(4210, 4211, 4212, 4227, 4228)  # Family Buccinidae
 cucumbers = c(6600, 6600, 6611, 6700 , 6705, 6710 , 6711 , 6712, 6713, 6714, 6715, 6716, 6717, 6718, 6719, 6720 ) # class Holothuroidea
@@ -618,9 +618,9 @@ write.table( out, file="temp.csv", sep =";")
 
 # ---------------- Zwanenburg / MPAs etc
 
-p = snowcrab::initialise.local.environment()
+p = bio.bio.snowcrab::initialise.local.environment()
 
-load(file.path( project.datadirectory("snowcrab"), "R", "cat.georef.rdata"))
+load(file.path( project.datadirectory("bio.snowcrab"), "R", "cat.georef.rdata"))
 cat$totno = cat$totno * cat$sa
 to.extract = c("lon", "lat", "yr", "totno", "spec")
 yrs = which(cat$yr > 2003)
@@ -632,9 +632,9 @@ write.table( out, file="temp.csv", sep =";")
 
 # 4X trawl locations
 
-p = snowcrab::initialise.local.environment()
+p = bio.bio.snowcrab::initialise.local.environment()
 
-  set = snowcrab.db("setInitial")
+  set = bio.snowcrab.db("setInitial")
   ii = filter.region.polygon(set, region="cfa4x")
   set = set[ ii, ]
   set = set[ , c("yr", "lon", "lat") ]
@@ -644,9 +644,9 @@ p = snowcrab::initialise.local.environment()
 
 # wolf fish extraction for Jim Simon
 
-p = snowcrab::initialise.local.environment()
+p = bio.bio.snowcrab::initialise.local.environment()
 
-Y = snowcrab.db( DS="cat.georeferenced" )
+Y = bio.snowcrab.db( DS="cat.georeferenced" )
 spec = taxonomy.recode( from="taxa", to="spec", tolookup="wolffish")
 taxonomy.recode( from="spec", to="taxa", tolookup=spec )
 
@@ -665,14 +665,14 @@ write.csv( Y, file="~/tmp/jim.csv" )
 ----
 # skate purse extraction for Jim Simon
 
-p = snowcrab::initialise.local.environment()
+p = bio.bio.snowcrab::initialise.local.environment()
 
 yrs = c(2005:2012)
-Z = snowcrab.db( DS="set.complete" )
+Z = bio.snowcrab.db( DS="set.complete" )
 Z = Z[which(Z$yr %in% yrs ) , ]
 Z = Z[, c("trip", "set", "yr", "lon", "lat")]
 
-Y = snowcrab.db( DS="cat.georeferenced" )
+Y = bio.snowcrab.db( DS="cat.georeferenced" )
 spec = c(1224)
 
 Y = Y[ which( Y$spec %in% spec ) , ]
@@ -693,8 +693,8 @@ write.csv( Y, file="~/tmp/jim.csv" )
 # NENS data request WRT EMERA power line
 
 
-p = snowcrab::initialise.local.environment()
-set = snowcrab.db("set")
+p = bio.bio.snowcrab::initialise.local.environment()
+set = bio.snowcrab.db("set")
 set = set[,c( "yr", "lon", "lat", "t", "sa", "R0.mass", "totmass.female.mat", "totmass.male.imm", "totmass.female.imm" )]
 nens = filter.region.polygon( set, region="cfanorth" )
 innergutter = intersect( nens, which(set$lon < -59.8 ) )

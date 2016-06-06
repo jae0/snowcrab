@@ -2,7 +2,7 @@
   # --------------------------
   # 0. Initialise work space
 
-p = snowcrab::initialise.local.environment(
+p = bio.bio.snowcrab::initialise.local.environment(
   current.assessment.year=2016,
   libs=c("parallel", "lubridate", "chron",  "bigmemory", "mgcv", "sp", "parallel",
          "grid" , "lattice", "fields", "rgdal", "raster")
@@ -80,7 +80,7 @@ p = snowcrab::initialise.local.environment(
             # "Z", "Npred" )
 
       print( "Make sure variable list here matches those in bio/habitat/src/habitat.complete.r ")
-      print( "and in the model statement in bio/snowcrab/_Rfunctions/analysis/model.formula.r")
+      print( "and in the model statement in bio/bio.snowcrab/_Rfunctions/analysis/model.formula.r")
 
       # p$model.type = "gam.full" # choose method for habitat model :
       # p$model.type = "gam.simple" # choose method for habitat model :
@@ -124,9 +124,9 @@ p = snowcrab::initialise.local.environment(
         p = make.list( list(v=c("R0.mass.environmentals.only", "R0.mass") ), Y=p )
           habitat.model.db (DS="habitat.redo", p=p )
         p = make.list( list(y=1970:p$current.assessment.year, v=c("R0.mass.environmentals.only", "R0.mass") ), Y=p )
-          parallel.run( snowcrab.habitat.db, p=p )
+          parallel.run( bio.snowcrab.habitat.db, p=p )
         # or
-        # snowcrab.habitat.db (p=p) -- working?
+        # bio.snowcrab.habitat.db (p=p) -- working?
       }
 
 
@@ -165,7 +165,7 @@ p = snowcrab::initialise.local.environment(
       Pmeta = K[ which( K$region=="cfa4x") ,]
       Pmeta = K[ which( K$region=="cfaall") ,]
 
-      outdir = file.path( project.datadirectory("snowcrab"), "R", "gam", "timeseries")
+      outdir = file.path( project.datadirectory("bio.snowcrab"), "R", "gam", "timeseries")
       rr = "cfanorth"
       rr = "cfasouth"
       rr = "cfa4x"
@@ -180,7 +180,7 @@ p = snowcrab::initialise.local.environment(
 
       ### --------- prediction success:
 
-      set = snowcrab.db( DS="set.logbook" )
+      set = bio.snowcrab.db( DS="set.logbook" )
       set = set[ set$yr %in% p$years.to.model ,]
       set$total.landings.scaled = scale( set$total.landings, center=T, scale=T )
       set = presence.absence( set, "R0.mass", p$habitat.threshold.quantile )  # determine presence absence(Y) and weighting(wt)

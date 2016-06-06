@@ -1,6 +1,6 @@
   RLibrary( "geostatsinla", "geostatsp", "mgcv", "nlme4" )
 
-  p = snowcrab::initialise.local.environment()
+  p = bio.snowcrab::initialise.local.environment()
 
   p$regions = c("cfa4x", "cfanorth","cfasouth" )
   p$vars.to.model = c("R0.mass")

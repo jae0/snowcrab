@@ -1,5 +1,5 @@
 
-p = snowcrab::initialise.local.environment( current.assessment.year=2016)
+p = bio.bio.snowcrab::initialise.local.environment( current.assessment.year=2016)
 
 
   require(rjags)
@@ -91,7 +91,7 @@ p = snowcrab::initialise.local.environment( current.assessment.year=2016)
   n.chains = 3
   n.thin = 100 # use of uniform distributions causes high autocorrelations ?
   n.iter.final = n.iter * n.thin
-  fnres = file.path( project.datadirectory("snowcrab"), "R", paste( "surplus.prod.mcmc", p$current.assessment.year,"rdata", sep=".") )
+  fnres = file.path( project.datadirectory("bio.snowcrab"), "R", paste( "surplus.prod.mcmc", p$current.assessment.year,"rdata", sep=".") )
 
 
   debug =F
@@ -101,7 +101,7 @@ p = snowcrab::initialise.local.environment( current.assessment.year=2016)
     n.chains = 3
     n.thin = 10
     n.iter.final = n.iter
-    fnres = file.path( project.datadirectory("snowcrab"), "R", "surplus.prod.mcmc.debug.rdata" )
+    fnres = file.path( project.datadirectory("bio.snowcrab"), "R", "surplus.prod.mcmc.debug.rdata" )
   }
 
 
@@ -181,9 +181,9 @@ p = snowcrab::initialise.local.environment( current.assessment.year=2016)
     y = jags.samples(m, variable.names=tomonitor, n.iter=n.iter.final, thin=n.thin) # sample from posterior
 
 
-    fnres =  file.path( project.datadirectory("snowcrab"), "R", "surplus.prod.mcmc.2013_final.rdata" )
-		# fnres =  file.path( project.datadirectory("snowcrab"), "R", "surplus.prod.mcmc.2012_final.rdata" )
-    # fnres =  file.path( project.datadirectory("snowcrab"), "R", "surplus.prod.mcmc.2012a.rdata" )
+    fnres =  file.path( project.datadirectory("bio.snowcrab"), "R", "surplus.prod.mcmc.2013_final.rdata" )
+		# fnres =  file.path( project.datadirectory("bio.snowcrab"), "R", "surplus.prod.mcmc.2012_final.rdata" )
+    # fnres =  file.path( project.datadirectory("bio.snowcrab"), "R", "surplus.prod.mcmc.2012a.rdata" )
     save(y, file=fnres, compress=T)
     # load( fnres )
 

@@ -1,6 +1,6 @@
 
 
-p = snowcrab::initialise.local.environment( current.assessment.year=2016)
+p = bio.snowcrab::initialise.local.environment( current.assessment.year=2016)
 
 # Tables for the SSR/RESDOC
 # ---------------------------------------------

@@ -1,8 +1,8 @@
 
 
-#p = snowcrab::initialise.local.environment()
+#p = bio.bio.snowcrab::initialise.local.environment()
 
- setwd( file.path( project.datadirectory("snowcrab"), "R" )
+ setwd( file.path( project.datadirectory("bio.snowcrab"), "R" )
  load("det.georef.rdata")
  load("set.complete.rdata")
 

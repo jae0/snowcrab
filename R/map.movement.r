@@ -1,7 +1,7 @@
 
  map.movement = function( p, outdir ) {
  
-    tags.datadir= file.path( project.datadirectory("snowcrab"), "data", "tagging" )
+    tags.datadir= file.path( project.datadirectory("bio.snowcrab"), "data", "tagging" )
 
     # plot movement of crab in maps
     # and generated interpolated fields of movemnent magnitudes, orientations and their errors

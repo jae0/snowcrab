@@ -1,10 +1,10 @@
 
-  snowcrab.external.db = function( p=NULL, DS="", vname="", year.current=NULL ) {
+  bio.snowcrab.external.db = function( p=NULL, DS="", vname="", year.current=NULL ) {
 
-    if ( DS=="det.snowcrab.in.groundfish.survey" ) {
+    if ( DS=="det.bio.snowcrab.in.groundfish.survey" ) {
 
-      ct = groundfish::groundfish.db( "det" )
-      cti  = taxonomy.filter.taxa( ct$spec, taxafilter="snowcrab", outtype="groundfishcodes" )
+      ct = bio.groundfish::groundfish.db( "det" )
+      cti  = taxonomy.filter.taxa( ct$spec, taxafilter="bio.snowcrab", outtype="groundfishcodes" )
       if (length(cti)> 0 ) ct = ct[cti,]
 
       imale = which( ct$sex==1 )
@@ -47,24 +47,24 @@
       return(ct)
     }
 
-    if ( DS %in% c("set.snowcrab.in.groundfish.survey", "set.snowcrab.in.groundfish.survey.redo"  ) ) {
+    if ( DS %in% c("set.bio.snowcrab.in.groundfish.survey", "set.bio.snowcrab.in.groundfish.survey.redo"  ) ) {
 
-      fn = file.path( project.datadirectory("snowcrab"), "R", paste("set.groundfish", vname, "rdata", sep=".") )
+      fn = file.path( project.datadirectory("bio.snowcrab"), "R", paste("set.groundfish", vname, "rdata", sep=".") )
 
       set = NULL
-      if ( DS=="set.snowcrab.in.groundfish.survey" ) {
+      if ( DS=="set.bio.snowcrab.in.groundfish.survey" ) {
         if ( file.exists( fn) )  load( fn )
         return (set)
       }
 
-      ct = snowcrab.external.db( DS="det.snowcrab.in.groundfish.survey", vname=vname )
+      ct = bio.snowcrab.external.db( DS="det.bio.snowcrab.in.groundfish.survey", vname=vname )
       if (nrow(ct)==0) return()
 
       uu = sum.data( ct, factors="id", variable="number" )
       names(uu) =c( "id", "n" )
 
-      set = groundfish::groundfish.db( "set.base" )
-      set = lonlat2planar( set, proj.type=p$internal.projection )  # utm20, WGS84 (snowcrab geoid)
+      set = bio.groundfish::groundfish.db( "set.base" )
+      set = lonlat2planar( set, proj.type=p$internal.projection )  # utm20, WGS84 (bio.snowcrab geoid)
       set$plon = grid.internal( set$plon, p$plons )
       set$plat = grid.internal( set$plat, p$plats )
 

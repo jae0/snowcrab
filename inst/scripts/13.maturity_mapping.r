@@ -1,6 +1,6 @@
 #maturity mapping
 
-p = snowcrab::initialise.local.environment( current.assessment.year=2016)
+p = bio.bio.snowcrab::initialise.local.environment( current.assessment.year=2016)
 
 
   p$regions = c("cfa4x", "cfanorth","cfasouth" )
@@ -10,7 +10,7 @@ p = snowcrab::initialise.local.environment( current.assessment.year=2016)
   p$prediction.dyear = 9/12 # predict for ~ Sept 1
   p$threshold.distance = 15  # limit to extrapolation/interpolation in km
 
-di = file.path(project.datadirectory('snowcrab'),'R','maturity')
+di = file.path(project.datadirectory('bio.snowcrab'),'R','maturity')
 #gam model
 load(file.path(di,'mat.gam.rdata'))
 summary(.m4.gam)

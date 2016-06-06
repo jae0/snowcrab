@@ -1,5 +1,5 @@
 
-	snowcrab.db = function( DS, p=NULL, yrs=NULL) {
+	bio.snowcrab.db = function( DS, p=NULL, yrs=NULL) {
 		# long!
 		# handles all basic data tables, etc. ... can be broken into smaller pieces to make easier to maintain
 
@@ -15,7 +15,7 @@
 
 		if (DS %in% c("set.odbc.redo", "set.odbc") ) {
 
-	    fn.root =  file.path( project.datadirectory("snowcrab"), "data", "trawl", "SNCRABSETS" )
+	    fn.root =  file.path( project.datadirectory("bio.snowcrab"), "data", "trawl", "SNCRABSETS" )
 			dir.create( fn.root, recursive = TRUE, showWarnings = FALSE )
 
 	    if (DS=="set.odbc") {
@@ -29,7 +29,7 @@
 			}
 
 			require(RODBC)
-			con = odbcConnect(oracle.snowcrab.server , uid=oracle.snowcrab.user, pwd=oracle.snowcrab.password, believeNRows=F)
+			con = odbcConnect(oracle.bio.snowcrab.server , uid=oracle.bio.snowcrab.user, pwd=oracle.bio.snowcrab.password, believeNRows=F)
 			# believeNRows=F required for oracle db's
 
 			for ( YR in yrs ) {
@@ -48,7 +48,7 @@
 
 
 		if (DS %in% c("det.odbc.redo", "det.odbc") ) {
-      fn.root =  file.path( project.datadirectory("snowcrab"), "data", "trawl", "SNCRABDETAILS" )
+      fn.root =  file.path( project.datadirectory("bio.snowcrab"), "data", "trawl", "SNCRABDETAILS" )
 			dir.create( fn.root, recursive = TRUE, showWarnings = FALSE  )
 
 	    if (DS=="det.odbc") {
@@ -62,7 +62,7 @@
 			}
 
 			require(RODBC)
-			con = odbcConnect(oracle.snowcrab.server , uid=oracle.snowcrab.user, pwd=oracle.snowcrab.password, believeNRows=F)
+			con = odbcConnect(oracle.bio.snowcrab.server , uid=oracle.bio.snowcrab.user, pwd=oracle.bio.snowcrab.password, believeNRows=F)
 			# believeNRows=F required for oracle db's
 
 			for ( YR in yrs ) {
@@ -85,7 +85,7 @@
 
 		if (DS %in% c("cat.odbc.redo", "cat.odbc") ) {
 
-      fn.root =  file.path( project.datadirectory("snowcrab"), "data", "trawl", "SNTRAWLBYCATCH" )
+      fn.root =  file.path( project.datadirectory("bio.snowcrab"), "data", "trawl", "SNTRAWLBYCATCH" )
 			dir.create( fn.root, recursive = TRUE, showWarnings = FALSE  )
 
 	    if (DS=="cat.odbc") {
@@ -99,7 +99,7 @@
 			}
 
 			require(RODBC)
-			con = odbcConnect(oracle.snowcrab.server , uid=oracle.snowcrab.user, pwd=oracle.snowcrab.password, believeNRows=F)
+			con = odbcConnect(oracle.bio.snowcrab.server , uid=oracle.bio.snowcrab.user, pwd=oracle.bio.snowcrab.password, believeNRows=F)
 			# believeNRows=F required for oracle db's
 
 			for ( YR in yrs ) {
@@ -121,7 +121,7 @@
 
 
     if (DS %in% c("setInitial.redo", "setInitial")) {
-      fn = file.path( project.datadirectory( "snowcrab", "data" ), "set.initial.rdata" )
+      fn = file.path( project.datadirectory( "bio.snowcrab", "data" ), "set.initial.rdata" )
 
       if (DS =="setInitial") {
         set = NULL
@@ -136,8 +136,8 @@
 
       # data dump from the observer system
       # August 2015 added in setcd_id from observer system to address the MPA survey sets (type=11) and regular fix station sets (type=4)
-      set = snowcrab.db( DS="set.odbc")
-      names( set ) = rename.snowcrab.variables(names( set))
+      set = bio.snowcrab.db( DS="set.odbc")
+      names( set ) = rename.bio.snowcrab.variables(names( set))
       setvars = c("trip", "set", "station", "stime", "observer", "cfa", "lon", "lat", "lon1", "lat1", "towquality", "Zx", "Tx", "gear", "sa", "dist", "dist0" )
       print('need to addin the mpa station index')
 
@@ -246,7 +246,7 @@
 
       # ---------------------
       # local lookuptable for netmind/minilog data (historical data only)
-      sntows = read.table(file.path( project.datadirectory("snowcrab"), "data", "lookuptables", "sntow.csv"),  sep=";", as.is=T, colClasses="character", header=T)
+      sntows = read.table(file.path( project.datadirectory("bio.snowcrab"), "data", "lookuptables", "sntow.csv"),  sep=";", as.is=T, colClasses="character", header=T)
       sntow.vars = c("trip",  "set", "patchtime", "netmind", "minilog")
 
       set = merge(set, sntows[,sntow.vars], by=c("trip", "set"), all.x=T, all.y=F, sort=F)
@@ -294,7 +294,7 @@
         set.cords <- shape.set[, c("lon", "lat")]
         sdf.set <- SpatialPointsDataFrame(set.cords, data=shape.set)
         proj4string(sdf.set) <- CRS(p$geog.proj)
-        shpdir = file.path(project.datadirectory("snowcrab"), "maps", "shapefiles", "survey")
+        shpdir = file.path(project.datadirectory("bio.snowcrab"), "maps", "shapefiles", "survey")
         setwd(shpdir)
 
         writeOGR(sdf.set, ".", "SurveyDataUpdate", driver="ESRI Shapefile", overwrite=T)
@@ -310,16 +310,16 @@
     # --------------------
 
     if (DS %in% c("det.initial", "det.initial.redo") ) {
-      fn = file.path(project.datadirectory("snowcrab"), "R", "det.initial.rdata")
+      fn = file.path(project.datadirectory("bio.snowcrab"), "R", "det.initial.rdata")
       if (DS =="det.initial") {
         load(fn)
         return(det)
       }
 
-      X = snowcrab.db( DS="set.clean" )
-      det = snowcrab.db( DS="det.odbc"  )
+      X = bio.snowcrab.db( DS="set.clean" )
+      det = bio.snowcrab.db( DS="det.odbc"  )
 
-      names( det ) = rename.snowcrab.variables(names(det) )
+      names( det ) = rename.bio.snowcrab.variables(names(det) )
       detvars = c( "trip", "set", "crabno", "sex", "cw", "mass", "abdomen", "chela", "mat",
                    "shell", "gonad", "eggcol", "eggPr", "durometer", "legs")
 
@@ -352,7 +352,7 @@
 
       #Identify morphology errors and print, save to CSV
       yr.e <- p$current.assessment.year
-      fn.e = file.path(project.datadirectory("snowcrab"), "data", "trawl", "morphology.errors")
+      fn.e = file.path(project.datadirectory("bio.snowcrab"), "data", "trawl", "morphology.errors")
       dir.create(fn.e, recursive=T, showWarnings=F)
       outfile.e =  file.path( fn.e, paste("morphologyerrors", yr.e, ".csv", sep=""))
 
@@ -426,12 +426,12 @@
 
       # do only after the above save
 
-      allometry.snowcrab( "cw.mass", "male", redo=T )
-      allometry.snowcrab( "chela.mass", "male", redo=T  )
-      allometry.snowcrab( "cw.chela.mat", "male", redo=T  )
-      allometry.snowcrab( "cw.mass", "female", redo=T  )
-      allometry.snowcrab( "chela.mass", "female", redo=T  )
-      allometry.snowcrab( "cw.chela.mat", "female", redo=T  )
+      allometry.bio.snowcrab( "cw.mass", "male", redo=T )
+      allometry.bio.snowcrab( "chela.mass", "male", redo=T  )
+      allometry.bio.snowcrab( "cw.chela.mat", "male", redo=T  )
+      allometry.bio.snowcrab( "cw.mass", "female", redo=T  )
+      allometry.bio.snowcrab( "chela.mass", "female", redo=T  )
+      allometry.bio.snowcrab( "cw.chela.mat", "female", redo=T  )
 
       names.e <- list(mat.e, sex.e, cw.e, chela.e, abdomen.e, mass.e, sex.a, sex.c)
       errors = NULL
@@ -463,7 +463,7 @@
 
 
     if (DS %in% c("cat.initial", "cat.initial.redo") ) {
-      fn = file.path(project.datadirectory("snowcrab"), "R", "cat.initial.rdata")
+      fn = file.path(project.datadirectory("bio.snowcrab"), "R", "cat.initial.rdata")
       if(DS =="cat.initial" ) {
         load(fn)
         return(cat)
@@ -472,10 +472,10 @@
 			# two steps:: bycatch from the cat tables (missing snow crab)
       # and determine totals from the snow crab det tables
 
-      det = snowcrab.db( DS="det.initial" )
+      det = bio.snowcrab.db( DS="det.initial" )
 
-      cat = snowcrab.db( DS="cat.odbc" )
-      names( cat ) = rename.snowcrab.variables(names( cat ) )
+      cat = bio.snowcrab.db( DS="cat.odbc" )
+      names( cat ) = rename.bio.snowcrab.variables(names( cat ) )
 
       # two different time periods (pre and post Moncton)
       # the earlier was saved as totmass.kept and the latter as discarded
@@ -541,13 +541,13 @@
 			biomass$totmass = biomass$totmass / 1000  # convert from grams to kg
       # !!!!!!!! must verify units of other species from observer system
 
-      snowcrab = merge(x=numbers, y=biomass, by=c("trip", "set"), all=T)
-      snowcrab = snowcrab[ which( as.character(snowcrab$trip) != "-1") , ]
+      bio.snowcrab = merge(x=numbers, y=biomass, by=c("trip", "set"), all=T)
+      bio.snowcrab = bio.snowcrab[ which( as.character(bio.snowcrab$trip) != "-1") , ]
 
-       snowcrab$spec = taxonomy.recode(to='parsimonious',from='spec', tolookup = 2526 )  # 2526 is the code used in the groundfish/snow crab surveys .. convert to internally consistent state
+       bio.snowcrab$spec = taxonomy.recode(to='parsimonious',from='spec', tolookup = 2526 )  # 2526 is the code used in the groundfish/snow crab surveys .. convert to internally consistent state
       # longer here -- in bio db only
 
-			final = snowcrab[,names(x)]  # get the right sequence of variables
+			final = bio.snowcrab[,names(x)]  # get the right sequence of variables
 
 				# strip zeros when both  no and mass are 0
 				z = which( final$totno==0 & final$totmass==0)
@@ -562,7 +562,7 @@
 				if (length(o) >0 ) final$totmass[o] = min( final$totmass[ which(final$totmass>0) ] )  # kg
 
       # -----------------------
-      # merge in the snowcrab weights
+      # merge in the bio.snowcrab weights
       cat = rbind(x, final)
 
 
@@ -633,7 +633,7 @@
     if ( DS %in% c("set.merge.det","set.merge.det.redo") ) {
     # browser()
 
-      fn = file.path( project.datadirectory("snowcrab"), "R", "set.biologicals.rdata")
+      fn = file.path( project.datadirectory("bio.snowcrab"), "R", "set.biologicals.rdata")
 
       if (DS=="set.merge.det" ) {
         load(fn)
@@ -642,10 +642,10 @@
 
       factors = c("trip", "set")
 
-      X = snowcrab.db( DS="set.clean" )
+      X = bio.snowcrab.db( DS="set.clean" )
       #X2015 = X[which(X$yr==2015),]
       #head(X2015)
-      Y = snowcrab.db( DS="det.initial" )
+      Y = bio.snowcrab.db( DS="det.initial" )
 
       # add various variables to set-level data
 
@@ -675,52 +675,52 @@
 
       # ------------------------------------------------------------------------------------------------
       # add (mean,var,count) of cw
-      # all snowcrabs
+      # all bio.snowcrabs
       # y = bodysize(Y[,c(factors, "mass")], factors, "mass", logtransform=T)  # <<< example for extracting mean mass
         y = bodysize(Y[,c(factors, "cw")], factors, "cw", logtransform=T)
         names(y) = c(factors, "cw.mean", "cw.var", "cw.n")
         X = merge(x=X, y=y, by=factors, all.x=T )
         X$cw.n = X$cw.n / X$sa
 
-      # commercially sized male snowcrabs
+      # commercially sized male bio.snowcrabs
         y = bodysize(Y[filter.class(Y, "m.com"), c(factors, "cw")], factors, "cw", logtransform=T)
         names(y) = c(factors, "cw.comm.mean", "cw.comm.var", "cw.comm.n")
         X = merge(x=X, y=y,  by=factors, all.x=T )
         X$cw.comm.n = X$cw.comm.n / X$sa
 
-      # noncommercial male snowcrabs
+      # noncommercial male bio.snowcrabs
         y = bodysize(Y[filter.class(Y, "m.ncom"), c(factors, "cw")], factors, "cw", logtransform=T)
         names(y) = c(factors, "cw.notcomm.mean", "cw.notcomm.var", "cw.notcomm.n")
         X = merge(x=X, y=y,  by=factors, all.x=T )
         X$cw.notcomm.n = X$cw.notcomm.n / X$sa
 
-      # mature female snowcrabs
+      # mature female bio.snowcrabs
         y = bodysize(Y[filter.class(Y, "f.mat"), c(factors, "cw")], factors, "cw", logtransform=T)
         names(y) = c(factors, "cw.fem.mat.mean", "cw.fem.mat.var", "cw.fem.mat.n")
         X = merge(x=X, y=y,  by=factors, all.x=T )
         X$cw.fem.mat.n = X$cw.fem.mat.n / X$sa
 
-      # immature female snowcrabs
+      # immature female bio.snowcrabs
         y = bodysize(Y[filter.class(Y, "f.imm"), c(factors, "cw")], factors, "cw", logtransform=T)
         names(y) = c(factors, "cw.fem.imm.mean", "cw.fem.imm.var", "cw.fem.imm.n")
         X = merge(x=X, y=y,  by=factors, all.x=T )
         X$cw.fem.imm.n = X$cw.fem.imm.n / X$sa
 
 
-      # mature male snowcrabs
+      # mature male bio.snowcrabs
         y = bodysize(Y[filter.class(Y, "m.mat"), c(factors, "cw")], factors, "cw", logtransform=T)
         names(y) = c(factors, "cw.male.mat.mean", "cw.male.mat.var", "cw.male.mat.n")
         X = merge(x=X, y=y,  by=factors, all.x=T )
         X$cw.male.mat.n = X$cw.male.mat.n / X$sa
 
-      # immature male snowcrabs
+      # immature male bio.snowcrabs
         y = bodysize(Y[filter.class(Y, "m.imm"), c(factors, "cw")], factors, "cw", logtransform=T)
         names(y) = c(factors, "cw.male.imm.mean", "cw.male.imm.var", "cw.male.imm.n")
         X = merge(x=X, y=y,  by=factors, all.x=T )
         X$cw.male.imm.n = X$cw.male.imm.n / X$sa
 
     # ------------------------------------------------------------------------------------------------
-    # add biomass of various components of the snowcrab population
+    # add biomass of various components of the bio.snowcrab population
     #      X = setmerge(X, det, varname="totmass.all", filter="all", variable="mass")
     #      ... better to use the total catch tables as subsampling may be used in the future
 
@@ -734,7 +734,7 @@
       }
 
     # ------------------------------------------------------------------------------------------------
-    # add numbers of various components of the snowcrab population
+    # add numbers of various components of the bio.snowcrab population
     #      X = setmerge(X, Y, varname="totno.all", filter="all", variable="number")
     #       ... better to use the total catch tables as subsampling may be used in the future
 
@@ -754,7 +754,7 @@
       rm(Y); gc()
       set = X
 
-      if ( nrow( snowcrab.db( DS="set.clean" )) != nrow( set) ) {   print( "Merge failure ... " );  stop()    }
+      if ( nrow( bio.snowcrab.db( DS="set.clean" )) != nrow( set) ) {   print( "Merge failure ... " );  stop()    }
 
       save( set, file=fn, compress=T )
 
@@ -766,7 +766,7 @@
 
     if ( DS %in% c("set.merge.cat","set.merge.cat.redo") ) {
 
-      fn = file.path( project.datadirectory("snowcrab"), "R", "set.cat.rdata")
+      fn = file.path( project.datadirectory("bio.snowcrab"), "R", "set.cat.rdata")
 
       if (DS %in% c("set.merge.cat" )) {
         load(fn)
@@ -775,21 +775,21 @@
 
       factors = c("trip", "set")
 
-      X = snowcrab.db( DS="set.merge.det" )
+      X = bio.snowcrab.db( DS="set.merge.det" )
       X2015 = X[which(X$yr == 2015),]
       print(head(X2015))
 
-      cat = snowcrab.db( DS="cat.initial" )
+      cat = bio.snowcrab.db( DS="cat.initial" )
       cat2015 = cat[grep("2015", cat$trip),]
       print(head(cat2015))
 
-      cat0 = cat[ taxonomy.filter.taxa( cat$spec, taxafilter="snowcrab", outtype="groundfishcodes"), c(factors, "totno")]
+      cat0 = cat[ taxonomy.filter.taxa( cat$spec, taxafilter="bio.snowcrab", outtype="groundfishcodes"), c(factors, "totno")]
       names(cat0) = c(factors, "totno.all")
       X = merge(x=X, y=cat0, by=factors, all.x=T )
       X$totno.all   = X$totno.all   / X$sa
       X$totno.all[!is.finite(X$totno.all)] = 0  # convert na's to zero
 
-      cat0 = cat[ taxonomy.filter.taxa( cat$spec, taxafilter="snowcrab", outtype="groundfishcodes" ), c(factors, "totmass")]
+      cat0 = cat[ taxonomy.filter.taxa( cat$spec, taxafilter="bio.snowcrab", outtype="groundfishcodes" ), c(factors, "totmass")]
       names(cat0) = c(factors, "totmass.all")
       X = merge(x=X, y=cat0, by=factors, all.x=T )
       X$totmass.all = X$totmass.all / X$sa
@@ -799,7 +799,7 @@
 
       set = X
 
-      if ( nrow( snowcrab.db( DS="setInitial" )) != nrow( set) ) {   print( "Merge failure ... " );  stop()    }
+      if ( nrow( bio.snowcrab.db( DS="setInitial" )) != nrow( set) ) {   print( "Merge failure ... " );  stop()    }
       X2015 = X[which(X$yr == 2015),]
       print(head(X2015))
 
@@ -815,7 +815,7 @@
     if (DS %in% c("set.minilog.seabird.retired", "set.minilog.seabird.redo.retired")) {
       # merge setInitial with minilog stats, seabird stats to generate sensible start and end times
       # used for creating netmind stats /metrics
-      fn = file.path( project.datadirectory( "snowcrab", "data"), "set.minilog.seabird.rdata" )
+      fn = file.path( project.datadirectory( "bio.snowcrab", "data"), "set.minilog.seabird.rdata" )
 
       if (DS=="set.minilog.seabird.redo.retired") {
         set = NULL
@@ -825,7 +825,7 @@
 
       if (DS=="set.minilog.seabird.retired") {
         tzone = "America/Halifax"
-        set = snowcrab.db( DS="setInitial")
+        set = bio.snowcrab.db( DS="setInitial")
         set.names= names(set)
         #set2015 = set[which(set$yr==2015),]
 
@@ -902,7 +902,7 @@
     if ( DS %in% c("set.clean", "set.clean.redo") ) {
 
       # merge seabird, minilog and netmind data and do some checks and cleaning
-      fn = file.path( project.datadirectory( "snowcrab" ), "data", "set.clean.rdata" )
+      fn = file.path( project.datadirectory( "bio.snowcrab" ), "data", "set.clean.rdata" )
 
       if ( DS=="set.clean" ) {
         set= NULL
@@ -912,7 +912,7 @@
 
       # the beginning here is identical to the netmind.db( "stat.redo" ) .. simpler to keep it this way (jae)
       tzone = "America/Halifax"
-      set = snowcrab.db( DS="setInitial")
+      set = bio.snowcrab.db( DS="setInitial")
 
       sbStats =  seabird.db( DS="stats" )
       sbv = c('trip','set', "z", "zsd", "t", "tsd", "n", "t0", "t1", "dt" )
@@ -1025,14 +1025,14 @@
 
     if (DS %in% c("set", "set.complete", "set.complete.redo") ) {
 
-      fn = file.path( project.datadirectory("snowcrab"), "R", "set.complete.rdata")
+      fn = file.path( project.datadirectory("bio.snowcrab"), "R", "set.complete.rdata")
 
       if (DS %in% c("set", "set.complete") ){
         load( fn )
         return ( set )
       }
 
-      set = snowcrab.db( DS="set.merge.cat" )
+      set = bio.snowcrab.db( DS="set.merge.cat" )
       # set2015 = set[which(set$yr == 2015),]
       # print(head(set2015))
 
@@ -1057,7 +1057,7 @@
 
       # ----add other species
       print( "Adding other species to 'set' ")
-      cat = snowcrab.db( DS="cat.initial" )
+      cat = bio.snowcrab.db( DS="cat.initial" )
       cat2015 = cat[grep("2015", cat$trip),]
       print(head(cat2015))
 
@@ -1097,29 +1097,29 @@
     }
 
     if (DS %in% c("det.georeferenced", "det.georeferenced.redo" ) ) {
-      fn = file.path( project.datadirectory("snowcrab"), "R", "det.georef.rdata" )
+      fn = file.path( project.datadirectory("bio.snowcrab"), "R", "det.georef.rdata" )
       if (DS=="det.georeferenced") {
         load(fn)
         return(det)
       }
-      set = snowcrab.db( "set.clean")
+      set = bio.snowcrab.db( "set.clean")
       set  = set[, c("trip", "set", "lon", "lat", "plon", "plat", "yr")]
-      det = snowcrab.db("det.initial")
+      det = bio.snowcrab.db("det.initial")
       det = merge( det, set, by=c("trip", "set"), all.x=T, all.y=F, sort=F, suffixes=c("",".set") )
       det$sa.set = NULL
       save(det, file=fn,compress=T)
     }
 
     if (DS %in% c("cat.georeferenced", "cat.georeferenced.redo" ) ) {
-      fn = file.path( project.datadirectory("snowcrab"), "R", "cat.georef.rdata" )
+      fn = file.path( project.datadirectory("bio.snowcrab"), "R", "cat.georef.rdata" )
       if (DS=="cat.georeferenced") {
         load(fn)
         return(cat)
       }
 
-      set = snowcrab.db( "set.clean")  #require SA estimates
+      set = bio.snowcrab.db( "set.clean")  #require SA estimates
       set  = set[, c("trip", "set", "lon", "lat", "plon", "plat", "yr", "sa")]
-      cat =  snowcrab.db("cat.initial")
+      cat =  bio.snowcrab.db("cat.initial")
       cat = merge( cat, set, by=c("trip", "set"), all.x=T, all.y=F, sort=F, suffixes=c("",".set") )
       cat$totmass = cat$totmass / cat$sa
       cat$totno = cat$totno / cat$sa
@@ -1131,7 +1131,7 @@
 
     if (DS %in% c("set.logbook", "set.logbook.redo" )) {
 
-      outdir = file.path( project.datadirectory("snowcrab"), "data" )
+      outdir = file.path( project.datadirectory("bio.snowcrab"), "data" )
       dir.create(path=outdir, recursive=T, showWarnings=F)
       fn = file.path( outdir, "set.logbook.rdata" )
 
@@ -1140,13 +1140,13 @@
         return(set)
       }
 
-      set0 = snowcrab.db( DS="set.complete" )
+      set0 = bio.snowcrab.db( DS="set.complete" )
       set = logbook.fisheries.stats.merge( set0 )
       save ( set, file=fn, compress=T )
       return (fn)
     }
 
 
-  }  ## end snowcrab.db
+  }  ## end bio.snowcrab.db
 
 

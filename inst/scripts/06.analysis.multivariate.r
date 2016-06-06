@@ -1,7 +1,7 @@
 
  ...  incomplete
 
-p = snowcrab::initialise.local.environment( current.assessment.year=2016)
+p = bio.snowcrab::initialise.local.environment( current.assessment.year=2016)
 
 	bioLibrary( "sorted.ordination")
 

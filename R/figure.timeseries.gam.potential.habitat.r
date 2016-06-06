@@ -1,7 +1,7 @@
 
-  figure.timeseries.gam.potential.habitat= function( outdir=file.path(project.datadirectory('snowcrab'), "assessments","2014"), all.areas=T ) {
+  figure.timeseries.gam.potential.habitat= function( outdir=file.path(project.datadirectory('bio.snowcrab'), "assessments","2014"), all.areas=T ) {
  
-    set = snowcrab.db( DS="set.merge.det")
+    set = bio.snowcrab.db( DS="set.merge.det")
   
     if (all.areas) {
       areas = c("cfa4x", "cfasouth", "cfanorth" )
@@ -15,7 +15,7 @@
     n.areas = length(areas)
     varnames = names(set)
 #    vars = varnames[ grep ( vars, varnames) ]
-fdir <-file.path( project.datadirectory("snowcrab"), "R", "gam","habitat" )
+fdir <-file.path( project.datadirectory("bio.snowcrab"), "R", "gam","habitat" )
         fs <- dir(fdir)
     fs <- fs[setdiff(grep('K.R0.mass',fs) , grep('environmentals.only',fs))]
         lo <- c()

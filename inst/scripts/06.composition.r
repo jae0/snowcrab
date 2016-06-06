@@ -1,12 +1,12 @@
 
 # species composition analysis from snow crab data
 
-p = snowcrab::initialise.local.environment( current.assessment.year=2016)
+p = bio.bio.snowcrab::initialise.local.environment( current.assessment.year=2016)
 
   bioLibrary( "sorted.ordination")
 
 
-  C = snowcrab.db( DS="cat.georeferenced" )
+  C = bio.snowcrab.db( DS="cat.georeferenced" )
   C$totno = log10( C$totno )
   C$totmass = log10( C$totmass )
 
@@ -55,9 +55,9 @@ p = snowcrab::initialise.local.environment( current.assessment.year=2016)
 
   ######## density modelling GAM/GLM
 
-p = snowcrab::initialise.local.environment( current.assessment.year=2016)
+p = bio.bio.snowcrab::initialise.local.environment( current.assessment.year=2016)
 
-  S = snowcrab.db( DS ="set.logbook" )
+  S = bio.snowcrab.db( DS ="set.logbook" )
   Sn = colnames( S )
 
   iv0 = Sn[ grep( "^ms.no." , Sn ) ]
@@ -108,8 +108,8 @@ p = snowcrab::initialise.local.environment( current.assessment.year=2016)
   y = stepAIC( Qlm)
   fy = labels(terms(y))  # accepted terms
 
-  save( Qlm, file=file.path( project.datadirectory("snowcrab"), "R", "density.model.lm.rdata"), compress=T )
-  save( y, file=file.path( project.datadirectory("snowcrab"), "R", "density.model.lm.stepwise.rdata"), compress=T )
+  save( Qlm, file=file.path( project.datadirectory("bio.snowcrab"), "R", "density.model.lm.rdata"), compress=T )
+  save( y, file=file.path( project.datadirectory("bio.snowcrab"), "R", "density.model.lm.stepwise.rdata"), compress=T )
 
 
   # gam model
@@ -124,7 +124,7 @@ p = snowcrab::initialise.local.environment( current.assessment.year=2016)
   plot( Qgam)
 
 
-  save( Qgam, file=file.path( project.datadirectory("snowcrab"), "R", "density.model.gam.rdata", compress=T )
+  save( Qgam, file=file.path( project.datadirectory("bio.snowcrab"), "R", "density.model.gam.rdata", compress=T )
 
 
 

@@ -1,6 +1,6 @@
 netmind.db = function( DS, Y=NULL, plotdata=FALSE ) {
   
-  netmind.dir = project.datadirectory("snowcrab", "data", "netmind" )
+  netmind.dir = project.datadirectory("bio.snowcrab", "data", "netmind" )
   netmind.rawdata.location = file.path( netmind.dir, "archive" )
   
   if (!is.null(Y)) {
@@ -81,7 +81,7 @@ netmind.db = function( DS, Y=NULL, plotdata=FALSE ) {
     }
     filelist = filelist[ which( !is.na( filelist[,1] ) ) , ]
     
-    set = snowcrab.db( DS="setInitial" ) 
+    set = bio.snowcrab.db( DS="setInitial" ) 
     
     for ( yr in Y ) {
       print(yr)
@@ -144,7 +144,7 @@ netmind.db = function( DS, Y=NULL, plotdata=FALSE ) {
     if(plotdata) pdf(paste0("netmind",yr,".pdf"))
     
     tzone = "America/Halifax"
-    set = snowcrab.db( DS="setInitial") 
+    set = bio.snowcrab.db( DS="setInitial") 
 
     sbStats =  seabird.db( DS="stats" )
     sbv = c('trip','set', "z", "zsd", "t", "tsd", "n", "t0", "t1", "dt" )

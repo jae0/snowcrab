@@ -21,8 +21,8 @@
     mat.unknown = 2
 
 
-    outfile=file.path( project.datadirectory("snowcrab"), "data", "observer", "odb.historical.datadump")
-    directories = file.path( project.datadirectory("snowcrab"), "data", "observer", "archive", c(2001:2003))
+    outfile=file.path( project.datadirectory("bio.snowcrab"), "data", "observer", "odb.historical.datadump")
+    directories = file.path( project.datadirectory("bio.snowcrab"), "data", "observer", "archive", c(2001:2003))
     fl = list.files(path=directories, pattern="[*.txt]$", full.names=T, recursive=T)
 
     if (type=="seasamples") fl = fl[ grep( "sea sample", fl, ignore.case=T ) ]

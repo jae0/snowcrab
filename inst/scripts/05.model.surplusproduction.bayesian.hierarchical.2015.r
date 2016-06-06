@@ -1,6 +1,6 @@
 
 
-p = snowcrab::initialise.local.environment( current.assessment.year=2016)
+p = bio.bio.snowcrab::initialise.local.environment( current.assessment.year=2016)
 
 
     require(rjags)
@@ -32,7 +32,7 @@ p = snowcrab::initialise.local.environment( current.assessment.year=2016)
   res$L[1:9,3] <- c(.004,res$L[1:8,3])
 
   #
-  #load(file.path(project.datadirectory('snowcrab'),"R","assessmentmodeldata2014.Rdata"))
+  #load(file.path(project.datadirectory('bio.snowcrab'),"R","assessmentmodeldata2014.Rdata"))
 
     sb = list(
       b.min = 0.001, # scaled to 1 but allow overshooting
@@ -111,7 +111,7 @@ p = snowcrab::initialise.local.environment( current.assessment.year=2016)
     n.chains = 3
     n.thin = 100 # use of uniform distributions causes high autocorrelations ?
     n.iter.final = n.iter * n.thin
-    fnres = file.path( project.datadirectory("snowcrab"), "R", paste( "surplus.prod.mcmc", p$current.assessment.year,"rdata", sep=".") )
+    fnres = file.path( project.datadirectory("bio.snowcrab"), "R", paste( "surplus.prod.mcmc", p$current.assessment.year,"rdata", sep=".") )
 
 
     debug =F
@@ -121,7 +121,7 @@ p = snowcrab::initialise.local.environment( current.assessment.year=2016)
       n.chains = 3
       n.thin = 10
       n.iter.final = n.iter
-      fnres = file.path( project.datadirectory("snowcrab"), "R", "surplus.prod.mcmc.debug.rdata" )
+      fnres = file.path( project.datadirectory("bio.snowcrab"), "R", "surplus.prod.mcmc.debug.rdata" )
     }
 
 
@@ -157,7 +157,7 @@ p = snowcrab::initialise.local.environment( current.assessment.year=2016)
 
 
     # ----------------
-    dir.output = file.path(project.datadirectory('snowcrab'),"assessments","2014")
+    dir.output = file.path(project.datadirectory('bio.snowcrab'),"assessments","2014")
   y = jags.samples(m, variable.names=tomonitor, n.iter=n.iter.final, thin=n.thin) # sample from posterior
 
   figure.bugs( type="timeseries", vname="biomass", y=y, sb=sb, fn=file.path(dir.output, "biomass.timeseries.png" ) ,save.plot=T)
@@ -199,9 +199,9 @@ p = snowcrab::initialise.local.environment( current.assessment.year=2016)
     y = jags.samples(m, variable.names=tomonitor, n.iter=n.iter.final, thin=n.thin) # sample from posterior
 
 
-    fnres =  file.path( project.datadirectory("snowcrab"), "R", "surplus.prod.mcmc.2014.survey_final.rdata" )
-		# fnres =  file.path( project.datadirectory("snowcrab"), "R", "surplus.prod.mcmc.2012_final.rdata" )
-    # fnres =  file.path( project.datadirectory("snowcrab"), "R", "surplus.prod.mcmc.2012a.rdata" )
+    fnres =  file.path( project.datadirectory("bio.snowcrab"), "R", "surplus.prod.mcmc.2014.survey_final.rdata" )
+		# fnres =  file.path( project.datadirectory("bio.snowcrab"), "R", "surplus.prod.mcmc.2012_final.rdata" )
+    # fnres =  file.path( project.datadirectory("bio.snowcrab"), "R", "surplus.prod.mcmc.2012a.rdata" )
     save(y, file=fnres, compress=T)
     # load( fnres )
 

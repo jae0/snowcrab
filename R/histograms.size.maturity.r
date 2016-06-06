@@ -2,7 +2,7 @@
   histograms.size.maturity = function( outdir, redo.data=F ) {
     # size frequency distributions of snow crab, broken down by maturity
 
-      loc = file.path(project.datadirectory("snowcrab"), "R", "size.data")
+      loc = file.path(project.datadirectory("bio.snowcrab"), "R", "size.data")
        
       dir.create(path=outdir, recursive=T, showWarnings=F)
       dir.create(path=loc, recursive=T, showWarnings=F)
@@ -19,10 +19,10 @@
 
       if (redo.data) {
       
-        set = snowcrab.db( DS="set.clean")
+        set = bio.snowcrab.db( DS="set.clean")
         set$sid = paste(set$trip, set$set, sep="~")
      
-        det = snowcrab.db( DS="det.initial")
+        det = bio.snowcrab.db( DS="det.initial")
         det$sid = paste(det$trip, det$set, sep="~")
 
         hvar="cw"
@@ -45,7 +45,7 @@
       
       }
       
-      set = snowcrab.db( DS="set.clean")
+      set = bio.snowcrab.db( DS="set.clean")
       set$sid = paste(set$trip, set$set, sep="~")
       for (f in  outfile) load(f)
 

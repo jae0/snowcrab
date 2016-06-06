@@ -1,6 +1,6 @@
 
   get.time.series.groundfish.survey.temperature = function( from.file=F, outfile=file.path(p$annual.results, "timeseries", "survey","groundfish.t.rdata") ) {
-    if (is.null(outfile)) outfile = file.path( project.datadirectory("snowcrab"), "R", "ts.rdata" )
+    if (is.null(outfile)) outfile = file.path( project.datadirectory("bio.snowcrab"), "R", "ts.rdata" )
 
     
     if( from.file) {

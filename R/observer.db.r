@@ -18,7 +18,7 @@
 				.libPaths("D://R//library-local")
 			}
 
-			fn.root =  file.path( project.datadirectory("snowcrab"), "data", "observer", "datadump" )
+			fn.root =  file.path( project.datadirectory("bio.snowcrab"), "data", "observer", "datadump" )
 			dir.create( fn.root, recursive = TRUE, showWarnings = FALSE )
 
 			if (DS=="odbc") {
@@ -40,7 +40,7 @@
 
       print ("Run on windows sessions as the linux odbc session is not happy")
       require(RODBC)
-      con=odbcConnect(oracle.snowcrab.server , uid=oracle.snowcrab.user, pwd=oracle.snowcrab.password, believeNRows=F)
+      con=odbcConnect(oracle.bio.snowcrab.server , uid=oracle.bio.snowcrab.user, pwd=oracle.bio.snowcrab.password, believeNRows=F)
 
 			for ( YR in yrs ) {
 				fny = file.path( fn.root, paste( YR,"rdata", sep="."))
@@ -67,18 +67,18 @@
     # ---------------------
 
     if (DS %in% c("odb", "odb.redo")) {
-      fn = file.path( project.datadirectory("snowcrab"), "data", "observer", "odb.rdata" )
+      fn = file.path( project.datadirectory("bio.snowcrab"), "data", "observer", "odb.rdata" )
       if (DS=="odb") {
         load( fn )
         return(odb)
       }
 
-      mod1 = allometry.snowcrab ( "cw.mass", "male")
-      mod2 = allometry.snowcrab ( "chela.mass", "male")
-      mod3 = allometry.snowcrab ( "cw.chela.mat", "male")
+      mod1 = allometry.bio.snowcrab ( "cw.mass", "male")
+      mod2 = allometry.bio.snowcrab ( "chela.mass", "male")
+      mod3 = allometry.bio.snowcrab ( "cw.chela.mat", "male")
 
       odb = observer.db( DS="odbc", yrs=1996:p$current.assessment.year )
-      names(odb) = rename.snowcrab.variables( names(odb) )
+      names(odb) = rename.bio.snowcrab.variables( names(odb) )
 
       i.m = which( odb$sex==1)
       i.f = which( odb$sex==2)

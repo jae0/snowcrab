@@ -1,13 +1,13 @@
 
-parameter.list.snowcrab = function ( p=NULL, set="default" ) {
+parameter.list.bio.snowcrab = function ( p=NULL, set="default" ) {
 
   if (is.null( p) ) p = list()
 
   if ( set =="default" ) {
 
-    if (!exists("annual.results", p ) ) p$annual.results = file.path( project.datadirectory("snowcrab"), "assessments", p$current.assessment.year ) # output location for year-specific results
+    if (!exists("annual.results", p ) ) p$annual.results = file.path( project.datadirectory("bio.snowcrab"), "assessments", p$current.assessment.year ) # output location for year-specific results
 
-    if (!exists("spatial.domain", p ) ) p$spatial.domain = "snowcrab"
+    if (!exists("spatial.domain", p ) ) p$spatial.domain = "bio.snowcrab"
 
     if (!exists("ext2", p ) ) p$ext2 = extent(matrix(c(-66.4, 42.2, -57.2, 47.4), nrow=2, ncol=2)) #MG extent of mapping frame
     if (!exists("extUTM", p ) ) p$extUTM = extent(matrix(c(219287.2, 4677581, 937584, 5265946), nrow=2, ncol=2)) #MG UTM extent of mapping frame

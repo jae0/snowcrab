@@ -1,7 +1,7 @@
 
   # tests using geoR and geoRglm
 
-p = snowcrab::initialise.local.environment( libs=c("geoR", "geoRglm"))
+p = bio.snowcrab::initialise.local.environment( libs=c("geoR", "geoRglm"))
 
 	set = snowcrab.db("set")
   ll = set[ which(set$yr==2000), c("plon","plat","R0.mass")]

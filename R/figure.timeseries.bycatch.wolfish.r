@@ -21,7 +21,7 @@ figure.timeseries.bycatch.wolfish = function(outdir, all.areas = T) {
   #species = c(10, 30, 201, 50, 2521, 2511, 202, 204, 2211)
   
   td =  get.time.series (
-    from.file = T, outfile = file.path(project.datadirectory("snowcrab"), "R", "tsbycatch.rdata")
+    from.file = T, outfile = file.path(project.datadirectory("bio.snowcrab"), "R", "tsbycatch.rdata")
   )
   td = td[which(td$variable == v) ,]
   td = td[order(td$region, td$year) ,]

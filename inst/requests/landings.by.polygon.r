@@ -1,6 +1,6 @@
 #area of fishery foot print represented in the emera line
 
-p = snowcrab::initialise.local.environment()
+p = bio.snowcrab::initialise.local.environment()
 
 a = logbook.db('logbook')
 a = a[which(a$cfa0=='cfanorth'),]

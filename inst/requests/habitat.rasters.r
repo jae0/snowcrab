@@ -1,8 +1,8 @@
 
 
-p = snowcrab::initialise.local.environment()
+p = bio.snowcrab::initialise.local.environment()
 
-basedir = file.path( project.directory("snowcrab"), "R", "gam" )
+basedir = file.path( project.directory("bio.snowcrab"), "R", "gam" )
 
 loc.map = file.path( basedir, "maps" )
 loc.sol = file.path( basedir, "predictions" )
@@ -22,6 +22,6 @@ require(gstat)
 mod = gstat(id = 'means', formula = z~1,locations= ~x+y,data=d, nmax = 10, set=list(idp= 0.5),maxdist=0.01)
 x = interpolate(r, mod)
 
-writeRaster(x, filename=paste("/home/adam/bio/snowcrab/R/Requests/CommercialMaleHabitat",yr,".tif",sep=""), format="GTiff", overwrite=TRUE)
+writeRaster(x, filename=paste("/home/adam/bio/bio.snowcrab/R/Requests/CommercialMaleHabitat",yr,".tif",sep=""), format="GTiff", overwrite=TRUE)
 return('Done')
 }

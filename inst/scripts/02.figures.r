@@ -1,7 +1,7 @@
 
-  # Figures obtained after completion of data assimilation and processing up to the end of "1.snowcrab.r"
+  # Figures obtained after completion of data assimilation and processing up to the end of "1.bio.snowcrab.r"
 
-  p = snowcrab::initialise.local.environment( current.assessment.year=2016)
+  p = bio.bio.snowcrab::initialise.local.environment( current.assessment.year=2016)
 
 
    # Think this is fixed now .. ?
@@ -39,7 +39,7 @@
   # ------------------------------------------
   # Timeseries of all survey variables
     #MG fix this one
-    figure.timeseries.survey(p, areas=c("cfanorth", "cfasouth", "cfa4x"), from.file=F ) # goes to file.path( project.datadirectory("snowcrab"), "R", "timeseries", "survey"
+    figure.timeseries.survey(p, areas=c("cfanorth", "cfasouth", "cfa4x"), from.file=F ) # goes to file.path( project.datadirectory("bio.snowcrab"), "R", "timeseries", "survey"
 
   #-----------------------------------------------
   # Time series of survey temperature
@@ -108,20 +108,20 @@
   # this is the basemap from map.r which is then post-labelled in sodipodi
     p$outdir = file.path(p$annual.results,"figures")
     p$outfile.basename = file.path(p$outdir, "map.CFAs")
-    # p$basemap = file.path( project.datadirectory("snowcrab"), "R", p$basemap)
+    # p$basemap = file.path( project.datadirectory("bio.snowcrab"), "R", p$basemap)
     map.basemap.with.cfa.lines( p, conversions=c("ps2png")  )
 
   # ------------------------------------------
   # Map:  Interpolated mean/geometric mean of various variables in the set data table
   p$do.parallel=F
-    map.set.information( p, outdir=file.path( project.datadirectory("snowcrab"), "R", "maps", "survey" )  )
-    map.set.information.diff( p, outdir=file.path( project.datadirectory("snowcrab"), "R", "maps", "survey.diff" )  )
+    map.set.information( p, outdir=file.path( project.datadirectory("bio.snowcrab"), "R", "maps", "survey" )  )
+    map.set.information.diff( p, outdir=file.path( project.datadirectory("bio.snowcrab"), "R", "maps", "survey.diff" )  )
 
 
   # ------------------------------------------
   # Map: Numerical density of by-catch species
    p$do.parallel=F
-    map.cat.information( p, outdir=file.path( project.datadirectory("snowcrab"), "R", "maps", "species" ) )
+    map.cat.information( p, outdir=file.path( project.datadirectory("bio.snowcrab"), "R", "maps", "species" ) )
 
   # ------------------------------------------
   p=initialise.local.environment()
@@ -136,26 +136,26 @@
   # ------------------------------------------
   # Map: Survey locations
 
-    map.survey.locations( p, basedir=file.path(project.datadirectory("snowcrab"), "R", "maps", "survey.locations"),  newyear=F, map.method="lattice"  )
-    map.survey.locations( p, basedir=file.path(project.datadirectory("snowcrab"), "R", "maps", "survey.locations"),  newyear=F, map.method="googleearth"  )
+    map.survey.locations( p, basedir=file.path(project.datadirectory("bio.snowcrab"), "R", "maps", "survey.locations"),  newyear=F, map.method="lattice"  )
+    map.survey.locations( p, basedir=file.path(project.datadirectory("bio.snowcrab"), "R", "maps", "survey.locations"),  newyear=F, map.method="googleearth"  )
 
   # ------------------------------------------
   # Map: Observer locations
-    map.observer.locations( p, basedir=file.path(project.datadirectory("snowcrab"), "R", "maps","observer.locations" ), newyear=F , map.method="lattice"  )
+    map.observer.locations( p, basedir=file.path(project.datadirectory("bio.snowcrab"), "R", "maps","observer.locations" ), newyear=F , map.method="lattice"  )
 
   # ------------------------------------------
   # Map: Logbook recorded locations
-    map.logbook.locations( p, basedir=file.path(project.datadirectory("snowcrab"), "R", "maps","logbook.locations" ), newyear=F , map.method="lattice"  )
+    map.logbook.locations( p, basedir=file.path(project.datadirectory("bio.snowcrab"), "R", "maps","logbook.locations" ), newyear=F , map.method="lattice"  )
 
   # ------------------------------------------
   # Map: Crab movement from mark-recapture data
     #MG I think Brent is primarily mapping this stuff now. Not sure the data has been updated in a while
-    map.movement( p, outdir=file.path(project.datadirectory("snowcrab"), "R", "maps", "mark.recapture") )
+    map.movement( p, outdir=file.path(project.datadirectory("bio.snowcrab"), "R", "maps", "mark.recapture") )
 
   # ------------------------------------------
   # Map: Spatial representation of maturity patterns of snow crab
     #MG Not sure we use these maps either, check with Adam and Jae
-    map.maturity( p, outdir=file.path(project.datadirectory("snowcrab"), "R", "maps", "maturity"), newyear=T )
+    map.maturity( p, outdir=file.path(project.datadirectory("bio.snowcrab"), "R", "maps", "maturity"), newyear=T )
 
   ##########################################################################
   ###############################  Retired figures #########################
@@ -182,15 +182,15 @@
 
   # ------------------------------------------
   # Timeseries: Larval brachyura from the SSIP data
-    figure.timeseries.larvae( outdir=file.path(project.datadirectory("snowcrab"), "R", "timeseries", "larvae") )
+    figure.timeseries.larvae( outdir=file.path(project.datadirectory("bio.snowcrab"), "R", "timeseries", "larvae") )
 
   # ------------------------------------------
   # Growth as a a function of instar for Scotian Shelf snow crab
-    figure.growth.instar( outdir=file.path(project.datadirectory("snowcrab"), "R", "growth") )
+    figure.growth.instar( outdir=file.path(project.datadirectory("bio.snowcrab"), "R", "growth") )
 
 
   # ------------------------------------------
   # Map: Larval distributions from the Scotian Shelf Ichtyoplankton Program data
-    map.larvae( p, outdir=file.path(project.datadirectory("snowcrab"), "R", "maps", "larvae"), conversions=conversions, libs=p$libs )
+    map.larvae( p, outdir=file.path(project.datadirectory("bio.snowcrab"), "R", "maps", "larvae"), conversions=conversions, libs=p$libs )
 
 

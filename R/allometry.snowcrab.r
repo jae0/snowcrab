@@ -1,18 +1,18 @@
 
-  allometry.snowcrab = function( id, sex, redo=F ) {
+  allometry.bio.snowcrab = function( id, sex, redo=F ) {
 
     male = 0
     female = 1
 
     M = NULL
-    fn = file.path( project.datadirectory("snowcrab"), "R", paste( sex, id, "rdata", sep=".") )
+    fn = file.path( project.datadirectory("bio.snowcrab"), "R", paste( sex, id, "rdata", sep=".") )
 
     if (!redo)  {
       if (file.exists(fn)) load(fn)
       return(M)
     }
 
-    det = snowcrab.db( DS="det.initial" )
+    det = bio.snowcrab.db( DS="det.initial" )
 
     if (sex == "male" ) {
       det = det[ which( det$sex==male) , ]

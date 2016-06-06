@@ -1,5 +1,5 @@
 
-p = snowcrab::initialise.local.environment( current.assessment.year=2016)
+p = bio.bio.snowcrab::initialise.local.environment( current.assessment.year=2016)
 
   require(chron)
 
@@ -10,7 +10,7 @@ p = snowcrab::initialise.local.environment( current.assessment.year=2016)
   # not all are fully refreshed automatically .. they are just place holders for now
 
       groundfish = indicators.db( db="groundfish.timeseries.redo" )
-      snowcrab = indicators.db( db="snowcrab.timeseries.redo")
+      bio.snowcrab = indicators.db( db="bio.snowcrab.timeseries.redo")
       climate = indicators.db (db="climate.redo" )
       shrimp = indicators.db( db="shrimp.timeseries.redo")
 
@@ -70,9 +70,9 @@ p = snowcrab::initialise.local.environment( current.assessment.year=2016)
   Y = pca.analyse.data(d, t0, t1, fname=file.path(project.datadirectory("indicators"), "keyfactors" ) )
 
 
-  sub = indic$data[, c("T_bottom_misaine", "SST_halifax", "ice_coverage.km.2", "Gulf.Stream.front.Ref.62lon", "T_sable_annual", "snowcrab.bottom.habitat.area", "snowcrab.kriged.R0.mass", "snowcrab.fishery.landings", "snowcrab.fishery.cpue", "groundfish.stratified.mean.temp" )]
+  sub = indic$data[, c("T_bottom_misaine", "SST_halifax", "ice_coverage.km.2", "Gulf.Stream.front.Ref.62lon", "T_sable_annual", "bio.snowcrab.bottom.habitat.area", "bio.snowcrab.kriged.R0.mass", "bio.snowcrab.fishery.landings", "bio.snowcrab.fishery.cpue", "groundfish.stratified.mean.temp" )]
 
-  write.table(sub, file=file.path( project.datadirectory( "snowcrab"), "research", "environ.management", "data.csv"), sep=";")
+  write.table(sub, file=file.path( project.datadirectory( "bio.snowcrab"), "research", "environ.management", "data.csv"), sep=";")
 
 
 inn = names (indic$data)
@@ -102,9 +102,9 @@ for (i in .keyfactors) {
   .fishery = c(indic$landedvalue.NS, indic$landedvalue.totals.NS, indic$landings.NS, indic$landings.totals.NS )
   Y = pca.analyse.data( indic$data, .fishery, t0=1970, t1, fname=file.path(project.datadirectory("indicators"), "fishery.overall" ))
 
-  # snowcrab
-  .snowcrab = c(indic$snowcrab, "groundfish.stratified.mean.totwgt.snowcrab", "groundfish.stratified.mean.totno.snowcrab" )
-  Y = pca.analyse.data(indic$data, .snowcrab, t0, t1, fname=file.path(project.datadirectory("indicators"), "snowcrab" ))
+  # bio.snowcrab
+  .bio.snowcrab = c(indic$bio.snowcrab, "groundfish.stratified.mean.totwgt.bio.snowcrab", "groundfish.stratified.mean.totno.bio.snowcrab" )
+  Y = pca.analyse.data(indic$data, .bio.snowcrab, t0, t1, fname=file.path(project.datadirectory("indicators"), "bio.snowcrab" ))
 
   # climate
   .climate = c( indic$climate )

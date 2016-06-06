@@ -3,7 +3,7 @@
   logbook.db = function( DS, prorate=T, p=NULL, yrs=NULL ) {
     		
 		if (DS %in% c("odbc.logbook", "odbc.logbook.redo")) {
-			fn.root =  file.path( project.datadirectory("snowcrab"), "data", "logbook", "datadump" )
+			fn.root =  file.path( project.datadirectory("bio.snowcrab"), "data", "logbook", "datadump" )
 			dir.create( fn.root, recursive = TRUE, showWarnings = FALSE )
 				
 			if (DS=="odbc.logbook") {
@@ -19,7 +19,7 @@
 			}
          
 			require(RODBC)
-      con=odbcConnect(oracle.snowcrab.server , uid=oracle.snowcrab.user, pwd=oracle.snowcrab.password, believeNRows=F)
+      con=odbcConnect(oracle.bio.snowcrab.server , uid=oracle.bio.snowcrab.user, pwd=oracle.bio.snowcrab.password, believeNRows=F)
 
 			for ( YR in yrs ) {
 				fny = file.path( fn.root, paste( YR,"rdata", sep="."))
@@ -41,7 +41,7 @@
 
     if (DS %in% c("odbc.licence.redo", "odbc.licence" ) ) {
                
-      filename.licence = file.path( project.datadirectory("snowcrab"), "data", "logbook", "lic.datadump.rdata" )
+      filename.licence = file.path( project.datadirectory("bio.snowcrab"), "data", "logbook", "lic.datadump.rdata" )
 
       if (DS=="odbc.licence") {
         load(filename.licence)
@@ -49,7 +49,7 @@
       }
 
       require(RODBC)
-      con=odbcConnect(oracle.snowcrab.server , uid=oracle.snowcrab.user, pwd=oracle.snowcrab.password, believeNRows=F)
+      con=odbcConnect(oracle.bio.snowcrab.server , uid=oracle.bio.snowcrab.user, pwd=oracle.bio.snowcrab.password, believeNRows=F)
       
       lic = sqlQuery(con, "select * from marfissci.licence_areas")
       save(lic, file=filename.licence, compress=T) 
@@ -59,7 +59,7 @@
 
     if (DS %in% c("odbc.areas.redo", "odbc.areas" ) ) {
                
-      filename.areas = file.path( project.datadirectory("snowcrab"), "data", "logbook", "areas.datadump.rdata" )
+      filename.areas = file.path( project.datadirectory("bio.snowcrab"), "data", "logbook", "areas.datadump.rdata" )
 
       if (DS=="odbc.areas") {
         load(filename.areas)
@@ -67,7 +67,7 @@
       }
 
       require(RODBC)
-      con=odbcConnect(oracle.snowcrab.server , uid=oracle.snowcrab.user, pwd=oracle.snowcrab.password, believeNRows=F)
+      con=odbcConnect(oracle.bio.snowcrab.server , uid=oracle.bio.snowcrab.user, pwd=oracle.bio.snowcrab.password, believeNRows=F)
       areas = sqlQuery(con, "select * from marfissci.areas")
       save(areas, file=filename.areas, compress=T) 
       
@@ -82,7 +82,7 @@
     
       # exclude data that have positions that are incorrect
 
-      filename = file.path( project.datadirectory("snowcrab"), "data", "logbook", "logbook.filtered.positions.rdata" )
+      filename = file.path( project.datadirectory("bio.snowcrab"), "data", "logbook", "logbook.filtered.positions.rdata" )
 
       if (DS=="logbook.filtered.positions") {
         load( filename )
@@ -123,7 +123,7 @@
 
     if (DS %in% c("logbook", "logbook.redo")) {
 
-      filename = file.path( project.datadirectory("snowcrab"), "data", "logbook", "logbook.rdata" )
+      filename = file.path( project.datadirectory("bio.snowcrab"), "data", "logbook", "logbook.rdata" )
 
       if (DS=="logbook") {
         load( filename )
@@ -144,7 +144,7 @@
       x = logbook.db( DS="odbc.logbook", yrs=1996:p$current.assessment.year )
  
       names( x ) = tolower( names( x ) )
-      names( x ) = rename.snowcrab.variables(names( x ))
+      names( x ) = rename.bio.snowcrab.variables(names( x ))
       to.char = c( "cfa", "licence_id_old", "licence", "date.fished", "date.landed",
                    "captain", "vessel", "doc_id", "doc_type")
       for (i in to.char) x[,i] = as.character(x[,i])
@@ -230,8 +230,8 @@
 
     if (DS %in% c( "fishing.grounds.annual", "fishing.grounds.global", "fishing.grounds.redo")) {
       
-      fn1 = file.path(  project.datadirectory("snowcrab"), "data", "logbook", "fishing.grounds.global.rdata")
-      fn2 = file.path(  project.datadirectory("snowcrab"), "data", "logbook", "fishing.grounds.annual.rdata")
+      fn1 = file.path(  project.datadirectory("bio.snowcrab"), "data", "logbook", "fishing.grounds.global.rdata")
+      fn2 = file.path(  project.datadirectory("bio.snowcrab"), "data", "logbook", "fishing.grounds.annual.rdata")
       
       if (DS=="fishing.grounds.global") {
         load( fn1 )
@@ -304,7 +304,7 @@
 
     if (DS %in% c("fisheries.historical", "fisheries.historical.redo" )) {
 
-      fn = file.path( project.datadirectory("snowcrab"), "data", "logbook", "logbook.historical.rdata" ) 
+      fn = file.path( project.datadirectory("bio.snowcrab"), "data", "logbook", "logbook.historical.rdata" ) 
 
       if (DS=="fisheries.historical") {
         logs = NULL
@@ -312,7 +312,7 @@
         return( logs )
       }
     
-      historicaldataloc = file.path( project.datadirectory("snowcrab"), "data", "logbook", "archive") 
+      historicaldataloc = file.path( project.datadirectory("bio.snowcrab"), "data", "logbook", "archive") 
       files = c("logbooks1996.csv", "logbooks1997.csv", "logbooks1998.csv", "logbooks1999.csv", "logbooks2000.csv", "logbooks2001.csv")
       out = NULL
       for (g in files) {
@@ -371,7 +371,7 @@
 
     if (DS %in% c("fisheries.complete", "fisheries.complete.redo" )) {
 
-      fn = file.path( project.datadirectory("snowcrab"), "data", "logbook", "logbook.complete.rdata" ) 
+      fn = file.path( project.datadirectory("bio.snowcrab"), "data", "logbook", "logbook.complete.rdata" ) 
 
       if (DS=="fisheries.complete") {
         load( fn)
@@ -417,7 +417,7 @@
   
     if (DS %in% c("logbook.gridded",  "logbook.gridded.redo" ) ) {
       
-      loc = file.path( project.datadirectory("snowcrab"), "data", "logbook", "gridded.fishery.data" )
+      loc = file.path( project.datadirectory("bio.snowcrab"), "data", "logbook", "gridded.fishery.data" )
       dir.create( path=loc, recursive=T, showWarnings=F)
 
       if (DS == "logbook.gridded") {

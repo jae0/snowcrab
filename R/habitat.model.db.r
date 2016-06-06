@@ -8,7 +8,7 @@
 
     if (DS %in% c("large.male.auxillary.data", "large.male.auxillary.data.redo") ) {
 
-      outdir = project.datadirectory("snowcrab", "R"  )
+      outdir = project.datadirectory("bio.snowcrab", "R"  )
       dir.create(path=outdir, recursive=T, showWarnings=F)
       fn = file.path( outdir, paste("habitat.model", "large_male_auxillary_data", "basedata", "rdata", sep=".") )
 
@@ -19,7 +19,7 @@
       }
 
       # add groundfish data
-      gf = snowcrab.external.db (p=p, DS="set.snowcrab.in.groundfish.survey", vname="R0.mass", year.current=p$current.assessment.year )  ## right now, fixed only to R0.mass ... TO DO make more variable
+      gf = bio.snowcrab.external.db (p=p, DS="set.bio.snowcrab.in.groundfish.survey", vname="R0.mass", year.current=p$current.assessment.year )  ## right now, fixed only to R0.mass ... TO DO make more variable
 
       # absense prior to 1999 is meaningless due to inconsistent recording
       ii = which( gf$n==0 & gf$yr<=1998)
@@ -90,7 +90,7 @@
 
       tokeep=  c( "Y", "yr",  "julian", "dyear", "dt.annual", "dt.seasonal", "plon", "plat", "wt", "wgts",  v, p$auxilliary.data )
 
-      set = snowcrab.db( DS="set.logbook" )
+      set = bio.snowcrab.db( DS="set.logbook" )
       if (exists("total.landings.scaled", set) ) {
         set$total.landings.scaled = scale( set$total.landings, center=T, scale=T )
       }
@@ -148,8 +148,8 @@
 
     if ( DS %in% c("habitat.redo", "habitat" ) ) {
 
-      outdir =  project.datadirectory("snowcrab", "R", "gam", "models", "habitat" )
-      # outdir =  project.datadirectory("snowcrab", "R", "gam", "models", "test" )
+      outdir =  project.datadirectory("bio.snowcrab", "R", "gam", "models", "habitat" )
+      # outdir =  project.datadirectory("bio.snowcrab", "R", "gam", "models", "test" )
 
       dir.create(path=outdir, recursive=T, showWarnings=F)
 
@@ -271,7 +271,7 @@
 
     if ( DS %in% c("abundance.redo", "abundance" ) ) {
 
-      outdir = file.path( project.datadirectory("snowcrab"), "R", "gam", "models", "abundance"  )
+      outdir = file.path( project.datadirectory("bio.snowcrab"), "R", "gam", "models", "abundance"  )
       dir.create(path=outdir, recursive=T, showWarnings=F)
 
       if( DS=="abundance") {
@@ -292,7 +292,7 @@
         print( p$runs[iip,])
         fn = file.path( outdir, paste("abundance", v, "rdata", sep=".") )
         set = habitat.model.db( DS="basedata", p=p, v=v )
-        # set = snowcrab.db( DS="set.logbook" )
+        # set = bio.snowcrab.db( DS="set.logbook" )
         set$Y = set[, v]  # override -- Y is P/A
 
         yrsw = c( p$years.to.model)

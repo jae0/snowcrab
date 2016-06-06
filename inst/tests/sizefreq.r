@@ -13,7 +13,7 @@
   rjags::load.module("glm")
 
   bioLibrary( "bayesian" )
-  p = snowcrab::initialise.local.environment()
+  p = bio.snowcrab::initialise.local.environment()
 
 
   data( fish, package="bayesmix")

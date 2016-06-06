@@ -3,7 +3,7 @@
 # Michelle Greenlaw
 
 
-p = snowcrab::initialise.local.environment()
+p = bio.snowcrab::initialise.local.environment()
 
 set = snowcrab.db( DS ="set.complete", p=p )
 head(set)

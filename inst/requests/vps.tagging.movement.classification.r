@@ -1,8 +1,8 @@
 #Emera Tagging
 
-p = snowcrab::initialise.local.environment()
+p = bio.bio.snowcrab::initialise.local.environment()
 
-dn = file.path(project.datadirectory('snowcrab'),'data','tagging','Emera')
+dn = file.path(project.datadirectory('bio.snowcrab'),'data','tagging','Emera')
 
 if(redo.base.data) {}
         a = dir(dn)

@@ -1,7 +1,7 @@
 
   get.marked = function(DS="file" ) { 
     
-    tags.datadir= file.path( project.datadirectory("snowcrab"), "data", "tagging" )
+    tags.datadir= file.path( project.datadirectory("bio.snowcrab"), "data", "tagging" )
     marked.file="tags.1996_2001.csv"
     marked = NULL
     

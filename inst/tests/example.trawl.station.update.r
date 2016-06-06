@@ -1,9 +1,9 @@
 
   # used to identify points to modify and obtain coords for new points
 
-  p = snowcrab::initialise.local.environment()
+  p = bio.bio.snowcrab::initialise.local.environment()
 
-  set = snowcrab.db("set")
+  set = bio.snowcrab.db("set")
   set = set[ which(set$yr==2007), ]
   set = set[, c("station", "lon", "lat")]
   set = set[ is.finite( rowSums(set) ) ,]
@@ -37,8 +37,8 @@
   names(l) = c("station", "lon.2005", "lat.2005", "lon.2006", "lat.2006")
   l = as.data.frame(l)
 
-  write.table(l, file=file.path( project.datadirectory("snowcrab"), "R", "trawl.stations.toadd.txt") ,sep=";")
-  write.table(set[todrop,c("station", "lon", "lat")], file=file.path( project.datadirectory("snowcrab"), "R", "trawl.stations.toremove.txt"), sep=";")
+  write.table(l, file=file.path( project.datadirectory("bio.snowcrab"), "R", "trawl.stations.toadd.txt") ,sep=";")
+  write.table(set[todrop,c("station", "lon", "lat")], file=file.path( project.datadirectory("bio.snowcrab"), "R", "trawl.stations.toremove.txt"), sep=";")
 
 
 

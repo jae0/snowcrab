@@ -1,14 +1,14 @@
 
   tagging.example.usage = function() {
 
-    bioLibrary( "snowcrab" )
+    bioLibrary( "bio.snowcrab" )
 
     marked.file = "tags.1996_2001.csv"
     recaps.file = "recaptures.csv"
 
     recaps = get.recaps () #  alternate:(DS="raw")
     marked = get.marked () #  alternate:(DS="raw")
-    marked2 =  read.table( file.path(project.datadirectory("snowcrab"), "data", "tagging", "tags_summary1993_2005.csv"), sep=";", header=T, as.is=T)
+    marked2 =  read.table( file.path(project.datadirectory("bio.snowcrab"), "data", "tagging", "tags_summary1993_2005.csv"), sep=";", header=T, as.is=T)
 
     move = get.move () #  alternate:(DS="redo")
 

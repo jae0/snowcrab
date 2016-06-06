@@ -1,5 +1,5 @@
   make.timeseries.data = function( areas=NULL, p=NULL, outfile=NULL, reduced.stations=F,vars=NULL ) {
-    set = snowcrab.db( DS ="set.complete", p=p )
+    set = bio.snowcrab.db( DS ="set.complete", p=p )
     #set2015 = set[which(set$yr == 2015),]
     #print (head(set2015))
    
@@ -13,5 +13,5 @@
     print("Variables Created")
     print(variables)
     tsdata =  get.time.series (set, areas, variables, from.file=F, outfile= outfile, reduced.stations=reduced.stations)  # this returns 1.96SE as "se"
-    return( paste("Saved: ts.rdata in",  file.path(project.datadirectory("snowcrab"), "R") ) )
+    return( paste("Saved: ts.rdata in",  file.path(project.datadirectory("bio.snowcrab"), "R") ) )
   }

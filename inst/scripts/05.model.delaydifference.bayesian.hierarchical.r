@@ -1,5 +1,5 @@
 
-p = snowcrab::initialise.local.environment( current.assessment.year=2016)
+p = bio.bio.snowcrab::initialise.local.environment( current.assessment.year=2016)
 
   require(rjags)
   rjags::load.module("dic")
@@ -54,7 +54,7 @@ p = snowcrab::initialise.local.environment( current.assessment.year=2016)
     coef(m)
     tomonitor = c("FB","K", "REC", "Znat", "Ztot", "q.biomass", "qREC", "Catch", "Cr" )
     dic.samples(m, n.iter=n.iter ) # pDIC
-    fnres = file.path( project.datadirectory("snowcrab"), "R", "delaydifference.mcmc.simple.rdata" )
+    fnres = file.path( project.datadirectory("bio.snowcrab"), "R", "delaydifference.mcmc.simple.rdata" )
 
   }
 
@@ -65,7 +65,7 @@ p = snowcrab::initialise.local.environment( current.assessment.year=2016)
     coef(m)
     tomonitor =  c("FB","K", "REC", "Znat", "Ztot", "q.biomass", "qREC", "Catch", "Cr" )
     dic.samples(m, n.iter=n.iter ) # pDIC
-    fnres = file.path( project.datadirectory("snowcrab"), "R", "delaydifference.mcmc.simple.illegal.rdata" )
+    fnres = file.path( project.datadirectory("bio.snowcrab"), "R", "delaydifference.mcmc.simple.illegal.rdata" )
 
   }
 

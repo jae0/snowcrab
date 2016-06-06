@@ -1,5 +1,5 @@
 
-p = snowcrab::initialise.local.environment( current.assessment.year=2016)
+p = bio.snowcrab::initialise.local.environment( current.assessment.year=2016)
 
   # mapping of fisher stats
   # loc = file.path( project.datadirectory("shrimp"), "maps" ) # output directory <---- change this to a local

@@ -9,8 +9,8 @@
     female = 1
     sex.unknown = 2
 
-    fn.root =  file.path( project.datadirectory("snowcrab"), "markov"  )
-    fn =  file.path( project.datadirectory("snowcrab"), "markov", paste( p$senario, "rdata", sep=".")  )
+    fn.root =  file.path( project.datadirectory("bio.snowcrab"), "markov"  )
+    fn =  file.path( project.datadirectory("bio.snowcrab"), "markov", paste( p$senario, "rdata", sep=".")  )
 
     dir.create( fn.root, recursive=T, showWarnings=F )
 

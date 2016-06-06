@@ -1,13 +1,13 @@
 
   figure.timeseries.larvae = function( outdir ) {
-    larvae = read.table(file=file.path(  project.datadirectory("snowcrab"), "data", "larvae", "ts.brachyura.csv"),  sep = "\t")
+    larvae = read.table(file=file.path(  project.datadirectory("bio.snowcrab"), "data", "larvae", "ts.brachyura.csv"),  sep = "\t")
     colnames(larvae) = c("yr", "mean.n.m3", "sdev", "n")
     larvae$se = larvae$sdev / sqrt(larvae$n-1)
 
     ts.plotandsave( x=larvae$yr, y=larvae$mean.n.m3, lb=larvae$mean.n.m3-larvae$se, ub=larvae$mean.n.m3+larvae$se,
       w=larvae$n, outdir=outdir, action="save", title="Brachyura", smooth=0.75 ) 
 
-    l.monthly = read.table(file=file.path(  project.datadirectory("snowcrab"), "data", "larvae", "ts.brachyura.monthly.csv"),  sep = "\t")
+    l.monthly = read.table(file=file.path(  project.datadirectory("bio.snowcrab"), "data", "larvae", "ts.brachyura.monthly.csv"),  sep = "\t")
     colnames(l.monthly) = c("month", "mean.n.m3", "n")
 
     x = l.monthly$month

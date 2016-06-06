@@ -1,7 +1,7 @@
 
   map.larval.distributions = function(p, outdir, conversions, libs ) {
 
-    xyz = read.table(file=file.path( project.datadirectory("snowcrab"), "data", "larvae", "brachyura.xyz"),  sep = "\t")
+    xyz = read.table(file=file.path( project.datadirectory("bio.snowcrab"), "data", "larvae", "brachyura.xyz"),  sep = "\t")
     colnames(xyz) = c("lon", "lat", "n.m3")
     xyz$n.m3 = log(xyz$n.m3)
     xyz$yr = 2000

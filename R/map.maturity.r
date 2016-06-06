@@ -1,7 +1,7 @@
 
   map.maturity = function(p, outdir ) {
 
-    load(file.path( project.datadirectory("snowcrab"), "R", "maturity.rdata"))
+    load(file.path( project.datadirectory("bio.snowcrab"), "R", "maturity.rdata"))
 
     p$tension = "-T.4"  # 0.35+ for steep; 0.25 for smooth
     p$maskres = "-S16k"

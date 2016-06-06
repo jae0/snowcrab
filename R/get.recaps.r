@@ -2,7 +2,7 @@
  
   get.recaps = function(DS="file") {
     
-    tags.datadir= file.path( project.datadirectory("snowcrab"), "data", "tagging" )
+    tags.datadir= file.path( project.datadirectory("bio.snowcrab"), "data", "tagging" )
 
     recaps.file="recaptures.csv"
     recaps = NULL
