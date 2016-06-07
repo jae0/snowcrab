@@ -1,4 +1,4 @@
-Package: snowcrab
+Package: bio.snowcrab
 Title: Snow crab assessment suite for bio and associated projects. 
 Version: 0.1
 Authors@R: c(
@@ -42,7 +42,7 @@ Imports:
   bio.polygons,
   bio.utilities 
 Suggests:
-  groundfish,
+  bio.groundfish,
   netmensuration,
   bio.habitat,
   bio.habitatsuitability,
@@ -51,6 +51,6 @@ Suggests:
   bio.temperature
 License: MIT
 LazyData: true
-URL: https://github.com/jae0/snowcrab/
+URL: https://github.com/jae0/bio.snowcrab/
 
 
