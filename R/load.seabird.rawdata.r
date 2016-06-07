@@ -43,17 +43,12 @@
 
     #add Dt to seabird times
     colnames(seabird) = c( "temperature", "pressure", "mdate", "mtime")
-    date.format = seabirdDate( header=header, outvalue="format"  )
 
     seabird$chron = chron(trimWhiteSpace(seabird$mdate),trimWhiteSpace(seabird$mtime),format = c("d mon y",times = "h:m:s"),out.format=dateformat.snow)
     seabird$chron = seabird$chron +dt
 
     numerics = c("temperature", "pressure")
     seabird = factor2number(seabird, numerics)
-
-    # obtain date format from the seabird header
-	  #date.format = seabirdDate( header=header, outvalue="format"  )
-    #seabird$chron = chron( dates.=seabird$mdate, times.=seabird$mtime, format=date.format, out.format=dateformat.snow )
 
     # check time first
 
