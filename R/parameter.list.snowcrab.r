@@ -1,5 +1,5 @@
 
-parameter.list.bio.snowcrab = function ( p=NULL, set="default" ) {
+parameter.list.snowcrab = function ( p=NULL, set="default" ) {
 
   if (is.null( p) ) p = list()
 
