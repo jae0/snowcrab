@@ -21,7 +21,7 @@ initialise.local.environment = function( current.assessment.year=NULL, libs=NULL
 
   p$libs = unique( c( p$libs, bioLibrary( "bio.snowcrab", "bio.spacetime", "bio.utilities",
       "bio.polygons", "bio.groundfish", "netmensuration", "bio.coastline",
-      "bio.substrate", "bio.temperature", "bio.taxonomy", "bio.habitat", "bio.habitatsuitability",
+      "bio.substrate", "bio.temperature", "bio.taxonomy", "bio.habitat", "bio.surveys",
       "bio.bathymetry" )) )
 
   if (!is.null(libs)) p$libs = unique( c(p$libs, RLibrary(libs) ) )
