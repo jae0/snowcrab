@@ -1,0 +1,60 @@
+\documentclass[10pt,letter,twocolumn]{article}
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\title{Ecomod Abbreviations and Sources}
+\begin{document}
+\maketitle
+\begin{description}
+	\item[z] observed depth
+	\item[zsd] observed sd of depth
+	\item[t] observed temperature
+	\item[tsd]  sd of temperature
+	\item[t0] touchdown time
+	\item[t1] lift off time
+	\item[dt] trawl time
+	\item[distance] trawl distance
+	\item[spread] mean trawl spread
+	\item[spread\_sd] sd of trawl spread
+	\item[surfacearea] measured trawl surface area
+	\item[vel] velocity
+	\item[vel sd] sd of velocity
+	\item[netmind\_n] number of netmind data points
+	\item[dZ] slope
+	\item[ddZ] curvature
+	\item[tmean.cl]  temperature mean from climatology
+	\item[tamp.cl] temperature amplitude from climatology
+	\item[thp.cl] temperature half period from climatology
+	\item[tsd.cl] temperature sd from climatology
+	\item[wmin.cl] week of minimum temperature from climatology
+	\item[wmin] week of minimum temperature
+	\item[wmax] week of maximum temperature
+	\item[tmin] minimum temperature
+	\item[tmax] maximum temperature
+	\item[tsd] temperature sd 
+	\item[tamp] temperature amplitude
+	\item[tmean] mean temperature
+	\item[thp] temperature half period
+	\item[C] species area model $ nspec~log(sa)+log(nyrs)$ lognormal glm parameter C is the intercept
+	\item[Z] species area calculations parameter Z the surface area parameter
+	\item[T] species area calculations parameter T the annual parameter
+	\item[Npred] Predicted number of species from the species area model
+	\item[ca1] correspondence analysis axis 1 from species composition analysis (speciescomposition.db.r)
+	\item[ca2] correspondence analysis axis 2 from species area (speciescomposition.db.r)
+	\item[nss.b1] normalized size spectrum parameter $lm(sizeclass~Number)$ b1 is slope
+	\item[nss.rsquared] normalized size spectrum model fit
+	\item[nss.shannon] normalized size spectrum shannon diversity
+	\item[smr] specific metabolic rate from Robinson et al. (1983)
+	\item[Pr.Reaction] probability of reaction (metabolism)
+	\item[Ea] activation energy (metabolism) \\$Ea ~ -b2 * T.C * R (T.C +273.15)$
+	\item[A] Arrhenius parameterization from metabolism model in watts per kg M is mass \\ $A  ~ 0.067 * M^(-0.24) / 5.57873 $
+	\item[qn] upper quantile for numbers
+	\item[qm] upper quantile for mass
+	\item[mass] average mass of species in tow
+	\item[len] average length of species in tow
+	
+	
+\end{description}
+
+\end{document}
