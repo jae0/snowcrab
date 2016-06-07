@@ -8,7 +8,7 @@
   #       Copying the following into each relevent file is not a solution as it is error prone and  repetitive.
   # ----------------------------------------------------------------------------------
 
-initialize.local.environment = function( current.assessment.year=NULL, libs=NULL, p=NULL ) {
+initialise.local.environment = function( current.assessment.year=NULL, libs=NULL, p=NULL ) {
 
   if (is.null(p)) p = list()
 
