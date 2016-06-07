@@ -1,7 +1,7 @@
 
   figure.timeseries.survey = function(p, areas="", from.file=F) {
      
-    set = bio.snowcrab.db( DS ="set.logbook" ) 
+    set = snowcrab.db( DS ="set.logbook" ) 
      
     if ( areas=="small.areas" ) { # default
       areas = c( "cfa20", "cfa21", "cfa22", "cfa23", "cfa24", "cfa4x", 

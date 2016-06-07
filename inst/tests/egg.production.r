@@ -151,7 +151,7 @@ yr
 
 # variance estimate from sets :: kriging estimates are unstable
 
-s=bio.snowcrab.db("set")
+s=snowcrab.db("set")
 x = log( s$f8.no + exp(1) )
 
 f8 = NULL

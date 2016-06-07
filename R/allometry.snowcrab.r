@@ -12,7 +12,7 @@
       return(M)
     }
 
-    det = bio.snowcrab.db( DS="det.initial" )
+    det = snowcrab.db( DS="det.initial" )
 
     if (sex == "male" ) {
       det = det[ which( det$sex==male) , ]

@@ -180,7 +180,7 @@ p = bio.bio.snowcrab::initialise.local.environment(
 
       ### --------- prediction success:
 
-      set = bio.snowcrab.db( DS="set.logbook" )
+      set = snowcrab.db( DS="set.logbook" )
       set = set[ set$yr %in% p$years.to.model ,]
       set$total.landings.scaled = scale( set$total.landings, center=T, scale=T )
       set = presence.absence( set, "R0.mass", p$habitat.threshold.quantile )  # determine presence absence(Y) and weighting(wt)

@@ -1,7 +1,7 @@
 
   figure.timeseries.egg.production= function( outdir=file.path(project.datadirectory('bio.snowcrab'), "assessments","2013"), vars='fecundity', all.areas=T ) {
  
-     set = bio.snowcrab.db( DS="set.merge.det")
+     set = snowcrab.db( DS="set.merge.det")
   
     if (all.areas) {
       areas = c("cfa4x", "cfasouth", "cfanorth" )

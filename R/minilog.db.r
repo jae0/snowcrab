@@ -67,7 +67,7 @@
       }
       filelist = filelist[ which( !is.na( filelist[,1] ) ) , ]
 
-      set = bio.snowcrab.db( DS="setInitial" )  # set$chron is in local time America/Halifax
+      set = snowcrab.db( DS="setInitial" )  # set$chron is in local time America/Halifax
 
       for ( yr in Y ) {
         print(yr)

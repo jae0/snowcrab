@@ -17,10 +17,10 @@ if(grepl('4x',tolower(areas))) years = 2004:p$current.assessment.year
 
       if (redo.data) {
       
-        set = bio.snowcrab.db( DS="set.clean")
+        set = snowcrab.db( DS="set.clean")
         set$sid = paste(set$trip, set$set, sep="~")
      
-        det = bio.snowcrab.db( DS="det.initial")
+        det = snowcrab.db( DS="det.initial")
         det$sid = paste(det$trip, det$set, sep="~")
 
         hvar="cw"
@@ -43,7 +43,7 @@ if(grepl('4x',tolower(areas))) years = 2004:p$current.assessment.year
       
       }
       
-      set = bio.snowcrab.db( DS="set.clean")
+      set = snowcrab.db( DS="set.clean")
       set$sid = paste(set$trip, set$set, sep="~")
       for (f in  outfile) load(f)
 

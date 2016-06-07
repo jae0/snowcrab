@@ -6,7 +6,7 @@ p = bio.bio.snowcrab::initialise.local.environment( current.assessment.year=2016
   bioLibrary( "sorted.ordination")
 
 
-  C = bio.snowcrab.db( DS="cat.georeferenced" )
+  C = snowcrab.db( DS="cat.georeferenced" )
   C$totno = log10( C$totno )
   C$totmass = log10( C$totmass )
 
@@ -57,7 +57,7 @@ p = bio.bio.snowcrab::initialise.local.environment( current.assessment.year=2016
 
 p = bio.bio.snowcrab::initialise.local.environment( current.assessment.year=2016)
 
-  S = bio.snowcrab.db( DS ="set.logbook" )
+  S = snowcrab.db( DS ="set.logbook" )
   Sn = colnames( S )
 
   iv0 = Sn[ grep( "^ms.no." , Sn ) ]

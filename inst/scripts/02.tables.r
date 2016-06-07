@@ -198,7 +198,7 @@ p = bio.bio.snowcrab::initialise.local.environment( current.assessment.year=2016
 # ---------------------------------------- USED
 #  Carapace condition from trawl data  >= 95mm CW  ... not kriged .. simple proportions
 
-    det0 = bio.snowcrab.db( DS="det.georeferenced" )
+    det0 = snowcrab.db( DS="det.georeferenced" )
     det0$fishyr = det0$yr  ## the counting routine expectes this variable
 
     det = det0[ which( det0$cw >= 95 ) ,]  # commerical sized crab only
@@ -238,7 +238,7 @@ p = bio.bio.snowcrab::initialise.local.environment( current.assessment.year=2016
   # counts of stations in each area
 
     # check towquality .. this should always == 1
-    set = bio.snowcrab.db("set.complete")
+    set = snowcrab.db("set.complete")
     if (length( unique( set$towquality) ) != 1 ) print("error -- not good tows")
 
     out = data.frame(yr=sort( unique(set$yr )) )
@@ -302,7 +302,7 @@ abline(h=50)
 # ----------------------------------------   NOT USED ____________
 #  Carapace condition from trawl data  < 95mm CW  ... not kriged .. simple proportions
 
-    det0 = bio.snowcrab.db( DS="det.georeferenced" )
+    det0 = snowcrab.db( DS="det.georeferenced" )
     det0$fishyr = det0$yr  ## the counting routine expectes this variable
 
     det = det0[ which( det0$cw < 95 ) ,]  # commerical sized crab only

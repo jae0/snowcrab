@@ -90,7 +90,7 @@
 
       tokeep=  c( "Y", "yr",  "julian", "dyear", "dt.annual", "dt.seasonal", "plon", "plat", "wt", "wgts",  v, p$auxilliary.data )
 
-      set = bio.snowcrab.db( DS="set.logbook" )
+      set = snowcrab.db( DS="set.logbook" )
       if (exists("total.landings.scaled", set) ) {
         set$total.landings.scaled = scale( set$total.landings, center=T, scale=T )
       }
@@ -292,7 +292,7 @@
         print( p$runs[iip,])
         fn = file.path( outdir, paste("abundance", v, "rdata", sep=".") )
         set = habitat.model.db( DS="basedata", p=p, v=v )
-        # set = bio.snowcrab.db( DS="set.logbook" )
+        # set = snowcrab.db( DS="set.logbook" )
         set$Y = set[, v]  # override -- Y is P/A
 
         yrsw = c( p$years.to.model)

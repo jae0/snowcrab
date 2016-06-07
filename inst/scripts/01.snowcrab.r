@@ -20,9 +20,9 @@
     # get data tables from Oracle server and store local copies
   # !!!!!! --------- these should be run on a windows machine: !!!!!!!!! <--------- READ THIS
   if (obtain.database.snapshot) {
-    bio.snowcrab.db( DS="set.odbc.redo", yrs=1996:p$current.assessment.year ) # Copy over datadirectory ("bio.snowcrab"), "data", "trawl", "SNCRABSETS"
-    bio.snowcrab.db( DS="det.odbc.redo", yrs=1996:p$current.assessment.year ) # Copy over datadirectory ("bio.snowcrab"), "data", "trawl", "SNCRABDETAILS"
-    bio.snowcrab.db( DS="cat.odbc.redo", yrs=1996:p$current.assessment.year ) # Copy over datadirectory ("bio.snowcrab"), "data", "trawl", "SNTRAWLBYCATCH"
+    snowcrab.db( DS="set.odbc.redo", yrs=1996:p$current.assessment.year ) # Copy over datadirectory ("bio.snowcrab"), "data", "trawl", "SNCRABSETS"
+    snowcrab.db( DS="det.odbc.redo", yrs=1996:p$current.assessment.year ) # Copy over datadirectory ("bio.snowcrab"), "data", "trawl", "SNCRABDETAILS"
+    snowcrab.db( DS="cat.odbc.redo", yrs=1996:p$current.assessment.year ) # Copy over datadirectory ("bio.snowcrab"), "data", "trawl", "SNTRAWLBYCATCH"
     logbook.db(  DS="odbc.logbook.redo", yrs=1996:p$current.assessment.year ) #Copy over datadirectory ("bio.snowcrab"), "data", "logbook", "datadump"
     logbook.db(  DS="odbc.licence.redo" ) #Copy over datadirectory ("bio.snowcrab"), "data", "logbook", "lic.datadump.rdata"
     logbook.db(  DS="odbc.areas.redo" ) #Copy over datadirectory ("bio.snowcrab"), "data", "observer", "datadump"
@@ -50,7 +50,7 @@
   if (get.base.data) {
     # sequence is important ... do not change
     # creates initial rdata and sqlite db
-    bio.snowcrab.db( DS="setInitial.redo", p=p ) # this is required by the seabird.db (but not minilog and netmind)
+    snowcrab.db( DS="setInitial.redo", p=p ) # this is required by the seabird.db (but not minilog and netmind)
 
     seabird.yToload = p$current.assessment.year
     minilog.yToload = p$current.assessment.year
@@ -75,7 +75,7 @@
     minilog.db (DS="stats.redo", Y=minilog.yToload )
     netmind.db (DS="stats.redo", Y=netmind.yToload )
 
-    set <- bio.snowcrab.db( DS="setInitial", p=p ) # this is required by the seabird.db (but not minilog and netmind)
+    set <- snowcrab.db( DS="setInitial", p=p ) # this is required by the seabird.db (but not minilog and netmind)
     # set2015 <- set[which(set$yr == '2015'),] #check to make sure 2015 data is in there properly
     # head(set2015)
 
@@ -101,15 +101,15 @@
       problems = data.quality.check( set, type="netmind.timestamp" )
 
 
-    bio.snowcrab.db( DS="set.clean.redo", p=p )  # sanity checks
+    snowcrab.db( DS="set.clean.redo", p=p )  # sanity checks
     #MG det.initial.redo updates and processes morphology. This code now identifies morphology errors, which must be
     #checked with written logs, then sent to database and put in debugging here and re-run
-    bio.snowcrab.db( DS="det.initial.redo", p=p )
-    bio.snowcrab.db( DS="det.georeferenced.redo" )
-    bio.snowcrab.db( DS="cat.initial.redo", p=p )
-    bio.snowcrab.db( DS="cat.georeferenced.redo" )
-    bio.snowcrab.db( DS="set.merge.det.redo" )
-    bio.snowcrab.db( DS="set.merge.cat.redo" )
+    snowcrab.db( DS="det.initial.redo", p=p )
+    snowcrab.db( DS="det.georeferenced.redo" )
+    snowcrab.db( DS="cat.initial.redo", p=p )
+    snowcrab.db( DS="cat.georeferenced.redo" )
+    snowcrab.db( DS="set.merge.det.redo" )
+    snowcrab.db( DS="set.merge.cat.redo" )
   }  # end base data
 
 
@@ -158,9 +158,9 @@
 
 
   logbook.db( DS  ="fisheries.complete.redo", p=p )
-  bio.snowcrab.db( DS ="set.complete.redo", p=p )
-  bio.snowcrab.db( DS ="set.logbook.redo", yrs=1996:p$current.assessment.year ) # add gridded fisheries data
-  # bio.snowcrab.db( DS ="set.logbook", yrs=1996:p$current.assessment.year )
+  snowcrab.db( DS ="set.complete.redo", p=p )
+  snowcrab.db( DS ="set.logbook.redo", yrs=1996:p$current.assessment.year ) # add gridded fisheries data
+  # snowcrab.db( DS ="set.logbook", yrs=1996:p$current.assessment.year )
 
   #make.timeseries.data(p=p, areas=p$regions )  #  timeseries of means of all survey data
   #in 2014 as there were reduced stations for comparison
@@ -168,7 +168,7 @@
   make.timeseries.data(p=p, areas=NULL,reduced.stations=F, vars=NULL) #  timeseries of means of all survey data
   #make.timeseries.data(p=p, areas=NULL,reduced.stations=F, vars=c('ms.mass.10', 'ms.mass.30', 'ms.mass.201', 'ms.mass.50', 'ms.mass.2521', 'ms.mass.2511', 'ms.mass.202', 'ms.mass.204', 'ms.mass.2211'), outfile = file.path( project.datadirectory("bio.snowcrab"), "R", "tsbycatch.rdata" )) #  timeseries of means of all survey data
 
-  #  tsdata = bio.snowcrab.db("set.timerseries")
+  #  tsdata = snowcrab.db("set.timerseries")
 
 # create a new lookuptable for data transformations after refreshing set data/ranges
   REPOS = recode.variable.initiate.db ( db="bio.snowcrab" )
@@ -186,14 +186,14 @@
 
 # simple geometric means of raw data:  used by indicators ordination and some figures
   # takes many hours ... need to make parallel  TODO
-  tsdata =  get.time.series ( x=bio.snowcrab.db( DS="set.logbook"),
+  tsdata =  get.time.series ( x=snowcrab.db( DS="set.logbook"),
   regions=p$regions, vars=variable.list.expand("all.data"), from.file=F, trim=0 )
 
 
 
 #  ----- experimental / tests / ideas
-  s =  bio.snowcrab.db( DS ="set.complete" )
-  d =   bio.snowcrab.db( DS ="det.georeferenced" )
+  s =  snowcrab.db( DS ="set.complete" )
+  d =   snowcrab.db( DS ="det.georeferenced" )
   l = merge( d, s[, c("trip", "set", "t")], by=c("trip", "set"), all.x=T, all.y=F)
   rm(s,d); gc()
   l = l[ which( as.numeric(as.character(l$mat)) %in% c(mature, immature)  &

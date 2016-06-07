@@ -448,7 +448,7 @@ savePlot(file.path(outdir,paste('observer.map.2014','png',sep=".")),type='png')
 
 #survey Index
 
-set = bio.snowcrab.db('set.complete')
+set = snowcrab.db('set.complete')
 
 st = unique(set[,c('yr','lon','lat','station')])
 st2013 = st[which(st$yr==2013),]

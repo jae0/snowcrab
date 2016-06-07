@@ -1,7 +1,7 @@
 
 p = bio.bio.snowcrab::initialise.local.environment()
 
-set = bio.snowcrab.db( DS ="set.complete", p=p )
+set = snowcrab.db( DS ="set.complete", p=p )
 
 set = set [ , c("trip", "set", "station", "yr", "lon", "lat", "t", "R0.mass", "R0.no" ) ]
 

@@ -3,8 +3,8 @@
 
   setwd( project.datadirectory("bio.snowcrab") )
 
-  det = bio.snowcrab.db( DS ="det.georeferenced" )
-  set = bio.snowcrab.db( DS ="set.complete" )
+  det = snowcrab.db( DS ="det.georeferenced" )
+  set = snowcrab.db( DS ="set.complete" )
 
   xdet = merge( det, set[,c("trip","set", "t", "z")], by=c("trip", "set"), all.x=T, all.y=F )
   xdet = xdet[ which( xdet$sex %in% c(female,male) ), ]

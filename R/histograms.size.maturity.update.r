@@ -19,10 +19,10 @@
 
       if (redo.data) {
       
-        set = bio.snowcrab.db( DS="set.clean")
+        set = snowcrab.db( DS="set.clean")
         set$sid = paste(set$trip, set$set, sep="~")
      
-        det = bio.snowcrab.db( DS="det.initial")
+        det = snowcrab.db( DS="det.initial")
         det$sid = paste(det$trip, det$set, sep="~")
 
         hvar="cw"
@@ -49,7 +49,7 @@
       }
      
       
-      set = bio.snowcrab.db( DS="set.clean")
+      set = snowcrab.db( DS="set.clean")
       set$sid = paste(set$trip, set$set, sep="~")
       for (f in  outfile) load(f)
 

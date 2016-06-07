@@ -66,7 +66,7 @@
       }
       filelist = filelist[ which( !is.na( filelist[,1] ) ) , ]
 
-      set = bio.snowcrab.db( DS="setInitial" )
+      set = snowcrab.db( DS="setInitial" )
 
       for ( yr in Y ) {
         print(yr)

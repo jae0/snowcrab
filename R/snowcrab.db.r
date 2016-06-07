@@ -1,5 +1,5 @@
 
-	bio.snowcrab.db = function( DS, p=NULL, yrs=NULL) {
+	snowcrab.db = function( DS, p=NULL, yrs=NULL) {
 		# long!
 		# handles all basic data tables, etc. ... can be broken into smaller pieces to make easier to maintain
 
@@ -136,7 +136,7 @@
 
       # data dump from the observer system
       # August 2015 added in setcd_id from observer system to address the MPA survey sets (type=11) and regular fix station sets (type=4)
-      set = bio.snowcrab.db( DS="set.odbc")
+      set = snowcrab.db( DS="set.odbc")
       names( set ) = rename.bio.snowcrab.variables(names( set))
       setvars = c("trip", "set", "station", "stime", "observer", "cfa", "lon", "lat", "lon1", "lat1", "towquality", "Zx", "Tx", "gear", "sa", "dist", "dist0" )
       print('need to addin the mpa station index')
@@ -316,8 +316,8 @@
         return(det)
       }
 
-      X = bio.snowcrab.db( DS="set.clean" )
-      det = bio.snowcrab.db( DS="det.odbc"  )
+      X = snowcrab.db( DS="set.clean" )
+      det = snowcrab.db( DS="det.odbc"  )
 
       names( det ) = rename.bio.snowcrab.variables(names(det) )
       detvars = c( "trip", "set", "crabno", "sex", "cw", "mass", "abdomen", "chela", "mat",
@@ -472,9 +472,9 @@
 			# two steps:: bycatch from the cat tables (missing snow crab)
       # and determine totals from the snow crab det tables
 
-      det = bio.snowcrab.db( DS="det.initial" )
+      det = snowcrab.db( DS="det.initial" )
 
-      cat = bio.snowcrab.db( DS="cat.odbc" )
+      cat = snowcrab.db( DS="cat.odbc" )
       names( cat ) = rename.bio.snowcrab.variables(names( cat ) )
 
       # two different time periods (pre and post Moncton)
@@ -641,10 +641,10 @@
 
       factors = c("trip", "set")
 
-      X = bio.snowcrab.db( DS="set.clean" )
+      X = snowcrab.db( DS="set.clean" )
       #X2015 = X[which(X$yr==2015),]
       #head(X2015)
-      Y = bio.snowcrab.db( DS="det.initial" )
+      Y = snowcrab.db( DS="det.initial" )
 
       # add various variables to set-level data
 
@@ -753,7 +753,7 @@
       rm(Y); gc()
       set = X
 
-      if ( nrow( bio.snowcrab.db( DS="set.clean" )) != nrow( set) ) {   print( "Merge failure ... " );  stop()    }
+      if ( nrow( snowcrab.db( DS="set.clean" )) != nrow( set) ) {   print( "Merge failure ... " );  stop()    }
 
       save( set, file=fn, compress=T )
 
@@ -774,11 +774,11 @@
 
       factors = c("trip", "set")
 
-      X = bio.snowcrab.db( DS="set.merge.det" )
+      X = snowcrab.db( DS="set.merge.det" )
       X2015 = X[which(X$yr == 2015),]
       print(head(X2015))
 
-      cat = bio.snowcrab.db( DS="cat.initial" )
+      cat = snowcrab.db( DS="cat.initial" )
       cat2015 = cat[grep("2015", cat$trip),]
       print(head(cat2015))
 
@@ -798,7 +798,7 @@
 
       set = X
 
-      if ( nrow( bio.snowcrab.db( DS="setInitial" )) != nrow( set) ) {   print( "Merge failure ... " );  stop()    }
+      if ( nrow( snowcrab.db( DS="setInitial" )) != nrow( set) ) {   print( "Merge failure ... " );  stop()    }
       X2015 = X[which(X$yr == 2015),]
       print(head(X2015))
 
@@ -824,7 +824,7 @@
 
       if (DS=="set.minilog.seabird.retired") {
         tzone = "America/Halifax"
-        set = bio.snowcrab.db( DS="setInitial")
+        set = snowcrab.db( DS="setInitial")
         set.names= names(set)
         #set2015 = set[which(set$yr==2015),]
 
@@ -911,7 +911,7 @@
 
       # the beginning here is identical to the netmind.db( "stat.redo" ) .. simpler to keep it this way (jae)
       tzone = "America/Halifax"
-      set = bio.snowcrab.db( DS="setInitial")
+      set = snowcrab.db( DS="setInitial")
 
       sbStats =  seabird.db( DS="stats" )
       sbv = c('trip','set', "z", "zsd", "t", "tsd", "n", "t0", "t1", "dt" )
@@ -1031,7 +1031,7 @@
         return ( set )
       }
 
-      set = bio.snowcrab.db( DS="set.merge.cat" )
+      set = snowcrab.db( DS="set.merge.cat" )
       # set2015 = set[which(set$yr == 2015),]
       # print(head(set2015))
 
@@ -1056,7 +1056,7 @@
 
       # ----add other species
       print( "Adding other species to 'set' ")
-      cat = bio.snowcrab.db( DS="cat.initial" )
+      cat = snowcrab.db( DS="cat.initial" )
       cat2015 = cat[grep("2015", cat$trip),]
       print(head(cat2015))
 
@@ -1101,9 +1101,9 @@
         load(fn)
         return(det)
       }
-      set = bio.snowcrab.db( "set.clean")
+      set = snowcrab.db( "set.clean")
       set  = set[, c("trip", "set", "lon", "lat", "plon", "plat", "yr")]
-      det = bio.snowcrab.db("det.initial")
+      det = snowcrab.db("det.initial")
       det = merge( det, set, by=c("trip", "set"), all.x=T, all.y=F, sort=F, suffixes=c("",".set") )
       det$sa.set = NULL
       save(det, file=fn,compress=T)
@@ -1116,9 +1116,9 @@
         return(cat)
       }
 
-      set = bio.snowcrab.db( "set.clean")  #require SA estimates
+      set = snowcrab.db( "set.clean")  #require SA estimates
       set  = set[, c("trip", "set", "lon", "lat", "plon", "plat", "yr", "sa")]
-      cat =  bio.snowcrab.db("cat.initial")
+      cat =  snowcrab.db("cat.initial")
       cat = merge( cat, set, by=c("trip", "set"), all.x=T, all.y=F, sort=F, suffixes=c("",".set") )
       cat$totmass = cat$totmass / cat$sa
       cat$totno = cat$totno / cat$sa
@@ -1139,13 +1139,13 @@
         return(set)
       }
 
-      set0 = bio.snowcrab.db( DS="set.complete" )
+      set0 = snowcrab.db( DS="set.complete" )
       set = logbook.fisheries.stats.merge( set0 )
       save ( set, file=fn, compress=T )
       return (fn)
     }
 
 
-  }  ## end bio.snowcrab.db
+  }  ## end snowcrab.db
 
 

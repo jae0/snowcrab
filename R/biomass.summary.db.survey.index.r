@@ -169,7 +169,7 @@
       v = "R1.no" 
       fm = formula( paste(v, "~yr+cfa"))
       
-      set = bio.snowcrab.db( DS ="set.complete", p=p, yrs=1996:p$current.assessment.year ) 
+      set = snowcrab.db( DS ="set.complete", p=p, yrs=1996:p$current.assessment.year ) 
       B = set[, c( v, "yr", "cfa" )]
       B[,v] = variable.recode( B[,v], v, direction="forward", db="bio.snowcrab" )
 
@@ -201,7 +201,7 @@
       v = "R0.mass" 
       fm = formula( paste(v, "~yr+cfa"))
       
-      set = bio.snowcrab.db( DS ="set.complete", p=p, yrs=1996:p$current.assessment.year ) 
+      set = snowcrab.db( DS ="set.complete", p=p, yrs=1996:p$current.assessment.year ) 
       B = set[, c( v, "yr", "cfa" )]
       B[,v] = variable.recode( B[,v], v, direction="forward", db="bio.snowcrab" )
 
@@ -230,7 +230,7 @@
       v = "R0.mass" 
       fm = formula( paste(v, "~yr+cfa"))
       
-      set = bio.snowcrab.db( DS ="set.complete", p=p, yrs=1996:p$current.assessment.year ) 
+      set = snowcrab.db( DS ="set.complete", p=p, yrs=1996:p$current.assessment.year ) 
       B = set[, c( v, "yr", "cfa" )]
       B[,v] = variable.recode( B[,v], v, direction="forward", db="bio.snowcrab" )
 
@@ -259,7 +259,7 @@
       v = "R1.no" 
       fm = formula( paste(v, "~yr+cfa"))
       
-      set = bio.snowcrab.db( DS ="set.complete", p=p, yrs=1996:p$current.assessment.year ) 
+      set = snowcrab.db( DS ="set.complete", p=p, yrs=1996:p$current.assessment.year ) 
       B = set[, c( v, "yr", "cfa" )]
       B[,v] = variable.recode( B[,v], v, direction="forward", db="bio.snowcrab" )
 
