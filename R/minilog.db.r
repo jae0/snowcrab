@@ -67,7 +67,7 @@
       }
       filelist = filelist[ which( !is.na( filelist[,1] ) ) , ]
 
-      set = snowcrab.db( DS="setInitial" )  # set$chron is in local time America/Halifax
+      set = snowcrab.db( DS="setInitial" )  # set$timestamp is in local time America/Halifax
 
       for ( yr in Y ) {
         print(yr)
@@ -139,11 +139,10 @@
             res = removeDuplicateswithNA(res,cols=c('trip','set'),idvar='dt')
           }
 
-        # TODO:: move the following to the load.minilog funcition .. and remove chron dependence
-        res$t0 = as.POSIXct( as.chron(res$t0), tz=tzone, origin=lubridate::origin )
-        res$t1 = as.POSIXct( as.chron(res$t1), tz=tzone, origin=lubridate::origin )
-        res$dt = as.numeric( res$t1 - res$t0  )
-        res$timestamp = lubridate::ymd_hms( res$timestamp)
+  #      res$t0 = as.POSIXct( as.chron(res$t0), tz=tzone, origin=lubridate::origin )
+  #      res$t1 = as.POSIXct( as.chron(res$t1), tz=tzone, origin=lubridate::origin )
+        res$dt = difftime( res$t1, res$t0 )
+        # res$timestamp = lubridate::ymd_hms( res$timestamp)
 
         return (res)
        }
@@ -157,7 +156,7 @@
         fn = file.path( minilog.dir, paste( "minilog.stats", yr, "rdata", sep=".") )
         miniStats = NULL
         miniRAW = minilog.db( DS="basedata", Y=yr )
-        miniRAW$timestamp = lubridate::ymd_hms( miniRAW$chron)
+#        miniRAW$timestamp = lubridate::ymd_hms( miniRAW$chron)
 
         mta = minilog.db( DS="metadata", Y=yr )
         mta$timestamp = ymd_hms( mta$timestamp )
@@ -180,8 +179,8 @@
           if (length( Mi) == 0 ) next()
           M = miniRAW[ Mi, ]
 
-          M$timestamp = as.POSIXct( M$chron, tz=tzone, origin=lubridate::origin )
-          settimestamp= as.POSIXct( rid$setChron[i] , tz=tzone , origin=lubridate::origin )
+#          M$timestamp = as.POSIXct( M$chron, tz=tzone, origin=lubridate::origin )
+          settimestamp= as.POSIXct( rid$set_timestamp[i] , tz=tzone , origin=lubridate::origin )
           time.gate =  list( t0=settimestamp - dminutes(5), t1=settimestamp + dminutes(11) )
 
           print( paste( i, ":", id) )
@@ -306,7 +305,7 @@
         toremove =NULL
         for (i in dups) {
           di = which( uuid == uuid[i] )
-          tdiff = B$setChron[di] - B$timestamp[di]
+          tdiff = B$set_timestamp[di] - B$timestamp[di]
           oo = which.min( abs( tdiff) )
           toremove = c(toremove, di[-oo] )
           print("----")

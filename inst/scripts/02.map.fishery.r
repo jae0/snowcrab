@@ -1,11 +1,14 @@
 
-p = bio.snowcrab::initialise.local.environment( current.assessment.year=2016)
+  p = bio.snowcrab::initialise.local.environment( current.assessment.year=2016)
 
   # mapping of fisher stats
-  # loc = file.path( project.datadirectory("shrimp"), "maps" ) # output directory <---- change this to a local
-                                            # drive/directory as you cannot write to the server (tethys)
-  loc = file.path( "C:\\Rsaves" )
+
+  # choose root location:
+  loc = file.path( project.datadirectory("bio.snowcrab"), "maps" ) # output directory <---- change this to a local
+  # loc = file.path( "C:" , "Rsaves" )  # if MSWindows
+
   loc.k = file.path( loc, "kml" )
+
   dir.create(path=loc.k, recursive=T, showWarnings=F)
 
   coords = c("lon", "lat", "elevation")
@@ -21,9 +24,9 @@ p = bio.snowcrab::initialise.local.environment( current.assessment.year=2016)
   sm$catch = sm$landings
   sm$cpue = sm$catch / sm$effort
   sm$year = sm$yr
-  sm$chron = as.chron( sm$date.fished )
-  sm$julian = convert.datecodes( sm$chron, "julian" )
-  sm$month = ceiling(sm$julian/365 *12)
+  sm$timestamp = as.POSIXct( sm$date.fished, origin=lubridate::origin )
+  sm$julian = lubridate::yday( sm$timestamp )
+  sm$month = lubridate::month( sm$timestamp )
 
   sm = sm[ which( is.finite(sm$effort) ) ,]
   sm = sm[ which( is.finite(sm$catch) ) ,]

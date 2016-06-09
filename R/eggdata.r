@@ -2,8 +2,6 @@
 eggdata = function( data.loc=".", redo.data=F, data.file ) {
 
   if (redo.data) {
-    
-    require( chron)
 
     # Data from Jae Jan 14
     load(file.path("det.rdata"))
@@ -22,24 +20,24 @@ eggdata = function( data.loc=".", redo.data=F, data.file ) {
     xmon =  (substring( sdt$trip, 4, 5))
     xday =  (substring( sdt$trip, 2, 3))
     date.string = paste( xyr, xmon, xday, sep="/")
-     
-    date.from.trip = chron( dates.=date.string, format=c( dates = "y/m/d" ), out.format=c(dates="year-m-d")  )
-     
+
+    date.from.trip = lubridate::ymd( date.string)
+
     i = which(!is.finite(sdt$sdate))
-    sdt$chrono = as.chron(sdt$sdate)
-    sdt$chrono[i] = date.from.trip[i]
-     
-    sdt$yr = years(sdt$chrono)
-    sdt$month = months(sdt$chrono)
-    sdt$julianday =  convert.datecodes(sdt$chrono, "julian")
+    # sdt$timestamp = as.POSIXct(sdt$sdate, origin=lubridate::origin )
+    sdt$timestamp[i] = date.from.trip[i]
+
+    sdt$yr = lubridate::year(sdt$timestamp)
+    sdt$month = lubridate::month(sdt$timestamp)
+    sdt$julianday =  lubridate::yday( sdt$timestamp )
     sdt$dummy = 1
 
-    sc$chronosc = as.chron(sc$sdate)
-    sc$yr = years(sc$chronosc)
-    sc$month = months(sc$chronosc)
-    sc$day = days(sc$chronosc)
+    sc$timestamp = as.POSIXct(sc$sdate, origin=lubridate::origin)
+    sc$yr = lubridate::year( sc$timestamp )
+    sc$month = lubridate::month(sc$timestamp)
+    sc$day = lubridate::day(sc$timestamp)
     sc$dummy = 1     # This is to use with 'xtabs'
-    sc$julianday = convert.datecodes(sc$chronosc, "julian")
+    sc$julianday = lubridate::yday( sc$timestamp )
     sdt=sdt[!is.na(sdt$sex),]   # Takes all good data, i.e. that which is not NA
     sdt=sdt[!is.na(sdt$cw),]
 
@@ -48,7 +46,7 @@ eggdata = function( data.loc=".", redo.data=F, data.file ) {
     rm(set,det)
     return ("Files saved to work directory")
   }
-  
+
   if (data.file =="sc") {
     load( file.path(data.loc, "sc.rdata") )
     return( sc )

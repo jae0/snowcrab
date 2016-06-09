@@ -86,12 +86,12 @@
       set$temp = NULL
       set$sdepth = NULL
       set$cftow = NULL
-      set$timestamp = as.POSIXct (set$chron)
+#      set$timestamp = as.POSIXct (set$chron)
       set$yr = lubridate::year(set$timestamp)
       set$dyear = lubridate::decimal_date( set$timestamp ) - lubridate::year( set$timestamp )
-      # set$julian = convert.datecodes(set$chron, "julian")
-      #set$weekno = floor(set$julian/365*52) + 1
-      #set$mon = floor(set$julian/365*12) + 1
+      # set$julian = lubridate::yday( set$timestamp )
+      #set$weekno = lubridate::week( set$timestamp )
+      #set$mon = lubridate::month( set$timestamp )
 
       #----------------------------
       # look up missing environmental data

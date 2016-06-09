@@ -264,44 +264,38 @@
         set$stime[i.na] = "12:00:00"  # set to noon by default if there are any more na's due to the merge
       }
 
-      # "chron" is the best estimate of sampling time
+      # "timestamp" is the best estimate of sampling time
       # sdate (POSIXct, America/Halifax AST/ADT) does not seem to be reliable
       # and so we use minilog data where possible in the recent period
       # and then records from the stime and trip id where minilog data are absent
-      set$chron = tripcode.to.chron( set$trip, set$stime )  # using chron .. deprecated
       set$timestamp = tripcode.to.timestamp( set$trip, set$stime, tzone="America/Halifax" )  # using lubridate/POSIXct
-
       set$stime = NULL ### --need to check timezone!!! TODO .... seems to be "America/Halifax" .. compare with seabird/minilog
 
-      i = which(is.na(set$chron))
-      if (length(i)>0) set$chron[i] = tripcode.to.chron( set$trip[i], "12:00:00" )
+      i = which(is.na(set$timestamp))
+      if (length(i)>0) set$timestamp[i] = tripcode.to.timestamp( set$trip[i], "12:00:00" )
 
-      set$julian =  convert.datecodes(set$chron, "julian")
-      set$yr = convert.datecodes(set$chron, "year")
+      set$julian = lubridate::yday( set$timestamp )
+      set$yr = lubridate::year( set$timestamp )
 
       save( set, file=fn, compress=TRUE )
 
       ## michelle:: please do not place hard-links into the code as this will force a fail for others ..
       ## this is probably better created as a functions and you can send to the data for a save into OGR format
       ## to a location of your choice? ..
-      michelle = FALSE
-      if (michelle) {
         #MG Save the trawl file to a shapefile to bring into ArcGIS
         shape.set <- set
         shape.set$lon <- -shape.set$lon
-        shape.set$chron <- as.character(shape.set$chron)
+        shape.set$timestamp <- as.character(shape.set$timestamp)
 
         set.cords <- shape.set[, c("lon", "lat")]
         sdf.set <- SpatialPointsDataFrame(set.cords, data=shape.set)
         proj4string(sdf.set) <- CRS(p$geog.proj)
         shpdir = file.path(project.datadirectory("bio.snowcrab"), "maps", "shapefiles", "survey")
+        dir.create ( shpdir, recursive=TRUE, showWarnings=FALSE)
         setwd(shpdir)
-
         writeOGR(sdf.set, ".", "SurveyDataUpdate", driver="ESRI Shapefile", overwrite=T)
-        setwd("/home/michelle/tmp")
         shp.path <- paste("SurveyDataUpdate shapefile created at", shpdir, sep=" ")
         print(shp.path)
-      }
 
       return ( fn )
     }

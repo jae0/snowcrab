@@ -3,7 +3,7 @@
 
     x$uniqueid = paste(x$gridid, x$yr, sep="~")
     ids = sort(unique(x$uniqueid))
-    x$week = weeks(x$chrono) # need to to add chron objebct or week to grid before implementation
+    x$dyear = lubridate::decimal_year(x$timestamp) - lubridate::year(x$timestamp)
 
     v = "landings"
     ti = "week"

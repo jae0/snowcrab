@@ -1,8 +1,5 @@
 	load.minilog.rawdata.one.file.per.day = function(fn, f, set ) {
 
-    # default time format
-    dateformat.snow = c(dates="year-m-d", times="h:m:s")  # default date output format for chron objects
-
     out = NULL
     minilog=NULL
 
@@ -17,9 +14,6 @@
     studyid = tolower( gsub("^.*Study ID=", "", header[ l.study ] ) )
     if (grepl( "test", studyid, ignore.case=T) ) return( NULL )
     if (grepl( "testage", studyid, ignore.case=T) ) return( NULL )
-
-
-    minute = 1 / 24 / 60 # 1 minute in chron terms
 
     minilog = as.data.frame(read.table( file=filename, sep=",", as.is=T, colClasses="character", header=F, skip=7))
 
@@ -46,23 +40,43 @@
     if (is.null(headerdateformat) ) return( NULL )
 
     minilog$mdate = gsub("^80-", "2000-", minilog$mdate )  # there are incorrect year entries
-    date.format = c( dates=headerdateformat, times="h:m:s")
-    minilog$chron = chron( dates.=minilog$mdate, times.=minilog$mtime, format=date.format, out.format=dateformat.snow )
+    minilog$timestamp = lubridate::parse_date_time ( paste(minilog$mdate, minilog$mtime), orders=paste(headerdateformat, "H:M:S" ) )
 
-    yr = as.numeric( as.character( years(minilog$chron[1]) ))
+    yr = as.numeric( as.character( lubridate::year( minilog$timestamp[1]) ) )
     if (!is.finite(yr) ) yr = minilogDate( header=header, outvalue="year"  )
     print(filename2)
     #break up minilog by station
     setS = set[which(tolower(set$trip)==tripid),]
-    minilog$chron1 = trunc(minilog$chron,'minutes')
+    minilog$timestamp1 = trunc(minilog$timestamp, 'mins')
     metadata = NULL
     basedata = NULL
     for(pp in 1:nrow(setS)){
         xS = setS[pp,]
-        mi = minilog[which(minilog$chron1>=xS$chron - (minute*10) & minilog$chron1<=xS$chron + (minute*20) ),] #three minutes before the start of the tow and 15 min after from setinfo
+        mi = minilog[ which( minilog$timestamp1 >= (xS$timestamp - lubridate::minutes(10)) &
+                             minilog$timestamp1 <= (xS$timestamp + lubridate::minutes(20))) , ] #three minutes before the start of the tow and 15 min after from setinfo
         mi$minilog_uid = xS$minilog_uid = paste('minilog',tripid,xS$station,xS$set,sep=".")
-        xS = data.frame(minilog_uid = xS$minilog_uid,yr=xS$yr,timestamp = xS$chron,trip=xS$trip,set=xS$set,station=xS$station,studyid=sprintf("ep%03d",xS$station),setZx=xS$Zx,setChron=xS$chron,error= NA,filename=filename2,headerall=headerall,stringsAsFactors=FALSE)
-        mi = data.frame(mdate=mi$mdate,mtime=mi$mtime,temperature=mi$temperature,depth=mi$depth,chron=mi$chron,minilog_uid = mi$minilog_uid,stringsAsFactors=FALSE)
+        xS = data.frame(
+          minilog_uid=xS$minilog_uid,
+          yr=xS$yr,
+          timestamp=xS$timestamp,
+          trip=xS$trip,
+          set=xS$set,
+          station=xS$station,
+          studyid=sprintf("ep%03d",xS$station),
+          setZx=xS$Zx,
+          set_timestamp=xS$timestamp,
+          error= NA,
+          filename=filename2,
+          headerall=headerall,
+          stringsAsFactors=FALSE)
+        mi = data.frame(
+          mdate=mi$mdate,
+          mtime=mi$mtime,
+          temperature=mi$temperature,
+          depth=mi$depth,
+          timestamp=mi$timestamp,
+          minilog_uid = mi$minilog_uid,
+          stringsAsFactors=FALSE)
         metadata = rbind(metadata,xS )
         basedata = rbind(basedata,mi)
     }

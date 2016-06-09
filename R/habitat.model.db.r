@@ -42,7 +42,7 @@
       baddata = which( lgbk$z < log(50) | lgbk$z > log(600) )
       if ( length(baddata) > 0 ) lgbk = lgbk[ -baddata,]
 
-      lgbk$julian = convert.datecodes( lgbk$date.landed, "julian" )
+      lgbk$julian = lubridate::yday( lgbk$date.landed )
 
       nms = intersect( names(gf) , names( lgbk) )
       set = rbind( gf[, nms], lgbk[,nms] )

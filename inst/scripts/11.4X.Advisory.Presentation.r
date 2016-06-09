@@ -1,9 +1,9 @@
 #logbook 4X
 p = bio.bio.snowcrab::initialise.local.environment( current.assessment.year=2016)
 
-require(chron)
 outdir = file.path(project.datadirectory('bio.snowcrab'),'4X')
 dir.create(outdir,showWarnings=F)
+
 #Map the Area
 if(map.logs) {
     require(PBSmapping)
@@ -75,7 +75,7 @@ if(map.logs.cpue) {
  		logs$lat =   round( as.numeric(substring(logs$latitude, 1,2)) + as.numeric(substring(logs$latitude, 3,6))/6000 ,6)
     	logs$lon = - round((as.numeric(substring(logs$longitude, 1,2)) + as.numeric(substring(logs$longitude, 3,6))/6000), 6)
    		logs$date_landed=logs$date_landed +8035200 #add 93 days to all dates (8,035,200 seconds)
-		logs$yr=as.character(years(as.chron(logs$date_landed)))        #determine year
+		logs$yr=as.character( lubridate::year( logs$date_landed ))        #determine year
 		logs$date_landed=logs$date_landed-8035200 #subtract 61 days
 		logs$yr=as.character(as.numeric(logs$yr)-1) # subtract one year to give starting year of season rather than end year
 
@@ -347,11 +347,6 @@ l = observer.db('odbc',yrs=2014:2015)
 #need to remove potential non-4x sets, interim, fix by using longitude.
 	l=l[l$LONGITUDE>63,]
 
-	require (chron)
-	require(lattice)
-
-
-
 
 # --------------------------------------
 # Remove CW's outside norms and remove production (pre-sorted) samples
@@ -364,7 +359,7 @@ l = observer.db('odbc',yrs=2014:2015)
 	h[h=="LONGITUDE"] = "lon"
 	names(a) = h
 	a$lon=-a$lon
-	a$year=as.character(years(as.chron(a$BOARD_DATE)))
+	a$year=as.character(lubridate::year(a$BOARD_DATE))
 
 #----------------------------------------
 # create columns for area and CFA
@@ -423,7 +418,7 @@ obs=l
     obs=obs[is.finite(obs$LONGITUDE),]
     names(obs) = tolower(names(obs))
   		obs$landing_date=obs$landing_date +8035200 #add 93 days to all dates (8,035,200 seconds)
-		obs$yr=as.character(years(as.chron(obs$landing_date)))        #determine year
+		obs$yr=as.character(lubridate::year(obs$landing_date) )        #determine year
 		obs$landing_date=obs$landing_date-8035200 #subtract 61 days
 		obs$yr=as.character(as.numeric(obs$yr)-1) # subtract one year to give starting year of season rather than end year
 

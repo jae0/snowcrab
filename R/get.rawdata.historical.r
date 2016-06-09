@@ -132,9 +132,7 @@
       rawdata$comments =  gsub("[*]", "", rawdata$comments)
 
       # additional variables
-      rawdata$julian = chron(
-        dates.=paste( substr(rawdata$sdate,1,2), "-", substr(rawdata$sdate,3,4), "-", substr(rawdata$sdate,5,8), sep=""),
-        format=c(dates="d-m-y"), out.format=c(dates="year-m-d") )
+      rawdata$timestamp = lubridate::dmy( paste( substr(rawdata$sdate,1,2), "-", substr(rawdata$sdate,3,4), "-", substr(rawdata$sdate,5,8), sep="") )
 
       numerics = c( "carapace_width", "female_abdomen", "chela_height", "loc0", "loc1",
                   "depth", "soak_days", "durometer", "weight")

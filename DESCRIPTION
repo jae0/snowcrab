@@ -16,7 +16,6 @@ Imports:
   bigmemory,
   boot, 
   Cairo, 
-  chron,
   DBI, 
   devtools,
   fields, 

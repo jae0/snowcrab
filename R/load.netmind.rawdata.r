@@ -63,15 +63,14 @@
       netmind = netmind[, c("ndate", "ntime", "lat", "lon", "speed", "primary", "secondary", "doorspread", "depth")]
       netmind$ndate = paste(substring(netmind$ndate,1,2), substring(netmind$ndate,3,4), substring(netmind$ndate,5,6), sep="-")
       netmind$ntime = paste(substring(netmind$ntime,1,2), substring(netmind$ntime,3,4), substring(netmind$ntime,5,6), sep=":")
-
-      netmind$chron = chron( dates.=netmind$ndate, times.=netmind$ntime, format=c(dates="y-m-d", times="h:m:s"), out.format=outfmt )
+      netmind$timestamp = lubridate::ymd_hms( paste( netmind$ndate, netmind$ntime) )
 
       # netmind data stored in GMT/UTC from GPS; the offset varies depending upon season due to daylight savings time (3 or 4 hrs)
       # obtain time offset in hours
       time.offset = netmindDate( header=header, outvalue="timeoffset" )   #  rounded to hours of fractional days
-      netmind$chron = as.chron( as.numeric(netmind$chron) + time.offset, out.format = outfmt )  # now in local time (America/Halifax)
+      netmind$timestamp = netmind$timestamp + lubridate::hours(time.offset) # now in local time (America/Halifax)
 
-      netmind.timestamp = netmind$chron[deepest.point]
+      netmind.timestamp = netmind$timestamp[ deepest.point ]
       yr = as.numeric( as.character( years( netmind.timestamp ) ) )
 
 
@@ -97,43 +96,43 @@
       setno = gsub( "^.*Tow:", "", header[ line.ship ] )
       setno = gsub( "[[:space:]]", "", setno )
       setno =  as.numeric( setno )
-      
+
       station = unlist(strsplit( header[[1]], "\\", fixed=TRUE ))
       station = station[ length(station) ]
       station = gsub( "[[:alpha:]]", "", station)
       station = gsub( "[[:punct:]]", "", station)
       station = as.numeric( station )
 
-         
+
       setxi = NULL
-         
+
       if (is.null ( setxi ) ) {
         # check time first
-        netmind.date.range = range( netmind$chron )
-        sets.in.date.range = which( set$chron >= netmind.date.range[1] & set$chron <= netmind.date.range[2] )
+        netmind.date.range = range( netmind$timestamp )
+        sets.in.date.range = which( set$timestamp >= netmind.date.range[1] & set$timestamp <= netmind.date.range[2] )
         if ( length( sets.in.date.range ) == 1 ) setxi= sets.in.date.range
       }
 
       if (is.null ( setxi ) ) {
         # check time first
-        netmind.date.range = range( netmind$chron )
-        sets.in.date.range = which( set$chron >= netmind.date.range[1] & set$chron <= netmind.date.range[2] 
+        netmind.date.range = range( netmind$timestamp )
+        sets.in.date.range = which( set$timestamp >= netmind.date.range[1] & set$timestamp <= netmind.date.range[2]
           & set$set==setno )
         if ( length( sets.in.date.range ) == 1 ) setxi= sets.in.date.range
       }
 
       if (is.null ( setxi ) ) {
         # check time and station
-        netmind.date.range = range( netmind$chron )
-        sets.in.date.range = which( set$chron >= netmind.date.range[1] & set$chron <= netmind.date.range[2] 
+        netmind.date.range = range( netmind$timestamp )
+        sets.in.date.range = which( set$timestamp >= netmind.date.range[1] & set$timestamp <= netmind.date.range[2]
           & set$trip==trip & set$station==station & set$set==setno )
         if ( length( sets.in.date.range ) == 1 ) setxi= sets.in.date.range
       }
-   
+
       if (is.null ( setxi ) ) {
         # check time and station
-        netmind.date.range = range( netmind$chron )
-        sets.in.date.range = which( set$chron >= netmind.date.range[1] & set$chron <= netmind.date.range[2] 
+        netmind.date.range = range( netmind$timestamp )
+        sets.in.date.range = which( set$timestamp >= netmind.date.range[1] & set$timestamp <= netmind.date.range[2]
           & set$station==station  )
         if ( length( sets.in.date.range ) == 1 ) setxi= sets.in.date.range
       }
@@ -143,17 +142,17 @@
         ni = trunc( nrow(netmind) / 2 )
         dx = abs( set$lon - netmind$lon[ni] )
         dy = abs( set$lat - netmind$lat[ni] )
-        sets.in.spatial.range = which( dx < 5/60 & dy < 5/60 
+        sets.in.spatial.range = which( dx < 5/60 & dy < 5/60
           & set$yr==yr )  # less than 5 minutes away
         if ( length( sets.in.spatial.range ) == 1 ) setxi= sets.in.spatial.range
       }
-    
+
       if (is.null ( setxi ) ) {
         # check distances
         ni = trunc( nrow(netmind) / 2 )
         dx = abs( set$lon1 - netmind$lon[ni] )
         dy = abs( set$lat1 - netmind$lat[ni] )
-        sets.in.spatial.range = which( dx < 5/60 & dy < 5/60 
+        sets.in.spatial.range = which( dx < 5/60 & dy < 5/60
           & set$yr==yr )  # less than 5 minutes away
         if ( length( sets.in.spatial.range ) == 1 ) setxi= sets.in.spatial.range
       }
@@ -164,7 +163,7 @@
         ni = trunc( nrow(netmind) / 2 )
         dx = abs( set$lon - netmind$lon[ni] )
         dy = abs( set$lat - netmind$lat[ni] )
-        sets.in.spatial.range = which( dx < 5/60 & dy < 5/60 
+        sets.in.spatial.range = which( dx < 5/60 & dy < 5/60
           & set$trip==trip )  # less than 5 minutes away
         if ( length( sets.in.spatial.range ) == 1 ) setxi= sets.in.spatial.range
       }
@@ -174,25 +173,25 @@
         ni = trunc( nrow(netmind) / 2 )
         dx = abs( set$lon - netmind$lon[ni] )
         dy = abs( set$lat - netmind$lat[ni] )
-        sets.in.spatial.range = which( dx < 5/60 & dy < 5/60  
+        sets.in.spatial.range = which( dx < 5/60 & dy < 5/60
           & set$station==station & set$trip==trip & set$set==setno )  # less than 10 minutes away
         if ( length( sets.in.spatial.range ) == 1 ) setxi= sets.in.spatial.range
       }
-    
+
       if (is.null ( setxi ) ) {
         # check staion, distance, and time
         ni = trunc( nrow(netmind) / 2 )
         dx = abs( set$lon - netmind$lon[ni] )
         dy = abs( set$lat - netmind$lat[ni] )
-        sets.in.spatial.range = which( dx < 5/60 & dy < 5/60  
+        sets.in.spatial.range = which( dx < 5/60 & dy < 5/60
           & set$station==station & set$trip==trip )  # less than 10 minutes away
         if ( length( sets.in.spatial.range ) == 1 ) setxi= sets.in.spatial.range
       }
 
 
       if  (is.null ( setxi ) ) return (NULL) # no matching data -- break
-      
-      setx = set[ setxi , ] # matching trip/set/station  
+
+      setx = set[ setxi , ] # matching trip/set/station
 
       netmind_uid =  paste( "netmind", setx$trip, setx$set, setx$station, hours(netmind.timestamp), minutes(netmind.timestamp), f, sep=".")
 
@@ -203,14 +202,14 @@
 
       comments = gsub("^Comments: ", "", header[ line.comments] )
 
-      netmind$netmind_uid = netmind_uid 
+      netmind$netmind_uid = netmind_uid
 
-      metadata = data.frame( filename, netmind_uid, yr, netmind.timestamp, setx$trip, setx$set, setx$station, setx$Zx, setx$chron,comments, stringsAsFactors =FALSE )
-      names( metadata ) = c("filename", "netmind_uid", "yr", "netmind_timestamp", "trip", "set", "station", "setZx", "setChron",  "comments" )
+      metadata = data.frame( filename, netmind_uid, yr, netmind.timestamp, setx$trip, setx$set, setx$station, setx$Zx, setx$timestamp, comments, stringsAsFactors =FALSE )
+      names( metadata ) = c("filename", "netmind_uid", "yr", "netmind_timestamp", "trip", "set", "station", "setZx", "set_timestamp",  "comments" )
       metadata$yr = as.numeric( as.character( metadata$yr ))
 
       basedata = netmind[ which( !is.na( netmind$netmind_uid) ) ,]
-      
+
       out = list( metadata=metadata, basedata=basedata )
 
       return(out)

@@ -14,21 +14,28 @@ p1 = findPolys(dat,pp)
 
 da = dat[which(dat$EID %in% p1$EID),]
 
-dal = da[,c('lon','lat','distance','chron', names(da)[grep('ms.size',names(da))])]
+dal = da[,c('lon','lat','distance','timestamp', names(da)[grep('ms.size',names(da))])]
 nn = as.numeric(substr(names(da)[grep('ms.size',names(da))],9,15))
 nn = taxonomy.recode(from='spec',tolookup=nn)$vern
 names(dal)[5:ncol(dal)] <- nn
- dal$yr = year(dal$chron)
+ dal$yr = lubridate::year( dal$timestamp )
   dal = dal[which(dal$yr>2003),]
 
 dal = Filter(function(x)!all(is.na(x)),dal)
 dal$yr = NULL
 
 #species data
-write.csv(dal,file='/home/bio.data/snowcrab/R/Requests/StAnnsSCSurveySpeciesData.csv',row.names=F)
+outloc = project.datadirectory( "bio.snowcrab", "R", "requests" )
+fn = file.path( outloc, "StAnnsSCSurveySpeciesData.csv" )
+write.csv(dal,file=fn, row.names=F)
 
 dal$NSp = apply(dal[,5:ncol(dal)],1,function(x) length(x[!is.na(x)]))
 
-x = dal[,c('lon','lat','distance','chron','Nsp')]
-xx = x[which(years(x$chron)>2003),]
-write.csv(xx,'/home/adam/bio/snowcrab/R/Requests/StAnnsSnowCrabSurvey.csv',row.names=F)
+x = dal[,c('lon','lat','distance','timestamp','Nsp')]
+xx = x[which( lubridate::year(x$timestamp) > 2003),]
+
+fn = file.path( outloc, "StAnnsSnowCrabSurvey.csv" )
+write.csv(xx, fn, row.names=F)
+
+
+

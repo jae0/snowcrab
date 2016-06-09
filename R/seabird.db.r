@@ -124,10 +124,10 @@
 
         # TODO:: need to move this into the load.seabird function and remove chron dependence in it
         # should not be required here .. but in case
-        res$t0 = as.POSIXct( lubridate::ymd_hms(res$t0), origin=lubridate::origin, tz=tzone )
-        res$t1 = as.POSIXct( lubridate::ymd_hms(res$t1), origin=lubridate::origin, tz=tzone )
-        res$dt = as.numeric( res$dt )  # minutes
-        res$timestamp = lubridate::ymd_hms( res$timestamp)
+        # res$t0 = as.POSIXct( lubridate::ymd_hms(res$t0), origin=lubridate::origin, tz=tzone )
+        # res$t1 = as.POSIXct( lubridate::ymd_hms(res$t1), origin=lubridate::origin, tz=tzone )
+        # res$dt = as.numeric( res$dt )  # minutes
+        # res$timestamp = lubridate::ymd_hms( res$timestamp)
 
         return(res)
       }
@@ -144,7 +144,7 @@
         sbStats = NULL
 
         sbRAW = seabird.db( DS="basedata", Y=yr )
-        sbRAW$timestamp = lubridate::ymd_hms( sbRAW$chron)
+   #     sbRAW$timestamp = lubridate::ymd_hms( sbRAW$timestamp )
 
         mta = seabird.db( DS="metadata", Y=yr )
         mta$timestamp = ymd_hms( mta$timestamp )
@@ -287,7 +287,7 @@
         for (i in dups) {
           di = which( uuid == uuid[i] )
 
-          tdiff = B$setChron[di] - B$timestamp[di]
+          tdiff = B$set_timestamp[di] - B$timestamp[di]
           oo = which.min( abs( tdiff) )
           toremove = c(toremove, di[-oo] )
           print("----")

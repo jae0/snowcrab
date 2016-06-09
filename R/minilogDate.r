@@ -12,7 +12,7 @@
 
       if ( !length(lineformat)==1 | !length(lineno)==1 ) return(out)
 
-      # minilog date format is variable must extract and convert to chron format
+      # minilog date format is variable must extract and convert to an identifiable format
       date.format = gsub( "^\\*.Date\\(", "", header[lineformat])
       date.format = gsub( "\\).*$", "", date.format)
       date.format = gsub( "dd", "d", date.format )

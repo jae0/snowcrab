@@ -25,7 +25,7 @@ make.maturity.spatial = function( distance=50 ) {
   to.keep = c("trip", "set", "sex", "cw", "mass", "abdomen", "chela", "mat",
     "shell", "gonad", "eggcol", "eggPr", "durometer", "legs",
     "station", "t0", "lon", "lat",
-    "chron", "julian", "yr", "z", "t",
+    "timestamp", "julian", "yr", "z", "t",
     "zsd", "tsd", "sa"
   )
   det = det[,to.keep]

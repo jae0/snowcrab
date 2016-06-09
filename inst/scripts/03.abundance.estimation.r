@@ -2,11 +2,11 @@
   # --------------------------
   # 0. Initialise work space
 
-p = bio.bio.snowcrab::initialise.local.environment(
-  current.assessment.year=2016,
-  libs=c("parallel", "lubridate", "chron",  "bigmemory", "mgcv", "sp", "parallel",
+  p = bio.bio.snowcrab::initialise.local.environment(
+    current.assessment.year=2016,
+    libs = c("parallel", "lubridate", "bigmemory", "mgcv", "sp", "parallel",
          "grid" , "lattice", "fields", "rgdal", "raster")
-)
+  )
 
   # --------------------------
   # 1. Define some additional starting parameters for debugging

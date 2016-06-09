@@ -15,7 +15,7 @@ initialise.local.environment = function( current.assessment.year=NULL, libs=NULL
   p$project.name = "bio.snowcrab"
   p$project.outdir.root = project.datadirectory( p$project.name, "R" ) #required for interpolations and mapping
 
-  p$libs = RLibrary ( c( "geosphere", "lubridate", "mgcv", "parallel", "DBI", "Cairo", "Hmisc", "chron",
+  p$libs = RLibrary ( c( "geosphere", "lubridate", "mgcv", "parallel", "DBI", "Cairo", "Hmisc",
       "vegan", "akima", "fields", "lattice", "gstat", "maptools",  "boot", "raster", "grid",
       "RColorBrewer", "rasterVis", "rgdal", "sp", "rgeos", "bigmemory" ) )
 

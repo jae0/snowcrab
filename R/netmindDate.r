@@ -23,22 +23,23 @@
         if ( length(ndt) != 7) stop ( paste("Local Time error:", header[lineloc], fnNetmind ) )
         dateobject = dates( gsub( "[[:space:]]", "", paste( ndt[7], ndt[4], ndt[5], sep="-" ) ), format="y-mon-d")
         timeobject = times( gsub( "[[:space:]]", "", ndt[6] ) )
-        loctime = chron( dateobject, timeobject, out.format=c("y-m-d", "hh:mm:ss") )
+        loctime = lubridate::ymd_hms( paste( dateobject, timeobject) )
         return (loctime)
       }
+
 
       if (outvalue=="linetime") {
         rec = stringsplit( header[linenumber], "[[:space:]]+" )
         recdate = paste(substring(rec[1],1,2), substring(rec[1],3,4), substring(rec[1],5,6), sep="-")
         recyr = (substring(rec[2],1,2))
         rectime = paste(recyr, substring(rec[2],3,4), substring(rec[2],5,6), sep=":")
-        recchron = chron( dates(recdate, format="y-m-d" ), times(rectime), out.format=c("y-m-d", "hh:mm:ss") )
-        return( recchron )
+        rects = lubridate::ymd_hms( paste( recdate, rectime) )
+        return( rects )
       }
 
       if (outvalue=="year") {
         out = netmindDate( header=header, outvalue="date", linenumber=linenumber )
-        out = as.numeric( as.character( years( out  ) ) )
+        out = lubridate::year( out  )
         return (out )
       }
 
@@ -50,8 +51,8 @@
       if (outvalue=="timeoffset") {
         locdate = netmindDate( header=header, outvalue="localtime" )
         recdate = netmindDate( header=header, outvalue="linetime", linenumber=linenumber )
-        toffset = as.numeric(locdate - recdate)  # in "days" .. keep only up to hour differences
-        toffset = round( toffset *24) / 24 
+        toffset = difftime( locdate, recdate, units="hours" )
+        toffset = round( toffset)
         return (toffset )
       }
 

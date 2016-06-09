@@ -1,9 +1,9 @@
 
-  net.configuration = function( N, t0=NULL, t1=NULL, tchron=NULL, yr=NULL, plotdata=FALSE ) {
+  net.configuration = function( N, t0=NULL, t1=NULL, set_timestamp=NULL, yr=NULL, plotdata=FALSE ) {
 
     # N is netmind data
     # t0 is current best estimate of start and end time
-    # tchron is timestamp from set-log .. alternate if there is no other useful time marker
+    # set_timestamp is timestamp from set-log .. alternate if there is no other useful time marker
 
     # create default output should the following fail
     out = data.frame( slon=NA, slat=NA, distance=NA, spread=NA, spread_sd=NA,
@@ -23,14 +23,14 @@
     problem = F
 
     # time checks
-    if ( is.null(t0) & !is.null(tchron) ) {
-      t0 = tchron  # no data in t0 ,, use tchron as alternate
-      tchron =NULL # remove to cause no more effects
+    if ( is.null(t0) & !is.null(set_timestamp) ) {
+      t0 = set_timestamp  # no data in t0 ,, use set_timestamp as alternate
+      set_timestamp =NULL # remove to cause no more effects
     }
 
-    if (!is.null(t0) & !is.null(tchron)  ) {
-     t0_multiple = t0 = tchron
-     tchron =NULL
+    if (!is.null(t0) & !is.null(set_timestamp)  ) {
+     t0_multiple = t0 = set_timestamp
+     set_timestamp =NULL
     }
 
     if(N$netmind_uid[1] =='netmind.S26092014.9.541.17.48.304') return(out)
@@ -43,8 +43,8 @@
       oo = which( is.finite( M$depth ))
       if ( length(oo) < n.req ) return(out)
 
-      if(!is.null(tchron)) settimestamp=tchron
-      if(is.null(tchron)) settimestamp=t0
+      if(!is.null(set_timestamp)) settimestamp=set_timestamp
+      if(is.null(set_timestamp)) settimestamp=t0
       time.gate =  list( t0=settimestamp - dminutes(5), t1=settimestamp + dminutes(9) )
 
       bcp = list(
@@ -133,16 +133,16 @@
     if (!is.null( t0_multiple )) {
 
       if( !any(is.na(t0_multiple) )) { # two estimates of t0
-      timediff = abs( as.numeric( t0_multiple[1] - t0_multiple[2] ))
+      timediff = abs( difftime( t0_multiple[1], t0_multiple[2] ))
       if ( is.finite( timediff )) {
-      if (timediff > 20 ) { # more than XX seconds
+      if (timediff > lubridate::seconds(20) ) { # more than XX seconds
         # check bounds
         if (!is.null( t1) ) {
 
-          dts =  abs( as.numeric( t1 - t0_multiple ))
-          if(all(is.chron(dts))) igood = which( dts > 5/60/24 &  dts < 7/60/24 )
-          if(any(!is.chron(dts))) igood = which( dts > 300 &  dts < 420 )
-          if(any(dts<12)) igood = which( dts > 5 &  dts < 7 )
+          dts =  abs( difftime( t1, t0_multiple ))
+          if(any(dts<12)) {
+            igood = which( dts > lubridate::minutes(5) &  dts < lubridate::minutes(7) )
+          }
 
           if (length(igood)==0 ) t0=mean(t0_multiple) # both not good, take mean
           if (length(igood)==1 ) t0=t0_multiple[igood]
@@ -159,10 +159,10 @@
     out$t0 = t0
     out$t1 = t1
 
-    out$dt = as.POSIXct(t1) - as.POSIXct(t0)  # minutes
+    out$dt = difftime( as.POSIXct(t1), as.POSIXct(t0), units="mins" ) # minutes
 
-    if(!is.na(out$t0))    out$yr = as.numeric( as.character( years( out$t0) ))
-    if(is.na(out$t0))    out$yr = as.numeric( as.character( years(N$timestamp[1]) ))
+    if(!is.na(out$t0))    out$yr = lubridate::year( out$t0)
+    if(is.na(out$t0))    out$yr = lubridate::year(N$timestamp[1])
 
     itime =  which( N$timestamp >= t0  &  N$timestamp <= t1 )
     if ( length( itime) < n.req ) problem = T

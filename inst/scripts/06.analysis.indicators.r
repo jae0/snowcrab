@@ -1,11 +1,9 @@
 
-p = bio.bio.snowcrab::initialise.local.environment( current.assessment.year=2016)
+  p = bio.bio.snowcrab::initialise.local.environment( current.assessment.year=2016)
 
-  require(chron)
+	p$libs = unique( c( p$libs, bioLibrary( "spacetime", "bio.utilities", "parallel", "sorted.ordination", "bio.indicators") ) )
 
-	bioLibrary( c( "spacetime", "bio.utilities", "parallel", "sorted.ordination", "bio.indicators") )
-
-  setwd( project.datadirectory("bio.indicators") )
+  # setwd( project.datadirectory("bio.indicators") )
 
   # not all are fully refreshed automatically .. they are just place holders for now
 
