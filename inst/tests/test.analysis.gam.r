@@ -8,7 +8,7 @@ Test:     Biomass estimation via GAM / LME
   require(mgcv)
   require(nlme4)
 
-  p = bio.bio.snowcrab::initialise.local.environment()
+  p = bio.snowcrab::initialise.local.environment()
 
     p$model.type = "gam.full"
       # p$model.type = "gamm.full"

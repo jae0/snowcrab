@@ -1,7 +1,7 @@
 
   # Figures obtained after completion of data assimilation and processing up to the end of "1.bio.snowcrab.r"
 
-  p = bio.bio.snowcrab::initialise.local.environment( current.assessment.year=2016)
+  p = bio.snowcrab::initialise.local.environment( current.assessment.year=2016)
 
 
    # Think this is fixed now .. ?

@@ -1,7 +1,7 @@
 
 # species composition analysis from snow crab data
 
-p = bio.bio.snowcrab::initialise.local.environment( current.assessment.year=2016)
+p = bio.snowcrab::initialise.local.environment( current.assessment.year=2016)
 
   bioLibrary( "sorted.ordination")
 
@@ -55,7 +55,7 @@ p = bio.bio.snowcrab::initialise.local.environment( current.assessment.year=2016
 
   ######## density modelling GAM/GLM
 
-p = bio.bio.snowcrab::initialise.local.environment( current.assessment.year=2016)
+p = bio.snowcrab::initialise.local.environment( current.assessment.year=2016)
 
   S = snowcrab.db( DS ="set.logbook" )
   Sn = colnames( S )

@@ -1,5 +1,5 @@
 
-  allometry.bio.snowcrab = function( id, sex, redo=F ) {
+  allometry.snowcrab = function( id, sex, redo=F ) {
 
     male = 0
     female = 1

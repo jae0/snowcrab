@@ -3,7 +3,7 @@
     #browser()
     
     if (DS %in% c("complete", "complete.redo") ) {
-      fn = file.path( project.datadirectory("bio.snowcrab"), "R", "bugs.rdata" ) 
+      fn = file.path( project.datadirectory("snowcrab"), "R", "bugs.rdata" ) 
       if ( DS == "complete") {
         out = NULL
         if (file.exists(fn)) load(fn)
@@ -46,7 +46,7 @@
 
 
     if (DS %in% c("L", "L.redo" ) ) {
-      fn = file.path( project.datadirectory("bio.snowcrab"), "R", "L.bugs.rdata" )
+      fn = file.path( project.datadirectory("snowcrab"), "R", "L.bugs.rdata" )
       L=NULL
       if (DS=="L") {
         if (file.exists(fn)) load(fn)
@@ -61,7 +61,7 @@
 
 
     if (DS %in% c("B", "B.redo" )) {
-      fn = file.path( project.datadirectory("bio.snowcrab"), "R", "B.bugs.rdata" ) 
+      fn = file.path( project.datadirectory("snowcrab"), "R", "B.bugs.rdata" ) 
       B=NULL
       if (DS=="B") {
         if (file.exists(fn)) load(fn)
@@ -87,7 +87,7 @@
    
     
     if (DS %in% c("B.sd", "B.sd.redo" )) {
-      fn = file.path( project.datadirectory("bio.snowcrab"), "R", "B.sd.bugs.rdata" ) 
+      fn = file.path( project.datadirectory("snowcrab"), "R", "B.sd.bugs.rdata" ) 
       B=NULL
       if (DS=="B.sd") {
         if (file.exists(fn)) load(fn)
@@ -112,7 +112,7 @@
 
 
     if (DS %in% c("R_geomean", "R_geomean.redo" )) {
-      fn = file.path( project.datadirectory("bio.snowcrab"), "R", "R_geomean.bugs.rdata" ) 
+      fn = file.path( project.datadirectory("snowcrab"), "R", "R_geomean.bugs.rdata" ) 
       Bx = NULL
       if (DS=="R_geomean") {
         if (file.exists(fn)) load(fn)
@@ -124,10 +124,10 @@
       
       set = snowcrab.db( DS ="set.complete", p=p, yrs=1996:p$current.assessment.year ) 
       B = set[, c( v, "yr", "cfa" )]
-      B[,v] = variable.recode( B[,v], v, direction="forward", db="bio.snowcrab" )
+      B[,v] = variable.recode( B[,v], v, direction="forward", db="snowcrab" )
 
       Bg = aggregate( fm , data=B, FUN=mean, na.rm=T )
-      Bg[,v] = variable.recode( Bg[,v], v, direction="backward", db="bio.snowcrab" )
+      Bg[,v] = variable.recode( Bg[,v], v, direction="backward", db="snowcrab" )
 
       Bx = xtabs( fm, data=Bg )
 
@@ -144,7 +144,7 @@
 
 
     if (DS %in% c("B_geomean", "B_geomean.redo" )) {
-      fn = file.path( project.datadirectory("bio.snowcrab"), "R", "B_geomean.bugs.rdata" ) 
+      fn = file.path( project.datadirectory("snowcrab"), "R", "B_geomean.bugs.rdata" ) 
       Bx = NULL
       if (DS=="B_geomean") {
         if (file.exists(fn)) load(fn)
@@ -156,10 +156,10 @@
       
       set = snowcrab.db( DS ="set.complete", p=p, yrs=1996:p$current.assessment.year ) 
       B = set[, c( v, "yr", "cfa" )]
-      B[,v] = variable.recode( B[,v], v, direction="forward", db="bio.snowcrab" )
+      B[,v] = variable.recode( B[,v], v, direction="forward", db="snowcrab" )
 
       Bg = aggregate( fm , data=B, FUN=mean, na.rm=T )
-      Bg[,v] = variable.recode( Bg[,v], v, direction="backward", db="bio.snowcrab" )
+      Bg[,v] = variable.recode( Bg[,v], v, direction="backward", db="snowcrab" )
 
       Bx = xtabs( fm, data=Bg )
 
@@ -173,7 +173,7 @@
  
 
     if (DS %in% c("B_geomean.sd", "B_geomean.sd.redo" )) {
-      fn = file.path( project.datadirectory("bio.snowcrab"), "R", "B_geomean.sd.bugs.rdata" ) 
+      fn = file.path( project.datadirectory("snowcrab"), "R", "B_geomean.sd.bugs.rdata" ) 
       Bx = NULL
       if (DS=="B_geomean.sd") {
         if (file.exists(fn)) load(fn)
@@ -185,10 +185,10 @@
       
       set = snowcrab.db( DS ="set.complete", p=p, yrs=1996:p$current.assessment.year ) 
       B = set[, c( v, "yr", "cfa" )]
-      B[,v] = variable.recode( B[,v], v, direction="forward", db="bio.snowcrab" )
+      B[,v] = variable.recode( B[,v], v, direction="forward", db="snowcrab" )
 
       Bg = aggregate( fm , data=B, FUN=sd, na.rm=T )
-      # Bg[,v] = variable.recode( Bg[,v], v, direction="backward", db="bio.snowcrab" )
+      # Bg[,v] = variable.recode( Bg[,v], v, direction="backward", db="snowcrab" )
 
       Bx = xtabs( fm, data=Bg )
 
@@ -202,7 +202,7 @@
  
 
     if (DS %in% c("R_geomean.sd", "R_geomean.sd.redo" )) {
-      fn = file.path( project.datadirectory("bio.snowcrab"), "R", "R_geomean.sd.bugs.rdata" ) 
+      fn = file.path( project.datadirectory("snowcrab"), "R", "R_geomean.sd.bugs.rdata" ) 
       Bx = NULL
       if (DS=="R_geomean.sd") {
         if (file.exists(fn)) load(fn)
@@ -214,10 +214,10 @@
       
       set = snowcrab.db( DS ="set.complete", p=p, yrs=1996:p$current.assessment.year ) 
       B = set[, c( v, "yr", "cfa" )]
-      B[,v] = variable.recode( B[,v], v, direction="forward", db="bio.snowcrab" )
+      B[,v] = variable.recode( B[,v], v, direction="forward", db="snowcrab" )
 
       Bg = aggregate( fm , data=B, FUN=sd, na.rm=T )
-      # Bg[,v] = variable.recode( Bg[,v], v, direction="backward", db="bio.snowcrab" )
+      # Bg[,v] = variable.recode( Bg[,v], v, direction="backward", db="snowcrab" )
 
       Bx = xtabs( fm, data=Bg )
 
@@ -230,7 +230,7 @@
     }
  
     if (DS %in% c("R", "R.redo" )) {
-      fn = file.path( project.datadirectory("bio.snowcrab"), "R", "R.bugs.rdata" ) 
+      fn = file.path( project.datadirectory("snowcrab"), "R", "R.bugs.rdata" ) 
       R=NULL
       if (DS=="R") {
         if (file.exists(fn)) load(fn)
@@ -259,7 +259,7 @@
 
 
     if (DS %in% c("R.sd", "R.sd.redo" )) {
-      fn = file.path( project.datadirectory("bio.snowcrab"), "R", "R.sd.bugs.rdata" ) 
+      fn = file.path( project.datadirectory("snowcrab"), "R", "R.sd.bugs.rdata" ) 
       R=NULL
       if (DS=="R.sd") {
         if (file.exists(fn)) load(fn)

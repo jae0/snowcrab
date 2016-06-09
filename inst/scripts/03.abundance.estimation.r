@@ -2,7 +2,7 @@
   # --------------------------
   # 0. Initialise work space
 
-  p = bio.bio.snowcrab::initialise.local.environment(
+  p = bio.snowcrab::initialise.local.environment(
     current.assessment.year=2016,
     libs = c("parallel", "lubridate", "bigmemory", "mgcv", "sp", "parallel",
          "grid" , "lattice", "fields", "rgdal", "raster")
@@ -80,7 +80,7 @@
             # "Z", "Npred" )
 
       print( "Make sure variable list here matches those in bio/habitat/src/habitat.complete.r ")
-      print( "and in the model statement in bio/bio.snowcrab/_Rfunctions/analysis/model.formula.r")
+      print( "and in the model statement in bio.snowcrab/_Rfunctions/analysis/model.formula.r")
 
       # p$model.type = "gam.full" # choose method for habitat model :
       # p$model.type = "gam.simple" # choose method for habitat model :
@@ -124,9 +124,9 @@
         p = make.list( list(v=c("R0.mass.environmentals.only", "R0.mass") ), Y=p )
           habitat.model.db (DS="habitat.redo", p=p )
         p = make.list( list(y=1970:p$current.assessment.year, v=c("R0.mass.environmentals.only", "R0.mass") ), Y=p )
-          parallel.run( bio.snowcrab.habitat.db, p=p )
+          parallel.run( snowcrab.habitat.db, p=p )
         # or
-        # bio.snowcrab.habitat.db (p=p) -- working?
+        # snowcrab.habitat.db (p=p) -- working?
       }
 
 

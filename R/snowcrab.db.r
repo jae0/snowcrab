@@ -29,7 +29,7 @@
 			}
 
 			require(RODBC)
-			con = odbcConnect(oracle.bio.snowcrab.server , uid=oracle.bio.snowcrab.user, pwd=oracle.bio.snowcrab.password, believeNRows=F)
+			con = odbcConnect(oracle.snowcrab.server , uid=oracle.snowcrab.user pwd=oracle.snowcrab.password, believeNRows=F)
 			# believeNRows=F required for oracle db's
 
 			for ( YR in yrs ) {
@@ -62,7 +62,7 @@
 			}
 
 			require(RODBC)
-			con = odbcConnect(oracle.bio.snowcrab.server , uid=oracle.bio.snowcrab.user, pwd=oracle.bio.snowcrab.password, believeNRows=F)
+			con = odbcConnect(oracle.snowcrab.server , uid=oracle.snowcrab.user pwd=oracle.snowcrab.password, believeNRows=F)
 			# believeNRows=F required for oracle db's
 
 			for ( YR in yrs ) {
@@ -99,7 +99,7 @@
 			}
 
 			require(RODBC)
-			con = odbcConnect(oracle.bio.snowcrab.server , uid=oracle.bio.snowcrab.user, pwd=oracle.bio.snowcrab.password, believeNRows=F)
+			con = odbcConnect(oracle.snowcrab.server , uid=oracle.snowcrab.user pwd=oracle.snowcrab.password, believeNRows=F)
 			# believeNRows=F required for oracle db's
 
 			for ( YR in yrs ) {
@@ -402,12 +402,12 @@
 
       # do only after the above save
 
-      allometry.bio.snowcrab( "cw.mass", "male", redo=T )
-      allometry.bio.snowcrab( "chela.mass", "male", redo=T  )
-      allometry.bio.snowcrab( "cw.chela.mat", "male", redo=T  )
-      allometry.bio.snowcrab( "cw.mass", "female", redo=T  )
-      allometry.bio.snowcrab( "chela.mass", "female", redo=T  )
-      allometry.bio.snowcrab( "cw.chela.mat", "female", redo=T  )
+      allometry.snowcrab( "cw.mass", "male", redo=T )
+      allometry.snowcrab( "chela.mass", "male", redo=T  )
+      allometry.snowcrab( "cw.chela.mat", "male", redo=T  )
+      allometry.snowcrab( "cw.mass", "female", redo=T  )
+      allometry.snowcrab( "chela.mass", "female", redo=T  )
+      allometry.snowcrab( "cw.chela.mat", "female", redo=T  )
 
       names.e <- list(mat.e, sex.e, cw.e, chela.e, abdomen.e, mass.e, sex.a, sex.c)
       errors = NULL

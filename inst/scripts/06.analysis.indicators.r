@@ -1,5 +1,5 @@
 
-  p = bio.bio.snowcrab::initialise.local.environment( current.assessment.year=2016)
+  p = bio.snowcrab::initialise.local.environment( current.assessment.year=2016)
 
 	p$libs = unique( c( p$libs, bioLibrary( "spacetime", "bio.utilities", "parallel", "sorted.ordination", "bio.indicators") ) )
 

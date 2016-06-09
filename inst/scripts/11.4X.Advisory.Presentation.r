@@ -1,5 +1,5 @@
 #logbook 4X
-p = bio.bio.snowcrab::initialise.local.environment( current.assessment.year=2016)
+p = bio.snowcrab::initialise.local.environment( current.assessment.year=2016)
 
 outdir = file.path(project.datadirectory('bio.snowcrab'),'4X')
 dir.create(outdir,showWarnings=F)

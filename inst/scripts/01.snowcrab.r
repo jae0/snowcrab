@@ -188,7 +188,7 @@
   #for ( vs in c( "R0.mass", "male.large", "male.small", "female.large", "female.small" ) ) {
     ### -------- not yet finished this one ...  TODO
     vs="R0.mass"
-    bio.snowcrab.external.db(p=p, DS="set.bio.snowcrab.in.groundfish.survey.redo", vname=vs, year.current=p$current.assessment.year )
+    bio.snowcrab.external.db(p=p, DS="set.snowcrab.in.groundfish.survey.redo", vname=vs, year.current=p$current.assessment.year )
 
     # ---- TODO !!! must replace this with bio.db processing step
 

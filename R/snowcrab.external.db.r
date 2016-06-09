@@ -47,12 +47,12 @@
       return(ct)
     }
 
-    if ( DS %in% c("set.bio.snowcrab.in.groundfish.survey", "set.bio.snowcrab.in.groundfish.survey.redo"  ) ) {
+    if ( DS %in% c("set.snowcrab.in.groundfish.survey", "set.snowcrab.in.groundfish.survey.redo"  ) ) {
 
       fn = file.path( project.datadirectory("bio.snowcrab"), "R", paste("set.groundfish", vname, "rdata", sep=".") )
 
       set = NULL
-      if ( DS=="set.bio.snowcrab.in.groundfish.survey" ) {
+      if ( DS=="set.snowcrab.in.groundfish.survey" ) {
         if ( file.exists( fn) )  load( fn )
         return (set)
       }

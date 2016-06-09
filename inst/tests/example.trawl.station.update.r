@@ -1,7 +1,7 @@
 
   # used to identify points to modify and obtain coords for new points
 
-  p = bio.bio.snowcrab::initialise.local.environment()
+  p = bio.snowcrab::initialise.local.environment()
 
   set = snowcrab.db("set")
   set = set[ which(set$yr==2007), ]

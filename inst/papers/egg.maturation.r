@@ -15,7 +15,7 @@
   } else { # assume linux
 
     workdir = file.path( project.datadirectory( "bio.snowcrab"), "R" )  # linux
-  	p = bio.bio.snowcrab::initialise.local.environment()
+  	p = bio.snowcrab::initialise.local.environment()
 
   }
 

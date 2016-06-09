@@ -1,5 +1,5 @@
 
-p = bio.bio.snowcrab::initialise.local.environment( libs=c("arm", "car", "effects", "splines") )
+p = bio.snowcrab::initialise.local.environment( libs=c("arm", "car", "effects", "splines") )
 
 data.file = file.path(  project.datadirectory("bio.snowcrab"), "R", "det_georef.rdata" )
 load( data.file )

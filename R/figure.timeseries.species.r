@@ -20,7 +20,7 @@
     }
 
     #na.omit()
-    #variables =  c( variable.list.expand("all.to.model"), variable.list.expand("bio.snowcrab.cw"), variable.list.expand("physical"),"landings", "cpue", "notraps", "effort" )
+    #variables =  c( variable.list.expand("all.to.model"), variable.list.expand("snowcrab.cw"), variable.list.expand("physical"),"landings", "cpue", "notraps", "effort" )
     #variables = c('RO.mass', 'R1.no', 'totno.female')
     #species = c(10, 30, 201, 50, 2521, 2511, 202, 204, 2211) 
     #cod, halibut, thornyskate, wolfish, lessertoadcrab, jonahcrab, smoothskate, winterskate, northernshrimp, 
@@ -33,14 +33,14 @@
   
       if (!( v %in% names.set))  next() 
       B = set[, c( v, "yr", "region" )]
-      B[,1] = variable.recode( B[,1], v, direction="forward", db="bio.snowcrab" )
+      B[,1] = variable.recode( B[,1], v, direction="forward", db="snowcrab" )
       oo = which( B[,1] > 0 | is.finite( B[,1] ) )
       if (length(oo) < 10 ) next()
 
       ylab = list( paste("Geometric mean", v) , cex=cex)
       xlab = list("Year", cex=cex)
 
-      fn = file.path( project.datadirectory("bio.snowcrab"), "R", "timeseries", "survey", paste( v, "png", sep="." ) )
+      fn = file.path( project.datadirectory("snowcrab"), "R", "timeseries", "survey", paste( v, "png", sep="." ) )
       dir.create( dirname(fn), recursive=T, showWarnings=F )
       ftype="png"
       if (grepl( "png$", fn)) ftype="png"
