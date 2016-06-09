@@ -30,8 +30,8 @@ initialise.local.environment = function( current.assessment.year=NULL, libs=NULL
   p$current.assessment.year = current.assessment.year
 
   p = parameter.list.snowcrab ( p=p )
-  p = spatial.parameters( p ) # region and lon/lats, projections
-  p = gmt.parameters( p )
+  p = spatial.parameters( p=p ) # region and lon/lats, projections
+  p = gmt.parameters( p=p )
 
   return(p)
 }
