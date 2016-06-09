@@ -1,5 +1,5 @@
 
-  # Tables based upon data created by "1.bio.snowcrab.r"
+  # Tables based upon data created by "01.snowcrab.r"
 
 p = bio.snowcrab::initialise.local.environment( current.assessment.year=2016)
 

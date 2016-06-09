@@ -1,7 +1,7 @@
 #logbook 4X
 p = bio.snowcrab::initialise.local.environment( current.assessment.year=2016)
 
-outdir = file.path(project.datadirectory('bio.snowcrab'),'4X')
+outdir = file.path(project.datadirectory('bio.snowcrab'),'assessments',  current.assessment.year, "presentations", '4X')
 dir.create(outdir,showWarnings=F)
 
 #Map the Area

@@ -91,7 +91,7 @@ p = bio.snowcrab::initialise.local.environment()
 
   # for Glace Bay comparisons: override with ..
 
-  # reulsts in: ~/bio.snowcrab/issues/briefing.note.glace.bay/2005
+  # reulsts in: ~/tmp/bio.snowcrab/issues/briefing.note.glace.bay/2005
 
 
 p = bio.snowcrab::initialise.local.environment()

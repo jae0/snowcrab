@@ -15,9 +15,9 @@ figure.crab.groundfish.survey <- function(species , outdir=file.path(project.dat
 
 #	      species = c( "cod", "skates", "thornyskate", "northernshrimp",
 #	                   "brittlestar", "basketstar",
-#	                   "bio.snowcrab",  "hermitcrab", "jonahcrab",
+#	                   "hermitcrab", "jonahcrab",
 #	                   "lessertoadcrab", "northernstonecrab", "porcupinestonecrab", "portlyspidercrab",
-#	                   "redcrab", "atlanticrockcrab", "toadcrab", "bio.snowcrab",'atlanticwolffish','halibut','smoothskate','winterskate')
+#	                   "redcrab", "atlanticrockcrab", "toadcrab", "snowcrab",'atlanticwolffish','halibut','smoothskate','winterskate')
 	      #cod, halibut, thornyskate, wolfish, lessertoadcrab, jonahcrab, smoothskate, winterskate, northernshrimp,
 	      species = c(10, 30, 201, 50, 2521, 2511, 202, 204, 2211)
  set = snowcrab.db( DS="set.complete")
@@ -31,7 +31,7 @@ figure.crab.groundfish.survey <- function(species , outdir=file.path(project.dat
 		 ou = ou[order(ou$cfa,ou$yr),]
 		 ou$mean = ou$upper = ou$lower = 0
 		 boot.mean <- function(x,i){mean(x[i])}
-     #get the bs estimates for bio.snowcrab
+     #get the bs estimates for snowcrab
 
 		 for(j in 1:nrow(ou)) {
   	  lp = set[which(set$yr==ou[j,'yr'] & set$cfa==ou[j,'cfa']),'mass']
@@ -63,7 +63,7 @@ figure.crab.groundfish.survey <- function(species , outdir=file.path(project.dat
  		}
 gr.list = do.call(rbind,gr.list)
 gr.list$grp = 'groundfish'
-ou$grp = 'bio.snowcrab'
+ou$grp = 'snowcrab'
 
 xlim=c(1968,p$current.assessment.year+2)
 oi = gr.list

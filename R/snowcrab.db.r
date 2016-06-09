@@ -517,13 +517,13 @@
 			biomass$totmass = biomass$totmass / 1000  # convert from grams to kg
       # !!!!!!!! must verify units of other species from observer system
 
-      bio.snowcrab = merge(x=numbers, y=biomass, by=c("trip", "set"), all=T)
-      bio.snowcrab = bio.snowcrab[ which( as.character(bio.snowcrab$trip) != "-1") , ]
+      snowcrab = merge(x=numbers, y=biomass, by=c("trip", "set"), all=T)
+      snowcrab = snowcrab[ which( as.character(snowcrab$trip) != "-1") , ]
 
-       bio.snowcrab$spec = taxonomy.recode(to='parsimonious',from='spec', tolookup = 2526 )  # 2526 is the code used in the groundfish/snow crab surveys .. convert to internally consistent state
+      snowcrab$spec = taxonomy.recode(to='parsimonious',from='spec', tolookup = 2526 )  # 2526 is the code used in the groundfish/snow crab surveys .. convert to internally consistent state
       # longer here -- in bio db only
 
-			final = bio.snowcrab[,names(x)]  # get the right sequence of variables
+			final = snowcrab[,names(x)]  # get the right sequence of variables
 
 				# strip zeros when both  no and mass are 0
 				z = which( final$totno==0 & final$totmass==0)
@@ -538,7 +538,7 @@
 				if (length(o) >0 ) final$totmass[o] = min( final$totmass[ which(final$totmass>0) ] )  # kg
 
       # -----------------------
-      # merge in the bio.snowcrab weights
+      # merge in the snowcrab weights
       cat = rbind(x, final)
 
 
@@ -650,52 +650,52 @@
 
       # ------------------------------------------------------------------------------------------------
       # add (mean,var,count) of cw
-      # all bio.snowcrabs
+      # all snowcrabs
       # y = bodysize(Y[,c(factors, "mass")], factors, "mass", logtransform=T)  # <<< example for extracting mean mass
         y = bodysize(Y[,c(factors, "cw")], factors, "cw", logtransform=T)
         names(y) = c(factors, "cw.mean", "cw.var", "cw.n")
         X = merge(x=X, y=y, by=factors, all.x=T )
         X$cw.n = X$cw.n / X$sa
 
-      # commercially sized male bio.snowcrabs
+      # commercially sized male snowcrabs
         y = bodysize(Y[filter.class(Y, "m.com"), c(factors, "cw")], factors, "cw", logtransform=T)
         names(y) = c(factors, "cw.comm.mean", "cw.comm.var", "cw.comm.n")
         X = merge(x=X, y=y,  by=factors, all.x=T )
         X$cw.comm.n = X$cw.comm.n / X$sa
 
-      # noncommercial male bio.snowcrabs
+      # noncommercial male snowcrabs
         y = bodysize(Y[filter.class(Y, "m.ncom"), c(factors, "cw")], factors, "cw", logtransform=T)
         names(y) = c(factors, "cw.notcomm.mean", "cw.notcomm.var", "cw.notcomm.n")
         X = merge(x=X, y=y,  by=factors, all.x=T )
         X$cw.notcomm.n = X$cw.notcomm.n / X$sa
 
-      # mature female bio.snowcrabs
+      # mature female snowcrabs
         y = bodysize(Y[filter.class(Y, "f.mat"), c(factors, "cw")], factors, "cw", logtransform=T)
         names(y) = c(factors, "cw.fem.mat.mean", "cw.fem.mat.var", "cw.fem.mat.n")
         X = merge(x=X, y=y,  by=factors, all.x=T )
         X$cw.fem.mat.n = X$cw.fem.mat.n / X$sa
 
-      # immature female bio.snowcrabs
+      # immature female snowcrabs
         y = bodysize(Y[filter.class(Y, "f.imm"), c(factors, "cw")], factors, "cw", logtransform=T)
         names(y) = c(factors, "cw.fem.imm.mean", "cw.fem.imm.var", "cw.fem.imm.n")
         X = merge(x=X, y=y,  by=factors, all.x=T )
         X$cw.fem.imm.n = X$cw.fem.imm.n / X$sa
 
 
-      # mature male bio.snowcrabs
+      # mature male snowcrabs
         y = bodysize(Y[filter.class(Y, "m.mat"), c(factors, "cw")], factors, "cw", logtransform=T)
         names(y) = c(factors, "cw.male.mat.mean", "cw.male.mat.var", "cw.male.mat.n")
         X = merge(x=X, y=y,  by=factors, all.x=T )
         X$cw.male.mat.n = X$cw.male.mat.n / X$sa
 
-      # immature male bio.snowcrabs
+      # immature male snowcrabs
         y = bodysize(Y[filter.class(Y, "m.imm"), c(factors, "cw")], factors, "cw", logtransform=T)
         names(y) = c(factors, "cw.male.imm.mean", "cw.male.imm.var", "cw.male.imm.n")
         X = merge(x=X, y=y,  by=factors, all.x=T )
         X$cw.male.imm.n = X$cw.male.imm.n / X$sa
 
     # ------------------------------------------------------------------------------------------------
-    # add biomass of various components of the bio.snowcrab population
+    # add biomass of various components of the snowcrab population
     #      X = setmerge(X, det, varname="totmass.all", filter="all", variable="mass")
     #      ... better to use the total catch tables as subsampling may be used in the future
 
@@ -709,7 +709,7 @@
       }
 
     # ------------------------------------------------------------------------------------------------
-    # add numbers of various components of the bio.snowcrab population
+    # add numbers of various components of the snowcrab population
     #      X = setmerge(X, Y, varname="totno.all", filter="all", variable="number")
     #       ... better to use the total catch tables as subsampling may be used in the future
 
@@ -758,13 +758,13 @@
       cat2015 = cat[grep("2015", cat$trip),]
       print(head(cat2015))
 
-      cat0 = cat[ taxonomy.filter.taxa( cat$spec, taxafilter="bio.snowcrab", outtype="groundfishcodes"), c(factors, "totno")]
+      cat0 = cat[ taxonomy.filter.taxa( cat$spec, taxafilter="snowcrab", outtype="groundfishcodes"), c(factors, "totno")]
       names(cat0) = c(factors, "totno.all")
       X = merge(x=X, y=cat0, by=factors, all.x=T )
       X$totno.all   = X$totno.all   / X$sa
       X$totno.all[!is.finite(X$totno.all)] = 0  # convert na's to zero
 
-      cat0 = cat[ taxonomy.filter.taxa( cat$spec, taxafilter="bio.snowcrab", outtype="groundfishcodes" ), c(factors, "totmass")]
+      cat0 = cat[ taxonomy.filter.taxa( cat$spec, taxafilter="snowcrab", outtype="groundfishcodes" ), c(factors, "totmass")]
       names(cat0) = c(factors, "totmass.all")
       X = merge(x=X, y=cat0, by=factors, all.x=T )
       X$totmass.all = X$totmass.all / X$sa

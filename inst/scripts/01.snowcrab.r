@@ -180,7 +180,7 @@
   #  tsdata = snowcrab.db("set.timerseries")
 
 # create a new lookuptable for data transformations after refreshing set data/ranges
-  REPOS = recode.variable.initiate.db ( db="bio.snowcrab" )
+  REPOS = recode.variable.initiate.db ( db="snowcrab" )
 
 
 # -------------------------------------------------------------------------------------
@@ -188,7 +188,7 @@
   #for ( vs in c( "R0.mass", "male.large", "male.small", "female.large", "female.small" ) ) {
     ### -------- not yet finished this one ...  TODO
     vs="R0.mass"
-    bio.snowcrab.external.db(p=p, DS="set.snowcrab.in.groundfish.survey.redo", vname=vs, year.current=p$current.assessment.year )
+    snowcrab.external.db(p=p, DS="set.snowcrab.in.groundfish.survey.redo", vname=vs, year.current=p$current.assessment.year )
 
     # ---- TODO !!! must replace this with bio.db processing step
 

@@ -80,7 +80,7 @@
 
         print ( p$runs[iip,] )
 
-        qs = empirical.ranges( db="bio.snowcrab", v, probs=c(p$habitat.threshold.quantile, 0.95), remove.zeros=T )
+        qs = empirical.ranges( db="snowcrab", v, probs=c(p$habitat.threshold.quantile, 0.95), remove.zeros=T )
 
         PS = habitat.db ( DS="complete", year=y, p=p )
 				PS$dyear = p$prediction.dyear  # must be same as above
