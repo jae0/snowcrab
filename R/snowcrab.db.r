@@ -29,7 +29,7 @@
 			}
 
 			require(RODBC)
-			con = odbcConnect(oracle.snowcrab.server , uid=oracle.snowcrab.user pwd=oracle.snowcrab.password, believeNRows=F)
+			con = odbcConnect(oracle.snowcrab.server , uid=oracle.snowcrab.user, pwd=oracle.snowcrab.password, believeNRows=F)
 			# believeNRows=F required for oracle db's
 
 			for ( YR in yrs ) {
@@ -62,7 +62,7 @@
 			}
 
 			require(RODBC)
-			con = odbcConnect(oracle.snowcrab.server , uid=oracle.snowcrab.user pwd=oracle.snowcrab.password, believeNRows=F)
+			con = odbcConnect(oracle.snowcrab.server , uid=oracle.snowcrab.user, pwd=oracle.snowcrab.password, believeNRows=F)
 			# believeNRows=F required for oracle db's
 
 			for ( YR in yrs ) {
@@ -99,7 +99,7 @@
 			}
 
 			require(RODBC)
-			con = odbcConnect(oracle.snowcrab.server , uid=oracle.snowcrab.user pwd=oracle.snowcrab.password, believeNRows=F)
+			con = odbcConnect(oracle.snowcrab.server , uid=oracle.snowcrab.user, pwd=oracle.snowcrab.password, believeNRows=F)
 			# believeNRows=F required for oracle db's
 
 			for ( YR in yrs ) {
