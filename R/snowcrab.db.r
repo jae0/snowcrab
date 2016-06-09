@@ -135,10 +135,10 @@
       # Female abdomen width measure if CW >= 30 mm .. changed in 2007 .. previously all were measured.
 
       # data dump from the observer system
-      # August 2015 added in setcd_id from observer system to address the MPA survey sets (type=11) and regular fix station sets (type=4)
+      # August 2015 added in setcd_id from observer system to address the MPA survey sets (type=11) and regular fix station sets (type=4) .. renamed to set_type
       set = snowcrab.db( DS="set.odbc")
       names( set ) = rename.bio.snowcrab.variables(names( set))
-      setvars = c("trip", "set", "station", "stime", "observer", "cfa", "lon", "lat", "lon1", "lat1", "towquality", "Zx", "Tx", "gear", "sa", "dist", "dist0" )
+      setvars = c("trip", "set", "set_type", "station", "stime", "observer", "cfa", "lon", "lat", "lon1", "lat1", "towquality", "Zx", "Tx", "gear", "sa", "dist", "dist0" )
       print('need to addin the mpa station index')
 
 	    set$trip = as.character(set$trip)
@@ -278,24 +278,6 @@
       set$yr = lubridate::year( set$timestamp )
 
       save( set, file=fn, compress=TRUE )
-
-      ## michelle:: please do not place hard-links into the code as this will force a fail for others ..
-      ## this is probably better created as a functions and you can send to the data for a save into OGR format
-      ## to a location of your choice? ..
-        #MG Save the trawl file to a shapefile to bring into ArcGIS
-        shape.set <- set
-        shape.set$lon <- -shape.set$lon
-        shape.set$timestamp <- as.character(shape.set$timestamp)
-
-        set.cords <- shape.set[, c("lon", "lat")]
-        sdf.set <- SpatialPointsDataFrame(set.cords, data=shape.set)
-        proj4string(sdf.set) <- CRS(p$geog.proj)
-        shpdir = file.path(project.datadirectory("bio.snowcrab"), "maps", "shapefiles", "survey")
-        dir.create ( shpdir, recursive=TRUE, showWarnings=FALSE)
-        setwd(shpdir)
-        writeOGR(sdf.set, ".", "SurveyDataUpdate", driver="ESRI Shapefile", overwrite=T)
-        shp.path <- paste("SurveyDataUpdate shapefile created at", shpdir, sep=" ")
-        print(shp.path)
 
       return ( fn )
     }
