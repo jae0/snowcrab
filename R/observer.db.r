@@ -40,7 +40,7 @@
 
       print ("Run on windows sessions as the linux odbc session is not happy")
       require(RODBC)
-      con=odbcConnect(oracle.snowcrab.server , uid=oracle.snowcrab.user pwd=oracle.snowcrab.password, believeNRows=F)
+      con=odbcConnect(oracle.snowcrab.server , uid=oracle.snowcrab.user, pwd=oracle.snowcrab.password, believeNRows=F)
 
 			for ( YR in yrs ) {
 				fny = file.path( fn.root, paste( YR,"rdata", sep="."))
