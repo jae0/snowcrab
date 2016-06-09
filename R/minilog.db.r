@@ -305,7 +305,7 @@
         toremove =NULL
         for (i in dups) {
           di = which( uuid == uuid[i] )
-          tdiff = B$set_timestamp[di] - B$timestamp[di]
+          tdiff = difftime( B$set_timestamp[di], B$timestamp[di])
           oo = which.min( abs( tdiff) )
           toremove = c(toremove, di[-oo] )
           print("----")

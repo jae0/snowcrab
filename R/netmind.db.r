@@ -250,7 +250,7 @@ netmind.db = function( DS, Y=NULL, plotdata=FALSE ) {
       for (i in dups) {
         di = which( uuid == uuid[i] )
         w <- B[di,]
-        tdiff = B$set_timestamp[di] - B$netmind_timestamp[di]
+        tdiff = difftime( B$set_timestamp[di], B$netmind_timestamp[di])
         oo = which.min( abs( tdiff) )
         toremove = c(toremove, di[-oo] )
         print("----")

@@ -95,7 +95,7 @@
         j1 = j1 + 1
       }
       tdiff1 = abs( difftime( seabird$timestamp[j1], set$timestamp[iset] ))
-      if ( tdiff1 > (15 * minute) ) {
+      if ( tdiff1 > lubridate::minutes(15) ) {
         # then something went wrong .. default to a few minutes before set$chron
         j1 = which.min( abs( difftime( seabird$timestamp, (set$timestamp[iset] + lubridate::minutes(12) ) )) )
       }
