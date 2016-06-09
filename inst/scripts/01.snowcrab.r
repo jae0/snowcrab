@@ -9,7 +9,7 @@
 
   # load required functions and parameters
 
-  p = bio.snowcrab::initialise.local.environment( current.assessment.year=2016)
+  p = bio.snowcrab::initialise.local.environment( current.assessment.year=2016 )
 
   debug = FALSE
   if (debug) {

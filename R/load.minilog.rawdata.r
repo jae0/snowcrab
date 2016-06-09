@@ -125,7 +125,7 @@
 
       error = ""
       if (any(is.na(minilog$timestamp))) error = paste(error, "Ambiguous time format" )
-      if (lubraidate::year(minilog$timestamp[1]) != yr)  error = paste(error, "Years inconsistent" )
+      if (lubridate::year(minilog$timestamp[1]) != yr)  error = paste(error, "Years inconsistent" )
       strangedatacheck = try( lm(temperature ~ depth, data=minilog,  na.action="na.omit"), silent=T )
       if ( "try-error" %in% class( strangedatacheck ) ) error=paste(error, "no depth data?")
 
