@@ -52,12 +52,14 @@
     # creates initial rdata and sqlite db
     snowcrab.db( DS="setInitial.redo", p=p ) # this is required by the seabird.db (but not minilog and netmind)
 
-    # not required
+    # was in above split off as it is not required
     export.to.shapefile(
       inp=snowcrab.db( DS="setInitial", p=p ),
       out=file.path(project.datadirectory("bio.snowcrab"), "maps", "shapefiles", "survey"),
       fn="SurveyDataUpdate"
     )
+
+(p$current.assessment.year)
 
     seabird.yToload = p$current.assessment.year
     minilog.yToload = p$current.assessment.year

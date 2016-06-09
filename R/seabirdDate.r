@@ -18,7 +18,7 @@
           dstring = paste(y[1], y[2], y[3], sep=" ")
           tstring = y[4]
           out = lubridate::parse_date_time( paste(dstring, tstring ), orders="d b y H:M:S" ) # b = mon, in POSIXct
-          if (outvalue=="year") return( lubdridate::year( out ) )
+          if (outvalue=="year") return( lubridate::year( out ) )
           if (outvalue=="posix") return(out)
         }
       }
