@@ -139,17 +139,15 @@
             res = removeDuplicateswithNA(res,cols=c('trip','set'),idvar='dt')
           }
 
-  #      res$t0 = as.POSIXct( as.chron(res$t0), tz=tzone, origin=lubridate::origin )
-  #      res$t1 = as.POSIXct( as.chron(res$t1), tz=tzone, origin=lubridate::origin )
+  #      res$t0 = as.POSIXct( as.chron(res$t0), tz="America/Halifax", origin=lubridate::origin )
+  #      res$t1 = as.POSIXct( as.chron(res$t1), tz="America/Halifax", origin=lubridate::origin )
         res$dt = difftime( res$t1, res$t0 )
         # res$timestamp = lubridate::ymd_hms( res$timestamp)
 
         return (res)
        }
 
-
       # "stats.redo" is the default action
-      tzone = "America/Halifax"
 
       for ( yr in Y ) {
         print (yr )
@@ -159,7 +157,7 @@
 #        miniRAW$timestamp = lubridate::ymd_hms( miniRAW$chron)
 
         mta = minilog.db( DS="metadata", Y=yr )
-        mta$timestamp = ymd_hms( mta$timestamp )
+        mta$timestamp = ymd_hms( mta$timestamp, tz="America/Halifax")
 
         rid = minilog.db( DS="set.minilog.lookuptable" )
         rid = data.frame( minilog_uid=rid$minilog_uid, stringsAsFactors=FALSE )
@@ -179,8 +177,9 @@
           if (length( Mi) == 0 ) next()
           M = miniRAW[ Mi, ]
 
-#          M$timestamp = as.POSIXct( M$chron, tz=tzone, origin=lubridate::origin )
-          settimestamp= as.POSIXct( rid$set_timestamp[i] , tz=tzone , origin=lubridate::origin )
+#          M$timestamp = as.POSIXct( M$chron, tz="America/Halifax", origin=lubridate::origin )
+          # settimestamp= as.POSIXct( rid$set_timestamp[i] , tz="America/Halifax", origin=lubridate::origin )
+          settimestamp= rid$set_timestamp[i]
           time.gate =  list( t0=settimestamp - dminutes(5), t1=settimestamp + dminutes(11) )
 
           print( paste( i, ":", id) )
@@ -265,8 +264,8 @@
             #            res$t0 = bc$smooth.method[2]
             #            res$dt = bc$smooth.method[2] -  bc$smooth.method[1]
           }
-          res$t0 = as.POSIXct(res$t0,origin=lubridate::origin, tz=tzone )
-          res$t1 = as.POSIXct(res$t1,origin=lubridate::origin, tz=tzone )
+          res$t0 = as.POSIXct(res$t0,origin=lubridate::origin, tz="America/Halifax" )
+          res$t1 = as.POSIXct(res$t1,origin=lubridate::origin, tz="America/Halifax")
           res$dt = as.numeric(res$dt)
           miniStats = rbind(miniStats, cbind( minilog_uid=id, res ) )
         }

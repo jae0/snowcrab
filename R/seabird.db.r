@@ -147,7 +147,7 @@
    #     sbRAW$timestamp = lubridate::ymd_hms( sbRAW$timestamp )
 
         mta = seabird.db( DS="metadata", Y=yr )
-        mta$timestamp = ymd_hms( mta$timestamp )
+        # mta$timestamp = ymd_hms( mta$timestamp )
 
         rid = seabird.db( DS="set.seabird.lookuptable" )
         rid = data.frame( seabird_uid=rid$seabird_uid, stringsAsFactors=FALSE )

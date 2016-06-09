@@ -165,7 +165,7 @@
       x$status = ""  # "" "" ""
 
       datelanded =  matrix(unlist(strsplit(x$date.landed, " ", fixed=T)), ncol=2, byrow=T)[,1]
-      x$date.landed = lubridate::ymd( datelanded )
+      x$date.landed = lubridate::ymd( datelanded, tz="America/Halifax" )
       x$landings = x$pro_rated_slip_wt_lbs * 0.454  # convert to kg
       x$cpue = x$landings / x$effort
       x$depth = x$depth_fm*1.83
@@ -354,7 +354,7 @@
        da = substring(dt,7,8)
 
        logs[i, "date.landed"] = paste( mon, da, yr, sep="/")
-       logs$date.landed = lubridate::mdy( logs$date.landed)
+       logs$date.landed = lubridate::mdy( logs$date.landed, tz="America/Halifax" )
 
        to.extract = c( "year","lat","lon","depth","landings","effort","soak.time",
                         "cpue","trap.type","cfv","status","licence",

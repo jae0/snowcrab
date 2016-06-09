@@ -40,20 +40,21 @@
     if (is.null(headerdateformat) ) return( NULL )
 
     minilog$mdate = gsub("^80-", "2000-", minilog$mdate )  # there are incorrect year entries
-    minilog$timestamp = lubridate::parse_date_time ( paste(minilog$mdate, minilog$mtime), orders=paste(headerdateformat, "H:M:S" ) )
+    minilog$timestamp = lubridate::parse_date_time ( paste(minilog$mdate, minilog$mtime), orders=paste(headerdateformat, "H:M:S" ), tz="America/Halifax" )
 
-    yr = as.numeric( as.character( lubridate::year( minilog$timestamp[1]) ) )
+    yr = lubridate::year( minilog$timestamp[1])
     if (!is.finite(yr) ) yr = minilogDate( header=header, outvalue="year"  )
     print(filename2)
     #break up minilog by station
     setS = set[which(tolower(set$trip)==tripid),]
-    minilog$timestamp1 = trunc(minilog$timestamp, 'mins')
+    # minilog$timestamp1 = trunc(minilog$timestamp, 'mins')
     metadata = NULL
     basedata = NULL
     for(pp in 1:nrow(setS)){
         xS = setS[pp,]
-        mi = minilog[ which( minilog$timestamp1 >= (xS$timestamp - lubridate::minutes(10)) &
-                             minilog$timestamp1 <= (xS$timestamp + lubridate::minutes(20))) , ] #three minutes before the start of the tow and 15 min after from setinfo
+        xSii = which( minilog$timestamp >= (xS$timestamp - lubridate::minutes(10)) &
+                      minilog$timestamp <= (xS$timestamp + lubridate::minutes(20)))
+        mi = minilog[ xSii , ] #three minutes before the start of the tow and 15 min after from setinfo
         mi$minilog_uid = xS$minilog_uid = paste('minilog',tripid,xS$station,xS$set,sep=".")
         xS = data.frame(
           minilog_uid=xS$minilog_uid,

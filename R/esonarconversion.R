@@ -32,7 +32,7 @@ esonar2netmind = function(fn = NULL) {
 
       stop( "Must verify time formats in esonar inputs and converted netmind output")
 
-    ets = lubridate::ymd(esonar$GPSDate)
+    ets = lubridate::ymd(esonar$GPSDate, tz="UTC" )  # should check this
     ets = as.character(ets)
     etsd = strsplit(ets, "[- :punct:]")
     ww = sapply(stsd, function(x) paste(x[3], x[1], x[2], sep = ""))

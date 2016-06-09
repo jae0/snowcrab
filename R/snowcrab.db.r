@@ -272,7 +272,7 @@
       set$stime = NULL ### --need to check timezone!!! TODO .... seems to be "America/Halifax" .. compare with seabird/minilog
 
       i = which(is.na(set$timestamp))
-      if (length(i)>0) set$timestamp[i] = tripcode.to.timestamp( set$trip[i], "12:00:00" )
+      if (length(i)>0) set$timestamp[i] = tripcode.to.timestamp( set$trip[i], "12:00:00", tzone="America/Halifax"  )
 
       set$julian = lubridate::yday( set$timestamp )
       set$yr = lubridate::year( set$timestamp )

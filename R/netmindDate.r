@@ -23,7 +23,7 @@
         if ( length(ndt) != 7) stop ( paste("Local Time error:", header[lineloc], fnNetmind ) )
         dateobject = dates( gsub( "[[:space:]]", "", paste( ndt[7], ndt[4], ndt[5], sep="-" ) ), format="y-mon-d")
         timeobject = times( gsub( "[[:space:]]", "", ndt[6] ) )
-        loctime = lubridate::ymd_hms( paste( dateobject, timeobject) )
+        loctime = lubridate::ymd_hms( paste( dateobject, timeobject), tz="America/Halifax" )
         return (loctime)
       }
 
@@ -33,7 +33,7 @@
         recdate = paste(substring(rec[1],1,2), substring(rec[1],3,4), substring(rec[1],5,6), sep="-")
         recyr = (substring(rec[2],1,2))
         rectime = paste(recyr, substring(rec[2],3,4), substring(rec[2],5,6), sep=":")
-        rects = lubridate::ymd_hms( paste( recdate, rectime) )
+        rects = lubridate::ymd_hms( paste( recdate, rectime), tz="UTC" )
         return( rects )
       }
 
