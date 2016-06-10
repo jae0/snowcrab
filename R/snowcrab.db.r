@@ -197,7 +197,7 @@
         set$lon[i] = 60.08317
       }
 
-      debug.2015= T
+      debug.2015= FALSE
       if(debug.2015) {
         i= which(set$trip_id == '100045549' & set$set==1 & set$station ==1)
         set$stime[i] = 0449
