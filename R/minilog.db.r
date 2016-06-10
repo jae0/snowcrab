@@ -67,7 +67,7 @@
       }
       filelist = filelist[ which( !is.na( filelist[,1] ) ) , ]
 
-      set = snowcrab.db( DS="setInitial" )  # set$timestamp is in local time America/Halifax
+      set = snowcrab.db( DS="setInitial" )  # set$timestamp is in UTC
 
       for ( yr in Y ) {
         print(yr)
@@ -157,7 +157,13 @@
 #        miniRAW$timestamp = lubridate::ymd_hms( miniRAW$chron)
 
         mta = minilog.db( DS="metadata", Y=yr )
-        mta$timestamp = ymd_hms( mta$timestamp, tz="America/Halifax")
+
+        str(mta)
+        mta$timestamp[1]
+
+        stop()
+
+        # mta$timestamp = ymd_hms( mta$timestamp, tz="America/Halifax")
 
         rid = minilog.db( DS="set.minilog.lookuptable" )
         rid = data.frame( minilog_uid=rid$minilog_uid, stringsAsFactors=FALSE )
@@ -264,8 +270,8 @@
             #            res$t0 = bc$smooth.method[2]
             #            res$dt = bc$smooth.method[2] -  bc$smooth.method[1]
           }
-          res$t0 = as.POSIXct(res$t0,origin=lubridate::origin, tz="America/Halifax" )
-          res$t1 = as.POSIXct(res$t1,origin=lubridate::origin, tz="America/Halifax")
+#          res$t0 = as.POSIXct(res$t0,origin=lubridate::origin, tz="America/Halifax" )
+#          res$t1 = as.POSIXct(res$t1,origin=lubridate::origin, tz="America/Halifax")
           res$dt = as.numeric(res$dt)
           miniStats = rbind(miniStats, cbind( minilog_uid=id, res ) )
         }

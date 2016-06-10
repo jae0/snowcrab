@@ -1,7 +1,5 @@
 
-  data.quality.check = function( set, type ) {
-
-
+  data.quality.check = function( type ) {
 
     if (type=="seabird.load") {
         SS = snowcrab.db( DS="setInitial")
@@ -35,9 +33,8 @@
     }
 
 
-
-
     if (type=="tow.duration") {
+      set <- snowcrab.db( DS="setInitial" )
       e0 = which( ( set$dt > 9  | set$dt < 3.5 )  & set$yr >=2004 )
       if  (length(e0)>0 ) {
         print( "The following have rather short/long tow times (dt)" )
@@ -49,6 +46,7 @@
 
     if (type=="tow.distance") {
       # expected = 2 knots * 5 min = 2 * 1.852 * 5/60 = 0.309 km ( so a good range is {-25%, +75%} = (0.232, 0.5408)
+      set <- snowcrab.db( DS="setInitial" )
       e0 = which( ( set$distance > 0.541  | set$distance < 0.232 )  & set$yr >=2004 )
       if  (length(e0)>0 ) {
         print( "The following have rather short/long tow distances" )
@@ -60,6 +58,7 @@
 
     if (type=="netmind.timestamp") {
       #  check times/data and merge remaining data using datestamps and {station, set}
+      set <- snowcrab.db( DS="setInitial" )
       time.diff = difftime( set$netmind.timestamp, set$timestamp )
       time.thresh = lubridate::minutes(30)
       i = which( abs( time.diff ) > time.thresh )
@@ -72,6 +71,7 @@
 
     # netmind mismatches
     if(type=="netmind.mismatches") {
+      set <- snowcrab.db( DS="setInitial" )
       q = which( set$yr > 2004 & (set$netmind_uid==""| is.na(set$netmind_uid) )  )
       if ( length (q) > 0 ) {
         print( "No netmind matches for the following sets:")
@@ -83,6 +83,7 @@
 
     # duplicated stations
     if (type=="stations") {
+      set <- snowcrab.db( DS="setInitial" )
       must.be.unique = paste( set$yr, set$station, sep="~" )
       dups = duplicates.toremove( must.be.unique )
       x = set[ dups, c( "trip", "set", "station" ) ]
@@ -95,6 +96,7 @@
 
     # poor minilog matches
     if(type=="minilog") {
+      set <- snowcrab.db( DS="setInitial" )
       must.be.unique = set$t0
       dups = duplicates.toremove( must.be.unique )
       x = set[ dups, c( "trip", "set", "station", "t0" ) ]
@@ -106,6 +108,7 @@
 
     # minilog mismatches
     if(type=="minilog.mismatches") {
+      set <- snowcrab.db( DS="setInitial" )
       q = which( set$yr > 2004 & (set$minilog_uid==""| is.na(set$minilog_uid) )  )
       if ( length (q) > 0 ) {
         print( "No minilog matches for the following sets:")
@@ -115,6 +118,7 @@
     }
 
     if(type=="minilog.dateproblems") {
+      set <- snowcrab.db( DS="setInitial" )
       time.thresh = lubridate::hours(1)
       ii = which( abs( difftime( set$t0, set$timestamp )) > time.thresh )
       if ( length (ii) > 0 ) {
@@ -126,6 +130,7 @@
 
     # positional information
     if(type=="position") {
+      set <- snowcrab.db( DS="setInitial" )
       plot(set$lon, set$lat)
       inside = filter.region.polygon( set[, c("lon", "lat") ], "cfaall")
       if (length (inside) == nrow(set) ) {
@@ -142,6 +147,7 @@
 
     # counts of stations by area
     if(type=="count.stations") {
+      set <- snowcrab.db( DS="setInitial" )
       years = sort( unique( set$yr ) )
       nyears = length(years)
       nregions = length(p$regions)
@@ -160,13 +166,19 @@
       print (x)
       return(x)
     }
-  if(type=='na.spread') {
-    	ii <- which(is.na(set$spread))
+
+
+    if(type=='na.spread') {
+      set <- snowcrab.db( DS="setInitial" )
+
+      ii <- which(is.na(set$spread))
     	x = set[ii,c('trip','set','station','netmind')]
     	print(x)
     	return(x)
     }
+
     if(type=='na.distance') {
+      set <- snowcrab.db( DS="setInitial" )
     	ii <- which(is.na(set$distance))
     	x = set[ii,c('trip','set','station','netmind')]
     	print(x)

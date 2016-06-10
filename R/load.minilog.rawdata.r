@@ -65,14 +65,15 @@
     if (is.null(headerdateformat) ) return( NULL )
 
     minilog$mdate = gsub("^80-", "2000-", minilog$mdate )  # there are incorrect year entries
-    minilog$timestamp = lubridate::parse_date_time ( paste(minilog$mdate, minilog$mtime), orders=paste( headerdateformat, "H:M:S" ) )
+    minilog$timestamp = lubridate::parse_date_time ( paste(minilog$mdate, minilog$mtime), orders=paste( headerdateformat, "H:M:S" ), tz="America/Halifax" )
+    minilog$timestamp = with_tz(  minilog$timestamp, "UTC" )  # set/setInitial is in UTC .. match the time zone .. to permit time comparisons with range
 
-    yr = as.numeric( as.character( lubridate::year( minilog$timestamp[1]) ) )
+    yr = lubridate::year( minilog$timestamp[1])
     if (!is.finite(yr) ) yr = minilogDate( header=header, outvalue="year"  )
-
 
     # check time first
     minilog.date.range = range( minilog$timestamp )
+
     setxi = which( set$timestamp >= minilog.date.range[1] & set$timestamp <= minilog.date.range[2] )
     if ( length(setxi ) ==0 ) return (NULL)
 
@@ -144,7 +145,7 @@
       if (length(zmaxi)==0) zmaxi = floor( nrow(minilog) / 2 )  # take midpoint
       if ( !(length(zmaxi)==1) ) stop( filename )
       tstamp = minilog$timestamp[o[zmaxi]]
-      minilog_uid = paste( "minilog",  setx$trip, setx$set, setx$station, hours(tstamp), minutes(tstamp), f, sep=".")
+      minilog_uid = paste( "minilog",  setx$trip, setx$set, setx$station, lubridate::hour(tstamp), lubridate::minute(tstamp), f, sep=".")
       minilog$minilog_uid[o] = minilog_uid
 
       out = data.frame( minilog_uid, yr, minilog$timestamp[zmaxi], setx$trip, setx$set, setx$station, studyid, setx$Zx, setx$timestamp, error, filename2, headerall, stringsAsFactors=FALSE)

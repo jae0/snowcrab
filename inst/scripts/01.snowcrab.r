@@ -84,41 +84,42 @@
     minilog.db (DS="stats.redo", Y=minilog.yToload )
     netmind.db (DS="stats.redo", Y=netmind.yToload )
 
-    set <- snowcrab.db( DS="setInitial", p=p ) # this is required by the seabird.db (but not minilog and netmind)
-    # set2015 <- set[which(set$yr == '2015'),] #check to make sure 2015 data is in there properly
-    # head(set2015)
 
-      problems = data.quality.check( set, type="stations")
-      problems = data.quality.check( set, type="count.stations")
-      problems = data.quality.check( set, type="position")
-      #MG try checking the end position of the tow, if there is an error
+    problems = data.quality.check( type="stations")
+    problems = data.quality.check( type="count.stations")
+    problems = data.quality.check( type="position")
+    #MG try checking the end position of the tow, if there is an error
 
-      problems = data.quality.check( set, type="minilog.mismatches" )
-      problems = data.quality.check( set, type="tminilog.load")
-      problems = data.quality.check( set, type="minilog.dateproblems")
-      problems = data.quality.check( set, type="minilog") # Check for duplicate timestamps
+    problems = data.quality.check( type="minilog.mismatches" )
+    problems = data.quality.check( type="minilog.load")
+    problems = data.quality.check( type="minilog.dateproblems")
+    problems = data.quality.check( type="minilog") # Check for duplicate timestamps
 
-      problems = data.quality.check( set, type="netmind.load")
-      problems = data.quality.check( set, type="netmind.mismatches" )
+    problems = data.quality.check( type="netmind.load")
+    problems = data.quality.check( type="netmind.mismatches" )
 
-      problems = data.quality.check( set, type="tow.duration")
-      problems = data.quality.check( set, type="tow.distance")
+    problems = data.quality.check( type="tow.duration")
+    problems = data.quality.check( type="tow.distance")
 
-      problems = data.quality.check( set, type="seabird.mismatches" )
-      problems = data.quality.check( set, type="seabird.load")
+    problems = data.quality.check( type="seabird.mismatches" )
+    problems = data.quality.check( type="seabird.load")
 
-      problems = data.quality.check( set, type="netmind.timestamp" )
+    problems = data.quality.check( type="netmind.timestamp" )
 
 
     snowcrab.db( DS="set.clean.redo", p=p )  # sanity checks
+
     #MG det.initial.redo updates and processes morphology. This code now identifies morphology errors, which must be
     #checked with written logs, then sent to database and put in debugging here and re-run
     snowcrab.db( DS="det.initial.redo", p=p )
     snowcrab.db( DS="det.georeferenced.redo" )
+
     snowcrab.db( DS="cat.initial.redo", p=p )
     snowcrab.db( DS="cat.georeferenced.redo" )
+
     snowcrab.db( DS="set.merge.det.redo" )
     snowcrab.db( DS="set.merge.cat.redo" )
+
   }  # end base data
 
 

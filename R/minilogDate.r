@@ -26,7 +26,8 @@
 
       Mtimestamp = paste( Mdate, Mtime )
 
-      out = lubridate::parse_date_time ( Mtimestamp, orders=paste( date.format, "H:M:S" ) )
+      out = lubridate::parse_date_time ( Mtimestamp, orders=paste( date.format, "H:M:S" ), tz="America/Halifax"  )
+      out = with_tz( out, "UTC" )
 
       if (outvalue=="year") out = lubridate::year( out )
       if (outvalue=="format") out = date.format

@@ -1,7 +1,7 @@
 
   # ---------------------------------------- low-level data access
 
-	load.seabird.rawdata = function(fn, f, set, plot=F) {
+	load.seabird.rawdata = function(fn, f, set, plotdata=F) {
 
     out = NULL
 
@@ -19,12 +19,11 @@
 
     if ( nrow(seabird) < 10 ) return( NULL )
     if(ncol(seabird)==1) {
-#AMC ADDED 2013 FOR FUNCTIONALITY AND IF SEABIRD DATA NOT SEPARAETED OUT BY COLUMNS
-  seabird = as.data.frame(matrix(apply(seabird,2,function(x) unlist(strsplit(x,","))),ncol=4,byrow=T))
+      #AMC ADDED 2013 FOR FUNCTIONALITY AND IF SEABIRD DATA NOT SEPARAETED OUT BY COLUMNS
+      seabird = as.data.frame(matrix(apply(seabird,2,function(x) unlist(strsplit(x,","))),ncol=4,byrow=T))
     }
 
-#if time is not correct in seabird file and is due to DST fix by BMC
-
+    # if time is not correct in seabird file and is due to DST fix by BMC
     mhead = readLines(filename, n=40)
     #local time
     lt = mhead[grep("System UpLoad Time",mhead)]
@@ -36,7 +35,7 @@
     st = unlist(strsplit(unlist(strsplit(st,"    "))[2], "  "))
     st  = lubridate::dmy_hms( paste( st[1], st[2]))
 
-    dt = as.numeric(round(difftime(lt,st))[[1]]/24)
+    dt = difftime(lt,st)
 
     #add Dt to seabird times
     colnames(seabird) = c( "temperature", "pressure", "mdate", "mtime")
@@ -50,6 +49,10 @@
     # check time first
 
     seabird.date.range = range( seabird$timestamp )
+
+    # set is in ADT/AST .. convert to UTC
+    set$timestamp = with_tz( set$timestamp, "UTC")
+
     setxi = which( set$timestamp >= seabird.date.range[1] & set$timestamp <= seabird.date.range[2] )
     if ( length( setxi ) == 0 ) return(NULL)
 
@@ -129,9 +132,7 @@
             plot(seabird$timestamp, -seabird$pressure,type='l',main=setinfo$trip[1])
             points(setinfo$timestamp, rep(0,nrow(setinfo)),pch=16,col='red')
             dev.off()
-
           }
-
         next()
       }
 
@@ -140,7 +141,7 @@
       if (length(zmaxi)==0) zmaxi = floor( length(o) / 2 )  # take midpoint
 
       tstamp = seabird$timestamp[o[zmaxi]]
-      uid =  paste( "seabird", setx$trip, setx$set, setx$station, hours(tstamp), minutes(tstamp), f, sep=".")
+      uid =  paste( "seabird", setx$trip, setx$set, setx$station, lubridate::hour(tstamp), lubridate::minute(tstamp), f, sep=".")
       seabird$seabird_uid[o] = uid
       seabird$depth[o] = decibar2depth ( P=seabird$pressure[o], lat=setx$lat )
       studyid = paste( setx$trip, setx$set, setx$station, sep="." )

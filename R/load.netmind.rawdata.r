@@ -104,6 +104,9 @@
       station = as.numeric( station )
 
 
+      # set is in ADT/AST .. convert to UTC .. will not be necessary once fixed at set level
+      set$timestamp = with_tz( set$timestamp, "UTC")
+
       setxi = NULL
 
       if (is.null ( setxi ) ) {
@@ -193,7 +196,7 @@
 
       setx = set[ setxi , ] # matching trip/set/station
 
-      netmind_uid =  paste( "netmind", setx$trip, setx$set, setx$station, hours(netmind.timestamp), minutes(netmind.timestamp), f, sep=".")
+      netmind_uid =  paste( "netmind", setx$trip, setx$set, setx$station, lubridate::hour(netmind.timestamp), lubridate::minute(netmind.timestamp), f, sep=".")
 
       filename = basename(fn)
 

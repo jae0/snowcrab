@@ -77,7 +77,7 @@
         basedata = NULL
         metadata = NULL
         for (f in 1:length(fs)) {
-          j = load.seabird.rawdata( fn=fs, f=f, set=set, plotdata=T )  # variable naming conventions in the past
+          j = load.seabird.rawdata( fn=fs, f=f, set=set, plotdata=FALSE )
           if (is.null(j)) next()
           metadata = rbind( metadata, j$metadata)
           basedata = rbind( basedata, j$basedata)

@@ -274,6 +274,9 @@
       i = which(is.na(set$timestamp))
       if (length(i)>0) set$timestamp[i] = tripcode.to.timestamp( set$trip[i], "12:00:00", tzone="America/Halifax"  )
 
+      # from this point forwards all timestamps are in UTC for set
+      set$timestamp = with_tz( set$timestamp, "UTC")
+
       set$julian = lubridate::yday( set$timestamp )
       set$yr = lubridate::year( set$timestamp )
 
@@ -787,93 +790,6 @@
     # --------------------------------
 
 
-    if (DS %in% c("set.minilog.seabird.retired", "set.minilog.seabird.redo.retired")) {
-      # merge setInitial with minilog stats, seabird stats to generate sensible start and end times
-      # used for creating netmind stats /metrics
-      fn = file.path( project.datadirectory( "bio.snowcrab", "data"), "set.minilog.seabird.rdata" )
-
-      if (DS=="set.minilog.seabird.redo.retired") {
-        set = NULL
-        if ( file.exists( fn) ) load (fn)
-        return (set)
-      }
-
-      if (DS=="set.minilog.seabird.retired") {
-        tzone = "America/Halifax"
-        set = snowcrab.db( DS="setInitial")
-        set.names= names(set)
-        #set2015 = set[which(set$yr==2015),]
-
-        #These have 2015 data in them
-        sb = seabird.db( DS="set.seabird.lookuptable" )
-        ml = minilog.db( DS="set.minilog.lookuptable" )
-        # ml2015 = ml[grep("2015", ml$trip),]
-        nm = netmind.db( DS="set.netmind.lookuptable" )
-
-        set = merge( set, sb, by=c("trip","set"), all.x=T, all.y=F, sort=F, suffixes=c("", ".seabird") )
-        set = merge( set, ml, by=c("trip","set"), all.x=T, all.y=F, sort=F, suffixes=c("", ".minilog") )
-        set = merge( set, nm, by=c("trip","set"), all.x=T, all.y=F, sort=F, suffixes=c("", ".netmind") )
-
-        set = set[ , c( set.names, "seabird_uid", "minilog_uid", "netmind_uid" ) ]
-
-        #These do not have 2015 data in them
-        sbStats =  seabird.db( DS="stats" )
-   #     sbStats = sbStats[ , c("seabird_uid", "z", "zsd", "t", "tsd", "n", "t0", "t1", "dt" ) ]
-        sbStats = sbStats[ , c("seabird_uid",'trip','set', "z", "zsd", "t", "tsd", "n", "t0", "t1", "dt" ) ]
-        #sbStats2015= sbStats[grep("2015", sbStats$trip),]
-        mlStats =  minilog.db( DS="stats" )
-   #     mlStats = mlStats[ , c("minilog_uid", "z", "zsd", "t", "tsd", "n", "t0", "t1", "dt" ) ]
-        mlStats = mlStats[ , c("minilog_uid",'trip','set', "z", "zsd", "t", "tsd", "n", "t0", "t1", "dt" ) ]
-         #mlStats2015= mlStats[grep("2015", mlStats$trip),]
-
-
-
-        names( mlStats ) = c("minilog_uid",'trip','set', "z.ml", "zsd.ml", "t.ml", "tsd.ml", "n.ml", "t0.ml", "t1.ml", "dt.ml" )
-
-#      set = merge( set, sbStats, by="seabird_uid", all.x=TRUE, all.y=FALSE, sort=FALSE )
-#      set = merge( set, mlStats, by="minilog_uid", all.x=TRUE, all.y=FALSE, sort=FALSE )
-        set = merge( set, sbStats, by=c("trip","set"), all.x=TRUE, all.y=FALSE, sort=FALSE )
-        set = merge( set, mlStats, by=c("trip","set"), all.x=TRUE, all.y=FALSE, sort=FALSE )
-        set$t0 = as.POSIXct(set$t0,format="%Y-%m-%d %H:%M:%S", tz=tzone,origin=lubridate::origin )
-        set$t1 = as.POSIXct(set$t1,format="%Y-%m-%d %H:%M:%S", tz=tzone ,origin=lubridate::origin)
-        set = toNums(set,c('dt','t0.ml','t1.ml', 'dt.ml'))
-
-        # use seabird data as the standard, replace with minilog data where missing
-        ii = which(!is.finite( set$t0) )
-        if (length(ii) > 0 )  set$t0[ ii] = as.POSIXct(set$t0.ml[ii],origin=lubridate::origin, tz=tzone)
-
-        ii = which(!is.finite( set$t1) )
-        if (length(ii) > 0 )  set$t1[ ii] = as.POSIXct(set$t1.ml[ii],origin=lubridate::origin, tz=tzone)
-
-        ii = which(!is.finite( set$z) )
-        if (length(ii) > 0 )  set$z[ ii] = set$z.ml[ii]
-
-        ii = which(!is.finite( set$zsd) )
-        if (length(ii) > 0 )  set$zsd[ ii] = set$zsd.ml[ii]
-
-        ii = which(!is.finite( set$t) )
-        if (length(ii) > 0 )  set$t[ ii] = set$t.ml[ii]
-
-        ii = which(!is.finite( set$tsd) )
-        if (length(ii) > 0 )  set$tsd[ ii] = set$tsd.ml[ii]
-
-
-
-        ii = which(!is.finite( set$dt) )
-        if (length(ii) > 0 )  set$dt[ ii] = set$dt.ml[ii]
-
-        set = set[ ,c(set.names, "netmind_uid", "z", "zsd", "t", "tsd", "t0", "t1", "dt" ) ]
-     #   set2015 = set[which(set$yr==2015),]  ## why are we doing this over here? and if you want to do this make it more generic rather than for a specific year? (Jae)
-     #   print(head(set2015))
-        save( set, file=fn, compress=TRUE)
-        return (fn)
-      }
-    }
-
-    # --------------------------------
-
-
-
     if ( DS %in% c("set.clean", "set.clean.redo") ) {
 
       # merge seabird, minilog and netmind data and do some checks and cleaning
@@ -886,10 +802,10 @@
       }
 
       # the beginning here is identical to the netmind.db( "stat.redo" ) .. simpler to keep it this way (jae)
-      tzone = "America/Halifax"
-      set = snowcrab.db( DS="setInitial")
+      set = snowcrab.db( DS="setInitial")  # timestamp in UTC
 
-      sbStats =  seabird.db( DS="stats" )
+      sbStats =  seabird.db( DS="stats" )  # timestamp in UTC
+
       sbv = c('trip','set', "z", "zsd", "t", "tsd", "n", "t0", "t1", "dt" )
       set_sb = merge( set[, c("trip", "set") ], sbStats[,sbv], by=c("trip","set"), all.x=TRUE, all.y=FALSE, sort=FALSE )
       # tapply( as.numeric(set_sb$dt), year(set_sb$t1), mean, na.rm=T )
@@ -941,11 +857,13 @@
 
       # last resort: use netmind data to fill
       ii = which(!is.finite( set$t0) )
-      if (length(ii) > 0 )  set$t0[ ii] = as.POSIXct( set$t0.nm[ii], origin=lubridate::origin, tz=tzone)
+      # if (length(ii) > 0 )  set$t0[ ii] = as.POSIXct( set$t0.nm[ii], origin=lubridate::origin, tz="UTC" )
+      if (length(ii) > 0 )  set$t0[ ii] = set$t0.nm[ii]
       set$t0.nm = NULL
 
       ii = which(!is.finite( set$t1) )
-      if (length(ii) > 0 )  set$t1[ ii] = as.POSIXct( set$t1.nm[ii], origin=lubridate::origin, tz=tzone)
+      # if (length(ii) > 0 )  set$t1[ ii] = as.POSIXct( set$t1.nm[ii], origin=lubridate::origin, tz="UTC")
+      if (length(ii) > 0 )  set$t1[ ii] =  set$t1.nm[ii]
       set$t1.nm = NULL
 
       ii = which( !is.finite( set$dt) )
