@@ -28,30 +28,27 @@
     #local time
     lt = mhead[grep("System UpLoad Time",mhead)]
     lt = unlist(strsplit(unlist(strsplit(lt,"= "))[2], " "))
-    lt  = lubridate::mdy_hms( paste( paste(lt[1],lt[2],lt[3],sep="-"), lt[4]) )
+    lt  = lubridate::mdy_hms( paste( paste(lt[1],lt[2],lt[3],sep="-"), lt[4]), tz="America/Halifax" )
 
     #seabird time
     st = mhead[grep("SERIAL NO", mhead)]
     st = unlist(strsplit(unlist(strsplit(st,"    "))[2], "  "))
-    st  = lubridate::dmy_hms( paste( st[1], st[2]))
+    st  = lubridate::dmy_hms( paste( st[1], st[2]), tz="America/Halifax")
 
-    dt = difftime(lt,st)
-
-    #add Dt to seabird times
+    #add difference to seabird times
     colnames(seabird) = c( "temperature", "pressure", "mdate", "mtime")
 
-    seabird$timestamp = lubridate::dmy_hms( paste( trimWhiteSpace(seabird$mdate), trimWhiteSpace(seabird$mtime) ) )
-    seabird$timestamp = seabird$timestamp + dt
+    seabird$timestamp = lubridate::dmy_hms( paste( trimWhiteSpace(seabird$mdate), trimWhiteSpace(seabird$mtime) ), tz="America/Halifax" )
+
+    seabird$timestamp = with_tz( seabird$timestamp, "UTC" )  # from now on, seabird is UTC
+
+    seabird$timestamp = seabird$timestamp + difftime(lt,st)
 
     numerics = c("temperature", "pressure")
     seabird = factor2number(seabird, numerics)
 
     # check time first
-
     seabird.date.range = range( seabird$timestamp )
-
-    # set is in ADT/AST .. convert to UTC
-    set$timestamp = with_tz( set$timestamp, "UTC")
 
     setxi = which( set$timestamp >= seabird.date.range[1] & set$timestamp <= seabird.date.range[2] )
     if ( length( setxi ) == 0 ) return(NULL)
@@ -151,7 +148,6 @@
     }
 
     basedata = seabird[ which( !is.na( seabird$seabird_uid) ) ,]
-
 
     return( list( metadata=metadata, basedata=basedata ) )
   }

@@ -8,8 +8,8 @@
         header = readLines( fnSeaBird, n=52)
       }
 
-      if ( any( grepl("Sea-Bird", header) )) {
-        lineno = grep( "^start\\ time\\ =", header, perl=T )
+      if ( any( grepl("Sea-Bird", header, useBytes=TRUE ) )) {
+        lineno = grep( "^start\\ time\\ =", header, perl=TRUE, useBytes=TRUE  )
         if ( length(lineno)==1 ) {
           Mdate = gsub( "^start\\ time\\ =", "", header[lineno])
           Mdate = gsub( "^[[:space:]]{1,}", "", Mdate) # empty space at beginning

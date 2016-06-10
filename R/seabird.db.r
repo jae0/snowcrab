@@ -3,7 +3,6 @@
 
   seabird.db = function( DS="", Y=NULL, plotdata=FALSE ){
 
-    tzone = "America/Halifax"
     sb.dir = project.datadirectory("bio.snowcrab", "data", "seabird" )
     seabird.rawdata.location = file.path( sb.dir, "archive" )
 
@@ -122,6 +121,7 @@
           res = removeDuplicateswithNA(res,cols=c('trip','set'),idvar='dt')
         }
 
+        # tzone = "America/Halifax"
         # TODO:: need to move this into the load.seabird function and remove chron dependence in it
         # should not be required here .. but in case
         # res$t0 = as.POSIXct( lubridate::ymd_hms(res$t0), origin=lubridate::origin, tz=tzone )
@@ -136,6 +136,8 @@
 
       # default action  is "stats.redo"
 
+
+      # tzone = "America/Halifax"  .. no longer require .. UTC
 
       for ( yr in Y ) {
         print (yr )
@@ -228,8 +230,12 @@
             ##  likely due to greater precision and data density relative to minilog
             res$t0 = bc$smooth.method0
             res$t1 = bc$smooth.method1
-            res$t0 = as.POSIXct(bc$smooth.method0,origin=lubridate::origin, tz=tzone )
-            res$t1 = as.POSIXct(bc$smooth.method1,origin=lubridate::origin, tz=tzone )
+
+            res$t0 = as.POSIXct(bc$smooth.method0,origin=lubridate::origin )
+            res$t1 = as.POSIXct(bc$smooth.method1,origin=lubridate::origin )
+
+            # res$t0 = as.POSIXct(bc$smooth.method0,origin=lubridate::origin, tz=tzone )
+            # res$t1 = as.POSIXct(bc$smooth.method1,origin=lubridate::origin, tz=tzone )
             res$dt = bc$smooth.method1 -  bc$smooth.method0
           } else if(any(is.na( res ))) {
               ## not sure what this step is trying to accomplish ? ... JC
@@ -238,13 +244,16 @@
           } else if (all (!is.finite( bc$smooth.method) ) & all( res[,c('t0','t1','dt')]>0 ) ) {
             ## --- NOTE smooth (1)  seem to work best ... focus upon these methods with seabird data ...
             ##  likely due to greater precision and data density relative to minilog
-            res$t0 = as.POSIXct(res$t0,origin=lubridate::origin, tz=tzone )
-            res$t1 = as.POSIXct(res$t1,origin=lubridate::origin, tz=tzone )
+            # res$t0 = as.POSIXct(res$t0,origin=lubridate::origin, tz=tzone )
+            # res$t1 = as.POSIXct(res$t1,origin=lubridate::origin, tz=tzone )
+            res$t0 = as.POSIXct(res$t0,origin=lubridate::origin )
+            res$t1 = as.POSIXct(res$t1,origin=lubridate::origin )
             res$dt = res$t1 -  res$t0
           }
-
-          res$t0 = as.POSIXct(res$t0,origin=lubridate::origin, tz=tzone )
-          res$t1 = as.POSIXct(res$t0,origin=lubridate::origin, tz=tzone )
+          # res$t0 = as.POSIXct(res$t0,origin=lubridate::origin, tz=tzone )
+          # res$t1 = as.POSIXct(res$t0,origin=lubridate::origin, tz=tzone )
+          res$t0 = as.POSIXct(res$t0,origin=lubridate::origin )
+          res$t1 = as.POSIXct(res$t0,origin=lubridate::origin )
           res$dt = as.numeric(res$dt)
           sbStats = rbind( sbStats, cbind( seabird_uid=id, res ) )
         }
