@@ -21,8 +21,8 @@
         lineloc = grep( "Local Time:", header, ignore.case=T  )
         ndt = stringsplit( header[lineloc], "[[:space:]]+" )
         if ( length(ndt) != 7) stop ( paste("Local Time error:", header[lineloc], fnNetmind ) )
-        dateobject = dates( gsub( "[[:space:]]", "", paste( ndt[7], ndt[4], ndt[5], sep="-" ) ), format="y-mon-d")
-        timeobject = times( gsub( "[[:space:]]", "", ndt[6] ) )
+        dateobject = gsub( "[[:space:]]", "", paste( ndt[7], ndt[4], ndt[5], sep="-" ) )
+        timeobject = gsub( "[[:space:]]", "", ndt[6] )
         loctime = lubridate::ymd_hms( paste( dateobject, timeobject), tz="America/Halifax" )
         return (loctime)
       }
@@ -51,7 +51,7 @@
       if (outvalue=="timeoffset") {
         locdate = netmindDate( header=header, outvalue="localtime" )
         recdate = netmindDate( header=header, outvalue="linetime", linenumber=linenumber )
-        toffset = difftime( locdate, recdate, units="hours" )
+        toffset = difftime(  with_tz( locdate, "UTC"),  with_tz(recdate, "UTC"), units="hours" )
         toffset = round( toffset)
         return (toffset )
       }

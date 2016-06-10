@@ -63,7 +63,7 @@
       netmind = netmind[, c("ndate", "ntime", "lat", "lon", "speed", "primary", "secondary", "doorspread", "depth")]
       netmind$ndate = paste(substring(netmind$ndate,1,2), substring(netmind$ndate,3,4), substring(netmind$ndate,5,6), sep="-")
       netmind$ntime = paste(substring(netmind$ntime,1,2), substring(netmind$ntime,3,4), substring(netmind$ntime,5,6), sep=":")
-      netmind$timestamp = lubridate::ymd_hms( paste( netmind$ndate, netmind$ntime) )
+      netmind$timestamp = lubridate::ymd_hms( paste( netmind$ndate, netmind$ntime), tz="UTC" )
 
       # netmind data stored in GMT/UTC from GPS; the offset varies depending upon season due to daylight savings time (3 or 4 hrs)
       # obtain time offset in hours
@@ -102,10 +102,6 @@
       station = gsub( "[[:alpha:]]", "", station)
       station = gsub( "[[:punct:]]", "", station)
       station = as.numeric( station )
-
-
-      # set is in ADT/AST .. convert to UTC .. will not be necessary once fixed at set level
-      set$timestamp = with_tz( set$timestamp, "UTC")
 
       setxi = NULL
 

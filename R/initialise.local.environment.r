@@ -10,6 +10,8 @@
 
 initialise.local.environment = function( current.assessment.year=NULL, libs=NULL, p=NULL ) {
 
+  Sys.setlocale("LC_COLLATE", "C")   # turn off locale-specific sorting,
+
   if (is.null(p)) p = list()
 
   p$project.name = "bio.snowcrab"

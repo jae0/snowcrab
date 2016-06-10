@@ -81,7 +81,7 @@ netmind.db = function( DS, Y=NULL, plotdata=FALSE ) {
     }
     filelist = filelist[ which( !is.na( filelist[,1] ) ) , ]
 
-    set = snowcrab.db( DS="setInitial" )
+    set = snowcrab.db( DS="setInitial" )  # UTC
 
     for ( yr in Y ) {
       print(yr)
