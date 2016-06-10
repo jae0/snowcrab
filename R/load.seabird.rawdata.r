@@ -23,24 +23,28 @@
       seabird = as.data.frame(matrix(apply(seabird,2,function(x) unlist(strsplit(x,","))),ncol=4,byrow=T))
     }
 
+    tz.system = "America/Halifax"
+    tz.seabird = "America/Halifax"
+    tz.snowcrab = "UTC"
+
     # if time is not correct in seabird file and is due to DST fix by BMC
     mhead = readLines(filename, n=40)
     #local time
     lt = mhead[grep("System UpLoad Time",mhead)]
     lt = unlist(strsplit(unlist(strsplit(lt,"= "))[2], " "))
-    lt  = lubridate::mdy_hms( paste( paste(lt[1],lt[2],lt[3],sep="-"), lt[4]), tz="America/Halifax" )
+    lt  = lubridate::mdy_hms( paste( paste(lt[1],lt[2],lt[3],sep="-"), lt[4]), tz=tz.system )
 
     #seabird time
     st = mhead[grep("SERIAL NO", mhead)]
     st = unlist(strsplit(unlist(strsplit(st,"    "))[2], "  "))
-    st  = lubridate::dmy_hms( paste( st[1], st[2]), tz="America/Halifax")
+    st  = lubridate::dmy_hms( paste( st[1], st[2]), tz=tz.seabird )
 
     #add difference to seabird times
     colnames(seabird) = c( "temperature", "pressure", "mdate", "mtime")
 
-    seabird$timestamp = lubridate::dmy_hms( paste( trimWhiteSpace(seabird$mdate), trimWhiteSpace(seabird$mtime) ), tz="America/Halifax" )
+    seabird$timestamp = lubridate::dmy_hms( paste( trimWhiteSpace(seabird$mdate), trimWhiteSpace(seabird$mtime) ), tz=tz.seabird )
 
-    seabird$timestamp = with_tz( seabird$timestamp, "UTC" )  # from now on, seabird is UTC
+    seabird$timestamp = with_tz( seabird$timestamp, tz.snowcrab )  # from now on, seabird is UTC
 
     seabird$timestamp = seabird$timestamp + difftime(lt,st)
 

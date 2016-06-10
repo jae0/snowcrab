@@ -143,8 +143,7 @@ netmind.db = function( DS, Y=NULL, plotdata=FALSE ) {
 
     if(plotdata) pdf(paste0("netmind",yr,".pdf"))
 
-    tzone = "America/Halifax"
-    set = snowcrab.db( DS="setInitial")
+    set = snowcrab.db( DS="setInitial")  # UTC
 
     sbStats =  seabird.db( DS="stats" )
     sbv = c('trip','set', "z", "zsd", "t", "tsd", "n", "t0", "t1", "dt" )
@@ -199,7 +198,6 @@ netmind.db = function( DS, Y=NULL, plotdata=FALSE ) {
       fn = file.path( netmind.dir, paste( "netmind.stats", yr, "rdata", sep=".") )
       Stats = NULL
       basedata = netmind.db( DS="basedata", Y=yr )
-      # basedata$timestamp = as.POSIXct( basedata$chron , tz=tzone, origin=lubridate::origin )
 
       ii = which( set$yr==yr & !is.na(set$netmind_uid) )
       nii =  length( ii )

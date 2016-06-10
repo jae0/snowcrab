@@ -81,7 +81,7 @@
         metadata = NULL
         for (f in 1:length(fs)) {
           if( yr >= 2014 ) {
-            j = load.minilog.rawdata.one.file.per.day( fn=fs[f], f=f, set=set)  # variable naming conventions in the past
+            j = load.minilog.rawdata.one.file.per.day( fn=fs[f], f=f, set=set)
           } else {
             j = load.minilog.rawdata( fn=fs[f], f=f, set=set)  # variable naming conventions in the past
           }
@@ -94,9 +94,10 @@
         # incomplete ....
         add.backup.minilogs=FALSE
         if (add.backup.minilogs) {
+          stop( "TODO")
           fb = backups[ which( as.numeric(backups[,3])==yr ) , 2 ]
           for (f in 1:length(fb)) {
-            j = load.minilog.rawdata.backups( fn=fb[f], f=f, set=set)  # variable naming conventions in the past
+            j = load.minilog.rawdata.backups( fn=fb[f], f=f, set=set)
             if (is.null(j)) next()
             metadata = rbind( metadata, j$metadata)
             basedata = rbind( basedata, j$basedata)
@@ -154,14 +155,14 @@
         fn = file.path( minilog.dir, paste( "minilog.stats", yr, "rdata", sep=".") )
         miniStats = NULL
         miniRAW = minilog.db( DS="basedata", Y=yr )
-#        miniRAW$timestamp = lubridate::ymd_hms( miniRAW$chron)
+#       miniRAW$timestamp = lubridate::ymd_hms( miniRAW$chron)
 
         mta = minilog.db( DS="metadata", Y=yr )
 
         str(mta)
         mta$timestamp[1]
 
-        stop()
+        browser()
 
         # mta$timestamp = ymd_hms( mta$timestamp, tz="America/Halifax")
 

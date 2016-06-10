@@ -268,11 +268,11 @@
       # sdate (POSIXct, America/Halifax AST/ADT) does not seem to be reliable
       # and so we use minilog data where possible in the recent period
       # and then records from the stime and trip id where minilog data are absent
-      set$timestamp = tripcode.to.timestamp( set$trip, set$stime, tzone="America/Halifax" )  # using lubridate/POSIXct
+      set$timestamp = tripcode.to.timestamp( set$trip, set$stime )  # using lubridate/POSIXct
       set$stime = NULL ### --need to check timezone!!! TODO .... seems to be "America/Halifax" .. compare with seabird/minilog
 
       i = which(is.na(set$timestamp))
-      if (length(i)>0) set$timestamp[i] = tripcode.to.timestamp( set$trip[i], "12:00:00", tzone="America/Halifax"  )
+      if (length(i)>0) set$timestamp[i] = tripcode.to.timestamp( set$trip[i], "12:00:00" )
 
       # from this point forwards all timestamps are in UTC for set
       set$timestamp = with_tz( set$timestamp, "UTC")

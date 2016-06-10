@@ -1,5 +1,8 @@
 	load.minilog.rawdata.one.file.per.day = function(fn, f, set ) {
 
+    tz.minilog = "America/Halifax"
+    tz.snowcrab = "UTC"
+
     out = NULL
     minilog=NULL
 
@@ -40,8 +43,8 @@
     if (is.null(headerdateformat) ) return( NULL )
 
     minilog$mdate = gsub("^80-", "2000-", minilog$mdate )  # there are incorrect year entries
-    minilog$timestamp = lubridate::parse_date_time ( paste(minilog$mdate, minilog$mtime), orders=paste(headerdateformat, "H:M:S" ), tz="America/Halifax" )
-    minilog$timestamp = with_tz(  minilog$timestamp, "UTC" )  # set/setInitial is now in UTC
+    minilog$timestamp = lubridate::parse_date_time ( paste(minilog$mdate, minilog$mtime), orders=paste(headerdateformat, "H:M:S" ), tz=tz.minilog )
+    minilog$timestamp = with_tz(  minilog$timestamp, tz.snowcrab )  # set/setInitial is now in UTC
 
     yr = lubridate::year( minilog$timestamp[1])
     if (!is.finite(yr) ) yr = minilogDate( header=header, outvalue="year"  )
