@@ -124,7 +124,7 @@
         print( head( seabird[ o,] ) )
         print( "The following is the closest matching in set:")
         print( setx)
-          if(plot){
+          if(plotdata){
             setinfo = set[setxi,]
             fp =  file.path( project.datadirectory("bio.snowcrab"), "data", "seabird", "mismatches", yr)
             dir.create( fp, recursive = TRUE, showWarnings = FALSE )
