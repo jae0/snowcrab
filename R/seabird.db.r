@@ -206,7 +206,7 @@
 
           if (!is.null(bc)) {
             if (plotdata) {
-              # to visualize
+              bottom.contact.plot( bc )
               plotfn = file.path( sb.dir, "figures", paste(id, "pdf", sep="." ) )
               print (plotfn)
               dev.flush()
