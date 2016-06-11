@@ -211,22 +211,7 @@
             }
           }
 
-          if (all (is.finite( bc$smooth.method) ) & all(!is.null(bc)) ) {
-            ## --- NOTE smooth (1)  seems to work best ... focus upon these methods with seabird data ...
-            ##  likely due to greater precision and data density relative to minilog
-            res$t0 = bc$smooth.method0
-            res$t1 = bc$smooth.method1
-          } else {
-            res$t0 = as.POSIXct(bc$res$t0,origin=lubridate::origin, tz="UTC" )  # timezone gets lost
-            res$t1 = as.POSIXct(bc$res$t1,origin=lubridate::origin, tz="UTC" )
-          }
-
-          res$dt = res$t1 - res$t0
-          res$z = bc$res$z
-          res$t = bc$res$t
-          res$zsd = bc$res$zsd
-          res$tsd = bc$res$tsd
-          res$n = bc$res$n
+          if ( !is.null(bc)) if ( !is.null(bc$res )) res = bc$res
 
           sbStats = rbind( sbStats, cbind( seabird_uid=id, res ) )
         }
