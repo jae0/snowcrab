@@ -169,7 +169,7 @@
           time.gate =  list( t0=settimestamp - dminutes(5), t1=settimestamp + dminutes(10) )
 
           bcp = list(id=id, nr=nrow(M), YR=yr, tdif.min=3, tdif.max=9, time.gate=time.gate, depth.min=20, depth.range=c(-40,20),
-                     smooth.windowsize=5, modal.windowsize=5, noisefilter.trim=0.025, noisefilter.target.r2=0.95, noisefilter.quants=c(0.025, 0.975) )
+                     smooth.windowsize=5, modal.windowsize=5, noisefilter.trim=0.01, noisefilter.target.r2=0.9, noisefilter.quants=c(0.025, 0.975) )
 
           bcp = bottom.contact.parameters( bcp ) # add other default parameters
 
