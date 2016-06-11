@@ -1,7 +1,7 @@
 
 	# mostly a copy over of the MINILOG functions with variable nemaes being replaced
 
-  seabird.db = function( DS="", Y=NULL, plotdata=FALSE ){
+  seabird.db = function( DS="", Y=NULL, plotdata=TRUE ){
 
     sb.dir = project.datadirectory("bio.snowcrab", "data", "seabird" )
     seabird.rawdata.location = file.path( sb.dir, "archive" )
@@ -75,7 +75,7 @@
         basedata = NULL
         metadata = NULL
         for (f in 1:length(fs)) {
-          j = load.seabird.rawdata( fn=fs, f=f, set=set, plotdata=FALSE )
+          j = load.seabird.rawdata( fn=fs, f=f, set=set, plotdata=plotdata )
           if (is.null(j)) next()
           metadata = rbind( metadata, j$metadata)
           basedata = rbind( basedata, j$basedata)
@@ -92,6 +92,8 @@
 
 
     if (DS %in% c("stats", "stats.redo" ) ) {
+
+      dir.create( file.path( sb.dir, "figures" ), recursive=TRUE, showWarnings=FALSE )
 
       if (DS=="stats") {
 
@@ -205,9 +207,10 @@
           if (!is.null(bc)) {
             if (plotdata) {
               # to visualize
-              pdf( paste0("seabird",yr,".pdf"))
-                bottom.contact.plot( bc )
-              dev.off()
+              plotfn = file.path( sb.dir, "figures", paste(id, "pdf", sep="." ) )
+              print (plotfn)
+              dev.flush()
+              dev.copy2pdf( file=plotfn )
             }
           }
 
