@@ -1,5 +1,5 @@
 
-  data.quality.check = function( type ) {
+  data.quality.check = function( type, p ) {
 
     # duplicated stations
     if (type=="stations") {

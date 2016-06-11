@@ -1,8 +1,9 @@
 
-  minilog.db = function( DS="", Y=NULL ){
+  minilog.db = function( DS="", Y=NULL, plotdata=TRUE ){
 
     minilog.dir = project.datadirectory("bio.snowcrab", "data", "minilog" )
     minilog.rawdata.location = file.path( minilog.dir, "archive" )
+    plotdir = project.datadirectory("bio.snowcrab", "data", "minilog", "figures" )
 
     if (!is.null(Y)) {
       iY = which( Y>=1999 )  # no historical data prior to 1999
@@ -204,10 +205,11 @@
             if( ndat > 100 ) {
               # defaults appropriate for more modern scanmar data have > 3500 pings
               # depth resolution is about 4-5 m
-              bcp = list(
-                id=id, nr=nrow(M), YR=yr,
-                tdif.min=3, tdif.max=9, time.gate=time.gate, depth.min=20, depth.range=c(-20,30), eps.depth = 1
-              )
+              bcp = list(id=id, nr=nrow(M), YR=yr, tdif.min=3, tdif.max=9, time.gate=time.gate,
+                         depth.min=20, depth.range=c(-40,20), eps.depth =1 ,
+                         smooth.windowsize=5, modal.windowsize=5,
+                         noisefilter.trim=0.01, noisefilter.target.r2=0.9, noisefilter.quants=c(0.025, 0.975) )
+
 
               # if(id=="minilog.S18092004.6.392.13.9.326") browser()
               # if(id=="minilog.S22061999.8.NA.NA.NA.84") browser()
@@ -216,7 +218,17 @@
               bcp = bottom.contact.parameters( bcp ) # add other default parameters .. not specified above
               bc =  NULL
               bc = bottom.contact( x=M, bcp=bcp )
-              ## bottom.contact.plot (bc)
+
+              if (!is.null(bc)) {
+                if (plotdata) {
+                  bottom.contact.plot( bc )
+                  plotfn = file.path( plotdir, "figures", paste(id, "pdf", sep="." ) )
+                  print (plotfn)
+                  dev.flush()
+                  dev.copy2pdf( file=plotfn )
+                }
+              }
+
 
               if ( is.null(bc) || ( exists( "res", bc) && ( ( !is.finite(bc$res$t0 ) || !is.finite(bc$res$t1 ) ) ) )) {
                  bc = bottom.contact( x=M, bcp=bcp )

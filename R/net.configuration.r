@@ -1,9 +1,11 @@
 
-  net.configuration = function( N, t0=NULL, t1=NULL, set_timestamp=NULL, yr=NULL, plotdata=FALSE ) {
+  net.configuration = function( N, t0=NULL, t1=NULL, set_timestamp=NULL, yr=NULL, plotdata=TRUE ) {
 
     # N is netmind data
     # t0 is current best estimate of start and end time
     # set_timestamp is timestamp from set-log .. alternate if there is no other useful time marker
+
+    plotdir = project.datadirectory("bio.snowcrab", "data", "netmind", "figures" )
 
     # create default output should the following fail
     out = data.frame( slon=NA, slat=NA, distance=NA, spread=NA, spread_sd=NA,
@@ -47,11 +49,12 @@
       if(is.null(set_timestamp)) settimestamp=t0
       time.gate =  list( t0=settimestamp - dminutes(5), t1=settimestamp + dminutes(9) )
 
-      bcp = list(
-        id=N$netmind_uid[1], nr=nrow(M),
-        tdif.min=3, tdif.max=9, time.gate=time.gate, depth.min=20, depth.range=c(-20,30),
-        depthproportion=0.6, noisefilter.inla.h = 0.02, eps.depth = 2 # m
-      )
+
+      bcp = list(id=N$netmind_uid[1], nr=nrow(M), YR=yr, tdif.min=3, tdif.max=9, time.gate=time.gate,
+                   depth.min=20, depth.range=c(-40,20), eps.depth=2 ,
+                   smooth.windowsize=5, modal.windowsize=5,
+                   noisefilter.trim=0.01, noisefilter.target.r2=0.9, noisefilter.quants=c(0.025, 0.975) )
+
 
       bcp = bottom.contact.parameters( bcp ) # add other default parameters
 
@@ -82,8 +85,15 @@
         bc = bottom.contact( x=M, bcp=bcp )
       }
 
-      if (plotdata)  bottom.contact.plot( bc)  # to visualize/debug
-
+      if ( !is.null(bc)  {
+        if (plotdata) {
+          bottom.contact.plot( bc )
+          plotfn = file.path( plotdir, "figures", paste(bcp$id, "pdf", sep="." ) )
+          print (plotfn)
+          dev.flush()
+          dev.copy2pdf( file=plotfn )
+        }
+      }
       if (is.null(t0) & !is.null(bc$bottom0) ) t0 = bc$bottom0
       if (is.null(t1) & !is.null(bc$bottom1) ) t1 = bc$bottom1
       N = N[ bc$bottom.contact , ]

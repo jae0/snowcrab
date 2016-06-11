@@ -30,6 +30,10 @@ initialise.local.environment = function( current.assessment.year=NULL, libs=NULL
 
   if (is.null(current.assessment.year) ) current.assessment.year=as.numeric( substring(Sys.Date(),1,4))
   p$current.assessment.year = current.assessment.year
+  p$seabird.yToload = 2012:p$current.assessment.year
+  p$minilog.yToload = 1999:p$current.assessment.year
+  p$netmind.yToload = 1999:p$current.assessment.year
+  p$esonar.yToload  = 2014:p$current.assessment.year
 
   p = parameter.list.snowcrab ( p=p )
   p = spatial.parameters( p=p ) # region and lon/lats, projections

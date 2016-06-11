@@ -51,27 +51,28 @@
     # sequence is important ... do not change
     # creates initial rdata and sqlite db
     snowcrab.db( DS="setInitial.redo", p=p ) # this is required by the seabird.db (but not minilog and netmind)
+      # few sanity checks on the initial data pulled from the raw tables
+      problems = data.quality.check( type="stations")  # duplicates
+      problems = data.quality.check( type="count.stations")
+      problems = data.quality.check( type="position") #MG try checking the end position of the tow, if there is an error
 
-    # was in above split off as it is not required
-    export.to.shapefile(
-      inp=snowcrab.db( DS="setInitial", p=p ),
-      out=file.path(project.datadirectory("bio.snowcrab"), "maps", "shapefiles", "survey"),
-      fn="SurveyDataUpdate"
-    )
+      # was in above. Split off as a separate function it is not essential
+      # and can break without the right ESRI drivers. JC
+      export.to.shapefile(
+        inp=snowcrab.db( DS="setInitial", p=p ),
+        out=file.path(project.datadirectory("bio.snowcrab"), "maps", "shapefiles", "survey"),
+        fn="SurveyDataUpdate"
+      )
 
-(p$current.assessment.year)
+    # check/choose the years
+    (p$current.assessment.year)
 
-    seabird.yToload = p$current.assessment.year
-    minilog.yToload = p$current.assessment.year
-    netmind.yToload = p$current.assessment.year
-    esonar.yToload  = p$current.assessment.year
+    # if just updating a single year, run the following, else all years will be run by default
+    p$seabird.yToload = p$current.assessment.year
+    p$minilog.yToload = p$current.assessment.year
+    p$netmind.yToload = p$current.assessment.year
+    p$esonar.yToload  = p$current.assessment.year
 
-    if (redo.all.data) {
-      seabird.yToload = 2012:p$current.assessment.year
-      minilog.yToload = 1999:p$current.assessment.year
-      netmind.yToload = 1999:p$current.assessment.year
-      esonar.yToload  = 2014:p$current.assessment.year
-    }
 
     seabird.db( DS="load", Y=seabird.yToload ) # this begins 2012;
     minilog.db( DS="load", Y=minilog.yToload ) # minilog data series "begins" in 1999 -- 60 min?
@@ -86,29 +87,20 @@
     netmind.db (DS="stats.redo", Y=netmind.yToload )
 
 
-    problems = data.quality.check( type="stations")
-    problems = data.quality.check( type="count.stations")
-    problems = data.quality.check( type="position")
-    #MG try checking the end position of the tow, if there is an error
-
-    problems = data.quality.check( type="minilog.mismatches" )
-    problems = data.quality.check( type="minilog.load")
-    problems = data.quality.check( type="minilog.dateproblems")
-    problems = data.quality.check( type="minilog") # Check for duplicate timestamps
-
-    problems = data.quality.check( type="netmind.load")
-    problems = data.quality.check( type="netmind.mismatches" )
-
-    problems = data.quality.check( type="tow.duration")
-    problems = data.quality.check( type="tow.distance")
-
-    problems = data.quality.check( type="seabird.mismatches" )
-    problems = data.quality.check( type="seabird.load")
-
-    problems = data.quality.check( type="netmind.timestamp" )
-
-
+    # merge in netmind, minilog, seabird, esonar data and do some sanity checks
     snowcrab.db( DS="set.clean.redo", p=p )  # sanity checks
+      problems = data.quality.check( type="minilog.mismatches", p=p )
+      problems = data.quality.check( type="minilog.load", p=p)
+      problems = data.quality.check( type="minilog.dateproblems", p=p)
+      problems = data.quality.check( type="minilog", p=p) # Check for duplicate timestamps
+      problems = data.quality.check( type="netmind.load", p=p)
+      problems = data.quality.check( type="netmind.mismatches", p=p )
+      problems = data.quality.check( type="tow.duration", p=p)
+      problems = data.quality.check( type="tow.distance", p=p)
+      problems = data.quality.check( type="seabird.mismatches", p=p )
+      problems = data.quality.check( type="seabird.load", p=p)
+      problems = data.quality.check( type="netmind.timestamp" , p=p)
+
 
     #MG det.initial.redo updates and processes morphology. This code now identifies morphology errors, which must be
     #checked with written logs, then sent to database and put in debugging here and re-run
