@@ -53,7 +53,6 @@
       }
 
       # default is to "load"
-      #
 
       dirlist = list.files(path=seabird.rawdata.location, full.names=T, recursive=T)
       nfiles = length(dirlist)
@@ -130,13 +129,7 @@
         return(res)
       }
 
-      # browser()
-
       # default action  is "stats.redo"
-
-
-      # tzone = "America/Halifax"  .. no longer require .. UTC
-
       for ( yr in Y ) {
         print (yr )
 
@@ -182,12 +175,6 @@
           bcp = bottom.contact.parameters( bcp ) # add other default parameters
 
           print(id)
-#          if( id=='seabird.S03092012.11.334.19.2.3') { browser() ; bc = bottom.contact( x=M, bcp=bcp, debugrun=TRUE ) }
-#          if (id=='seabird.S03092012.10.333.16.22.3') { browser() ; bc = bottom.contact( x=M, bcp=bcp, debugrun=TRUE ) }
-#          if (id=='seabird.S02112012.2.54.6.47.2') { browser() ; bc = bottom.contact( x=M, bcp=bcp, debugrun=TRUE ) }
-#          if (id=='seabird.S03092012.13.541.21.38.3') { browser() ; bc = bottom.contact( x=M, bcp=bcp, debugrun=TRUE ) }
-
-#          if (id=='seabird.S03092012.10.333.16.22.3') { browser() }
           bc = NULL
           bc = bottom.contact( x=M, bcp=bcp )
           #browser()
@@ -213,7 +200,8 @@
 
           # default, empty container
           res = data.frame(z=NA, t=NA, zsd=NA, tsd=NA, n=NA, t0=NA, t1=NA, dt=NA)
-          if ( !is.null(bc$res) & exists( "res", bc) ) res = bc$res
+          if ( !is.null( bc$res ) ) res = bc$res
+
           if (!is.null(bc)) {
             if (plotdata) {
               # to visualize
@@ -228,28 +216,18 @@
             ##  likely due to greater precision and data density relative to minilog
             res$t0 = bc$smooth.method0
             res$t1 = bc$smooth.method1
-
-            tzone = "UTC"
-            res$t0 = as.POSIXct(bc$smooth.method0, origin=lubridate::origin , tz=tzone)
-            res$t1 = as.POSIXct(bc$smooth.method1, origin=lubridate::origin , tz=tzone)
-
-            res$dt = bc$smooth.method1 -  bc$smooth.method0
-          } else if(any(is.na( res ))) {
-              ## not sure what this step is trying to accomplish ? ... JC
-              ir = which(is.na( res ))
-              res[ir] <- NA
-          } else if (all (!is.finite( bc$smooth.method) ) & all( res[,c('t0','t1','dt')]>0 ) ) {
-            ## --- NOTE smooth (1)  seem to work best ... focus upon these methods with seabird data ...
-            ##  likely due to greater precision and data density relative to minilog
-            tzone = "UTC"
-            res$t0 = as.POSIXct(res$t0,origin=lubridate::origin, tz=tzone )
-            res$t1 = as.POSIXct(res$t1,origin=lubridate::origin, tz=tzone )
-            res$dt = res$t1 -  res$t0
+          } else
+            res$t0 = as.POSIXct(bc$res$t0,origin=lubridate::origin, tz="UTC" )  # timezone gets lost
+            res$t1 = as.POSIXct(bc$res$t1,origin=lubridate::origin, tz="UTC" )
           }
-          tzone = "UTC"
-          res$t0 = as.POSIXct(res$t0,origin=lubridate::origin, tz=tzone )
-          res$t1 = as.POSIXct(res$t0,origin=lubridate::origin, tz=tzone )
-          res$dt = as.numeric(res$dt)
+
+          res$dt = res$t1 - res$t0
+          res$z = bc$res$z
+          res$t = bc$res$t
+          res$zsd = bc$res$zsd
+          res$tsd = bc$res$tsd
+          res$n = bc$res$n
+
           sbStats = rbind( sbStats, cbind( seabird_uid=id, res ) )
         }
 
