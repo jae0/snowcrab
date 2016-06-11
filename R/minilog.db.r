@@ -183,24 +183,25 @@
           res = data.frame(z=NA, t=NA, zsd=NA, tsd=NA, n=NA, t0=NA, t1=NA, dt=NA)
 
           bad.list = c(
+#'minilog.S12071999.1.NA.NA.NA.190',
 #'minilog.S20052000.10.NA.NA.NA.13',
 #'minilog.S19092004.8.389.NA.NA.321',
-#'minilog.S19062000.8.NA.NA.NA.165' ,
-#"minilog.S07092002.12.NA.NA.NA.245",
-#"minilog.S08092002.10.NA.NA.NA.254",
+#'minilog.S19062000.8.NA.NA.NA.165',
+#'minilog.S07092002.12.NA.NA.NA.245',
+#'minilog.S08092002.10.NA.NA.NA.254',
 #'minilog.S12102002.8.NA.15.59.349',
-#'minilog.S28052002.10.NA.19.30.445'
-# "minilog.S24112009.4.370.NA.NA.276",
-# "minilog.S08092010.3.178.NA.NA.170",
-# "minilog.S21102010.9.341.14.51.252",
-# "minilog.S25092010.8.36.NA.NA.33",
-# "minilog.S27102010.3.918.8.11.423"
+#'minilog.S28052002.10.NA.19.30.445',
+#'minilog.S24112009.4.370.NA.NA.276',
+#'minilog.S08092010.3.178.NA.NA.170',
+#'minilog.S21102010.9.341.14.51.252',
+#'minilog.S25092010.8.36.NA.NA.33',
+#'minilog.S27102010.3.918.8.11.423' '
           )
 
           if (! ( id %in% bad.list ) ) {
 
             ndat = length(M$depth[!is.na(M$depth)])
-            if( ndat > 15 ) {
+            if( ndat > 100 ) {
               # defaults appropriate for more modern scanmar data have > 3500 pings
               # depth resolution is about 4-5 m
               bcp = list(
