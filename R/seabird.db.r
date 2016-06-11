@@ -216,7 +216,7 @@
             ##  likely due to greater precision and data density relative to minilog
             res$t0 = bc$smooth.method0
             res$t1 = bc$smooth.method1
-          } else
+          } else {
             res$t0 = as.POSIXct(bc$res$t0,origin=lubridate::origin, tz="UTC" )  # timezone gets lost
             res$t1 = as.POSIXct(bc$res$t1,origin=lubridate::origin, tz="UTC" )
           }
