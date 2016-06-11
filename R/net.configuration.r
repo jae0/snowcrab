@@ -85,7 +85,7 @@
         bc = bottom.contact( x=M, bcp=bcp )
       }
 
-      if ( !is.null(bc)  {
+      if ( !is.null(bc) )  {
         if (plotdata) {
           bottom.contact.plot( bc )
           plotfn = file.path( plotdir, "figures", paste(bcp$id, "pdf", sep="." ) )
