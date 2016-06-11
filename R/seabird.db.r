@@ -168,11 +168,8 @@
           settimestamp= rid$timestamp[i]
           time.gate =  list( t0=settimestamp - dminutes(5), t1=settimestamp + dminutes(9) )
 
-          bcp = list(
-            id=id, nr=nrow(M), YR=yr,
-            tdif.min=3, tdif.max=9, time.gate=time.gate, noisefilter.inla.h=0.01,
-            depth.min=20, depth.range=c(-20,30), depthproportion=0.6, eps.depth = 2
-          )
+          bcp = list(id=id, nr=nrow(M), YR=yr, tdif.min=3, tdif.max=9, time.gate=time.gate, depth.min=20, depth.range=c(-40,20),
+                     smooth.windowsize=7, modal.windowsize=7, noisefilter.trim=0.05, noisefilter.target.r2=0.95, noisefilter.quants=c(0.025, 0.975) )
 
           bcp = bottom.contact.parameters( bcp ) # add other default parameters
 
