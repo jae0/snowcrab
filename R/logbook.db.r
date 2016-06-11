@@ -151,7 +151,7 @@
 
       iy = which(!is.finite(x$year))
       if (length(iy) > 0) {
-        x$year[iy] = years(x$date.landed) [iy]
+        x$year[iy] = lubridate::years(x$date.landed) [iy]
         iy = which(!is.finite(x$year))
         if (length(iy) > 0)  x = x[ -iy, ]
       }
@@ -165,7 +165,7 @@
       x$status = ""  # "" "" ""
 
       datelanded =  matrix(unlist(strsplit(x$date.landed, " ", fixed=T)), ncol=2, byrow=T)[,1]
-      x$date.landed = lubridate::ymd( datelanded, tz="America/Halifax" )
+      x$date.landed = lubridate::ymd( x$datelanded, tz="America/Halifax" )
       x$date.landed = with_tz( date.landed, "UTC" )
 
       x$landings = x$pro_rated_slip_wt_lbs * 0.454  # convert to kg
