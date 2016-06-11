@@ -166,6 +166,8 @@
 
       datelanded =  matrix(unlist(strsplit(x$date.landed, " ", fixed=T)), ncol=2, byrow=T)[,1]
       x$date.landed = lubridate::ymd( datelanded, tz="America/Halifax" )
+      x$date.landed = with_tz( date.landed, "UTC" )
+
       x$landings = x$pro_rated_slip_wt_lbs * 0.454  # convert to kg
       x$cpue = x$landings / x$effort
       x$depth = x$depth_fm*1.83
@@ -355,6 +357,7 @@
 
        logs[i, "date.landed"] = paste( mon, da, yr, sep="/")
        logs$date.landed = lubridate::mdy( logs$date.landed, tz="America/Halifax" )
+       logs$date.landed = with_tz( logs$date.landed, "UTC" )
 
        to.extract = c( "year","lat","lon","depth","landings","effort","soak.time",
                         "cpue","trap.type","cfv","status","licence",
@@ -387,6 +390,8 @@
       logbook$plat = grid.internal( logbook$plat, p$plats )
 
 			logbook$timestamp = as.POSIXct( logbook$date.landed, tz="America/Halifax", origin=lubridate::origin  )  # required for temperature lookups
+      logbook$timestamp = with_tz( logbook$timestamp, "UTC")
+
       logbook$dyear = lubridate::decimal_date( logbook$timestamp ) - lubridate::year(logbook$timestamp )
 
       logbook = logbook[which(logbook$yr<=p$current.assessment.year),]

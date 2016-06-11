@@ -8,7 +8,7 @@
               & (any(grepl("Local", header, useBytes=TRUE)))
               & (any(grepl("Ship", header, useBytes=TRUE)))
               & (length(header) > 15) ) ) {
-		      print(paste(fnNetmind,' error in file header;'))
+		      print(paste(fnNetmind,' There is an error in file header.'))
           return( out )
         }
       }

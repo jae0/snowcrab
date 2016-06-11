@@ -166,7 +166,6 @@
 
   p=initialise.local.environment()
 
-
   logbook.db( DS  ="fisheries.complete.redo", p=p )
   snowcrab.db( DS ="set.complete.redo", p=p )
   snowcrab.db( DS ="set.logbook.redo", yrs=1996:p$current.assessment.year ) # add gridded fisheries data

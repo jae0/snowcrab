@@ -140,8 +140,8 @@
             res = removeDuplicateswithNA(res,cols=c('trip','set'),idvar='dt')
           }
 
-  #      res$t0 = as.POSIXct( as.chron(res$t0), tz="America/Halifax", origin=lubridate::origin )
-  #      res$t1 = as.POSIXct( as.chron(res$t1), tz="America/Halifax", origin=lubridate::origin )
+        res$t0 = as.POSIXct( res$t0, tz="UTC", origin=lubridate::origin )
+        res$t1 = as.POSIXct( res$t1, tz="UTC", origin=lubridate::origin )
         res$dt = difftime( res$t1, res$t0 )
         # res$timestamp = lubridate::ymd_hms( res$timestamp)
 
@@ -155,22 +155,12 @@
         fn = file.path( minilog.dir, paste( "minilog.stats", yr, "rdata", sep=".") )
         miniStats = NULL
         miniRAW = minilog.db( DS="basedata", Y=yr )
-#       miniRAW$timestamp = lubridate::ymd_hms( miniRAW$chron)
-
         mta = minilog.db( DS="metadata", Y=yr )
-
-        str(mta)
-        mta$timestamp[1]
-
-        browser()
-
-        # mta$timestamp = ymd_hms( mta$timestamp, tz="America/Halifax")
 
         rid = minilog.db( DS="set.minilog.lookuptable" )
         rid = data.frame( minilog_uid=rid$minilog_uid, stringsAsFactors=FALSE )
         rid = merge( rid, mta, by="minilog_uid", all.x=TRUE, all.y=FALSE )
         rid = rid[ which(rid$yr== yr) ,]
-        #rid = rid[grepl('S19092004',rid$minilog_uid),]
         if (nrow(rid) == 0 ) next()
 
         for ( i in 1:nrow(rid)  ) {
@@ -184,8 +174,6 @@
           if (length( Mi) == 0 ) next()
           M = miniRAW[ Mi, ]
 
-#          M$timestamp = as.POSIXct( M$chron, tz="America/Halifax", origin=lubridate::origin )
-          # settimestamp= as.POSIXct( rid$set_timestamp[i] , tz="America/Halifax", origin=lubridate::origin )
           settimestamp= rid$set_timestamp[i]
           time.gate =  list( t0=settimestamp - dminutes(5), t1=settimestamp + dminutes(11) )
 
@@ -220,7 +208,7 @@
                 tdif.min=3, tdif.max=9, time.gate=time.gate, depth.min=20, depth.range=c(-20,30), eps.depth = 1
               )
 
-              #if(id=="minilog.S18092004.6.392.13.9.326") browser()
+              # if(id=="minilog.S18092004.6.392.13.9.326") browser()
               # if(id=="minilog.S22061999.8.NA.NA.NA.84") browser()
               # if(id=="minilog.S04102007.12.903.17.10.378") browser()
 
@@ -271,8 +259,8 @@
             #            res$t0 = bc$smooth.method[2]
             #            res$dt = bc$smooth.method[2] -  bc$smooth.method[1]
           }
-#          res$t0 = as.POSIXct(res$t0,origin=lubridate::origin, tz="America/Halifax" )
-#          res$t1 = as.POSIXct(res$t1,origin=lubridate::origin, tz="America/Halifax")
+          res$t0 = as.POSIXct(res$t0,origin=lubridate::origin, tz="UTC" )
+          res$t1 = as.POSIXct(res$t1,origin=lubridate::origin, tz="UTC")
           res$dt = as.numeric(res$dt)
           miniStats = rbind(miniStats, cbind( minilog_uid=id, res ) )
         }
