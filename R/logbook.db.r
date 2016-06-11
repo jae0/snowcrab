@@ -165,8 +165,8 @@
       x$status = ""  # "" "" ""
 
       datelanded =  matrix(unlist(strsplit(x$date.landed, " ", fixed=T)), ncol=2, byrow=T)[,1]
-      x$date.landed = lubridate::ymd( x$datelanded, tz="America/Halifax" )
-      x$date.landed = with_tz( date.landed, "UTC" )
+      x$date.landed = lubridate::ymd( datelanded, tz="America/Halifax" )
+      x$date.landed = with_tz( x$date.landed, "UTC" )
 
       x$landings = x$pro_rated_slip_wt_lbs * 0.454  # convert to kg
       x$cpue = x$landings / x$effort
