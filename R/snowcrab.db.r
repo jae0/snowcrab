@@ -806,14 +806,14 @@
 
       sbStats =  seabird.db( DS="stats" )  # timestamp in UTC
 
-      sbv = c('trip','set', "z", "zsd", "t", "tsd", "n", "t0", "t1", "dt" )
+      sbv = c('trip','set', "z", "zsd", "t", "tsd", "n", "t0", "t1", "dt", "seabird_uid" )
       set_sb = merge( set[, c("trip", "set") ], sbStats[,sbv], by=c("trip","set"), all.x=TRUE, all.y=FALSE, sort=FALSE )
       # tapply( as.numeric(set_sb$dt), year(set_sb$t1), mean, na.rm=T )
       # tapply( as.numeric(set_sb$dt), year(set_sb$t1), function(x) length(which(is.finite(x))) )
 
       mlStats =  minilog.db( DS="stats" )
        # mlStats$dt = as.numeric(mlStats$dt )
-      mlv =  c('trip','set', "z",    "zsd",    "t",    "tsd",    "n",    "t0",    "t1",    "dt" )
+      mlv =  c('trip', +'set', "z",    "zsd",    "t",    "tsd",    "n",    "t0",    "t1",    "dt", "minilog_uid" )
       set_ml = merge( set[, c("trip", "set") ], mlStats[,mlv], by=c("trip","set"), all.x=TRUE, all.y=FALSE, sort=FALSE )
       # tapply( as.numeric(set_ml$dt), lubridate::year(set_ml$t1), mean, na.rm=T )
       # tapply( as.numeric(set_ml$dt), year(set_ml$t1), function(x) length(which(is.finite(x))) )

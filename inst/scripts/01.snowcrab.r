@@ -78,6 +78,7 @@
 
     netmind.db( DS='esonar2netmind.conversion',Y=esonar.yToload )
     netmind.db( DS="load", Y=netmind.yToload) # netmind data series "begins" in 1998 -- 60 min?
+      #JC note: 1998:2002 have about 60 files with no data, just a short header
 
     #MG I'm not sure why these stats are not being written automatically, neet to set it in the code above to run these after data is loaded
     seabird.db (DS="stats.redo", Y=seabird.yToload )
