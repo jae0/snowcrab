@@ -12,7 +12,6 @@
       surfacearea=NA, vel=NA, vel_sd=NA, netmind_n=NA, t0=NA, t1=NA, dt=NA, yr=NA )
 
     n.req = 30
-    t0_multiple = NULL
 
     if(length(t0)>1) {t0 = NULL}
 
@@ -31,7 +30,7 @@
     }
 
     if (!is.null(t0) & !is.null(set_timestamp)  ) {
-     t0_multiple = t0 = set_timestamp
+     t0 = set_timestamp
      set_timestamp =NULL
     }
 
@@ -103,7 +102,6 @@
     if (all(is.na(t1))) t1=NA
 
     if ( is.null(t1) || !is.finite(t1) ) {
-      # t1_tmp = t0 + 5 /50/24
       t1_tmp = NA  # rather than guessing, flag and then fill later
     } else {
       t1_tmp = t1
@@ -137,32 +135,6 @@
         out$spread = mean( N$doorspread[ gooddoor ], na.rm=T ) / 1000
         out$spread_sd = sd( N$doorspread[ gooddoor ], na.rm=T ) / 1000
       }
-    }
-
-
-    if (!is.null( t0_multiple )) {
-
-      if( !any(is.na(t0_multiple) )) { # two estimates of t0
-      timediff = abs( difftime( t0_multiple[1], t0_multiple[2] ))
-      if ( is.finite( timediff )) {
-      if (timediff > lubridate::seconds(20) ) { # more than XX seconds
-        # check bounds
-        if (!is.null( t1) ) {
-
-          dts =  abs( difftime( t1, t0_multiple ))
-          if(any(dts<12)) {
-            igood = which( dts > lubridate::minutes(5) &  dts < lubridate::minutes(7) )
-          }
-
-          if (length(igood)==0 ) t0=mean(t0_multiple) # both not good, take mean
-          if (length(igood)==1 ) t0=t0_multiple[igood]
-          if (length(igood)==2 ) t0=min( t0_multiple )  # both good, no info which is best .. take the longer tow to be conservative
-        }
-      } else {
-        t0 = min( t0_multiple ) # this is to be more conservative in SA estimates ... better to be wrong by estimating too large a SA
-      }
-      }
-    }
     }
 
     if ( length(t0)>1) t0 = NA

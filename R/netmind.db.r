@@ -1,4 +1,4 @@
-netmind.db = function( DS, Y=NULL, plotdata=FALSE ) {
+netmind.db = function( DS, Y=NULL, plotdata=TRUE ) {
 
   netmind.dir = project.datadirectory("bio.snowcrab", "data", "netmind" )
   netmind.rawdata.location = file.path( netmind.dir, "archive" )
@@ -141,24 +141,17 @@ netmind.db = function( DS, Y=NULL, plotdata=FALSE ) {
     # bring in stats from each data stream and then calculate netmind stats
     # bring in minilog and seabird data that has t0, t1 times for start and stop of bottom contact
 
-    if(plotdata) pdf(paste0("netmind",yr,".pdf"))
-
     set = snowcrab.db( DS="setInitial")  # UTC
 
     sbStats =  seabird.db( DS="stats" )
     sbv = c('trip','set', "z", "zsd", "t", "tsd", "n", "t0", "t1", "dt" )
     set_sb = merge( set[, c("trip", "set") ], sbStats[,sbv], by=c("trip","set"), all.x=TRUE, all.y=FALSE, sort=FALSE )
-    # tapply( as.numeric(set_sb$dt), year(set_sb$t1), mean, na.rm=T )
-    # tapply( as.numeric(set_sb$dt), year(set_sb$t1), function(x) length(which(is.finite(x))) )
 
     mlStats =  minilog.db( DS="stats" )
-     # mlStats$dt = as.numeric(mlStats$dt )
     mlv =  c('trip','set', "z",    "zsd",    "t",    "tsd",    "n",    "t0",    "t1",    "dt" )
     set_ml = merge( set[, c("trip", "set") ], mlStats[,mlv], by=c("trip","set"), all.x=TRUE, all.y=FALSE, sort=FALSE )
-    # tapply( as.numeric(set_ml$dt), lubridate::year(set_ml$t1), mean, na.rm=T )
-    # tapply( as.numeric(set_ml$dt), year(set_ml$t1), function(x) length(which(is.finite(x))) )
 
-    set = merge( set, set_sb, by=c("trip", "set" ), all.x=TRUE, all.y=FALSE, sort=FALSE )
+    set = merge( set, set_sb, by=c("trip", "set" ), all.x=TRUE, all.y=FALSE, sort=FALSE, suffixes=c("", ".sb" ) )
     set = merge( set, set_ml, by=c("trip", "set" ), all.x=TRUE, all.y=FALSE, sort=FALSE, suffixes=c("", ".ml" ))
 
     # use seabird data as the standard, replace with minilog data where missing
@@ -186,8 +179,6 @@ netmind.db = function( DS, Y=NULL, plotdata=FALSE ) {
     tokeep = grep( "\\.ml$", colnames(set), invert=TRUE )
     set = set[, tokeep]
     set$n = NULL
-    # tapply( as.numeric(set$dt), year(set$t1), mean, na.rm=T )
-    # tapply( as.numeric(set$dt), year(set$t1), function(x) length(which(is.finite(x))) )
 
     nm = netmind.db( DS="set.netmind.lookuptable" )
     set = merge( set, nm, by=c("trip","set"), all.x=T, all.y=F, sort=F, suffixes=c("", ".netmind") )
@@ -210,14 +201,13 @@ netmind.db = function( DS, Y=NULL, plotdata=FALSE ) {
         print(rid[i,])
         bdi = which( basedata$netmind_uid==id )
         if (length(bdi) < 5 ) next()
-        N = basedata[ bdi ,]
-        l = net.configuration( N, t0=rid$t0[i], t1=rid$t1[i], set_timestamp=rid$timestamp[i], yr=yr, plotdata=plotdata)
+        l = net.configuration( basedata[ bdi ,], t0=rid$t0[i], t1=rid$t1[i],
+          set_timestamp=rid$timestamp[i], yr=yr, plotdata=plotdata )
         l$netmind_uid = id
         l[,c('t0','t1','dt')] = as.numeric(l[,c('t0','t1','dt')])
         Stats = rbind( Stats, l )
         save( Stats, file=fn, compress=TRUE )
       }
-      if(plotdata)dev.off()
     }
     return ( netmind.dir )
   }

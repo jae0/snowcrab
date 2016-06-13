@@ -83,7 +83,7 @@
 
     #MG I'm not sure why these stats are not being written automatically, neet to set it in the code above to run these after data is loaded
     seabird.db (DS="stats.redo", Y=p$seabird.yToload )
-    minilog.db (DS="stats.redo", Y=p$minilog.yToload )
+    minilog.db (DS="stats.redo", Y=p$minilog.yToload )  # note no depth in minilog any more (since 2014 ..  useful for temperature only)
     netmind.db (DS="stats.redo", Y=p$netmind.yToload )
 
 
