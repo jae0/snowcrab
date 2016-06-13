@@ -12,6 +12,7 @@
         Y = Y[iY]
     }
 
+
     if ( DS %in% c("basedata", "metadata", "load") ) {
 
       if (DS=="basedata" ){
@@ -62,7 +63,10 @@
         if (is.null(yr) ) next()
         if ( yr %in% Y ) filelist[f,] = c( f, dirlist[f], yr )
       }
-      filelist = filelist[ which( !is.na( filelist[,1] ) ) , ]
+      fli = which( !is.na( filelist[,1] ) )
+      if (length(fli) == 0) return( "No data found matching the criteria")
+
+      filelist = filelist[ fli , ]
 
       set = snowcrab.db( DS="setInitial" )
 
@@ -136,13 +140,12 @@
         print (yr )
 
         fn = file.path( sb.dir, paste( "seabird.stats", yr, "rdata", sep=".") )
-        sbStats = NULL
+        sbRAW = mta = sbStats = NULL
 
         sbRAW = seabird.db( DS="basedata", Y=yr )
-   #     sbRAW$timestamp = lubridate::ymd_hms( sbRAW$timestamp )
-
         mta = seabird.db( DS="metadata", Y=yr )
-        # mta$timestamp = ymd_hms( mta$timestamp )
+
+        if (is.null(sbRAW) | is.null(mta)) next()
 
         rid = seabird.db( DS="set.seabird.lookuptable" )
         rid = data.frame( seabird_uid=rid$seabird_uid, stringsAsFactors=FALSE )
@@ -150,6 +153,9 @@
         rid = rid[ which(rid$yr== yr) ,]
 
         if (nrow(rid) == 0 ) next()
+
+  #      if (length(fli) == 0) return( "No data found matching the criteria")
+
         #prune down the rids to only a subset
         #rid = rid[grepl('S30092013',rid$seabird_uid),]
         for ( i in 1:nrow(rid) ) {

@@ -74,11 +74,11 @@
     p$esonar.yToload  = p$year.assessment
 
 
-    seabird.db( DS="load", Y=seabird.yToload ) # this begins 2012;
-    minilog.db( DS="load", Y=minilog.yToload ) # minilog data series "begins" in 1999 -- 60 min?
+    seabird.db( DS="load", Y=p$seabird.yToload ) # this begins 2012;
+    minilog.db( DS="load", Y=p$minilog.yToload ) # minilog data series "begins" in 1999 -- 60 min?
 
-    netmind.db( DS='esonar2netmind.conversion',Y=esonar.yToload )
-    netmind.db( DS="load", Y=netmind.yToload) # netmind data series "begins" in 1998 -- 60 min?
+    netmind.db( DS='esonar2netmind.conversion',Y=p$esonar.yToload )
+    netmind.db( DS="load", Y=p$netmind.yToload) # netmind data series "begins" in 1998 -- 60 min?
       #JC note: 1998:2002 have about 60 files with no data, just a short header
 
     #MG I'm not sure why these stats are not being written automatically, neet to set it in the code above to run these after data is loaded
