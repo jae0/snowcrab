@@ -3,7 +3,7 @@
   # forward projection
 
   # ++++++++++ must check timing of 4X to make sure that the season is not an issue ++++++++++
-p = bio.snowcrab::initialise.local.environment( current.assessment.year=2016)
+p = bio.snowcrab::initialise.local.environment( year.assessment=2016)
 
 
   p$clusters = "localhost"
@@ -18,7 +18,7 @@ p = bio.snowcrab::initialise.local.environment( current.assessment.year=2016)
   p$nyears.projection = 6
   p$pyears.projection = c( p$start.projection.year : (p$start.projection.year + p$nyears.projection))
 
-  p$good.years = as.character( c(2003:p$current.assessment.year) )  # use only the autumn surveys ...
+  p$good.years = as.character( c(2003:p$year.assessment) )  # use only the autumn surveys ...
 # p$scenario = "historic"
   p$scenario = "mature.only"
   p$exploit.rate = c(0, 0.1, 0.2, 0.4, 0.6, 1)
@@ -71,7 +71,7 @@ p = bio.snowcrab::initialise.local.environment( current.assessment.year=2016)
   FM[ which(FM==1) ] = NA
   FM[ which(FM<eps) ] = NA
 
-  three.yr.retro = as.character( p$current.assessment.year + c(0, -1, -2))
+  three.yr.retro = as.character( p$year.assessment + c(0, -1, -2))
   FM = FM[, three.yr.retro, ]
   fm = apply( FM, c(1,3), mean, na.rm=T )
   fm = apply( FM, c(1,3), mean, na.rm=T )

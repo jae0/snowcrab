@@ -3,7 +3,7 @@
   # 0. Initialise work space
 
   p = bio.snowcrab::initialise.local.environment(
-    current.assessment.year=2016,
+    year.assessment=2016,
     libs = c("parallel", "lubridate", "bigmemory", "mgcv", "sp", "parallel",
          "grid" , "lattice", "fields", "rgdal", "raster")
   )
@@ -123,7 +123,7 @@
         # p$clusters = rep( "localhost", 2)
         p = make.list( list(v=c("R0.mass.environmentals.only", "R0.mass") ), Y=p )
           habitat.model.db (DS="habitat.redo", p=p )
-        p = make.list( list(y=1970:p$current.assessment.year, v=c("R0.mass.environmentals.only", "R0.mass") ), Y=p )
+        p = make.list( list(y=1970:p$year.assessment, v=c("R0.mass.environmentals.only", "R0.mass") ), Y=p )
           parallel.run( snowcrab.habitat.db, p=p )
         # or
         # snowcrab.habitat.db (p=p) -- working?

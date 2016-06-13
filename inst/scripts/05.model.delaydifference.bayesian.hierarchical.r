@@ -1,5 +1,5 @@
 
-p = bio.snowcrab::initialise.local.environment( current.assessment.year=2016)
+p = bio.snowcrab::initialise.local.environment( year.assessment=2016)
 
   require(rjags)
   rjags::load.module("dic")
@@ -135,7 +135,7 @@ p = bio.snowcrab::initialise.local.environment( current.assessment.year=2016)
 
 
 
-    # densities of biomass estimates for the current year
+    # densities of biomass estimates for the year.assessment
       for (i in 1:3) plot(density(y$B[ndata,i,,] ), main="")
       qs = apply( y$B[ndata,,,], 1, quantile, probs=c(0.025, 0.5, 0.975) )
       qs

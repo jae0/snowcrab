@@ -330,7 +330,7 @@
 
 
       #Identify morphology errors and print, save to CSV
-      yr.e <- p$current.assessment.year
+      yr.e <- p$year.assessment
       fn.e = file.path(project.datadirectory("bio.snowcrab"), "data", "trawl", "morphology.errors")
       dir.create(fn.e, recursive=T, showWarnings=F)
       outfile.e =  file.path( fn.e, paste("morphologyerrors", yr.e, ".csv", sep=""))

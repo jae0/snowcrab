@@ -7,11 +7,11 @@
     classnames = paste( "Instar", c(13:9) )
 
     p$vars.to.model = classes
-    p$years.to.model = 1998:p$current.assessment.year
+    p$years.to.model = 1998:p$year.assessment
     p = make.list( list(y=p$years.to.model, v=p$vars.to.model ), Y=p )
     K = interpolation.db( DS="interpolation.simulation", p=p )
 
-    current.year = p$current.assessment.year
+    year.assessment = p$year.assessment
     K = K[ -which( as.character(K$region)=="cfa4x" & K$yr <= 2002 ), ]
     K = K[ -which( K$yr <= 1998 ), ]
 
@@ -27,7 +27,7 @@
     K$region = factor(as.character(K$region), levels=areas, labels=regions)
 
     zero.value = K[1,]
-    zero.value$yr = current.year
+    zero.value$yr = year.assessment
     zero.value$total = 0
     zero.value$lbound = 0
     zero.value$ubound = 0

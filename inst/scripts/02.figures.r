@@ -1,7 +1,7 @@
 
   # Figures obtained after completion of data assimilation and processing up to the end of "01.snowcrab.r"
 
-  p = bio.snowcrab::initialise.local.environment( current.assessment.year=2016)
+  p = bio.snowcrab::initialise.local.environment( year.assessment=2016)
 
 
    # Think this is fixed now .. ?
@@ -13,15 +13,15 @@
 
   # ------------------------------------------
    # Time-series: Fisheries landings
-   figure.landings.timeseries( yearmax=p$current.assessment.year, outdir=file.path( p$annual.results,  "timeseries","fishery"), outfile="landings.ts", outfile2="landings.ts.sm" )
+   figure.landings.timeseries( yearmax=p$year.assessment, outdir=file.path( p$annual.results,  "timeseries","fishery"), outfile="landings.ts", outfile2="landings.ts.sm" )
 
   # ------------------------------------------
   # Time-series: Fisheries effort
-   figure.effort.timeseries( yearmax=p$current.assessment.year, outdir=file.path( p$annual.results,"timeseries", "fishery"), outfile="effort.ts", outfile2="effort.ts.sm" )
+   figure.effort.timeseries( yearmax=p$year.assessment, outdir=file.path( p$annual.results,"timeseries", "fishery"), outfile="effort.ts", outfile2="effort.ts.sm" )
 
   # ------------------------------------------
   # Time-series: Fisheries CPUE
-   figure.cpue.timeseries( yearmax=p$current.assessment.year, outdir=file.path( p$annual.results,"timeseries", "fishery"), outfile="cpue.ts", outfile2="cpue.sm.ts" )
+   figure.cpue.timeseries( yearmax=p$year.assessment, outdir=file.path( p$annual.results,"timeseries", "fishery"), outfile="cpue.ts", outfile2="cpue.sm.ts" )
 
   # ------------------------------------------
   # Size frequency distributions, broken down by moult category from at-sea observed data
@@ -131,7 +131,7 @@
     #map.fisheries.data( p)
     raster.map.variables( p, grid.fun=mean, variables = c("effort", "landings", "cpue"))
   # Map: fisheries logbook data (Effort, CPUE, Landings)  with a colour scale stretched only over the past two years
-    raster.map.variables.current.year( p, grid.fun=mean, variables = c("effort", "landings", "cpue"), years=c('2014', '2015'))
+    raster.map.variables.year.assessment( p, grid.fun=mean, variables = c("effort", "landings", "cpue"), years=c('2014', '2015'))
 
   # ------------------------------------------
   # Map: Survey locations

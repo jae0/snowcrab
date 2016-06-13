@@ -1,7 +1,7 @@
 # ----------------------------------------------------------------------------------
 # NOTE :
 #
-#  1. The year in the file "current.assessment.year.r" must be changed every year.
+#  1. The year in the file "year.assessment.r" must be changed every year.
 #     It must be kept separate from "initialise.local.environment.r" as running in parallel mode
 #     requires occasionally overrding some parameters in "p". This override cannot be completed as
 #     "initialise.local.environment.r" is sourced with every initialisation of a a new CPU.
@@ -9,7 +9,7 @@
 
   # load required functions and parameters
 
-  p = bio.snowcrab::initialise.local.environment( current.assessment.year=2016 )
+  p = bio.snowcrab::initialise.local.environment( year.assessment=2016 )
 
   debug = FALSE
   if (debug) {
@@ -20,13 +20,13 @@
     # get data tables from Oracle server and store local copies
   # !!!!!! --------- these should be run on a windows machine: !!!!!!!!! <--------- READ THIS
   if (obtain.database.snapshot) {
-    snowcrab.db( DS="set.odbc.redo", yrs=1996:p$current.assessment.year ) # Copy over datadirectory ("bio.snowcrab"), "data", "trawl", "SNCRABSETS"
-    snowcrab.db( DS="det.odbc.redo", yrs=1996:p$current.assessment.year ) # Copy over datadirectory ("bio.snowcrab"), "data", "trawl", "SNCRABDETAILS"
-    snowcrab.db( DS="cat.odbc.redo", yrs=1996:p$current.assessment.year ) # Copy over datadirectory ("bio.snowcrab"), "data", "trawl", "SNTRAWLBYCATCH"
-    logbook.db(  DS="odbc.logbook.redo", yrs=1996:p$current.assessment.year ) #Copy over datadirectory ("bio.snowcrab"), "data", "logbook", "datadump"
+    snowcrab.db( DS="set.odbc.redo", yrs=1996:p$year.assessment ) # Copy over datadirectory ("bio.snowcrab"), "data", "trawl", "SNCRABSETS"
+    snowcrab.db( DS="det.odbc.redo", yrs=1996:p$year.assessment ) # Copy over datadirectory ("bio.snowcrab"), "data", "trawl", "SNCRABDETAILS"
+    snowcrab.db( DS="cat.odbc.redo", yrs=1996:p$year.assessment ) # Copy over datadirectory ("bio.snowcrab"), "data", "trawl", "SNTRAWLBYCATCH"
+    logbook.db(  DS="odbc.logbook.redo", yrs=1996:p$year.assessment ) #Copy over datadirectory ("bio.snowcrab"), "data", "logbook", "datadump"
     logbook.db(  DS="odbc.licence.redo" ) #Copy over datadirectory ("bio.snowcrab"), "data", "logbook", "lic.datadump.rdata"
     logbook.db(  DS="odbc.areas.redo" ) #Copy over datadirectory ("bio.snowcrab"), "data", "observer", "datadump"
-    observer.db( DS="odbc.redo", yrs=1996:p$current.assessment.year )
+    observer.db( DS="odbc.redo", yrs=1996:p$year.assessment )
   }
 
 # -------------------------------------------------------------------------------------
@@ -65,13 +65,13 @@
       )
 
     # check/choose the years
-    (p$current.assessment.year)
+    (p$year.assessment)
 
     # if just updating a single year, run the following, else all years will be run by default
-    p$seabird.yToload = p$current.assessment.year
-    p$minilog.yToload = p$current.assessment.year
-    p$netmind.yToload = p$current.assessment.year
-    p$esonar.yToload  = p$current.assessment.year
+    p$seabird.yToload = p$year.assessment
+    p$minilog.yToload = p$year.assessment
+    p$netmind.yToload = p$year.assessment
+    p$esonar.yToload  = p$year.assessment
 
 
     seabird.db( DS="load", Y=seabird.yToload ) # this begins 2012;
@@ -82,9 +82,9 @@
       #JC note: 1998:2002 have about 60 files with no data, just a short header
 
     #MG I'm not sure why these stats are not being written automatically, neet to set it in the code above to run these after data is loaded
-    seabird.db (DS="stats.redo", Y=seabird.yToload )
-    minilog.db (DS="stats.redo", Y=minilog.yToload )
-    netmind.db (DS="stats.redo", Y=netmind.yToload )
+    seabird.db (DS="stats.redo", Y=p$seabird.yToload )
+    minilog.db (DS="stats.redo", Y=p$minilog.yToload )
+    netmind.db (DS="stats.redo", Y=p$netmind.yToload )
 
 
     # merge in netmind, minilog, seabird, esonar data and do some sanity checks
@@ -161,8 +161,8 @@
 
   logbook.db( DS  ="fisheries.complete.redo", p=p )
   snowcrab.db( DS ="set.complete.redo", p=p )
-  snowcrab.db( DS ="set.logbook.redo", yrs=1996:p$current.assessment.year ) # add gridded fisheries data
-  # snowcrab.db( DS ="set.logbook", yrs=1996:p$current.assessment.year )
+  snowcrab.db( DS ="set.logbook.redo", yrs=1996:p$year.assessment ) # add gridded fisheries data
+  # snowcrab.db( DS ="set.logbook", yrs=1996:p$year.assessment )
 
   #make.timeseries.data(p=p, areas=p$regions )  #  timeseries of means of all survey data
   #in 2014 as there were reduced stations for comparison
@@ -181,7 +181,7 @@
   #for ( vs in c( "R0.mass", "male.large", "male.small", "female.large", "female.small" ) ) {
     ### -------- not yet finished this one ...  TODO
     vs="R0.mass"
-    snowcrab.external.db(p=p, DS="set.snowcrab.in.groundfish.survey.redo", vname=vs, year.current=p$current.assessment.year )
+    snowcrab.external.db(p=p, DS="set.snowcrab.in.groundfish.survey.redo", vname=vs, year.current=p$year.assessment )
 
     # ---- TODO !!! must replace this with bio.db processing step
 

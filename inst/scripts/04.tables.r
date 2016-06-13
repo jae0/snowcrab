@@ -1,13 +1,13 @@
 
 
-p = bio.snowcrab::initialise.local.environment( current.assessment.year=2016)
+p = bio.snowcrab::initialise.local.environment( year.assessment=2016)
 
 # Tables for the SSR/RESDOC
 # ---------------------------------------------
   # Tables of CC from trawl surveys > 95mmCW
 
   outvars = c("yr", "region", "vars", "total", "lbound", "ubound")
-  yy = c(1999:p$current.assessment.year)
+  yy = c(1999:p$year.assessment)
   rr = c("cfasouth", "cfanorth", "cfa4x")
   vv = c( "totno.male.com.CC1", "totno.male.com.CC2", "totno.male.com.CC3",
           "totno.male.com.CC4", "totno.male.com.CC5" )
@@ -55,7 +55,7 @@ p = bio.snowcrab::initialise.local.environment( current.assessment.year=2016)
 
 
   outvars = c("yr", "region", "vars", "total", "lbound", "ubound")
-  yy = c(1999:p$current.assessment.year)
+  yy = c(1999:p$year.assessment)
   rr = c("cfasouth", "cfanorth", "cfa4x")
   vv = c( "totmass.male.com", "R0.mass", "R0.no", "R1.no", "R2.no", "R3.no", "totno.male.imm", "totno.male.com.CC1to2", "totno.male.com.CC3to4",
           "totno.male.com.CC5" )

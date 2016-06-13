@@ -5,7 +5,7 @@
   get.population.projection.parameters = function( p ) {
     # parameters for fishable biomass calculations and projections
     
-    assessment.year = p$current.assessment.year
+    assessment.year = p$year.assessment
     
     p$regions = c("cfanorth", "cfasouth", "cfa4x")
     p$regions.labels = c( "N-ENS", "S-ENS", "4X")

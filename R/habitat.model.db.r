@@ -19,7 +19,7 @@
       }
 
       # add groundfish data
-      gf = snowcrab.external.db (p=p, DS="set.snowcrab.in.groundfish.survey", vname="R0.mass", year.current=p$current.assessment.year )  ## right now, fixed only to R0.mass ... TO DO make more variable
+      gf = snowcrab.external.db (p=p, DS="set.snowcrab.in.groundfish.survey", vname="R0.mass", year.current=p$year.assessment )  ## right now, fixed only to R0.mass ... TO DO make more variable
 
       # absense prior to 1999 is meaningless due to inconsistent recording
       ii = which( gf$n==0 & gf$yr<=1998)

@@ -3,7 +3,7 @@
         
 
     td = NULL
-    for ( yy in 1970:p$current.assessment.year ) {
+    for ( yy in 1970:p$year.assessment ) {
       KK = snowcrab.habitat.db( DS="K", p=p, v="R0.mass", y=yy )
       td = rbind( td, KK )
     }
@@ -49,7 +49,7 @@
     print("SD:")
     print( tapply(td$t, td$region, sd, na.rm=T) ) 
     print( "latest year:" )
-    print( td$t[ td$yr==p$current.assessment.year ])
+    print( td$t[ td$yr==p$year.assessment ])
     table.view( td )
     return(fn)  
   }

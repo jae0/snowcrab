@@ -2,7 +2,7 @@
 #Function to summarize and map raster variables
 #Cell size can also be adjusted to change the default cell size that is mapped, default = 6km
 
-	raster.map.variables.current.year = function(p=p, grid.fun, variables, cell=NULL, years=years) {
+	raster.map.variables.year.assessment = function(p=p, grid.fun, variables, cell=NULL, years=years) {
 
 	  browser()
 

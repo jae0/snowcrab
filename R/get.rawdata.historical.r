@@ -1,6 +1,6 @@
 # ----------------------------
 # obtain raw biological data
-# odb.historic = get.rawdata(outfile = file.path(p$current.assessment.year, "odb.historic.rdata") )
+# odb.historic = get.rawdata(outfile = file.path(p$year.assessment, "odb.historic.rdata") )
 # save(odb.historic, file=file.path(p$annual.results, "odb.historic.rdata"), compress=T)
 
 #  ss = get.rawdata (outfile="odb.historical.seasamples.datadump.rdata", type="seasamples")

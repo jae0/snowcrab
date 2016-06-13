@@ -1,5 +1,5 @@
 
-  p = bio.snowcrab::initialise.local.environment( current.assessment.year=2016)
+  p = bio.snowcrab::initialise.local.environment( year.assessment=2016)
 
 # ------------------------------------------
 # Time-series: all interpolated data estimated from interpolated analysis
@@ -29,7 +29,7 @@
 # ------------------------------------------
 # Time-series: Exploitation rate
   figure.exploitation.rate( p, outdir=file.path( p$annual.results, "timeseries",  "interpolated" ) )
-  figure.exploitation.rate( p, outdir=file.path( p$annual.results, "timeseries",  "interpolated" ), CFA4X.exclude.current.year=F )
+  figure.exploitation.rate( p, outdir=file.path( p$annual.results, "timeseries",  "interpolated" ), CFA4X.exclude.year.assessment=F )
 
 # ------------------------------------------
 # Time-series: Generic plots of all interpolated data

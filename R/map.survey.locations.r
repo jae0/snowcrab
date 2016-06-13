@@ -3,7 +3,7 @@
 
     set = snowcrab.db( DS="set.clean")
     years = sort( unique( set$yr ) )
-    if (newyear) years = p$current.assessment.year
+    if (newyear) years = p$year.assessment
 
     if ( map.method=="GMT" ) {
 

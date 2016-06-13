@@ -1,5 +1,5 @@
 
-p = bio.snowcrab::initialise.local.environment( current.assessment.year=2016)
+p = bio.snowcrab::initialise.local.environment( year.assessment=2016)
 
 
   require(rjags)
@@ -104,7 +104,7 @@ p = bio.snowcrab::initialise.local.environment( current.assessment.year=2016)
   n.chains = 3
   n.thin = 100 # use of uniform distributions causes high autocorrelations ?
   n.iter.final = n.iter * n.thin
-  fnres = file.path( project.datadirectory("bio.snowcrab"), "R", paste( "surplus.prod.mcmc", p$current.assessment.year,"rdata", sep=".") )
+  fnres = file.path( project.datadirectory("bio.snowcrab"), "R", paste( "surplus.prod.mcmc", p$year.assessment,"rdata", sep=".") )
 
 
   debug =T
@@ -230,7 +230,7 @@ p = bio.snowcrab::initialise.local.environment( current.assessment.year=2016)
 
     ndata = sb$N
 
-    # densities of biomass estimates for the current year
+    # densities of biomass estimates for the year.assessment
       for (i in 1:3) plot(density(y$B[ndata,i,,] ), main="")
       qs = apply( y$B[ndata,,,], 1, quantile, probs=c(0.025, 0.5, 0.975) )
       qs

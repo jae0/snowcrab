@@ -77,7 +77,7 @@
       mod2 = allometry.snowcrab ( "chela.mass", "male")
       mod3 = allometry.snowcrab ( "cw.chela.mat", "male")
 
-      odb = observer.db( DS="odbc", yrs=1996:p$current.assessment.year )
+      odb = observer.db( DS="odbc", yrs=1996:p$year.assessment )
       names(odb) = rename.bio.snowcrab.variables( names(odb) )
 
       i.m = which( odb$sex==1)

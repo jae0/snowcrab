@@ -307,7 +307,7 @@
           areas = c("cfa4x", "cfasouth", "cfanorth" )
           regions = c("4X", "S-ENS", "N-ENS")
     
-          td = exploitationrates(p=p, areas=areas, labels=regions, CFA4X.exclude.current.year=FALSE )
+          td = exploitationrates(p=p, areas=areas, labels=regions, CFA4X.exclude.year.assessment=FALSE )
    
           K =  apply( y$K, c(1), mean, na.rm=T  )
           FMSY = apply( y$FMSY, c(1), mean, na.rm=T  )

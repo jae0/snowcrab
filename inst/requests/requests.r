@@ -150,7 +150,7 @@ p = bio.snowcrab::initialise.local.environment()
 
       # Glace Bay extraction
       areas = c("cfanorth.not.glace.bay", "cfa22outer", "cfasouth" )
-      years = 1998:p$current.assessment.year
+      years = 1998:p$year.assessment
 
       set$sid = paste(set$trip, set$set, sep="~")
       det$sid = paste(det$trip, det$set, sep="~")
@@ -425,7 +425,7 @@ p = bio.snowcrab::initialise.local.environment()
   outdir = "ts.kriged.results"
 
   zero.value = K[1,]
-  zero.value$yr = p$current.assessment.year
+  zero.value$yr = p$year.assessment
   zero.value$total = 0
   zero.value$lbound = 0
   zero.value$ubound = 0
@@ -536,7 +536,7 @@ p = bio.snowcrab::initialise.local.environment()
   outdir = "ts.kriged.results"
 
   zero.value = K[1,]
-  zero.value$yr = p$current.assessment.year
+  zero.value$yr = p$year.assessment
   zero.value$total = 0
   zero.value$lbound = 0
   zero.value$ubound = 0

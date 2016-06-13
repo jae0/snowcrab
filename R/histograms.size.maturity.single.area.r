@@ -10,9 +10,9 @@
       outfile = file.path(loc, paste(outfilename))
       
       areas = area
-      years = 1998:p$current.assessment.year
-if(length(years)>15) years = (p$current.assessment.year-14):p$current.assessment.year
-if(grepl('4x',tolower(areas))) years = 2004:p$current.assessment.year
+      years = 1998:p$year.assessment
+if(length(years)>15) years = (p$year.assessment-14):p$year.assessment
+if(grepl('4x',tolower(areas))) years = 2004:p$year.assessment
 
 
       if (redo.data) {

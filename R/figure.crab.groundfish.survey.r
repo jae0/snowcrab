@@ -1,5 +1,5 @@
 figure.crab.groundfish.survey <- function(species , outdir=file.path(project.datadirectory('bio.snowcrab'),
-	"assessments",p$current.assessment.year)) {
+	"assessments",p$year.assessment)) {
 		require(latticeExtra)
     require(boot)
       areas.crab = c("cfa4x", "cfasouth", "cfanorth" )
@@ -65,7 +65,7 @@ gr.list = do.call(rbind,gr.list)
 gr.list$grp = 'groundfish'
 ou$grp = 'snowcrab'
 
-xlim=c(1968,p$current.assessment.year+2)
+xlim=c(1968,p$year.assessment+2)
 oi = gr.list
  if(!is.null(ou)) oi =rbind(ou,gr.list)
 

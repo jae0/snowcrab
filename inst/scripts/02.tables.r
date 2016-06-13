@@ -1,7 +1,7 @@
 
   # Tables based upon data created by "01.snowcrab.r"
 
-p = bio.snowcrab::initialise.local.environment( current.assessment.year=2016)
+p = bio.snowcrab::initialise.local.environment( year.assessment=2016)
 
 
   library("xtable")
@@ -252,7 +252,7 @@ p = bio.snowcrab::initialise.local.environment( current.assessment.year=2016)
     print(out)
 
     x11()
-    year = p$current.assessment.year
+    year = p$year.assessment
     setdata = set[ which(set$yr==year),]
     N = filter.region.polygon(setdata[,c("lon","lat")], "cfanorth")
     S = filter.region.polygon(setdata[,c("lon","lat")], "cfasouth")

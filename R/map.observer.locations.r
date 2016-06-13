@@ -4,7 +4,7 @@
     odb = observer.db( DS="odb")
     odb$yr = odb$fishyr  # use fishyr and not the real year ###################
     years = sort( unique( odb$yr ) )
-    if (newyear) years = p$current.assessment.year
+    if (newyear) years = p$year.assessment
 
     odb = odb[, c("yr", "lon", "lat")]
     odb = odb[ is.finite( rowSums(odb) ) ,]

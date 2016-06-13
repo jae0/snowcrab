@@ -24,7 +24,7 @@
   
     
     p$vars.to.model = c( "totno.female.primiparous", "totno.female.multiparous" )
-    p$years.to.model = 1998:p$current.assessment.year
+    p$years.to.model = 1998:p$year.assessment
     p = make.list( list(y=p$years.to.model, v=p$vars.to.model ), Y=p )
     K = interpolation.db( DS="interpolation.simulation", p=p )
     
@@ -89,7 +89,7 @@
     n.areas = length(areas)
 
 
-   td = fem[ which( as.numeric(as.character(years(fem$datestamp.multi)))  == p$current.assessment.year),]
+   td = fem[ which( as.numeric(as.character(years(fem$datestamp.multi)))  == p$year.assessment),]
    
    td$yr = td$years
    td$total = log10(td$total.egg.all)

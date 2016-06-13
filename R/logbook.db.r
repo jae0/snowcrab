@@ -141,7 +141,7 @@
       lb.historical$date.landed = as.POSIXct( lb.historical$date.landed  )
 
       # logbooks from marfissci tables
-      x = logbook.db( DS="odbc.logbook", yrs=1996:p$current.assessment.year )
+      x = logbook.db( DS="odbc.logbook", yrs=1996:p$year.assessment )
 
       names( x ) = tolower( names( x ) )
       names( x ) = rename.bio.snowcrab.variables(names( x ))
@@ -394,7 +394,7 @@
 
       logbook$dyear = lubridate::decimal_date( logbook$timestamp ) - lubridate::year(logbook$timestamp )
 
-      logbook = logbook[which(logbook$yr<=p$current.assessment.year),]
+      logbook = logbook[which(logbook$yr<=p$year.assessment),]
 			# bring in time invariant features:: depth
       logbook$z = logbook$depth
 			logbook$depth = NULL

@@ -4,7 +4,7 @@
     x = logbook.db( DS="logbook" )
     x = x[filter.region.polygon(x, region="isobath1000m"),]
     years = sort( unique( x$yr ) )
-    if (newyear) years = p$current.assessment.year
+    if (newyear) years = p$year.assessment
     x = x[, c("yr", "lon", "lat")]
     x = x[ is.finite( rowSums(x) ) ,]
 
