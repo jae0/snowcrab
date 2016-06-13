@@ -66,7 +66,10 @@
         if (is.null(yr) ) next()
         if ( yr %in% Y ) filelist[f,] = c( f, dirlist[f], yr )
       }
-      filelist = filelist[ which( !is.na( filelist[,1] ) ) , ]
+      fli = which( !is.na( filelist[,1] ) )
+      if ( length(fli) == 0) return( "No files matching the criteria.")
+
+      filelist = filelist[ fli , ]
 
       set = snowcrab.db( DS="setInitial" )  # set$timestamp is in UTC
 
@@ -140,7 +143,6 @@
         if(any(duplicated(res[,c('trip','set')]))) {
             res = removeDuplicateswithNA(res,cols=c('trip','set'),idvar='dt')
           }
-
         res$t0 = as.POSIXct( res$t0, tz="UTC", origin=lubridate::origin )
         res$t1 = as.POSIXct( res$t1, tz="UTC", origin=lubridate::origin )
         res$dt = difftime( res$t1, res$t0 )
@@ -154,9 +156,10 @@
       for ( yr in Y ) {
         print (yr )
         fn = file.path( minilog.dir, paste( "minilog.stats", yr, "rdata", sep=".") )
-        miniStats = NULL
+        mta = miniRAW = miniStats = NULL
         miniRAW = minilog.db( DS="basedata", Y=yr )
         mta = minilog.db( DS="metadata", Y=yr )
+        if (is.null(mta) | is.null(miniRAW)) next()
 
         rid = minilog.db( DS="set.minilog.lookuptable" )
         rid = data.frame( minilog_uid=rid$minilog_uid, stringsAsFactors=FALSE )

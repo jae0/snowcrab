@@ -60,10 +60,10 @@
         xS = setS[pp,]
         xSii = which( minilog$timestamp >= (xS$timestamp - lubridate::minutes(10)) &
                       minilog$timestamp <= (xS$timestamp + lubridate::minutes(20)))
-        if (length(xSii) != 1 ) next()
+        if (length(xSii) < 30 ) next()
         mi = minilog[ xSii , ] #three minutes before the start of the tow and 15 min after from setinfo
         mi$minilog_uid = xS$minilog_uid = paste('minilog',tripid,xS$station,xS$set,sep=".")
-        xS = data.frame(
+        meta = data.frame(
           minilog_uid=xS$minilog_uid,
           yr=xS$yr,
           timestamp=xS$timestamp,
@@ -77,7 +77,7 @@
           filename=filename2,
           headerall=headerall,
           stringsAsFactors=FALSE)
-        mi = data.frame(
+        base = data.frame(
           mdate=mi$mdate,
           mtime=mi$mtime,
           temperature=mi$temperature,
@@ -85,8 +85,8 @@
           timestamp=mi$timestamp,
           minilog_uid = mi$minilog_uid,
           stringsAsFactors=FALSE)
-        metadata = rbind(metadata,xS )
-        basedata = rbind(basedata,mi)
+        metadata = rbind(metadata, meta )
+        basedata = rbind(basedata, base )
     }
 
     return( list( metadata=metadata, basedata=basedata ) )
