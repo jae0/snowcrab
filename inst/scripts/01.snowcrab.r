@@ -135,13 +135,13 @@
 ## The following are very SLOW:
 # Temperatures ::
   loadfunctions ( "temperature", functionname="temperature.r" )  # days to run
-# Habitat data ... environmentals only as it is used by bio.db etc
+# Habitat data ... environmentals only as it is used by indicators.db etc
   loadfunctions ( "habitat", functionname="habitat.r") #MG fairly quick to run
   #loadfunctions ( "habitat", functionname="habitat.temperatures.r" )
 # BIO db update ::
 # must come after temperature interpolations to permit temperature lookups
   loadfunctions ( "bio", functionname="bio.r" )  #MG took about 20 minutes to run
-# the folllowing depends upon bio.db and temperature
+# the folllowing depends upon indicators.db and temperature
   #MG species area took 2 days to run in parallel, run some things on server if possible. It's quicker to run some things in serial though, ask Jae
   loadfunctions ( "speciesarea", functionname="speciesarea.r" )
   loadfunctions ( "speciescomposition", functionname="speciescomposition.r" )
@@ -183,7 +183,7 @@
     vs="R0.mass"
     snowcrab.external.db(p=p, DS="set.snowcrab.in.groundfish.survey.redo", vname=vs, year.current=p$year.assessment )
 
-    # ---- TODO !!! must replace this with bio.db processing step
+    # ---- TODO !!! must replace this with indicators.db processing step
 
 
 # simple geometric means of raw data:  used by indicators ordination and some figures

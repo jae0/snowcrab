@@ -182,7 +182,7 @@
       delta.distance = NULL
 	    n$distance = NA
 
-     if (nrow(n) > 10) {
+    if (nrow(n) > 10) {
       # integrate area:: piece-wise integration is used as there is curvature of the fishing track (just in case)
       delta.distance = geosphere::distGeo ( n[ 1:(end-1), pos ], n[ 2:end, pos ] ) / 1000 ## in meters convert to km
       n$distances = c( 0, cumsum( delta.distance  ) ) # cumsum used to do piecewise integration of distance
