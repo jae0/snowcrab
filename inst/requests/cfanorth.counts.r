@@ -1,6 +1,6 @@
 
 
-p = bio.snowcrab::initialise.local.environment()
+p = bio.snowcrab::load.environment()
 
   w = snowcrab.db( DS ="set.complete", p=p )
   w = w[ filter.region.polygon( w, "cfanorth"),]

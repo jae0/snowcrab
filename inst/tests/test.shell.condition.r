@@ -1,6 +1,6 @@
 
 
-p = bio.snowcrab::initialise.local.environment()
+p = bio.snowcrab::load.environment()
 
   k = snowcrab.db( DS ="det.georeferenced")
 

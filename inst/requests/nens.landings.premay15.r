@@ -1,6 +1,6 @@
 #nens landings pre may 15
 
-p = bio.snowcrab::initialise.local.environment()
+p = bio.snowcrab::load.environment()
 
 a = logbook.db('logbook')
 

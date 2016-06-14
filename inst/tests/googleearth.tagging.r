@@ -1,6 +1,6 @@
 
 
-  p = bio.snowcrab::initialise.local.environment()
+  p = bio.snowcrab::load.environment()
 
   workdir = file.path( project.datadirectory("bio.snowcrab"), "R" )
 

@@ -1,7 +1,7 @@
 
 
 
-p = bio.snowcrab::initialise.local.environment()
+p = bio.snowcrab::load.environment()
 
     require (boot)  # inv.logit
 

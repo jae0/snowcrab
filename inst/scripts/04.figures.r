@@ -1,5 +1,5 @@
 
-  p = bio.snowcrab::initialise.local.environment( year.assessment=2016)
+  p = bio.snowcrab::load.environment( year.assessment=2016)
 
 # ------------------------------------------
 # Time-series: all interpolated data estimated from interpolated analysis

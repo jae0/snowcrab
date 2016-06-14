@@ -1,7 +1,7 @@
 
   # Figures obtained after completion of data assimilation and processing up to the end of "01.snowcrab.r"
 
-  p = bio.snowcrab::initialise.local.environment( year.assessment=2016)
+  p = bio.snowcrab::load.environment( year.assessment=2016)
 
 
    # Think this is fixed now .. ?
@@ -124,7 +124,7 @@
     map.cat.information( p, outdir=file.path( project.datadirectory("bio.snowcrab"), "R", "maps", "species" ) )
 
   # ------------------------------------------
-  p=initialise.local.environment()
+  p=bio.snowcrab::load.environment()
   # Map:Fisheries logbook data (Effort, CPUE, Landings)
   # MG: This is not working properly, you must open the script and run through once by hand???
   # MG: To fix

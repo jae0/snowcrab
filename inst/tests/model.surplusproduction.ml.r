@@ -2,7 +2,7 @@
   # surplus production analysis
   # Maxmimum Likelihood optimization approach (aka, "timeseries modelling")
 
-  p = bio.snowcrab::initialise.local.environment()
+  p = bio.snowcrab::load.environment()
 
   ###  all data follow this sequence: c("cfanorth", "cfasouth", "cfa4x")
   redo.data=F

@@ -1,7 +1,7 @@
 
   # Tables based upon data created by "01.snowcrab.r"
 
-p = bio.snowcrab::initialise.local.environment( year.assessment=2016)
+p = bio.snowcrab::load.environment( year.assessment=2016)
 
 
   library("xtable")

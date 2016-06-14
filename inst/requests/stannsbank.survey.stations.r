@@ -1,6 +1,6 @@
 
 
-p = bio.snowcrab::initialise.local.environment()
+p = bio.snowcrab::load.environment()
 
 dat = snowcrab.db('set.complete')
 pp = read.csv(find.bio.gis('StAnnsMPA.csv'))

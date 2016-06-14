@@ -2,14 +2,14 @@
 # NOTE :
 #
 #  1. The year in the file "year.assessment.r" must be changed every year.
-#     It must be kept separate from "initialise.local.environment.r" as running in parallel mode
+#     It must be kept separate from "load.environment.r" as running in parallel mode
 #     requires occasionally overrding some parameters in "p". This override cannot be completed as
-#     "initialise.local.environment.r" is sourced with every initialisation of a a new CPU.
+#     "load.environment.r" is sourced with every initialisation of a a new CPU.
   # ----------------------------------------------------------------------------------
 
   # load required functions and parameters
 
-  p = bio.snowcrab::initialise.local.environment( year.assessment=2016 )
+  p = bio.snowcrab::load.environment( year.assessment=2016 )
 
   debug = FALSE
   if (debug) {
@@ -120,7 +120,7 @@
 # -------------------------------------------------------------------------------------
 # External Dependencies: (must be completed before the final lookup/mathcing phase)
 
-  p=initialise.local.environment()
+  p=bio.snowcrab::load.environment()
 
 # Bathymetry data ::
   loadfunctions("bathymetry", functionname="bathymetry.r" ) # if necessary
@@ -157,7 +157,7 @@
 # -------------------------------------------------------------------------------------
 # Final data lookup/matching .. AFTER refreshing all above tables (where relevent/possible)
 
-  p=initialise.local.environment()
+  p=bio.snowcrab::load.environment()
 
   logbook.db( DS  ="fisheries.complete.redo", p=p )
   snowcrab.db( DS ="set.complete.redo", p=p )

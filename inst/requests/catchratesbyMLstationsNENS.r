@@ -1,5 +1,5 @@
 
-p = bio.snowcrab::initialise.local.environment()
+p = bio.snowcrab::load.environment()
 
 makeMap(area='NENS',addSurvey=T,addEmera=T)
 makeMap(addSurvey=T)

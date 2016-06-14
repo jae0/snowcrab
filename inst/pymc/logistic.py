@@ -10,7 +10,7 @@ import pdb
 
 
 r('source( "~/.Rprofile" )')
-r('p=bio.snowcrab::initialise.local.environment()" ) ')
+r('p=bio.snowcrab::load.environment()" ) ')
 r('res = biomass.summary.db(p=p)')
 
 IOA = array( r('as.matrix(res$B)') )

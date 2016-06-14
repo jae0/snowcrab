@@ -9,7 +9,7 @@
   #
   # 4.figures.r
 
-  p = bio.snowcrab::initialise.local.environment()
+  p = bio.snowcrab::load.environment()
 
   # ------------------------------------------
   # krige relevant variable to whole-shelf scale

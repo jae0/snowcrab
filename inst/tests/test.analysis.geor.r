@@ -1,5 +1,5 @@
 
-p = bio.snowcrab::initialise.local.environment()
+p = bio.snowcrab::load.environment()
 
 require(geoR)
 require(geoRglm)
@@ -41,7 +41,7 @@ names(ca20)
 
 # ----------------------
 
-	p=initialise.local.environment()
+	p=load.environment()
 
 kvar = "R0.mass"
 kyear = 2007

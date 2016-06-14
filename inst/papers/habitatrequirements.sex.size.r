@@ -4,7 +4,7 @@
   # define categories of interest
 
 
-  p = bio.snowcrab::initialise.local.environment.r()
+  p = bio.snowcrab::load.environment.r()
 
   p$regions ="cfaall"
   p$vars.to.model = c("male.large.mass", "male.small.mass", "female.large.mass", "female.small.mass" )

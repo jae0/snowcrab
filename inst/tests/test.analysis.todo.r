@@ -2,7 +2,7 @@
 
 # 1 .generate Z estimates and possibly relate them to changes in prey and pred abundance.
 
-	p = bio.snowcrab::initialise.local.environment()
+	p = bio.snowcrab::load.environment()
   q = get.population.projection.parameters( assessment.year = p$year.assessment )
 
   scenario = "mature.only"
@@ -103,7 +103,7 @@
   # -------------------------------------------------------------------------------------
   # source required functions
 
-  p = bio.snowcrab::initialise.local.environment()
+  p = bio.snowcrab::load.environment()
 
 
   # -------------------------------------------------------------------------------------

@@ -2,7 +2,7 @@
   # --------------------------
   # 0. Initialise work space
 
-  p = bio.snowcrab::initialise.local.environment(
+  p = bio.snowcrab::load.environment(
     year.assessment=2016,
     libs = c("parallel", "lubridate", "bigmemory", "mgcv", "sp", "parallel",
          "grid" , "lattice", "fields", "rgdal", "raster")

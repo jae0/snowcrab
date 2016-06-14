@@ -1,6 +1,6 @@
 #Emera Tagging
 
-p = bio.snowcrab::initialise.local.environment()
+p = bio.snowcrab::load.environment()
 
 dn = file.path(project.datadirectory('bio.snowcrab'),'data','tagging','Emera')
 
