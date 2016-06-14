@@ -76,7 +76,7 @@ Q1d 214.52285 1256.456  k=256 -- not enough data in some years
   #Hsim = round(Hsim)  # force binary
 
 
-  PS = habitat.db ( DS="complete", year=y, p=p )
+  PS = indicators.db ( DS="complete", year=y, p=p )
   PS$dyear = p$prediction.dyear  # must be same as above
   PS$t = NA
 

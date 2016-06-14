@@ -216,7 +216,7 @@
     y = 2012
     v = "R0.mass"
 
-        PS = habitat.db ( DS="complete", year=y, p=p )
+        PS = indicators.db ( DS="complete", year=y, p=p )
 				PS$dyear = p$prediction.dyear  # must be same as above
 				PS$t = NA
 

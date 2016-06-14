@@ -26,7 +26,7 @@ params=p
 
 hab = NULL
 for(y in p$years.to.model) {
-   PS = habitat.db ( DS="complete", year=y, p=params )
+   PS = indicators.db ( DS="complete", year=y, p=params )
    PS$dyear = p$prediction.dyear
    PS$t = NA
 

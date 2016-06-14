@@ -82,7 +82,7 @@
 
         qs = empirical.ranges( db="snowcrab", v, probs=c(p$habitat.threshold.quantile, 0.95), remove.zeros=T )
 
-        PS = habitat.db ( DS="complete", year=y, p=p )
+        PS = indicators.db ( DS="complete", year=y, p=p )
 				PS$dyear = p$prediction.dyear  # must be same as above
 
         PST = temperature.db( p=p, DS="spatial.interpolation", yr=y  )
