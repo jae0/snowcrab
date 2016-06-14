@@ -472,7 +472,7 @@
 
 			# clean species codes ... this causes multiple entries for some species that need to be summed up
       # cat$spec = taxonomy.parsimonious( spec=cat$spec )
-      # --- no longer here ... only when integrated into indicators.db
+      # --- no longer here ... only when integrated into survey.db
 
       # remove data where species codes are ambiguous, or missing or non-living items
       xx = which( !is.finite( cat$spec) )
@@ -524,7 +524,7 @@
       snowcrab = snowcrab[ which( as.character(snowcrab$trip) != "-1") , ]
 
       snowcrab$spec = taxonomy.recode(to='parsimonious',from='spec', tolookup = 2526 )  # 2526 is the code used in the groundfish/snow crab surveys .. convert to internally consistent state
-      # longer here -- in indicators.db only
+      # longer here -- in survey.db only
 
 			final = snowcrab[,names(x)]  # get the right sequence of variables
 

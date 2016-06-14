@@ -7,26 +7,26 @@
 
   # not all are fully refreshed automatically .. they are just place holders for now
 
-      groundfish = bio.indicators.db( db="groundfish.timeseries.redo" )
-      snowcrab = bio.indicators.db( db="snowcrab.timeseries.redo")
-      climate = bio.indicators.db (db="climate.redo" )
-      shrimp = bio.indicators.db( db="shrimp.timeseries.redo")
+      groundfish = indicators.ts.db( db="groundfish.timeseries.redo" )
+      snowcrab = indicators.ts.db( db="snowcrab.timeseries.redo")
+      climate = indicators.ts.db (db="climate.redo" )
+      shrimp = indicators.ts.db( db="shrimp.timeseries.redo")
 
-      sar = bio.indicators.db( db="species.area.redo" )
-      nss = bio.indicators.db( db="sizespectrum.redo" )
-      metab = bio.indicators.db( db="metabolism.redo" )
-      sc = bio.indicators.db( db="species.composition.redo" )
+      sar = indicators.ts.db( db="species.area.redo" )
+      nss = indicators.ts.db( db="sizespectrum.redo" )
+      metab = indicators.ts.db( db="metabolism.redo" )
+      sc = indicators.ts.db( db="species.composition.redo" )
 
-      economics = bio.indicators.db( db="economic.data.redo" )
+      economics = indicators.ts.db( db="economic.data.redo" )
 
       # hand constructed and updated .. TODO :: find solutions!
-      #plankton = bio.indicators.db( db="plankton.timeseries.redo" )
-      human = bio.indicators.db( db="demographics.redo" )
+      #plankton = indicators.ts.db( db="plankton.timeseries.redo" )
+      human = indicators.ts.db( db="demographics.redo" )
 
 
-      #seals = bio.indicators.db( db="seal.timeseries.redo" )
-      landedvalue = bio.indicators.db( db="landedvalue.annual.redo", ref.year=2008 )
-      landings = bio.indicators.db( db="landings.annual.redo" )
+      #seals = indicators.ts.db( db="seal.timeseries.redo" )
+      landedvalue = indicators.ts.db( db="landedvalue.annual.redo", ref.year=2008 )
+      landings = indicators.ts.db( db="landings.annual.redo" )
 
 
 
@@ -47,8 +47,8 @@
 
 
 
-  indic = bio.indicators.db( db="bio.indicators.all.glue" )  # glue all time-series together
-  # indic = bio.indicators.db( db="bio.indicators.all" ) # load the glued version
+  indic = indicators.ts.db( db="bio.indicators.all.glue" )  # glue all time-series together
+  # indic = indicators.ts.db( db="bio.indicators.all" ) # load the glued version
 
 
  # indic$data$Nwells.drilled = cumsum.jae(indic$data$Nwells.drilled)
@@ -60,7 +60,7 @@
   t1 = 2015
 
   # ordination of selected key factors
-  indic = bio.indicators.db( db="bio.indicators.all" )
+  indic = indicators.ts.db( db="bio.indicators.all" )
 
   d = bio.indicators.subset ( indic, type="keyfactors" )
 #  save( d, file="/home/adam/tmp/ordin.rdata", compress=TRUE )
