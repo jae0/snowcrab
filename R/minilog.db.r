@@ -225,7 +225,7 @@
               if (!is.null(bc)) {
                 if (plotdata) {
                   bottom.contact.plot( bc )
-                  plotfn = file.path( plotdir, "figures", paste(id, "pdf", sep="." ) )
+                  plotfn = file.path( plotdir, paste(id, "pdf", sep="." ) )
                   print (plotfn)
                   dev.flush()
                   dev.copy2pdf( file=plotfn )

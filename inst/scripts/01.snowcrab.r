@@ -52,9 +52,9 @@
     # creates initial rdata and sqlite db
     snowcrab.db( DS="setInitial.redo", p=p ) # this is required by the seabird.db (but not minilog and netmind)
       # few sanity checks on the initial data pulled from the raw tables
-      problems = data.quality.check( type="stations")  # duplicates
-      problems = data.quality.check( type="count.stations")
-      problems = data.quality.check( type="position") #MG try checking the end position of the tow, if there is an error
+      problems = data.quality.check( type="stations", p=p)  # duplicates
+      problems = data.quality.check( type="count.stations", p=p)
+      problems = data.quality.check( type="position", p=p) #MG try checking the end position of the tow, if there is an error
 
       # was in above. Split off as a separate function it is not essential
       # and can break without the right ESRI drivers. JC
