@@ -129,8 +129,7 @@
         tzone = "UTC"
         res$t0 = as.POSIXct( lubridate::ymd_hms(res$t0), origin=lubridate::origin, tz=tzone )
         res$t1 = as.POSIXct( lubridate::ymd_hms(res$t1), origin=lubridate::origin, tz=tzone )
-        # res$dt = as.numeric( res$dt )  # minutes
-        res$timestamp = lubridate::ymd_hms( res$timestamp)
+        # res$timestamp = lubridate::ymd_hms( res$timestamp)
 
         return(res)
       }

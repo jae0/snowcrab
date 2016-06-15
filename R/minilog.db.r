@@ -146,7 +146,6 @@
         res$t0 = as.POSIXct( res$t0, tz="UTC", origin=lubridate::origin )
         res$t1 = as.POSIXct( res$t1, tz="UTC", origin=lubridate::origin )
         res$dt = difftime( res$t1, res$t0 )
-        # res$timestamp = lubridate::ymd_hms( res$timestamp)
 
         return (res)
        }
@@ -277,7 +276,6 @@
           }
           res$t0 = as.POSIXct(res$t0,origin=lubridate::origin, tz="UTC" )
           res$t1 = as.POSIXct(res$t1,origin=lubridate::origin, tz="UTC")
-          res$dt = as.numeric(res$dt)
           miniStats = rbind(miniStats, cbind( minilog_uid=id, res ) )
         }
 
@@ -285,7 +283,7 @@
         minidt = miniStats$dt
         miniStats$dt = NA
         i = which(!is.na( minidt ) )
-        if (length(i) >0 ) miniStats$dt[i] = times( minidt[i] )
+        if (length(i) >0 ) miniStats$dt[i] = minidt[i]
 
         save( miniStats, file=fn, compress=TRUE )
       }

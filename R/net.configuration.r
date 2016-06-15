@@ -141,7 +141,7 @@
     out$t0 = t0
     out$t1 = t1
 
-    out$dt = difftime( as.POSIXct(t1), as.POSIXct(t0), units="mins" ) # minutes
+    out$dt = difftime( as.POSIXct(t1), as.POSIXct(t0) ) # minutes
 
     if(!is.na(out$t0))    out$yr = lubridate::year( out$t0)
     if(is.na(out$t0))    out$yr = lubridate::year(N$timestamp[1])
