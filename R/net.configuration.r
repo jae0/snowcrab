@@ -4,6 +4,8 @@
     # N is netmind data
     # t0 is current best estimate of start and end time
     # set_timestamp is timestamp from set-log .. alternate if there is no other useful time marker
+    # note:: NETMIND data stream calls the wingspread as "DOORSPREAD".
+    # It is not. It is wingspread.
 
     plotdir = project.datadirectory("bio.snowcrab", "data", "netmind", "figures" )
 
@@ -112,7 +114,7 @@
 
     out$slon=N$lon[1]
     out$slat=N$lat[1]
-    out$spread=mean( N$doorspread, na.rm=T ) / 1000
+    out$spread=mean( N$doorspread, na.rm=T ) / 1000  # though called doorspread it is actually wingspread
     out$spread_sd=sd( N$doorspread, na.rm=T ) /1000
 
     # first set the impossible door spreads to NA and then interpolate based upon a 5 and 95 % quantiles
@@ -191,7 +193,7 @@
       n$doorspread.predicted = NA
       ii = which( is.finite( n$doorspread ) )
       if ( length(ii) > n.req ) {
-
+          # recall that doorspread is actually wingspread ...
          n$doorspread.predicted = approx( x=n$distances, y=n$doorspread, xout=n$distances, method="linear", rule=2 )$y
 
 

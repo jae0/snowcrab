@@ -37,6 +37,9 @@
         netmind[,13] = NULL
       }
 
+      ### NOTE:: doorspread is actually wingspread ..
+      ### the logging software calls it doorspread but it is actually wingspread.
+
       colnames(netmind) = c("ndate", "ntime", "lat.deg", "lat.min", "lat.orient",
                             "lon.deg", "lon.min", "lon.orient", "speed", "primary", "secondary", "doorspread", "depth")
 

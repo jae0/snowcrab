@@ -186,6 +186,7 @@
           res = data.frame(z=NA, t=NA, zsd=NA, tsd=NA, n=NA, t0=NA, t1=NA, dt=NA)
 
           bad.list = c(
+"minilog.S02112006.9.151.22.14.142",
 #'minilog.S12071999.1.NA.NA.NA.190',
 #'minilog.S20052000.10.NA.NA.NA.13',
 #'minilog.S19092004.8.389.NA.NA.321',
