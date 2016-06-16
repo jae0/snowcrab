@@ -173,7 +173,7 @@
   #  tsdata = snowcrab.db("set.timerseries")
 
 # create a new lookuptable for data transformations after refreshing set data/ranges
-  REPOS = recode.variable.initiate.db ( db="snowcrab" )
+  REPOS = bio.indicators::recode.variable.initiate.db ( db="snowcrab" )
 
 
 # -------------------------------------------------------------------------------------
