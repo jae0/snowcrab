@@ -205,7 +205,7 @@
           if (! ( id %in% bad.list ) ) {
 
             ndat = length(M$depth[!is.na(M$depth)])
-            if( ndat > 100 ) {
+            if( ndat > 20 ) {
               # defaults appropriate for more modern scanmar data have > 3500 pings
               # depth resolution is about 4-5 m
               bcp = list(id=id, nr=nrow(M), YR=yr, tdif.min=3, tdif.max=9, time.gate=time.gate,
