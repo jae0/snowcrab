@@ -1,15 +1,6 @@
-# ----------------------------------------------------------------------------------
-# NOTE :
-#
-#  1. The year in the file "year.assessment.r" must be changed every year.
-#     It must be kept separate from "load.environment.r" as running in parallel mode
-#     requires occasionally overrding some parameters in "p". This override cannot be completed as
-#     "load.environment.r" is sourced with every initialisation of a a new CPU.
-  # ----------------------------------------------------------------------------------
 
-  # load required functions and parameters
 
-  p = bio.snowcrab::load.environment( year.assessment=2016 )
+p = bio.snowcrab::load.environment( year.assessment=2016 )
 
   debug = FALSE
   if (debug) {
@@ -17,17 +8,17 @@
     p$clusters= c("localhost")
   }
 
-    # get data tables from Oracle server and store local copies
-  # !!!!!! --------- these should be run on a windows machine: !!!!!!!!! <--------- READ THIS
-  if (obtain.database.snapshot) {
-    snowcrab.db( DS="set.odbc.redo", yrs=1996:p$year.assessment ) # Copy over datadirectory ("bio.snowcrab"), "data", "trawl", "SNCRABSETS"
-    snowcrab.db( DS="det.odbc.redo", yrs=1996:p$year.assessment ) # Copy over datadirectory ("bio.snowcrab"), "data", "trawl", "SNCRABDETAILS"
-    snowcrab.db( DS="cat.odbc.redo", yrs=1996:p$year.assessment ) # Copy over datadirectory ("bio.snowcrab"), "data", "trawl", "SNTRAWLBYCATCH"
-    logbook.db(  DS="odbc.logbook.redo", yrs=1996:p$year.assessment ) #Copy over datadirectory ("bio.snowcrab"), "data", "logbook", "datadump"
-    logbook.db(  DS="odbc.licence.redo" ) #Copy over datadirectory ("bio.snowcrab"), "data", "logbook", "lic.datadump.rdata"
-    logbook.db(  DS="odbc.areas.redo" ) #Copy over datadirectory ("bio.snowcrab"), "data", "observer", "datadump"
-    observer.db( DS="odbc.redo", yrs=1996:p$year.assessment )
-  }
+# get data tables from Oracle server and store local copies
+# !!!!!! --------- these should be run on a windows machine: !!!!!!!!! <--------- READ THIS
+if (obtain.database.snapshot) {
+  snowcrab.db( DS="set.odbc.redo", yrs=1996:p$year.assessment ) # Copy over datadirectory ("bio.snowcrab"), "data", "trawl", "SNCRABSETS"
+  snowcrab.db( DS="det.odbc.redo", yrs=1996:p$year.assessment ) # Copy over datadirectory ("bio.snowcrab"), "data", "trawl", "SNCRABDETAILS"
+  snowcrab.db( DS="cat.odbc.redo", yrs=1996:p$year.assessment ) # Copy over datadirectory ("bio.snowcrab"), "data", "trawl", "SNTRAWLBYCATCH"
+  logbook.db(  DS="odbc.logbook.redo", yrs=1996:p$year.assessment ) #Copy over datadirectory ("bio.snowcrab"), "data", "logbook", "datadump"
+  logbook.db(  DS="odbc.licence.redo" ) #Copy over datadirectory ("bio.snowcrab"), "data", "logbook", "lic.datadump.rdata"
+  logbook.db(  DS="odbc.areas.redo" ) #Copy over datadirectory ("bio.snowcrab"), "data", "observer", "datadump"
+  observer.db( DS="odbc.redo", yrs=1996:p$year.assessment )
+}
 
 # -------------------------------------------------------------------------------------
 # produce base data files from bio.snowcrab logbook database (marfis) and historical data
@@ -73,7 +64,6 @@
     p$netmind.yToload = p$year.assessment
     p$esonar.yToload  = p$year.assessment
 
-
     seabird.db( DS="load", Y=p$seabird.yToload ) # this begins 2012;
     minilog.db( DS="load", Y=p$minilog.yToload ) # minilog data series "begins" in 1999 -- 60 min?
 
@@ -85,7 +75,6 @@
     seabird.db (DS="stats.redo", Y=p$seabird.yToload )
     minilog.db (DS="stats.redo", Y=p$minilog.yToload )  # note no depth in minilog any more (since 2014 ..  useful for temperature only)
     netmind.db (DS="stats.redo", Y=p$netmind.yToload )
-
 
     # merge in netmind, minilog, seabird, esonar data and do some sanity checks
     snowcrab.db( DS="set.clean.redo", p=p )  # sanity checks
@@ -115,49 +104,9 @@
 
   }  # end base data
 
-
-
-# -------------------------------------------------------------------------------------
-# External Dependencies: (must be completed before the final lookup/mathcing phase)
-
-  p=bio.snowcrab::load.environment()
-
-# Bathymetry data ::
-  loadfunctions("bathymetry", functionname="bathymetry.r" ) # if necessary
-# Substrate type  ::
-  loadfunctions("substrate", functionname="substrate.r" ) # if necessary
-# Groundfish data ::
-# NOTE  groundfish.db( DS="odbc.redo" ) must first be done manually
-# on a windows machine and data snapshots moved to local system
-  loadfunctions( "groundfish", functionname="1.groundfish.r" ) #MG took 15-25 minutes to run
-# Taxonomy ::
-  loadfunctions("taxonomy", functionname="taxonomy.r" ) # if necessary #MG takes about 30 minutes to run
-## The following are very SLOW:
-# Temperatures ::
-  loadfunctions ( "temperature", functionname="temperature.r" )  # days to run
-# Habitat data ... environmentals only as it is used by survey.db etc
-  loadfunctions ( "habitat", functionname="habitat.r") #MG fairly quick to run
-  #loadfunctions ( "habitat", functionname="habitat.temperatures.r" )
-# BIO db update ::
-# must come after temperature interpolations to permit temperature lookups
-  loadfunctions ( "bio", functionname="bio.r" )  #MG took about 20 minutes to run
-# the folllowing depends upon survey.db and temperature
-  #MG species area took 2 days to run in parallel, run some things on server if possible. It's quicker to run some things in serial though, ask Jae
-  loadfunctions ( "speciesarea", functionname="speciesarea.r" )
-  loadfunctions ( "speciescomposition", functionname="speciescomposition.r" )
-  loadfunctions ( "sizespectrum", functionname="sizespectrum.r" )
-  loadfunctions ( "metabolism", functionname="metabolism.r" )
-  loadfunctions ( "condition", functionname="condition.r" ) #MG this one took 8 days to run on the laptop, in serial...
-# Habitat data :: NOTE:: This glues all the above together in planar coord system
-# to allow fast lookup of data for matching with set, logbook data
-  loadfunctions ( "habitat", functionname="habitat.complete.r" )
-
-
-
-# -------------------------------------------------------------------------------------
-# Final data lookup/matching .. AFTER refreshing all above tables (where relevent/possible)
-
-  p=bio.snowcrab::load.environment()
+# --------------------------------------------------------------
+# External Dependencies: to permit lookup of data, complete:
+# bio.indicators::{01.indicators.r, 02.interpolations.r}
 
   logbook.db( DS  ="fisheries.complete.redo", p=p )
   snowcrab.db( DS ="set.complete.redo", p=p )
@@ -178,48 +127,18 @@
 
 # -------------------------------------------------------------------------------------
 # snow crab found in external databases tapped into for habitat determination
-  #for ( vs in c( "R0.mass", "male.large", "male.small", "female.large", "female.small" ) ) {
-    ### -------- not yet finished this one ...  TODO
-    vs="R0.mass"
-    snowcrab.external.db(p=p, DS="set.snowcrab.in.groundfish.survey.redo", vname=vs, year.current=p$year.assessment )
+#for ( vs in c( "R0.mass", "male.large", "male.small", "female.large", "female.small" ) ) {
+  ### -------- not yet finished this one ...  TODO
+  vs="R0.mass"
+  snowcrab.external.db(p=p, DS="set.snowcrab.in.groundfish.survey.redo", vname=vs, year.current=p$year.assessment )
 
-    # ---- TODO !!! must replace this with survey.db processing step
-
+  # ---- TODO !!! must replace this with survey.db processing step
 
 # simple geometric means of raw data:  used by indicators ordination and some figures
-  # takes many hours ... need to make parallel  TODO
-  tsdata =  get.time.series ( x=snowcrab.db( DS="set.logbook"),
-  regions=p$regions, vars=variable.list.expand("all.data"), from.file=F, trim=0 )
+# takes many hours ... need to make parallel  TODO
+tsdata =  get.time.series ( x=snowcrab.db( DS="set.logbook"),
+regions=p$regions, vars=variable.list.expand("all.data"), from.file=F, trim=0 )
 
 
-
-#  ----- experimental / tests / ideas
-  s =  snowcrab.db( DS ="set.complete" )
-  d =   snowcrab.db( DS ="det.georeferenced" )
-  l = merge( d, s[, c("trip", "set", "t")], by=c("trip", "set"), all.x=T, all.y=F)
-  rm(s,d); gc()
-  l = l[ which( as.numeric(as.character(l$mat)) %in% c(mature, immature)  &
-                l$sex %in% c(male, female) ) , ]
-
-  l$sex= factor( as.character(l$sex) )
-  l$mat = factor( as.character( l$mat))
-
-  m = glm( t~ as.factor(mat) * as.factor(sex), data= l, family=gaussian())
-  require(car)
-
-  Anova( m)
-  require(effects)
-  k=all.effects(m, l)
-  plot(k)
-
-
-  # -------------------------------------------------------------------------------------
-  # test: make size at maturity estimates in a spatial context
-
-  if( make.maturity.db ) {
-    maturity = make.maturity.spatial( distance=50 )
-    save(maturity, file="maturity.rdata", compress=T)
-    # load(file.path( project.datadirectory("bio.snowcrab"), "R", "maturity.rdata"))
-  }
 
 
