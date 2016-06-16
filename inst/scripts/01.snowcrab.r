@@ -2,11 +2,6 @@
 
 p = bio.snowcrab::load.environment( year.assessment=2016 )
 
-  debug = FALSE
-  if (debug) {
-    p$do.parallel =F
-    p$clusters= c("localhost")
-  }
 
 # get data tables from Oracle server and store local copies
 # !!!!!! --------- these should be run on a windows machine: !!!!!!!!! <--------- READ THIS
@@ -106,8 +101,11 @@ if (obtain.database.snapshot) {
 
 # --------------------------------------------------------------
 # External Dependencies: to permit lookup of data, complete:
-# bio.indicators::{01.indicators.r, 02.interpolations.r}
 
+  bio.indicators::{01.indicators.r, 02.interpolations.r}
+
+
+# --------------------------------------------------------------
   logbook.db( DS  ="fisheries.complete.redo", p=p )
   snowcrab.db( DS ="set.complete.redo", p=p )
   snowcrab.db( DS ="set.logbook.redo", yrs=1996:p$year.assessment ) # add gridded fisheries data
