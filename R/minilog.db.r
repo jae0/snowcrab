@@ -187,7 +187,8 @@
 
           bad.list = c(
 "minilog.S02112006.9.151.22.14.142",
-"minilog.S27042001.7.NA.18.7.17"
+"minilog.S27042001.7.NA.18.7.17",
+"minilog.S08112008.9.55.NA.NA.55"
 #'minilog.S12071999.1.NA.NA.NA.190',
 #'minilog.S20052000.10.NA.NA.NA.13',
 #'minilog.S19092004.8.389.NA.NA.321',
@@ -212,7 +213,7 @@
               bcp = list(id=id, nr=nrow(M), YR=yr, tdif.min=3, tdif.max=9, time.gate=time.gate,
                          depth.min=20, depth.range=c(-40,20), eps.depth =1 ,
                          smooth.windowsize=5, modal.windowsize=5,
-                         noisefilter.trim=0.01, noisefilter.target.r2=0.9, noisefilter.quants=c(0.025, 0.975) )
+                         noisefilter.trim=0.05, noisefilter.target.r2=0.9, noisefilter.quants=c(0.025, 0.975) )
 
 
               # if(id=="minilog.S18092004.6.392.13.9.326") browser()
