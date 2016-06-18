@@ -50,36 +50,34 @@
       if(is.null(set_timestamp)) settimestamp=t0
       time.gate =  list( t0=settimestamp - dminutes(5), t1=settimestamp + dminutes(9) )
 
-
       bcp = list(id=N$netmind_uid[1], nr=nrow(M), YR=yr, tdif.min=3, tdif.max=9, time.gate=time.gate,
                    depth.min=20, depth.range=c(-40,20), eps.depth=2 ,
                    smooth.windowsize=5, modal.windowsize=5,
                    noisefilter.trim=0.01, noisefilter.target.r2=0.9, noisefilter.quants=c(0.025, 0.975) )
-
 
       bcp = bottom.contact.parameters( bcp ) # add other default parameters
 
       bc = NULL
       bc = bottom.contact( x=M, bcp=bcp )
 
-      if ( is.null(bc) || (!is.null( res$bc) && ( ( !is.finite(bc$res$t0 ) || !is.finite(bc$res$t1 ) ) ) )) {
+      if ( is.null(bc) || (!is.null( bc$res) && ( ( !is.finite(bc$res$t0 ) || !is.finite(bc$res$t1 ) ) ) )) {
          bc = bottom.contact( x=M, bcp=bcp )
       }
 
-      if ( is.null(bc) || (!is.null( res$bc) && ( ( !is.finite(bc$res$t0 ) || !is.finite(bc$res$t1 ) ) ) )) {
+      if ( is.null(bc) || (!is.null( bc$res) && ( ( !is.finite(bc$res$t0 ) || !is.finite(bc$res$t1 ) ) ) )) {
         # try once more with random settings
         bcp$noisefilter.inla.h =  0.1
         bc = bottom.contact( x=M, bcp=bcp )
       }
 
-      if ( is.null(bc) || (!is.null( res$bc) && ( ( !is.finite(bc$res$t0 ) || !is.finite(bc$res$t1 ) ) ) )) {
+      if ( is.null(bc) || (!is.null( bc$res) && ( ( !is.finite(bc$res$t0 ) || !is.finite(bc$res$t1 ) ) ) )) {
         # try once more with random settings
         M$depth = jitter( M$depth, amount = bcp$eps.depth/10 )
         bcp$noisefilter.inla.h =  0.01
         bc = bottom.contact( x=M, bcp=bcp )
       }
 
-      if ( is.null(bc) || (!is.null( res$bc) && ( ( !is.finite(bc$res$t0 ) || !is.finite(bc$res$t1 ) ) ) )) {
+      if ( is.null(bc) || (!is.null( bc$res) && ( ( !is.finite(bc$res$t0 ) || !is.finite(bc$res$t1 ) ) ) )) {
         # try once more with random settings
         M$depth = jitter( M$depth, amount = bcp$eps.depth/10 )
         bcp$noisefilter.inla.h =  0.1
