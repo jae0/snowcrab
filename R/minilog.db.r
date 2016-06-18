@@ -154,6 +154,7 @@
 
       for ( yr in Y ) {
         print (yr )
+
         fn = file.path( minilog.dir, paste( "minilog.stats", yr, "rdata", sep=".") )
         mta = miniRAW = miniStats = NULL
         miniRAW = minilog.db( DS="basedata", Y=yr )
@@ -185,6 +186,7 @@
           # default, empty container
           res = data.frame(z=NA, t=NA, zsd=NA, tsd=NA, n=NA, t0=NA, t1=NA, dt=NA)
 
+
           bad.list = c(
 "minilog.S02112006.9.151.22.14.142",
 "minilog.S27042001.7.NA.18.7.17",
@@ -207,21 +209,22 @@
 
           if (! ( id %in% bad.list ) ) {
 
-            ndat = length(M$depth[!is.na(M$depth)])
+            rii = which( M$timestamp > settimestamp &  (M$timestamp < settimestamp+dminutes(5)) )
+            # first estimate in case the following does not work
+            if (length(rii) > 30) res = data.frame( z=mean(M$depth[rii], na.rm=TRUE), t=mean(M$temperature[rii], na.rm=TRUE),
+                    zsd=sd(M$depth[rii], na.rm=TRUE), tsd=sd(M$temperature[rii], na.rm=TRUE), n=NA, t0=NA, t1=NA, dt=NA)
+
+            ndat = length( which( !is.na(M$depth) ))
+            if (ndat ==0 ) print ("No depth data in minilogs")
             if( ndat > 20 ) {
-              # defaults appropriate for more modern scanmar data have > 3500 pings
-              # depth resolution is about 4-5 m
+
               bcp = list(id=id, nr=nrow(M), YR=yr, tdif.min=3, tdif.max=9, time.gate=time.gate,
                          depth.min=20, depth.range=c(-40,20), eps.depth =1 ,
                          smooth.windowsize=5, modal.windowsize=5,
                          noisefilter.trim=0.05, noisefilter.target.r2=0.9, noisefilter.quants=c(0.025, 0.975) )
-
-              # if(id=="minilog.S04102007.12.903.17.10.378") browser()
-
               bcp = bottom.contact.parameters( bcp ) # add other default parameters .. not specified above
               bc =  NULL
               bc = bottom.contact( x=M, bcp=bcp )
-
               if (!is.null(bc)) {
                 if (plotdata) {
                   bottom.contact.plot( bc )
@@ -231,38 +234,33 @@
                   dev.copy2pdf( file=plotfn )
                 }
               }
-
-
-              if ( is.null(bc) || ( !is.null( res$bc) && ( ( !is.finite(bc$res$t0 ) || !is.finite(bc$res$t1 ) ) ) )) {
+              if ( is.null(bc) || ( !is.null( bc$res ) && ( ( !is.finite(bc$res$t0 ) || !is.finite(bc$res$t1 ) ) ) )) {
                  bc = bottom.contact( x=M, bcp=bcp )
               }
-
-              if ( is.null(bc) || ( !is.null( res$bc) && ( ( !is.finite(bc$res$t0 ) || !is.finite(bc$res$t1 ) ) ) )) {
+              if ( is.null(bc) || ( !is.null( bc$res ) && ( ( !is.finite(bc$res$t0 ) || !is.finite(bc$res$t1 ) ) ) )) {
                 bcp$noisefilter.inla.h =0.1
                 bc = bottom.contact( x=M, bcp=bcp )
               }
-
-              if ( is.null(bc) || ( !is.null( res$bc) && ( ( !is.finite(bc$res$t0 ) || !is.finite(bc$res$t1 ) ) ) )) {
+              if ( is.null(bc) || ( !is.null( bc$res) && ( ( !is.finite(bc$res$t0 ) || !is.finite(bc$res$t1 ) ) ) )) {
                 M$depth = jitter( M$depth, amount = bcp$eps.depth/10 )
                 bcp$noisefilter.inla.h = 0.2
                 bc = bottom.contact( x=M, bcp=bcp )
               }
-
-              if ( is.null(bc) || ( !is.null( res$bc) && ( ( !is.finite(bc$res$t0 ) || !is.finite(bc$res$t1 ) ) ) )) {
+              if ( is.null(bc) || ( !is.null( bc$res) && ( ( !is.finite(bc$res$t0 ) || !is.finite(bc$res$t1 ) ) ) )) {
                 M$depth = jitter( M$depth, amount = bcp$eps.depth/10 )
                 bcp$noisefilter.inla.h = 0.5
                 bc = bottom.contact( x=M, bcp=bcp )
               }
+              if ( !is.null(bc$res) ) {
+                res = bc$res
+                res$t0 = as.POSIXct(res$t0,origin=lubridate::origin, tz="UTC" )
+                res$t1 = as.POSIXct(res$t1,origin=lubridate::origin, tz="UTC")
+              }
+            } #end if dat
+          } # end if badlist
 
-              if ( !is.null(bc$res) ) res = bc$res
-            }
-
-          }
-
-          res$t0 = as.POSIXct(res$t0,origin=lubridate::origin, tz="UTC" )
-          res$t1 = as.POSIXct(res$t1,origin=lubridate::origin, tz="UTC")
           miniStats = rbind(miniStats, cbind( minilog_uid=id, res ) )
-        }
+        } #end nrow id
 
         miniStats$minilog_uid =  as.character(miniStats$minilog_uid)
         minidt = miniStats$dt
@@ -271,7 +269,7 @@
         if (length(i) >0 ) miniStats$dt[i] = minidt[i]
 
         save( miniStats, file=fn, compress=TRUE )
-      }
+      } # end for year
 
       return ( minilog.dir )
     }
