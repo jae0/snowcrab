@@ -160,8 +160,11 @@
         for ( i in 1:nrow(rid) ) {
           #browser()
           print(i)
-          warnings()
+
           id = rid$seabird_uid[i]
+
+          if (id=="seabird.S06112014.8.210.18.44.9") next()  # strange problems
+
           sso.trip = rid$trip[i]
           sso.set = rid$set[i]
           sso.station = rid$station[i]
