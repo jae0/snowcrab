@@ -38,6 +38,9 @@
 
     if(N$netmind_uid[1] =='netmind.S26092014.9.541.17.48.304') return(out)
 
+    if(N$netmind_uid[1] =='netmind.S20092007.8.333.17.27.241') browser()
+
+
     if ( any( is.null( t1 ) || is.null(t0) ) )   {
       # try to determine from netmind data if minilog/seadbird data methods have failed. .. not effective due to noise/and small data stream
 
@@ -56,34 +59,28 @@
                    noisefilter.trim=0.01, noisefilter.target.r2=0.9, noisefilter.quants=c(0.025, 0.975) )
 
       bcp = bottom.contact.parameters( bcp ) # add other default parameters
-
       bc = NULL
       bc = bottom.contact( x=M, bcp=bcp )
-
       if ( is.null(bc) || (!is.null( bc$res) && ( ( !is.finite(bc$res$t0 ) || !is.finite(bc$res$t1 ) ) ) )) {
          bc = bottom.contact( x=M, bcp=bcp )
       }
-
       if ( is.null(bc) || (!is.null( bc$res) && ( ( !is.finite(bc$res$t0 ) || !is.finite(bc$res$t1 ) ) ) )) {
         # try once more with random settings
-        bcp$noisefilter.inla.h =  0.1
-        bc = bottom.contact( x=M, bcp=bcp )
-      }
-
-      if ( is.null(bc) || (!is.null( bc$res) && ( ( !is.finite(bc$res$t0 ) || !is.finite(bc$res$t1 ) ) ) )) {
-        # try once more with random settings
-        M$depth = jitter( M$depth, amount = bcp$eps.depth/10 )
         bcp$noisefilter.inla.h =  0.01
         bc = bottom.contact( x=M, bcp=bcp )
       }
-
       if ( is.null(bc) || (!is.null( bc$res) && ( ( !is.finite(bc$res$t0 ) || !is.finite(bc$res$t1 ) ) ) )) {
         # try once more with random settings
         M$depth = jitter( M$depth, amount = bcp$eps.depth/10 )
         bcp$noisefilter.inla.h =  0.1
         bc = bottom.contact( x=M, bcp=bcp )
       }
-
+      if ( is.null(bc) || (!is.null( bc$res) && ( ( !is.finite(bc$res$t0 ) || !is.finite(bc$res$t1 ) ) ) )) {
+        # try once more with random settings
+        M$depth = jitter( M$depth, amount = bcp$eps.depth/10 )
+        bcp$noisefilter.inla.h =  0.5
+        bc = bottom.contact( x=M, bcp=bcp )
+      }
       if ( !is.null(bc) )  {
         if (plotdata) {
           bottom.contact.plot( bc )
