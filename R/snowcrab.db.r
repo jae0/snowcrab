@@ -951,8 +951,8 @@
       # ----add other species
       print( "Adding other species to 'set' ")
       cat = snowcrab.db( DS="cat.initial" )
-      cat2015 = cat[grep("2015", cat$trip),]
-      print(head(cat2015))
+      # cat2015 = cat[grep("2015", cat$trip),]
+      # print(head(cat2015))
 
 			cat$uid = paste(cat$trip, cat$set, sep="~")
 			set$uid = paste(set$trip, set$set, sep="~")
@@ -982,8 +982,8 @@
         set[,k] = set[,k] / set$sa
       }
 
-      set2015 = set[which(set$yr ==2015), ]
-      print(head(set2015))
+      # set2015 = set[which(set$yr ==2015), ]
+      # print(head(set2015))
 
       save(set, file=fn, compress=T)
 

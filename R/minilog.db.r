@@ -188,7 +188,8 @@
           bad.list = c(
 "minilog.S02112006.9.151.22.14.142",
 "minilog.S27042001.7.NA.18.7.17",
-"minilog.S08112008.9.55.NA.NA.55"
+"minilog.S08112008.9.55.NA.NA.55",
+"minilog.S12102011.12.129.NA.NA.145"
 #'minilog.S12071999.1.NA.NA.NA.190',
 #'minilog.S20052000.10.NA.NA.NA.13',
 #'minilog.S19092004.8.389.NA.NA.321',
@@ -215,9 +216,6 @@
                          smooth.windowsize=5, modal.windowsize=5,
                          noisefilter.trim=0.05, noisefilter.target.r2=0.9, noisefilter.quants=c(0.025, 0.975) )
 
-
-              # if(id=="minilog.S18092004.6.392.13.9.326") browser()
-              # if(id=="minilog.S22061999.8.NA.NA.NA.84") browser()
               # if(id=="minilog.S04102007.12.903.17.10.378") browser()
 
               bcp = bottom.contact.parameters( bcp ) # add other default parameters .. not specified above
@@ -246,37 +244,21 @@
 
               if ( is.null(bc) || ( !is.null( res$bc) && ( ( !is.finite(bc$res$t0 ) || !is.finite(bc$res$t1 ) ) ) )) {
                 M$depth = jitter( M$depth, amount = bcp$eps.depth/10 )
-                bcp$noisefilter.inla.h = 0.01
+                bcp$noisefilter.inla.h = 0.2
                 bc = bottom.contact( x=M, bcp=bcp )
               }
 
               if ( is.null(bc) || ( !is.null( res$bc) && ( ( !is.finite(bc$res$t0 ) || !is.finite(bc$res$t1 ) ) ) )) {
                 M$depth = jitter( M$depth, amount = bcp$eps.depth/10 )
-                bcp$noisefilter.inla.h = 0.1
+                bcp$noisefilter.inla.h = 0.5
                 bc = bottom.contact( x=M, bcp=bcp )
               }
 
               if ( !is.null(bc$res) ) res = bc$res
             }
 
-            if( ndat == 0) {
-              # nothing to do now ...
-              # headerall = rid[i,'headerall'] , z = NA, t =  NA, zsd =NA, tsd =NA, n = NA,t0 =NA , t1=NA, dt =NA)
-              #todo tie in the seabird data bottom contact to get secondary temperature data}
-            }
-
           }
 
-          if (FALSE) {
-            # to visualize/debug
-            bottom.contact.plot(bc)
-            ## --- NOTE modal seems to work best ... but
-            # no single best method .. use the default which is the mean of all methods
-            ##  likely due to greater precision and data density relative to minilog
-            #            res$t0 = bc$smooth.method[1]
-            #            res$t0 = bc$smooth.method[2]
-            #            res$dt = bc$smooth.method[2] -  bc$smooth.method[1]
-          }
           res$t0 = as.POSIXct(res$t0,origin=lubridate::origin, tz="UTC" )
           res$t1 = as.POSIXct(res$t1,origin=lubridate::origin, tz="UTC")
           miniStats = rbind(miniStats, cbind( minilog_uid=id, res ) )
