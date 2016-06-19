@@ -136,8 +136,10 @@ netmind.db = function( DS, Y=NULL, plotdata=TRUE ) {
       netmind.stat$yr = NULL
       nm = netmind.db( DS="set.netmind.lookuptable" )
       res = merge( nm, netmind.stat,  by="netmind_uid", all.x=TRUE, all.y=FALSE, sort=FALSE )
-
-
+      # not really required but just in case missing values cause confusion with rbind
+      res$t0 = as.POSIXct( res$t0, origin=lubridate::origin, tz="UTC" )
+      res$t1 = as.POSIXct( res$t1, origin=lubridate::origin, tz="UTC" )
+      res$dt = difftime( res$t1, res$t0 )  # reset in case time info gets lost with rbind
       return (res)
     }
 
@@ -208,11 +210,9 @@ netmind.db = function( DS, Y=NULL, plotdata=TRUE ) {
         l = net.configuration( basedata[ bdi ,], t0=rid$t0[i], t1=rid$t1[i],
           set_timestamp=rid$timestamp[i], yr=yr, plotdata=plotdata )
         l$netmind_uid = id
+        # not really required but just in case missing values cause confusion with rbind
         l$t0 = as.POSIXct( l$t0, origin=lubridate::origin, tz="UTC" )
         l$t1 = as.POSIXct( l$t1, origin=lubridate::origin, tz="UTC" )
-        # l[,c('t0','t1','dt')] = as.numeric(l[,c('t0','t1','dt')])
-browser()
-
         Stats = rbind( Stats, l )
         save( Stats, file=fn, compress=TRUE )
       }
