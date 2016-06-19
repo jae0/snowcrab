@@ -813,7 +813,7 @@
 
       mlStats =  minilog.db( DS="stats" )
        # mlStats$dt = as.numeric(mlStats$dt )
-      mlv =  c('trip', +'set', "z",    "zsd",    "t",    "tsd",    "n",    "t0",    "t1",    "dt", "minilog_uid" )
+      mlv =  c('trip', 'set', "z",    "zsd",    "t",    "tsd",    "n",    "t0",    "t1",    "dt", "minilog_uid" )
       set_ml = merge( set[, c("trip", "set") ], mlStats[,mlv], by=c("trip","set"), all.x=TRUE, all.y=FALSE, sort=FALSE )
       # tapply( as.numeric(set_ml$dt), lubridate::year(set_ml$t1), mean, na.rm=T )
       # tapply( as.numeric(set_ml$dt), year(set_ml$t1), function(x) length(which(is.finite(x))) )
@@ -858,6 +858,7 @@
       # last resort: use netmind data to fill
       ii = which(!is.finite( set$t0) )
       # if (length(ii) > 0 )  set$t0[ ii] = as.POSIXct( set$t0.nm[ii], origin=lubridate::origin, tz="UTC" )
+
       if (length(ii) > 0 )  set$t0[ ii] = set$t0.nm[ii]
       set$t0.nm = NULL
 

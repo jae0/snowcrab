@@ -104,7 +104,9 @@ netmind.db = function( DS, Y=NULL, plotdata=TRUE ) {
       save( basedata, file=fn.raw, compress=TRUE )
 
     }
+    # now that it is complete, refresh the set/uid lookup table
     netmind.db( DS="set.netmind.lookuptable.redo" )
+
     return ( netmind.dir  )
   }
 
@@ -117,7 +119,7 @@ netmind.db = function( DS, Y=NULL, plotdata=TRUE ) {
     if (DS %in% c("stats") ){
 
       flist = list.files(path=netmind.dir, pattern="stats", full.names=T, recursive=FALSE)
-      if (!is.null(Y)) {
+      if (!is.null(Y)) { # if Y is declared then subset ... default is to return all
         mm = NULL
         for (yy in Y ) {
           ll = grep( yy, flist)
@@ -134,6 +136,8 @@ netmind.db = function( DS, Y=NULL, plotdata=TRUE ) {
       netmind.stat$yr = NULL
       nm = netmind.db( DS="set.netmind.lookuptable" )
       res = merge( nm, netmind.stat,  by="netmind_uid", all.x=TRUE, all.y=FALSE, sort=FALSE )
+
+
       return (res)
     }
 
@@ -204,7 +208,11 @@ netmind.db = function( DS, Y=NULL, plotdata=TRUE ) {
         l = net.configuration( basedata[ bdi ,], t0=rid$t0[i], t1=rid$t1[i],
           set_timestamp=rid$timestamp[i], yr=yr, plotdata=plotdata )
         l$netmind_uid = id
-        l[,c('t0','t1','dt')] = as.numeric(l[,c('t0','t1','dt')])
+        l$t0 = as.POSIXct( l$t0, origin=lubridate::origin, tz="UTC" )
+        l$t1 = as.POSIXct( l$t1, origin=lubridate::origin, tz="UTC" )
+        # l[,c('t0','t1','dt')] = as.numeric(l[,c('t0','t1','dt')])
+browser()
+
         Stats = rbind( Stats, l )
         save( Stats, file=fn, compress=TRUE )
       }
