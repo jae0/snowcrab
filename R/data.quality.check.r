@@ -113,6 +113,10 @@
     if (type=="netmind.timestamp") {
       #  check times/data and merge remaining data using datestamps and {station, set}
       set <- snowcrab.db( DS="set.clean" )
+      nm = netmind.db("stats")
+      nm$netmind.timestamp = nm$t0
+      set = merge(set[,c("trip", "set", "lon", "lat", "timestamp", "seabird_uid", "minilog_uid", "netmind_uid")],
+                  nm[ ,c("netmind_uid","netmind.timestamp", "slon", "slat" )], by="netmind_uid", all.x=TRUE, all.y=FALSE )
       time.diff = difftime( set$netmind.timestamp, set$timestamp )
       time.thresh = lubridate::minutes(30)
       i = which( abs( time.diff ) > time.thresh )
