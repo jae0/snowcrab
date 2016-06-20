@@ -58,7 +58,6 @@ if (obtain.database.snapshot) {
     p$minilog.yToload = p$year.assessment
     p$netmind.yToload = p$year.assessment
     p$esonar.yToload  = p$year.assessment
-    p$netmensuration.problems = c()
 
     seabird.db( DS="load", Y=p$seabird.yToload ) # this begins 2012;
     minilog.db( DS="load", Y=p$minilog.yToload ) # minilog data series "begins" in 1999 -- 60 min?
@@ -67,9 +66,11 @@ if (obtain.database.snapshot) {
     netmind.db( DS="load", Y=p$netmind.yToload) # netmind data series "begins" in 1998 -- 60 min?
 
 
-      #JC note: 1998:2002 have about 60 files with no data, just a short header
+    #JC note: 1998:2002 have about 60 files with no data, just a short header
 
-    #MG I'm not sure why these stats are not being written automatically, neet to set it in the code above to run these after data is loaded
+    #MG I'm not sure why these stats are not being written automatically, neet to set it in the code above to run these after data is loaded -- JC: mostly as "stats" can fail and need to be re-run. No need to re-run "load" steps.
+    p$netmensuration.problems = c() # add troublesome id's here
+
     seabird.db (DS="stats.redo", Y=p$seabird.yToload )
     minilog.db (DS="stats.redo", Y=p$minilog.yToload )  # note no depth in minilog any more (since 2014 ..  useful for temperature only)
     netmind.db (DS="stats.redo", Y=p$netmind.yToload )
