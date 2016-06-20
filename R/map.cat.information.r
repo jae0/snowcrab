@@ -14,7 +14,7 @@
     for (sp in species) {
       outvars = c("trip", "set", "yr", "lon", "lat", "totmass", "totno", "sa")
       basedir = file.path( outdir, p$spatial.domain, sp )
-      sset = bcat[ taxonomy.filter.taxa (bcat$spec, taxafilter=sp, outtype="groundfishcodes" ), outvars]
+      sset = bcat[ taxonomy.filter.taxa (bcat$spec, taxafilter=sp, outtype="bio.groundfishcodes" ), outvars]
       if (dim(sset)[1] > 1) {
         variables = c("totno")
         sset = sset[ is.finite(rowSums(sset[, c("yr", "lon", "lat")])), ]

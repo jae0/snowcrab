@@ -4,7 +4,7 @@
     if ( DS=="det.snowcrab.in.groundfish.survey" ) {
 
       ct = bio.groundfish::groundfish.db( "det" )
-      cti  = taxonomy.filter.taxa( ct$spec, taxafilter="snowcrab", outtype="groundfishcodes" )
+      cti  = taxonomy.filter.taxa( ct$spec, taxafilter="snowcrab", outtype="bio.groundfishcodes" )
       if (length(cti)> 0 ) ct = ct[cti,]
 
       imale = which( ct$sex==1 )
