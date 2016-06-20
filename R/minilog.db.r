@@ -179,7 +179,7 @@
           M = miniRAW[ Mi, ]
 
           settimestamp= rid$set_timestamp[i]
-          time.gate =  list( t0=settimestamp - dminutes(5), t1=settimestamp + dminutes(11) )
+          time.gate =  list( t0=settimestamp - dminutes(6), t1=settimestamp + dminutes(12) )
 
           print( paste( i, ":", id) )
 
@@ -206,6 +206,7 @@
 #'minilog.S25092010.8.36.NA.NA.33',
 #'minilog.S27102010.3.918.8.11.423' '
           )
+          bad.list = unique( c(bad.list, p$netmensuration.problem ) )
 
           if (! ( id %in% bad.list ) ) {
 
@@ -219,9 +220,9 @@
             if( ndat > 20 ) {
 
               bcp = list(id=id, nr=nrow(M), YR=yr, tdif.min=3, tdif.max=9, time.gate=time.gate,
-                         depth.min=20, depth.range=c(-40,20), eps.depth =1 ,
+                         depth.min=20, depth.range=c(-40,20), eps.depth = 2 ,
                          smooth.windowsize=5, modal.windowsize=5,
-                         noisefilter.trim=0.05, noisefilter.target.r2=0.9, noisefilter.quants=c(0.025, 0.975) )
+                         noisefilter.trim=0.025, noisefilter.target.r2=0.9, noisefilter.quants=c(0.025, 0.975) )
               bcp = bottom.contact.parameters( bcp ) # add other default parameters .. not specified above
               bc =  NULL
               bc = bottom.contact( x=M, bcp=bcp )

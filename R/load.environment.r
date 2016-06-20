@@ -38,8 +38,49 @@ load.environment = function( year.assessment=NULL, libs=NULL, p=NULL ) {
   p$minilog.yToload = 1999:p$year.assessment
   p$netmind.yToload = 1999:p$year.assessment
   p$esonar.yToload  = 2014:p$year.assessment
+  p$netmensuration.problems = c()
 
-  p = parameter.list.snowcrab ( p=p )
+  p$annual.results = file.path( project.datadirectory("bio.snowcrab"), "assessments", p$year.assessment ) # output location for year-specific results
+
+  p$spatial.domain = "snowcrab"
+  p$ext2 = extent(matrix(c(-66.4, 42.2, -57.2, 47.4), nrow=2, ncol=2)) #MG extent of mapping frame
+  p$extUTM = extent(matrix(c(219287.2, 4677581, 937584, 5265946), nrow=2, ncol=2)) #MG UTM extent of mapping frame
+  p$geog.proj = "+proj=longlat +ellps=WGS84"
+  p$annot.cex=2
+  p$do.parallel = TRUE
+  p$clusters = c( rep("localhost", 1) )
+
+  p$fisheries.grid.resolution = 2
+  ## these are kriging related parameters:: the method is deprecated
+  p$ofname = file.path(p$annual.results, paste("TSresults", p$year.assessment, "rdata", sep=".") )
+  p$regions.to.model = c( "cfanorth", "cfasouth", "cfa4x", "cfaall" )
+
+  p$vars.to.model = variable.list.expand("all.to.model")
+  p$years.to.model = c(1998:p$year.assessment)
+
+  p$yearswithTdata = c(1950:p$year.assessment)
+  p$recode.data = TRUE
+  p$map.results=TRUE
+
+  p$prediction.dyear = 9/12  # time of year as fractional year to predict 1 Sept
+
+  p$nw = 10  # from temperature.r, number of intervals in a year
+  p$default.spatial.domain = "canada.east"  # for temperature/habitat lookups
+
+  p$kformula = as.formula( "kv ~ z + t + tamp + wmin + dZ + ddZ + substrate.mean" )  # model in 2006-2008
+  p$klocs = as.formula ( "~plon+plat" )
+  p$vgm.dist = unique(sort(c( seq(10, 60, 4), seq(50, 100, 10), seq( 80, 160, 20) )))
+  p$knmax=100  # must be greater than 30 for convergence
+  p$krige.incremental = FALSE
+  p$plot.variogram = FALSE
+  p$transgaussian.kriging = TRUE
+  p$n.conditional.sims = 100
+  p$threshold.distance = 5  # in km for merging fisheries data into the trawl data for external drift kriging
+  p$optimizers = c(  "bfgs", "nlm", "perf", "newton", "Nelder-Mead" )  # used by GAM
+
+  p$plottimes=c("annual", "globalaverage")
+  p$conversions=c("ps2png")
+
   p = spatial.parameters( p=p ) # region and lon/lats, projections
   p = gmt.parameters( p=p )
 

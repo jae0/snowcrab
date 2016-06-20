@@ -58,6 +58,7 @@ if (obtain.database.snapshot) {
     p$minilog.yToload = p$year.assessment
     p$netmind.yToload = p$year.assessment
     p$esonar.yToload  = p$year.assessment
+    p$netmensuration.problems = c()
 
     seabird.db( DS="load", Y=p$seabird.yToload ) # this begins 2012;
     minilog.db( DS="load", Y=p$minilog.yToload ) # minilog data series "begins" in 1999 -- 60 min?

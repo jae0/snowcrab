@@ -36,10 +36,10 @@
      set_timestamp =NULL
     }
 
-    if(N$netmind_uid[1] =='netmind.S26092014.9.541.17.48.304') return(out)
-
-    if(N$netmind_uid[1] =='netmind.S20092007.8.333.17.27.241') browser()
-
+    bad.list = c('netmind.S26092014.9.541.17.48.304',
+                 'netmind.S20092007.8.333.17.27.241' )
+    bad.list = unique( c(bad.list, p$netmensuration.problems) )
+    if (N$netmind_uid[1] %in% bad.list) next()
 
     if ( any( is.null( t1 ) || is.null(t0) ) )   {
       # try to determine from netmind data if minilog/seadbird data methods have failed. .. not effective due to noise/and small data stream
@@ -51,12 +51,12 @@
 
       if(!is.null(set_timestamp)) settimestamp=set_timestamp
       if(is.null(set_timestamp)) settimestamp=t0
-      time.gate =  list( t0=settimestamp - dminutes(5), t1=settimestamp + dminutes(9) )
+      time.gate =  list( t0=settimestamp - dminutes(6), t1=settimestamp + dminutes(12) )
 
       bcp = list(id=N$netmind_uid[1], nr=nrow(M), YR=yr, tdif.min=3, tdif.max=9, time.gate=time.gate,
-                   depth.min=20, depth.range=c(-40,20), eps.depth=2 ,
+                   depth.min=20, depth.range=c(-40,20), eps.depth=3,
                    smooth.windowsize=5, modal.windowsize=5,
-                   noisefilter.trim=0.01, noisefilter.target.r2=0.9, noisefilter.quants=c(0.025, 0.975) )
+                   noisefilter.trim=0.025, noisefilter.target.r2=0.9, noisefilter.quants=c(0.025, 0.975) )
 
       bcp = bottom.contact.parameters( bcp ) # add other default parameters
       bc = NULL

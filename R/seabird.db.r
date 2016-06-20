@@ -163,7 +163,11 @@
 
           id = rid$seabird_uid[i]
 
-          if (id=="seabird.S06112014.8.210.18.44.9") next()  # strange problems
+          bad.list = c(
+            "seabird.S06112014.8.210.18.44.9",
+            "seabird.S06112014.1.37.7.45.13" )
+          bad.list = unique( c(bad.list, p$netmensuration.problems) )
+          if (id %in% bad.list) next()
 
           sso.trip = rid$trip[i]
           sso.set = rid$set[i]
@@ -178,8 +182,8 @@
           settimestamp= rid$timestamp[i]
           time.gate =  list( t0=settimestamp - dminutes(6), t1=settimestamp + dminutes(12) )
 
-          bcp = list(id=id, nr=nrow(M), YR=yr, tdif.min=3, tdif.max=9, time.gate=time.gate, depth.min=20, depth.range=c(-45,20), eps.depth=2,
-                     smooth.windowsize=4, modal.windowsize=4, noisefilter.trim=0.025, noisefilter.target.r2=0.9, noisefilter.quants=c(0.025, 0.975))
+          bcp = list(id=id, nr=nrow(M), YR=yr, tdif.min=3, tdif.max=9, time.gate=time.gate, depth.min=20, depth.range=c(-40,20), eps.depth=2,
+                     smooth.windowsize=5, modal.windowsize=5, noisefilter.trim=0.025, noisefilter.target.r2=0.9, noisefilter.quants=c(0.025, 0.975))
 
           bcp = bottom.contact.parameters( bcp ) # add other default parameters
 
