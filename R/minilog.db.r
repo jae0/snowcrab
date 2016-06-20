@@ -191,7 +191,9 @@
 "minilog.S02112006.9.151.22.14.142",
 "minilog.S27042001.7.NA.18.7.17",
 "minilog.S08112008.9.55.NA.NA.55",
-"minilog.S12102011.12.129.NA.NA.145"
+"minilog.S12102011.12.129.NA.NA.145",
+"minilog.S18102007.11.226.18.44.198",
+"minilog.S27092007.9.86.NA.NA.87"
 #'minilog.S12071999.1.NA.NA.NA.190',
 #'minilog.S20052000.10.NA.NA.NA.13',
 #'minilog.S19092004.8.389.NA.NA.321',
@@ -252,7 +254,7 @@
                 bcp$noisefilter.inla.h = 0.5
                 bc = bottom.contact( x=M, bcp=bcp )
               }
-              if ( !is.null(bc$res) ) {
+              if ( !is.null(bc) && !is.null(bc$res) ) {
                 res = bc$res
                 res$t0 = as.POSIXct(res$t0,origin=lubridate::origin, tz="UTC" )
                 res$t1 = as.POSIXct(res$t1,origin=lubridate::origin, tz="UTC")

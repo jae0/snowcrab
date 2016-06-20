@@ -39,9 +39,7 @@
     bad.list = c('netmind.S26092014.9.541.17.48.304',
                  'netmind.S20092007.8.333.17.27.241' )
     bad.list = unique( c(bad.list, p$netmensuration.problems) )
-    if (N$netmind_uid[1] %in% bad.list) next()
-
-    if ( any( is.null( t1 ) || is.null(t0) ) )   {
+    if ( (! N$netmind_uid[1] %in% bad.list) && ( any( is.null( t1 ) || is.null(t0) ) ) )  {
       # try to determine from netmind data if minilog/seadbird data methods have failed. .. not effective due to noise/and small data stream
 
       M = N[, c("timestamp", "depth") ]
