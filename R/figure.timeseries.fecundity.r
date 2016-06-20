@@ -1,7 +1,7 @@
 
   figure.timeseries.fecundity = function( p, outdir, all.areas=T ) {
   
-    set = snowcrab.db("set.merge.det")
+    set = snowcrab.db("set.biologicals")
 
     if (all.areas) {
       areas = c("cfa4x", "cfasouth", "cfanorth" )

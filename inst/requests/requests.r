@@ -42,7 +42,7 @@ p = bio.snowcrab::load.environment()
 
   # ----------------------------------------------------------
   # Roger Pettipas .. bottom temperatures of Scotian shelf
-  set = snowcrab.db( "set.merge.det" )
+  set = snowcrab.db( "set.biologicals" )
   varstoextract = c("t0", "lon", "lat", "z", "zsd", "t", "tsd")
   t = set[ which(set$yr==2012), varstoextract]
 

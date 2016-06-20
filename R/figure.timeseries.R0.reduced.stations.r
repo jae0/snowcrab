@@ -1,7 +1,7 @@
 
   figure.timeseries.R0.reduced.stations = function( outdir, all.areas=T ) {
  
-    set = snowcrab.db( DS="set.merge.det")
+    set = snowcrab.db( DS="set.biologicals")
   
     if (all.areas) {
       areas = c("cfa4x", "cfasouth", "cfanorth" )

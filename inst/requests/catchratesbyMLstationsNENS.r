@@ -43,7 +43,7 @@ dev.off()
 
 
 
-set = snowcrab.db( DS="set.merge.det")
+set = snowcrab.db( DS="set.biologicals")
 set = set[which(set$station %in% c(173,184,188,612,3,703)),]
 
 a=merge(aggregate(totno.male+totno.female~yr,data=set,FUN= mean),aggregate(totno.male+totno.female~yr,data=set,FUN= sd),by='yr')

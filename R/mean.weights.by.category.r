@@ -8,7 +8,7 @@
       return( sizes )
     }
 
-    set = snowcrab.db("set.merge.det")
+    set = snowcrab.db("set.biologicals")
     set = set[,c("trip", "set", "yr", "lon", "lat", "sa")]
      
     det = snowcrab.db("det.initial")

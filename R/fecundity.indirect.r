@@ -7,7 +7,7 @@
     stop("Broken: Fix me")
 
     x = snowcrab.db(DS="det.initial")
-    y = snowcrab.db(DS="set.merge.det")[, c("trip", "set", "yr")]
+    y = snowcrab.db(DS="set.biologicals")[, c("trip", "set", "yr")]
     x = merge(x, y, by= c("trip","set"), all.x=T, all.y=F, sort=F)
 
     primiparous = filter.class( x, "primiparous")

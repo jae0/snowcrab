@@ -69,7 +69,7 @@ if (obtain.database.snapshot) {
     #JC note: 1998:2002 have about 60 files with no data, just a short header
 
     #MG I'm not sure why these stats are not being written automatically, neet to set it in the code above to run these after data is loaded -- JC: mostly as "stats" can fail and need to be re-run. No need to re-run "load" steps.
-    p$netmensuration.problems = c() # add troublesome id's here
+    p$netmensuration.problems = c("minilog.S18102007.11.226.18.44.198") # add troublesome id's here .. eventually move into their respective functions
 
     seabird.db (DS="stats.redo", Y=p$seabird.yToload )
     minilog.db (DS="stats.redo", Y=p$minilog.yToload )  # note no depth in minilog any more (since 2014 ..  useful for temperature only)
@@ -95,17 +95,14 @@ if (obtain.database.snapshot) {
     #checked with written logs, then sent to database and put in debugging here and re-run
     snowcrab.db( DS="det.initial.redo", p=p )
     snowcrab.db( DS="det.georeferenced.redo" )
-
     snowcrab.db( DS="cat.initial.redo", p=p )
     snowcrab.db( DS="cat.georeferenced.redo" )
-
-    snowcrab.db( DS="set.merge.det.redo" )
-    snowcrab.db( DS="set.merge.cat.redo" )
+    snowcrab.db( DS="set.biologicals.redo" )
 
   }  # end base data
 
 # --------------------------------------------------------------
-# External Dependencies: to permit lookup of data, complete:
+#  External Dependencies: to permit lookup of data, complete:
 
   bio.indicators::{01.indicators.r, 02.interpolations.r}
 

@@ -1,7 +1,7 @@
 
   figure.timeseries.CC5 = function( outdir, all.areas=T ) {
  #browser()
-    set = snowcrab.db( DS="set.merge.det")
+    set = snowcrab.db( DS="set.biologicals")
   
     if (all.areas) {
       areas = c("cfa4x", "cfasouth", "cfanorth" )

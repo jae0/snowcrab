@@ -17,7 +17,7 @@
     cex.axis = 1.3
 
     if (type == "trawl") {
-      set = snowcrab.db("set.merge.det")
+      set = snowcrab.db("set.biologicals")
       v = "cw.comm.mean"
       fn = file.path( outdir, paste( v, "combined.pdf", sep="." ) )
       td =  get.time.series ( from.file=T )

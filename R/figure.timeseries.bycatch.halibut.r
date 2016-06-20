@@ -2,7 +2,7 @@
   figure.timeseries.bycatch.halibut = function( outdir, all.areas=T ) {
  #browser()
     outdir=file.path(p$annual.results, "timeseries", "survey")
-    set = snowcrab.db( DS="set.merge.det")
+    set = snowcrab.db( DS="set.biologicals")
   
     if (all.areas) {
       areas = c("cfa4x", "cfasouth", "cfanorth" )

@@ -1,7 +1,7 @@
 
   figure.timeseries.sexratios = function( outdir, all.areas=T, type="mature" ) {
  #browser()
-    set = snowcrab.db("set.merge.det")
+    set = snowcrab.db("set.biologicals")
     #set2015 = set[which(set$yr == 2015),]
     #print(head(set2015))
   

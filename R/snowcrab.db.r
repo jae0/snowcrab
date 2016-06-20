@@ -435,7 +435,6 @@
       Sex.a: Indeterminate sex based on measurements taken (abdomen values where sex=male)\
       Sex.c: Indeterminate sex based on measurements taken (chela values where sex=female\n")
 
-
       return ( "Complete" )
     }
 
@@ -609,12 +608,12 @@
 
     # -------------
 
-    if ( DS %in% c("set.merge.det","set.merge.det.redo") ) {
+    if ( DS %in% c("set.biologicals", "set.biologicals.redo") ) {
     # browser()
 
       fn = file.path( project.datadirectory("bio.snowcrab"), "R", "set.biologicals.rdata")
 
-      if (DS=="set.merge.det" ) {
+      if (DS=="set.biologicals" ) {
         load(fn)
         return( set)
       }
@@ -735,32 +734,12 @@
 
       if ( nrow( snowcrab.db( DS="set.clean" )) != nrow( set) ) {   print( "Merge failure ... " );  stop()    }
 
-      save( set, file=fn, compress=T )
-
-    return ( "Complete" )
-  }
-
-
-    # ---------------------------
-
-    if ( DS %in% c("set.merge.cat","set.merge.cat.redo") ) {
-
-      fn = file.path( project.datadirectory("bio.snowcrab"), "R", "set.cat.rdata")
-
-      if (DS %in% c("set.merge.cat" )) {
-        load(fn)
-        return( set )
-      }
-
-      factors = c("trip", "set")
-
-      X = snowcrab.db( DS="set.merge.det" )
-      X2015 = X[which(X$yr == 2015),]
-      print(head(X2015))
+      # X2015 = X[which(X$yr == 2015),]
+      # print(head(X2015))
 
       cat = snowcrab.db( DS="cat.initial" )
-      cat2015 = cat[grep("2015", cat$trip),]
-      print(head(cat2015))
+      # cat2015 = cat[grep("2015", cat$trip),]
+      # print(head(cat2015))
 
       cat0 = cat[ taxonomy.filter.taxa( cat$spec, taxafilter="snowcrab", outtype="bio.groundfishcodes"), c(factors, "totno")]
       names(cat0) = c(factors, "totno.all")
@@ -779,13 +758,16 @@
       set = X
 
       if ( nrow( snowcrab.db( DS="setInitial" )) != nrow( set) ) {   print( "Merge failure ... " );  stop()    }
-      X2015 = X[which(X$yr == 2015),]
-      print(head(X2015))
+      # X2015 = X[which(X$yr == 2015),]
+      # print(head(X2015))
 
       save( set, file=fn, compress=T )
-      return ( "Complete" )
-    }
 
+    return ( "Complete" )
+  }
+
+
+    # ---------------------------
 
 
     # --------------------------------
@@ -927,7 +909,7 @@
         return ( set )
       }
 
-      set = snowcrab.db( DS="set.merge.cat" )
+      set = snowcrab.db( DS="set.biologicals" )
       # set2015 = set[which(set$yr == 2015),]
       # print(head(set2015))
 
