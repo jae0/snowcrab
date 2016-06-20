@@ -113,21 +113,21 @@ if (obtain.database.snapshot) {
   snowcrab.db( DS ="set.logbook.redo", yrs=1996:p$year.assessment ) # add gridded fisheries data
   # snowcrab.db( DS ="set.logbook", yrs=1996:p$year.assessment )
 
-  #make.timeseries.data(p=p, areas=p$regions )  #  timeseries of means of all survey data
-  #in 2014 as there were reduced stations for comparison
-  #make.timeseries.data(p=p, areas=p$regions,reduced.stations=F, vars='R0.mass' ) #  timeseries of means of all survey data
+  # make.timeseries.data(p=p, areas=p$regions )  #  timeseries of means of all survey data
+  # in 2014 as there were reduced stations for comparison
+  # make.timeseries.data(p=p, areas=p$regions,reduced.stations=F, vars='R0.mass' ) #  timeseries of means of all survey data
   make.timeseries.data(p=p, areas=NULL,reduced.stations=F, vars=NULL) #  timeseries of means of all survey data
-  #make.timeseries.data(p=p, areas=NULL,reduced.stations=F, vars=c('ms.mass.10', 'ms.mass.30', 'ms.mass.201', 'ms.mass.50', 'ms.mass.2521', 'ms.mass.2511', 'ms.mass.202', 'ms.mass.204', 'ms.mass.2211'), outfile = file.path( project.datadirectory("bio.snowcrab"), "R", "tsbycatch.rdata" )) #  timeseries of means of all survey data
+  # make.timeseries.data(p=p, areas=NULL,reduced.stations=F, vars=c('ms.mass.10', 'ms.mass.30', 'ms.mass.201', 'ms.mass.50', 'ms.mass.2521', 'ms.mass.2511', 'ms.mass.202', 'ms.mass.204', 'ms.mass.2211'), outfile = file.path( project.datadirectory("bio.snowcrab"), "R", "tsbycatch.rdata" )) #  timeseries of means of all survey data
 
-  #  tsdata = snowcrab.db("set.timerseries")
+  # tsdata = snowcrab.db("set.timerseries")
 
-# create a new lookuptable for data transformations after refreshing set data/ranges
+  # create a new lookuptable for data transformations after refreshing set data/ranges
   REPOS = bio.indicators::recode.variable.initiate.db ( db="snowcrab" )
 
 
 # -------------------------------------------------------------------------------------
 # snow crab found in external databases tapped into for habitat determination
-#for ( vs in c( "R0.mass", "male.large", "male.small", "female.large", "female.small" ) ) {
+# for ( vs in c( "R0.mass", "male.large", "male.small", "female.large", "female.small" ) ) {
   ### -------- not yet finished this one ...  TODO
   vs="R0.mass"
   snowcrab.external.db(p=p, DS="set.snowcrab.in.groundfish.survey.redo", vname=vs, year.current=p$year.assessment )
