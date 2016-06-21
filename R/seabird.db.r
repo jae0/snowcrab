@@ -165,7 +165,7 @@
 
           id = rid$seabird_uid[i]
           if (id %in% bad.list) next()
-          if (rid$set_type != 1) next()  # no need to process bad
+          # if (rid$set_type != 1) next()  # no need to process bad
 
 
           sso.trip = rid$trip[i]
