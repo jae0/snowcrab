@@ -21,6 +21,7 @@ netmind.db = function( DS, Y=NULL, plotdata=TRUE ) {
     }
   }
 
+  # -----------------------
 
   if ( DS %in% c("basedata", "metadata", "load") ) {
 
@@ -203,6 +204,7 @@ netmind.db = function( DS, Y=NULL, plotdata=TRUE ) {
       Stats = NULL
       for ( i in 1:nii  ){
         print(i)
+        if ( rid$set_type[i] != 1) next()  # process only "good tows"
         id = rid$netmind_uid[i]
         print(rid[i,])
         bdi = which( basedata$netmind_uid==id )
@@ -214,8 +216,8 @@ netmind.db = function( DS, Y=NULL, plotdata=TRUE ) {
         l$t0 = as.POSIXct( l$t0, origin=lubridate::origin, tz="UTC" )
         l$t1 = as.POSIXct( l$t1, origin=lubridate::origin, tz="UTC" )
         Stats = rbind( Stats, l )
-        save( Stats, file=fn, compress=TRUE )
       }
+      save( Stats, file=fn, compress=TRUE )
     }
     return ( netmind.dir )
   }

@@ -229,15 +229,7 @@
               bcp = bottom.contact.parameters( bcp ) # add other default parameters .. not specified above
               bc =  NULL
               bc = bottom.contact( x=M, bcp=bcp )
-              if (!is.null(bc)) {
-                if (plotdata) {
-                  bottom.contact.plot( bc )
-                  plotfn = file.path( plotdir, paste(id, "pdf", sep="." ) )
-                  print (plotfn)
-                  dev.flush()
-                  dev.copy2pdf( file=plotfn )
-                }
-              }
+
               if ( is.null(bc) || ( !is.null( bc$res ) && ( ( !is.finite(bc$res$t0 ) || !is.finite(bc$res$t1 ) ) ) )) {
                  bc = bottom.contact( x=M, bcp=bcp )
               }
@@ -255,6 +247,16 @@
                 bcp$noisefilter.inla.h = 0.5
                 bc = bottom.contact( x=M, bcp=bcp )
               }
+
+              if (!is.null(bc)) {
+                if (plotdata) {
+                  bottom.contact.plot( bc )
+                  plotfn = file.path( plotdir, paste(id, "pdf", sep="." ) )
+                  print (plotfn)
+                  dev.flush()
+                  dev.copy2pdf( file=plotfn )
+                }
+              }
               if ( !is.null(bc) && !is.null(bc$res) ) {
                 res = bc$res
                 res$t0 = as.POSIXct(res$t0,origin=lubridate::origin, tz="UTC" )
@@ -267,6 +269,7 @@
         } #end nrow id
 
         miniStats$minilog_uid =  as.character(miniStats$minilog_uid)
+
         minidt = miniStats$dt
         miniStats$dt = NA
         i = which(!is.na( minidt ) )

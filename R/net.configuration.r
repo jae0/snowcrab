@@ -15,25 +15,26 @@
 
     n.req = 30
 
-    if(length(t0)>1) {t0 = NULL}
+    if (!is.null(t0)) {
+      if (length(t0)>1) {t0 = NULL}
+      if (is.na(t0)) t0 = NULL
+    }
+
+    if (!is.null(t1)) {
+      if (is.na(t1)) t1 = NULL
+    }
 
     #changed this switch from depgth filed to lat as if there is not depth info can still run script
 	  if ( length( which( is.finite( N$lat))) < n.req ) print(N[1,])
 
-    if(is.na(t0)) t0 = NULL
-    if(is.na(t1)) t1 = NULL
-
     problem = F
 
     # time checks
-    if ( is.null(t0) & !is.null(set_timestamp) ) {
-      t0 = set_timestamp  # no data in t0 ,, use set_timestamp as alternate
-      set_timestamp =NULL # remove to cause no more effects
-    }
-
-    if (!is.null(t0) & !is.null(set_timestamp)  ) {
-     t0 = set_timestamp
-     set_timestamp =NULL
+    if ( is.null(t0) ){
+      if ( !is.null(set_timestamp) ) {
+        t0 = set_timestamp  # no data in t0 ,, use set_timestamp as alternate
+        set_timestamp =NULL # remove to cause no more effects
+      }
     }
 
     bad.list = c('netmind.S26092014.9.541.17.48.304',
@@ -64,6 +65,7 @@
       bc = NULL
       bc = bottom.contact( x=M, bcp=bcp )
       if ( is.null(bc) || (!is.null( bc$res) && ( ( !is.finite(bc$res$t0 ) || !is.finite(bc$res$t1 ) ) ) )) {
+         bcp$noisefilter.target.r2=0.8
          bc = bottom.contact( x=M, bcp=bcp )
       }
       if ( is.null(bc) || (!is.null( bc$res) && ( ( !is.finite(bc$res$t0 ) || !is.finite(bc$res$t1 ) ) ) )) {
@@ -192,9 +194,8 @@
       if ( length(ii) > n.req ) {
           # recall that doorspread is actually wingspread ...
          n$doorspread.predicted = approx( x=n$distances, y=n$doorspread, xout=n$distances, method="linear", rule=2 )$y
-
-
-       #turned off gam model in December 20, 2013 giving unrealistic values for spread as the new esnoar files have 0 and NA whereas older netmind are filled with previous value
+       #turned off gam model in December 20, 2013 giving unrealistic values for spread as the
+       # new esnoar files have 0 and NA whereas older netmind are filled with previous value
 			      	#gam.model = try( gam( doorspread ~ s(distances, k=5, bs="ts"), data=n[ii,], optimizer=c("outer", "nlm")), silent = T )
 			        #if ( ! "try-error" %in% class( gam.model )) {
 			        #  n$doorspread.predicted = predict( gam.model, newdata=n, newdata.guaranteed=T )

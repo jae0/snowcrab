@@ -134,6 +134,11 @@
         return(res)
       }
 
+      bad.list = c(
+        "seabird.S06112014.8.210.18.44.9",
+        "seabird.S06112014.1.37.7.45.13" )
+      bad.list = unique( c(bad.list, p$netmensuration.problems) )
+
       # default action  is "stats.redo"
       for ( yr in Y ) {
         print (yr )
@@ -153,21 +158,14 @@
 
         if (nrow(rid) == 0 ) next()
 
-  #      if (length(fli) == 0) return( "No data found matching the criteria")
-
-        #prune down the rids to only a subset
-        #rid = rid[grepl('S30092013',rid$seabird_uid),]
         for ( i in 1:nrow(rid) ) {
           #browser()
           print(i)
 
           id = rid$seabird_uid[i]
-
-          bad.list = c(
-            "seabird.S06112014.8.210.18.44.9",
-            "seabird.S06112014.1.37.7.45.13" )
-          bad.list = unique( c(bad.list, p$netmensuration.problems) )
           if (id %in% bad.list) next()
+          if (rid$set_type != 1) next()  # no need to process bad
+
 
           sso.trip = rid$trip[i]
           sso.set = rid$set[i]
@@ -178,6 +176,18 @@
           if (length( Mi) < 30 ) next()
 
           M = sbRAW[ Mi, ]
+
+          # default, empty container
+          res = data.frame(z=NA, t=NA, zsd=NA, tsd=NA, n=NA, t0=NA, t1=NA, dt=NA)
+          # initial estimate of z, t in case bottom contact fails
+          time.gate0 =  list( t0=rid$timestamp[i], t1=settimestamp + dminutes(5) )  # expected bottom
+          ii0 = which( M$timestamp > time.gate0[1] & M$timestamp < time.gate0[2]  )
+          if (length(ii0) > 30) {
+            res$z = mean(M$depth[ii0], na.rm=TRUE)
+            res$zsd = sd(M$depth[ii0], na.rm=TRUE)
+            res$t = mean(M$temperature[ii0], na.rm=TRUE)
+            res$tsd = sd(M$temperature[ii0], na.rm=TRUE)
+          }
 
           settimestamp= rid$timestamp[i]
           time.gate =  list( t0=settimestamp - dminutes(6), t1=settimestamp + dminutes(12) )
@@ -211,11 +221,10 @@
             bc = bottom.contact( x=M, bcp=bcp )
           }
 
-          # default, empty container
-          res = data.frame(z=NA, t=NA, zsd=NA, tsd=NA, n=NA, t0=NA, t1=NA, dt=NA)
-          if ( !is.null( bc$res ) ) res = bc$res
 
-          if (!is.null(bc)) {
+          if ( !is.null(bc) && !is.null( bc$res ) ) res = bc$res
+
+          if ( !is.null(bc) ) {
             if (plotdata) {
               bottom.contact.plot( bc )
               plotfn = file.path( sb.dir, "figures", paste(id, "pdf", sep="." ) )
@@ -224,16 +233,10 @@
               dev.copy2pdf( file=plotfn )
             }
           }
-
-          if ( !is.null(bc)) if ( !is.null(bc$res )) res = bc$res
-
           sbStats = rbind( sbStats, cbind( seabird_uid=id, res ) )
         }
-
         sbStats$seabird_uid =  as.character(sbStats$seabird_uid)
-
         save( sbStats, file=fn, compress=TRUE)
-
       }
 
       return ( sb.dir )
