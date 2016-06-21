@@ -134,9 +134,10 @@
         return(res)
       }
 
-      bad.list = c(
-        "seabird.S06112014.8.210.18.44.9",
-        "seabird.S06112014.1.37.7.45.13" )
+      # bad.list = c(
+      #  "seabird.S06112014.8.210.18.44.9",
+      #  "seabird.S06112014.1.37.7.45.13" )
+      bad.list = NULL
       bad.list = unique( c(bad.list, p$netmensuration.problems) )
 
       # default action  is "stats.redo"

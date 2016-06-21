@@ -37,8 +37,9 @@
       }
     }
 
-    bad.list = c('netmind.S26092014.9.541.17.48.304',
-                 'netmind.S20092007.8.333.17.27.241' )
+    #bad.list = c('netmind.S26092014.9.541.17.48.304',
+    #             'netmind.S20092007.8.333.17.27.241' )
+    bad.list = NULL
     bad.list = unique( c(bad.list, p$netmensuration.problems) )
     if ( N$netmind_uid[1] %in% bad.list) {
       return(out)
