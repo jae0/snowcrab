@@ -211,16 +211,19 @@ bad.list = NULL
           # default, empty container
           res = data.frame(z=NA, t=NA, zsd=NA, tsd=NA, n=NA, t0=NA, t1=NA, dt=NA)
 
+          rii = which( M$timestamp > settimestamp &  (M$timestamp < settimestamp+dminutes(5)) )
+          # first estimate in case the following does not work
+          if (length(rii) > 30) {
+            res$z = mean(M$depth[rii], na.rm=TRUE)
+            res$t = mean(M$temperature[rii], na.rm=TRUE)
+            res$zsd = sd(M$depth[rii], na.rm=TRUE)
+            res$tsd = sd(M$temperature[rii], na.rm=TRUE)
+          }
+
           if (! ( id %in% bad.list ) ) {
-
-            rii = which( M$timestamp > settimestamp &  (M$timestamp < settimestamp+dminutes(5)) )
-            # first estimate in case the following does not work
-            if (length(rii) > 30) res = data.frame( z=mean(M$depth[rii], na.rm=TRUE), t=mean(M$temperature[rii], na.rm=TRUE),
-                    zsd=sd(M$depth[rii], na.rm=TRUE), tsd=sd(M$temperature[rii], na.rm=TRUE), n=NA, t0=NA, t1=NA, dt=NA)
-
             ndat = length( which( !is.na(M$depth) ))
             if (ndat ==0 ) print ("No depth data in minilogs")
-            if( ndat > 20 ) {
+            if( ndat > 30 ) {
 
               bcp = list(id=id, nr=nrow(M), YR=yr, tdif.min=3, tdif.max=9, time.gate=time.gate,
                          depth.min=20, depth.range=c(-25,15), eps.depth = 2 ,
