@@ -226,7 +226,7 @@ bad.list = NULL
             if( ndat > 30 ) {
 
               bcp = list(id=id, nr=nrow(M), YR=yr, tdif.min=3, tdif.max=9, time.gate=time.gate,
-                         depth.min=20, depth.range=c(-25,15), eps.depth = 2 ,
+                         depth.min=20, depth.range=c(-30,20), eps.depth = 2 ,
                          smooth.windowsize=5, modal.windowsize=5,
                          noisefilter.trim=0.025, noisefilter.target.r2=0.85, noisefilter.quants=c(0.025, 0.975) )
               bcp = bottom.contact.parameters( bcp ) # add other default parameters .. not specified above
@@ -234,19 +234,23 @@ bad.list = NULL
               bc = bottom.contact( x=M, bcp=bcp )
 
               if ( is.null(bc) || ( !is.null( bc$res ) && ( ( !is.finite(bc$res$t0 ) || !is.finite(bc$res$t1 ) ) ) )) {
+                 bcp$noisefilter.target.r2=0.8
                  bc = bottom.contact( x=M, bcp=bcp )
               }
               if ( is.null(bc) || ( !is.null( bc$res ) && ( ( !is.finite(bc$res$t0 ) || !is.finite(bc$res$t1 ) ) ) )) {
+                bcp$noisefilter.target.r2=0.75
                 bcp$noisefilter.inla.h =0.1
                 bc = bottom.contact( x=M, bcp=bcp )
               }
               if ( is.null(bc) || ( !is.null( bc$res) && ( ( !is.finite(bc$res$t0 ) || !is.finite(bc$res$t1 ) ) ) )) {
                 M$depth = jitter( M$depth, amount = bcp$eps.depth/10 )
+                bcp$noisefilter.target.r2=0.75
                 bcp$noisefilter.inla.h = 0.2
                 bc = bottom.contact( x=M, bcp=bcp )
               }
               if ( is.null(bc) || ( !is.null( bc$res) && ( ( !is.finite(bc$res$t0 ) || !is.finite(bc$res$t1 ) ) ) )) {
                 M$depth = jitter( M$depth, amount = bcp$eps.depth/10 )
+                bcp$noisefilter.target.r2=0.75
                 bcp$noisefilter.inla.h = 0.5
                 bc = bottom.contact( x=M, bcp=bcp )
               }
