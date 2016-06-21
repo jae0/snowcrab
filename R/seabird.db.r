@@ -178,10 +178,12 @@
 
           M = sbRAW[ Mi, ]
 
+          settimestamp= rid$timestamp[i]
+
           # default, empty container
           res = data.frame(z=NA, t=NA, zsd=NA, tsd=NA, n=NA, t0=NA, t1=NA, dt=NA)
           # initial estimate of z, t in case bottom contact fails
-          time.gate0 =  list( t0=rid$timestamp[i], t1=settimestamp + dminutes(5) )  # expected bottom
+          time.gate0 =  list( t0=settimestamp, t1=settimestamp + dminutes(5) )  # expected bottom
           ii0 = which( M$timestamp > time.gate0[1] & M$timestamp < time.gate0[2]  )
           if (length(ii0) > 30) {
             res$z = mean(M$depth[ii0], na.rm=TRUE)
@@ -190,7 +192,6 @@
             res$tsd = sd(M$temperature[ii0], na.rm=TRUE)
           }
 
-          settimestamp= rid$timestamp[i]
           time.gate =  list( t0=settimestamp - dminutes(6), t1=settimestamp + dminutes(12) )
 
           bcp = list(id=id, nr=nrow(M), YR=yr, tdif.min=3, tdif.max=9, time.gate=time.gate, depth.min=20, depth.range=c(-25,15), eps.depth=2,
