@@ -248,12 +248,6 @@ bad.list = NULL
                 bcp$noisefilter.inla.h = 0.2
                 bc = bottom.contact( x=M, bcp=bcp )
               }
-              if ( is.null(bc) || ( !is.null( bc$res) && ( ( !is.finite(bc$res$t0 ) || !is.finite(bc$res$t1 ) ) ) )) {
-                M$depth = jitter( M$depth, amount = bcp$eps.depth/10 )
-                bcp$noisefilter.target.r2=0.75
-                bcp$noisefilter.inla.h = 0.5
-                bc = bottom.contact( x=M, bcp=bcp )
-              }
 
               if (!is.null(bc)) {
                 if (plotdata) {

@@ -71,19 +71,14 @@
       }
       if ( is.null(bc) || (!is.null( bc$res) && ( ( !is.finite(bc$res$t0 ) || !is.finite(bc$res$t1 ) ) ) )) {
         # try once more with random settings
-        bcp$noisefilter.inla.h =  0.01
+        bcp$noisefilter.inla.h =  0.025
+        bcp$noisefilter.target.r2= 0.75
         bc = bottom.contact( x=M, bcp=bcp )
       }
       if ( is.null(bc) || (!is.null( bc$res) && ( ( !is.finite(bc$res$t0 ) || !is.finite(bc$res$t1 ) ) ) )) {
         # try once more with random settings
         M$depth = jitter( M$depth, amount = bcp$eps.depth/10 )
         bcp$noisefilter.inla.h =  0.1
-        bc = bottom.contact( x=M, bcp=bcp )
-      }
-      if ( is.null(bc) || (!is.null( bc$res) && ( ( !is.finite(bc$res$t0 ) || !is.finite(bc$res$t1 ) ) ) )) {
-        # try once more with random settings
-        M$depth = jitter( M$depth, amount = bcp$eps.depth/10 )
-        bcp$noisefilter.inla.h =  0.5
         bc = bottom.contact( x=M, bcp=bcp )
       }
       if ( !is.null(bc) )  {
