@@ -101,6 +101,9 @@ if (obtain.database.snapshot) {
 
   }  # end base data
 
+  REPOS = bio.indicators::recode.variable.initiate.db ( db="snowcrab" )
+
+
 # --------------------------------------------------------------
 #  External Dependencies: to permit lookup of data, complete:
 
@@ -116,13 +119,12 @@ if (obtain.database.snapshot) {
   # make.timeseries.data(p=p, areas=p$regions )  #  timeseries of means of all survey data
   # in 2014 as there were reduced stations for comparison
   # make.timeseries.data(p=p, areas=p$regions,reduced.stations=F, vars='R0.mass' ) #  timeseries of means of all survey data
-  make.timeseries.data(p=p, areas=NULL,reduced.stations=F, vars=NULL) #  timeseries of means of all survey data
+  make.timeseries.data(p=p, areas=NULL, reduced.stations=F, vars=NULL) #  timeseries of means of all survey data
   # make.timeseries.data(p=p, areas=NULL,reduced.stations=F, vars=c('ms.mass.10', 'ms.mass.30', 'ms.mass.201', 'ms.mass.50', 'ms.mass.2521', 'ms.mass.2511', 'ms.mass.202', 'ms.mass.204', 'ms.mass.2211'), outfile = file.path( project.datadirectory("bio.snowcrab"), "R", "tsbycatch.rdata" )) #  timeseries of means of all survey data
 
   # tsdata = snowcrab.db("set.timerseries")
 
   # create a new lookuptable for data transformations after refreshing set data/ranges
-  REPOS = bio.indicators::recode.variable.initiate.db ( db="snowcrab" )
 
 
 # -------------------------------------------------------------------------------------
