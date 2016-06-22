@@ -69,7 +69,7 @@ if (obtain.database.snapshot) {
     #JC note: 1998:2002 have about 60 files with no data, just a short header
 
     #MG I'm not sure why these stats are not being written automatically, neet to set it in the code above to run these after data is loaded -- JC: mostly as "stats" can fail and need to be re-run. No need to re-run "load" steps.
-    p$netmensuration.problems = c("minilog.S12072001.1.NA.8.40.256", "netmind.S09092006.13.832.0.32.363", "minilog.S14102007.11.392.23.53.291") # add troublesome id's here .. eventually move into their respective functions
+    p$netmensuration.problems = c("seabird.S20112015.9.506.0.53.4", "minilog.S12072001.1.NA.8.40.256", "netmind.S09092006.13.832.0.32.363", "minilog.S14102007.11.392.23.53.291") # add troublesome id's here .. eventually move into their respective functions
 
     seabird.db (DS="stats.redo", Y=p$seabird.yToload )
     minilog.db (DS="stats.redo", Y=p$minilog.yToload )  # note no depth in minilog any more (since 2014 ..  useful for temperature only)

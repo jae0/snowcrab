@@ -174,7 +174,7 @@
 #'minilog.S25092010.8.36.NA.NA.33',
 #'minilog.S27102010.3.918.8.11.423' '
 #      )
-bad.list = NULL
+      bad.list = NULL
       bad.list = unique( c(bad.list, p$netmensuration.problem ) )
 
       for ( yr in Y ) {
@@ -223,7 +223,10 @@ bad.list = NULL
           if (! ( id %in% bad.list ) ) {
             ndat = length( which( !is.na(M$depth) ))
             if (ndat ==0 ) print ("No depth data in minilogs")
-            if( ndat > 30 ) {
+            if( ndat < 30 ) {
+              miniStats = rbind(miniStats, cbind( minilog_uid=id, res ) )
+              next()
+            } else {
 
               bcp = list(id=id, nr=nrow(M), YR=yr, tdif.min=3, tdif.max=9, time.gate=time.gate,
                          depth.min=20, depth.range=c(-30,20), eps.depth = 2 ,
@@ -233,23 +236,30 @@ bad.list = NULL
               bc =  NULL
               bc = bottom.contact( x=M, bcp=bcp )
 
-              if ( is.null(bc) || ( !is.null( bc$res ) && ( ( !is.finite(bc$res$t0 ) || !is.finite(bc$res$t1 ) ) ) )) {
+              redo = FALSE
+              if ( is.null(bc) ) redo =TRUE
+              if ( exists("res", bc)) {
+                if ( !is.finite(bc$res$t0 ) || !is.finite(bc$res$t1 ) ) redo = TRUE
+              }
+              if (redo) {
                  bcp$noisefilter.target.r2=0.8
                  bc = bottom.contact( x=M, bcp=bcp )
-              }
-              if ( is.null(bc) || ( !is.null( bc$res ) && ( ( !is.finite(bc$res$t0 ) || !is.finite(bc$res$t1 ) ) ) )) {
-                bcp$noisefilter.target.r2=0.75
-                bcp$noisefilter.inla.h =0.1
-                bc = bottom.contact( x=M, bcp=bcp )
-              }
-              if ( is.null(bc) || ( !is.null( bc$res) && ( ( !is.finite(bc$res$t0 ) || !is.finite(bc$res$t1 ) ) ) )) {
-                M$depth = jitter( M$depth, amount = bcp$eps.depth/10 )
-                bcp$noisefilter.target.r2=0.75
-                bcp$noisefilter.inla.h = 0.2
-                bc = bottom.contact( x=M, bcp=bcp )
+                 redo = FALSE
               }
 
-              if (!is.null(bc)) {
+              if ( is.null(bc) ) redo =TRUE
+              if ( exists("res", bc)) {
+                if ( !is.finite(bc$res$t0 ) || !is.finite(bc$res$t1 ) ) redo = TRUE
+              }
+              if (redo) {
+                 bcp$noisefilter.target.r2=0.75
+                 bcp$noisefilter.trim=0.05
+                 bcp$noisefilter.quants=c(0.025, 0.975)
+                 bc = bottom.contact( x=M, bcp=bcp )
+                 redo = FALSE
+              }
+
+              if (!is.null(bc) ) {
                 if (plotdata) {
                   bottom.contact.plot( bc )
                   plotfn = file.path( plotdir, paste(id, "pdf", sep="." ) )
@@ -260,16 +270,18 @@ bad.list = NULL
               }
               if ( !is.null(bc) && !is.null(bc$res) ) {
                 res = bc$res
-                # res$t0 = as.POSIXct(res$t0,origin=lubridate::origin, tz="UTC" )
-                # res$t1 = as.POSIXct(res$t1,origin=lubridate::origin, tz="UTC")
+                miniStats = rbind(miniStats, cbind( minilog_uid=id, res ) )
               }
             } #end if dat
           } # end if badlist
 
-          miniStats = rbind(miniStats, cbind( minilog_uid=id, res ) )
         } #end nrow id
 
+        # time needs to be reset as posix as it gets lost with rbind/cbind
         miniStats$minilog_uid =  as.character(miniStats$minilog_uid)
+        miniStats$t0 = as.POSIXct(miniStats$t0,origin=lubridate::origin, tz="UTC" )
+        miniStats$t1 = as.POSIXct(miniStats$t1,origin=lubridate::origin, tz="UTC")
+        miniStats$dt = difftime( miniStats$t1, miniStats$t0 )
 
         # minidt = miniStats$dt
         # miniStats$dt = NA

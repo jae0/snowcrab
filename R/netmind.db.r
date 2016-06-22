@@ -213,10 +213,11 @@ netmind.db = function( DS, Y=NULL, plotdata=TRUE ) {
           set_timestamp=rid$timestamp[i], yr=yr, plotdata=plotdata )
         l$netmind_uid = id
         # not really required but just in case missing values cause confusion with rbind
-        l$t0 = as.POSIXct( l$t0, origin=lubridate::origin, tz="UTC" )
-        l$t1 = as.POSIXct( l$t1, origin=lubridate::origin, tz="UTC" )
         Stats = rbind( Stats, l )
       }
+      Stats$t0 = as.POSIXct(Stats$t0,origin=lubridate::origin, tz="UTC" )
+      Stats$t1 = as.POSIXct(Stats$t1,origin=lubridate::origin, tz="UTC")
+      Stats$dt = difftime( Stats$t1, Stats$t0 )
       save( Stats, file=fn, compress=TRUE )
     }
     return ( netmind.dir )

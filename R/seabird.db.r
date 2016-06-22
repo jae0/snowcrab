@@ -232,6 +232,9 @@
           sbStats = rbind( sbStats, cbind( seabird_uid=id, res ) )
         }
         sbStats$seabird_uid =  as.character(sbStats$seabird_uid)
+        sbStats$t0 = as.POSIXct(sbStats$t0,origin=lubridate::origin, tz="UTC" )
+        sbStats$t1 = as.POSIXct(sbStats$t1,origin=lubridate::origin, tz="UTC")
+        sbStats$dt = difftime( sbStats$t1, sbStats$t0 )
         save( sbStats, file=fn, compress=TRUE)
       }
 
