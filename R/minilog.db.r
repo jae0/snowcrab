@@ -143,9 +143,9 @@
         if(any(duplicated(res[,c('trip','set')]))) {
             res = removeDuplicateswithNA(res,cols=c('trip','set'),idvar='dt')
           }
-        res$t0 = as.POSIXct( res$t0, tz="UTC", origin=lubridate::origin )
-        res$t1 = as.POSIXct( res$t1, tz="UTC", origin=lubridate::origin )
-        res$dt = difftime( res$t1, res$t0 )
+        #res$t0 = as.POSIXct( res$t0, tz="UTC", origin=lubridate::origin )
+        #res$t1 = as.POSIXct( res$t1, tz="UTC", origin=lubridate::origin )
+        #res$dt = difftime( res$t1, res$t0 )
 
         return (res)
        }
@@ -238,7 +238,7 @@
 
               redo = FALSE
               if ( is.null(bc) ) redo =TRUE
-              if ( exists("res", bc)) {
+              if ( !is.null(bc) && exists("res", bc)) {
                 if ( !is.finite(bc$res$t0 ) || !is.finite(bc$res$t1 ) ) redo = TRUE
               }
               if (redo) {
@@ -248,7 +248,7 @@
               }
 
               if ( is.null(bc) ) redo =TRUE
-              if ( exists("res", bc)) {
+              if ( !is.null(bc) && exists("res", bc)) {
                 if ( !is.finite(bc$res$t0 ) || !is.finite(bc$res$t1 ) ) redo = TRUE
               }
               if (redo) {
