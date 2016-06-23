@@ -5,7 +5,7 @@
 
 p = bio.snowcrab::load.environment()
 
-set = snowcrab.db( DS ="set.complete", p=p )
+set = snowcrab.db( DS ="set.clean", p=p )
 head(set)
 set.t.2015 = set[which(set$yr == '2015'),]
 head(set.t.2015)

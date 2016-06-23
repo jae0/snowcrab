@@ -57,7 +57,7 @@ p = bio.snowcrab::load.environment( year.assessment=2016)
 
 p = bio.snowcrab::load.environment( year.assessment=2016)
 
-  S = snowcrab.db( DS ="set.logbook" )
+  S = snowcrab.db( DS ="set.complete" )
   Sn = colnames( S )
 
   iv0 = Sn[ grep( "^ms.no." , Sn ) ]

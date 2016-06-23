@@ -3,7 +3,7 @@
 
   p = bio.snowcrab::load.environment()
 
-  set = snowcrab.db("set")
+  set = snowcrab.db("set.biologicals")
   set = set[ which(set$yr==2007), ]
   set = set[, c("station", "lon", "lat")]
   set = set[ is.finite( rowSums(set) ) ,]

@@ -603,6 +603,174 @@ snowcrab.db = function( DS, p=NULL, yrs=NULL) {
   }
 
 
+  # --------------------------------
+
+
+  if ( DS %in% c("set.clean", "set.clean.redo") ) {
+
+    # merge seabird, minilog and netmind data and do some checks and cleaning
+    fn = file.path( project.datadirectory( "bio.snowcrab" ), "data", "set.clean.rdata" )
+
+    if ( DS=="set.clean" ) {
+      set= NULL
+      if (file.exists( fn) ) load( fn )
+      return (set)
+    }
+
+    # the beginning here is identical to the netmind.db( "stat.redo" ) .. simpler to keep it this way (jae)
+    set = snowcrab.db( DS="setInitial")  # timestamp in UTC
+
+    sbStats =  seabird.db( DS="stats" )  # timestamp in UTC
+
+    sbv = c('trip','set', "z", "zsd", "t", "tsd", "n", "t0", "t1", "dt", "seabird_uid" )
+    set_sb = merge( set[, c("trip", "set") ], sbStats[,sbv], by=c("trip","set"), all.x=TRUE, all.y=FALSE, sort=FALSE )
+    # tapply( as.numeric(set_sb$dt), year(set_sb$t1), mean, na.rm=T )
+    # tapply( as.numeric(set_sb$dt), year(set_sb$t1), function(x) length(which(is.finite(x))) )
+
+    mlStats =  minilog.db( DS="stats" )
+     # mlStats$dt = as.numeric(mlStats$dt )
+    mlv =  c('trip', 'set', "z",    "zsd",    "t",    "tsd",    "n",    "t0",    "t1",    "dt", "minilog_uid" )
+    set_ml = merge( set[, c("trip", "set") ], mlStats[,mlv], by=c("trip","set"), all.x=TRUE, all.y=FALSE, sort=FALSE )
+    # tapply( as.numeric(set_ml$dt), lubridate::year(set_ml$t1), mean, na.rm=T )
+    # tapply( as.numeric(set_ml$dt), year(set_ml$t1), function(x) length(which(is.finite(x))) )
+
+    set = merge( set, set_sb, by=c("trip", "set" ), all.x=TRUE, all.y=FALSE, sort=FALSE )
+    set = merge( set, set_ml, by=c("trip", "set" ), all.x=TRUE, all.y=FALSE, sort=FALSE, suffixes=c("", ".ml" ))
+
+    # use seabird data as the standard, replace with minilog data where missing
+    ii = which(!is.finite( set$t0) )
+    if (length(ii) > 0 )  set$t0[ ii] = set$t0.ml[ii]
+
+    ii = which(!is.finite( set$t1) )
+    if (length(ii) > 0 )  set$t1[ ii] = set$t1.ml[ii]
+
+    ii = which(!is.finite( set$z) )
+    if (length(ii) > 0 )  set$z[ ii] = set$z.ml[ii]
+
+    ii = which(!is.finite( set$zsd) )
+    if (length(ii) > 0 )  set$zsd[ ii] = set$zsd.ml[ii]
+
+    ii = which(!is.finite( set$t) )
+    if (length(ii) > 0 )  set$t[ ii] = set$t.ml[ii]
+
+    ii = which(!is.finite( set$tsd) )
+    if (length(ii) > 0 )  set$tsd[ ii] = set$tsd.ml[ii]
+
+    ii = which(!is.finite( set$dt) )
+    if (length(ii) > 0 )  set$dt[ ii] = set$dt.ml[ii]
+
+    tokeep = grep( "\\.ml$", colnames(set), invert=TRUE )
+    set = set[, tokeep]
+    set$n = NULL
+    # tapply( as.numeric(set$dt), year(set$t1), mean, na.rm=T )
+    # tapply( as.numeric(set$dt), year(set$t1), function(x) length(which(is.finite(x))) )
+
+    # this is repeated to return to the same state as just prior to the netmind operations
+    # merging there would have been easier but it is possible to merge here to make things more modular
+
+    nm = netmind.db( DS="stats" )
+    set = merge( set, nm, by =c("trip","set"), all.x=TRUE, all.y=FALSE, suffixes=c("", ".nm") )
+
+    # last resort: use netmind data to fill
+    ii = which(!is.finite( set$t0) )
+    # if (length(ii) > 0 )  set$t0[ ii] = as.POSIXct( set$t0.nm[ii], origin=lubridate::origin, tz="UTC" )
+
+    if (length(ii) > 0 )  set$t0[ ii] = set$t0.nm[ii]
+    set$t0.nm = NULL
+
+    ii = which(!is.finite( set$t1) )
+    # if (length(ii) > 0 )  set$t1[ ii] = as.POSIXct( set$t1.nm[ii], origin=lubridate::origin, tz="UTC")
+    if (length(ii) > 0 )  set$t1[ ii] =  set$t1.nm[ii]
+    set$t1.nm = NULL
+
+    ii = which( !is.finite( set$dt) )
+    if (length(ii) > 0 )  set$dt[ ii] =  set$dt.nm[ii]
+    set$dt.nm = NULL
+
+    # historical data do not have these fields filled .. fill
+    ii = which( is.na( set$t0 ) )
+    if ( length (ii) > 0 ) {
+      set$t0[ii] = set$timestamp[ii]
+    }
+    # fix t1
+    ii = which( is.na( set$t1 ) )  # historical data do not have these fields filled .. fill
+    if ( length (ii) > 0 ) {
+      set$t1[ii] = set$t0[ii] + median(set$dt, na.rm=TRUE )
+    }
+
+    # positional data obtained directly from Netmind GPS and Minilog T0
+    # overwrite all, where available
+    ilon = which( is.finite( set$slon)  )
+    set$lon[ilon] = set$slon[ilon]
+
+    ilat = which( is.finite( set$slat) )
+    set$lat[ilat] = set$slat[ilat]
+
+    set = lonlat2planar(set, proj.type=p$internal.projection) # get planar projections of lon/lat in km
+    set$plon = grid.internal( set$plon, p$plons )
+    set$plat = grid.internal( set$plat, p$plats )
+
+    # merge surfacearea from net mesnuration into the database
+    set = clean.surface.area( set )
+
+    set$slon = NULL
+    set$slat = NULL
+    set$Tx = NULL
+    set$Zx = NULL
+    set$observer = NULL
+    set$cfa = NULL
+    set$gear = NULL
+
+  #  set2015= set[which(set$yr==2015),]
+  #  print(head(set2015))
+    save( set, file=fn, compress=TRUE )
+    return(fn)
+  }
+
+
+  # --------------------------------
+
+  # -------------------------------
+
+  if (DS %in% c("det.georeferenced", "det.georeferenced.redo" ) ) {
+    fn = file.path( project.datadirectory("bio.snowcrab"), "R", "det.georef.rdata" )
+    if (DS=="det.georeferenced") {
+      load(fn)
+      return(det)
+    }
+    set = snowcrab.db( "set.clean")
+    set  = set[, c("trip", "set", "lon", "lat", "plon", "plat", "yr")]
+    det = snowcrab.db("det.initial")
+    det = merge( det, set, by=c("trip", "set"), all.x=T, all.y=F, sort=F, suffixes=c("",".set") )
+    det$sa.set = NULL
+    save(det, file=fn,compress=T)
+  }
+
+
+  # -------------------------------
+
+
+  if (DS %in% c("cat.georeferenced", "cat.georeferenced.redo" ) ) {
+    fn = file.path( project.datadirectory("bio.snowcrab"), "R", "cat.georef.rdata" )
+    if (DS=="cat.georeferenced") {
+      load(fn)
+      return(cat)
+    }
+
+    set = snowcrab.db( "set.clean")  #require SA estimates
+    set  = set[, c("trip", "set", "lon", "lat", "plon", "plat", "yr", "sa")]
+    cat =  snowcrab.db("cat.initial")
+    cat = merge( cat, set, by=c("trip", "set"), all.x=T, all.y=F, sort=F, suffixes=c("",".set") )
+    cat$totmass = cat$totmass / cat$sa
+    cat$totno = cat$totno / cat$sa
+
+    cat$sa.set = NULL
+    save(cat, file=fn,compress=T)
+  }
+
+
+
+
   # -------------
 
   if ( DS %in% c("set.biologicals", "set.biologicals.redo") ) {
@@ -754,6 +922,43 @@ snowcrab.db = function( DS, p=NULL, yrs=NULL) {
 
     set = X
 
+    # complete area designations
+    set = fishing.area.designations(set, type="lonlat")
+
+    # ----add other species
+    print( "Adding other species to 'set' ")
+    cat = snowcrab.db( DS="cat.initial" )
+    # cat2015 = cat[grep("2015", cat$trip),]
+    # print(head(cat2015))
+
+    cat$uid = paste(cat$trip, cat$set, sep="~")
+    set$uid = paste(set$trip, set$set, sep="~")
+    suid = unique(sort( set$uid)) # necessary as some sp are found in sets that are dropped (bad tows)
+
+    ns = nrow(set)
+
+    for ( i in sort( unique( cat$spec ) ) ) {
+      print(i)
+      tmp = NULL
+      tmp = cat[ which(cat$spec==i & cat$uid %in% suid ) , c("uid","totno","totmass")  ]
+      tmp$meansize = tmp$totmass / tmp$totno
+      names(tmp) = c("uid", paste( c("ms.no", "ms.mass", "ms.size"), i, sep="." ) )
+      o = merge( set, tmp, by=c("uid"), all.x=T, all.y=F, sort=F )
+      if ( nrow(o) == nrow(set) ) {
+        set = o
+      } else {
+        print (nrow(o))
+        stop()
+      }
+    }
+
+    j = unique( c(grep("ms.mass", names(set)), grep("ms.no.", names(set)) ))
+    for ( k in j ) {
+      l = which( !is.finite( set[,k] ) )
+      set[l,k] = 0
+      set[,k] = set[,k] / set$sa
+    }
+
     if ( nrow( snowcrab.db( DS="setInitial" )) != nrow( set) ) {   print( "Merge failure ... " );  stop()    }
     # X2015 = X[which(X$yr == 2015),]
     # print(head(X2015))
@@ -763,136 +968,10 @@ snowcrab.db = function( DS, p=NULL, yrs=NULL) {
     return ( "Complete" )
   }
 
-
-  # --------------------------------
-
-
-  if ( DS %in% c("set.clean", "set.clean.redo") ) {
-
-    # merge seabird, minilog and netmind data and do some checks and cleaning
-    fn = file.path( project.datadirectory( "bio.snowcrab" ), "data", "set.clean.rdata" )
-
-    if ( DS=="set.clean" ) {
-      set= NULL
-      if (file.exists( fn) ) load( fn )
-      return (set)
-    }
-
-    # the beginning here is identical to the netmind.db( "stat.redo" ) .. simpler to keep it this way (jae)
-    set = snowcrab.db( DS="setInitial")  # timestamp in UTC
-
-    sbStats =  seabird.db( DS="stats" )  # timestamp in UTC
-
-    sbv = c('trip','set', "z", "zsd", "t", "tsd", "n", "t0", "t1", "dt", "seabird_uid" )
-    set_sb = merge( set[, c("trip", "set") ], sbStats[,sbv], by=c("trip","set"), all.x=TRUE, all.y=FALSE, sort=FALSE )
-    # tapply( as.numeric(set_sb$dt), year(set_sb$t1), mean, na.rm=T )
-    # tapply( as.numeric(set_sb$dt), year(set_sb$t1), function(x) length(which(is.finite(x))) )
-
-    mlStats =  minilog.db( DS="stats" )
-     # mlStats$dt = as.numeric(mlStats$dt )
-    mlv =  c('trip', 'set', "z",    "zsd",    "t",    "tsd",    "n",    "t0",    "t1",    "dt", "minilog_uid" )
-    set_ml = merge( set[, c("trip", "set") ], mlStats[,mlv], by=c("trip","set"), all.x=TRUE, all.y=FALSE, sort=FALSE )
-    # tapply( as.numeric(set_ml$dt), lubridate::year(set_ml$t1), mean, na.rm=T )
-    # tapply( as.numeric(set_ml$dt), year(set_ml$t1), function(x) length(which(is.finite(x))) )
-
-    set = merge( set, set_sb, by=c("trip", "set" ), all.x=TRUE, all.y=FALSE, sort=FALSE )
-    set = merge( set, set_ml, by=c("trip", "set" ), all.x=TRUE, all.y=FALSE, sort=FALSE, suffixes=c("", ".ml" ))
-
-    # use seabird data as the standard, replace with minilog data where missing
-    ii = which(!is.finite( set$t0) )
-    if (length(ii) > 0 )  set$t0[ ii] = set$t0.ml[ii]
-
-    ii = which(!is.finite( set$t1) )
-    if (length(ii) > 0 )  set$t1[ ii] = set$t1.ml[ii]
-
-    ii = which(!is.finite( set$z) )
-    if (length(ii) > 0 )  set$z[ ii] = set$z.ml[ii]
-
-    ii = which(!is.finite( set$zsd) )
-    if (length(ii) > 0 )  set$zsd[ ii] = set$zsd.ml[ii]
-
-    ii = which(!is.finite( set$t) )
-    if (length(ii) > 0 )  set$t[ ii] = set$t.ml[ii]
-
-    ii = which(!is.finite( set$tsd) )
-    if (length(ii) > 0 )  set$tsd[ ii] = set$tsd.ml[ii]
-
-    ii = which(!is.finite( set$dt) )
-    if (length(ii) > 0 )  set$dt[ ii] = set$dt.ml[ii]
-
-    tokeep = grep( "\\.ml$", colnames(set), invert=TRUE )
-    set = set[, tokeep]
-    set$n = NULL
-    # tapply( as.numeric(set$dt), year(set$t1), mean, na.rm=T )
-    # tapply( as.numeric(set$dt), year(set$t1), function(x) length(which(is.finite(x))) )
-
-    # this is repeated to return to the same state as just prior to the netmind operations
-    # merging there would have been easier but it is possible to merge here to make things more modular
-
-    nm = netmind.db( DS="stats" )
-    set = merge( set, nm, by =c("trip","set"), all.x=TRUE, all.y=FALSE, suffixes=c("", ".nm") )
-
-    # last resort: use netmind data to fill
-    ii = which(!is.finite( set$t0) )
-    # if (length(ii) > 0 )  set$t0[ ii] = as.POSIXct( set$t0.nm[ii], origin=lubridate::origin, tz="UTC" )
-
-    if (length(ii) > 0 )  set$t0[ ii] = set$t0.nm[ii]
-    set$t0.nm = NULL
-
-    ii = which(!is.finite( set$t1) )
-    # if (length(ii) > 0 )  set$t1[ ii] = as.POSIXct( set$t1.nm[ii], origin=lubridate::origin, tz="UTC")
-    if (length(ii) > 0 )  set$t1[ ii] =  set$t1.nm[ii]
-    set$t1.nm = NULL
-
-    ii = which( !is.finite( set$dt) )
-    if (length(ii) > 0 )  set$dt[ ii] =  set$dt.nm[ii]
-    set$dt.nm = NULL
-
-    # historical data do not have these fields filled .. fill
-    ii = which( is.na( set$t0 ) )
-    if ( length (ii) > 0 ) {
-      set$t0[ii] = set$timestamp[ii]
-    }
-    # fix t1
-    ii = which( is.na( set$t1 ) )  # historical data do not have these fields filled .. fill
-    if ( length (ii) > 0 ) {
-      set$t1[ii] = set$t0[ii] + median(set$dt, na.rm=TRUE )
-    }
-
-    # positional data obtained directly from Netmind GPS and Minilog T0
-    # overwrite all, where available
-    ilon = which( is.finite( set$slon)  )
-    set$lon[ilon] = set$slon[ilon]
-
-    ilat = which( is.finite( set$slat) )
-    set$lat[ilat] = set$slat[ilat]
-
-    set = lonlat2planar(set, proj.type=p$internal.projection) # get planar projections of lon/lat in km
-    set$plon = grid.internal( set$plon, p$plons )
-    set$plat = grid.internal( set$plat, p$plats )
-
-    # merge surfacearea from net mesnuration into the database
-    set = clean.surface.area( set )
-
-    set$slon = NULL
-    set$slat = NULL
-    set$Tx = NULL
-    set$Zx = NULL
-    set$observer = NULL
-    set$cfa = NULL
-    set$gear = NULL
-
-  #  set2015= set[which(set$yr==2015),]
-  #  print(head(set2015))
-    save( set, file=fn, compress=TRUE )
-    return(fn)
-  }
+  # -------------------------------
 
 
-  # --------------------------------
-
-
-  if (DS %in% c("set", "set.complete", "set.complete.redo") ) {
+  if (DS %in% c( "set.complete", "set.complete.redo") ) {
 
     fn = file.path( project.datadirectory("bio.snowcrab"), "R", "set.complete.rdata")
 
@@ -905,125 +984,34 @@ snowcrab.db = function( DS, p=NULL, yrs=NULL) {
     # set2015 = set[which(set$yr == 2015),]
     # print(head(set2015))
 
-		# bring in time invariant features:: depth
-		print ("Bring in depth")
+    # bring in time invariant features:: depth
+    print ("Bring in depth")
     set = habitat.lookup( set,  p=p, DS="depth" )
     set$z = log( set$z )
 
-	  # bring in time varing features:: temperature
-		print ("Bring in temperature")
+    # bring in time varing features:: temperature
+    print ("Bring in temperature")
     set = habitat.lookup( set, p=p, DS="temperature" )
 
-		# bring in all other habitat variables, use "z" as a proxy of data availability
-		# and then rename a few vars to prevent name conflicts
-	  set = habitat.lookup( set,  p=p, DS="all.data" )
+    # bring in all other habitat variables, use "z" as a proxy of data availability
+    # and then rename a few vars to prevent name conflicts
+    set = habitat.lookup( set,  p=p, DS="all.data" )
 
     # return planar coords to correct resolution
     set = lonlat2planar( set, proj.type=p$internal.projection )
 
-    # complete area designations
-    set = fishing.area.designations(set, type="lonlat")
-
-    # ----add other species
-    print( "Adding other species to 'set' ")
-    cat = snowcrab.db( DS="cat.initial" )
-    # cat2015 = cat[grep("2015", cat$trip),]
-    # print(head(cat2015))
-
-		cat$uid = paste(cat$trip, cat$set, sep="~")
-		set$uid = paste(set$trip, set$set, sep="~")
-		suid = unique(sort( set$uid)) # necessary as some sp are found in sets that are dropped (bad tows)
-
-		ns = nrow(set)
-
-    for ( i in sort( unique( cat$spec ) ) ) {
-      print(i)
-      tmp = NULL
-      tmp = cat[ which(cat$spec==i & cat$uid %in% suid ) , c("uid","totno","totmass")  ]
-      tmp$meansize = tmp$totmass / tmp$totno
-      names(tmp) = c("uid", paste( c("ms.no", "ms.mass", "ms.size"), i, sep="." ) )
-      o = merge( set, tmp, by=c("uid"), all.x=T, all.y=F, sort=F )
-			if ( nrow(o) == nrow(set) ) {
-				set = o
-			} else {
-				print (nrow(o))
-				stop()
-			}
-		}
-
-    j = unique( c(grep("ms.mass", names(set)), grep("ms.no.", names(set)) ))
-    for ( k in j ) {
-      l = which( !is.finite( set[,k] ) )
-      set[l,k] = 0
-      set[,k] = set[,k] / set$sa
-    }
-
     # set2015 = set[which(set$yr ==2015), ]
     # print(head(set2015))
+
+    set = logbook.fisheries.stats.merge( set ) # add gridded logbook data
+
+    if ( nrow( snowcrab.db( DS="setInitial" )) != nrow( set) ) {   print( "Merge failure ... " );  stop()    }
+    # X2015 = X[which(X$yr == 2015),]
+    # print(head(X2015))
 
     save(set, file=fn, compress=T)
 
   }
-
-  # -------------------------------
-
-  if (DS %in% c("det.georeferenced", "det.georeferenced.redo" ) ) {
-    fn = file.path( project.datadirectory("bio.snowcrab"), "R", "det.georef.rdata" )
-    if (DS=="det.georeferenced") {
-      load(fn)
-      return(det)
-    }
-    set = snowcrab.db( "set.clean")
-    set  = set[, c("trip", "set", "lon", "lat", "plon", "plat", "yr")]
-    det = snowcrab.db("det.initial")
-    det = merge( det, set, by=c("trip", "set"), all.x=T, all.y=F, sort=F, suffixes=c("",".set") )
-    det$sa.set = NULL
-    save(det, file=fn,compress=T)
-  }
-
-
-  # -------------------------------
-
-
-  if (DS %in% c("cat.georeferenced", "cat.georeferenced.redo" ) ) {
-    fn = file.path( project.datadirectory("bio.snowcrab"), "R", "cat.georef.rdata" )
-    if (DS=="cat.georeferenced") {
-      load(fn)
-      return(cat)
-    }
-
-    set = snowcrab.db( "set.clean")  #require SA estimates
-    set  = set[, c("trip", "set", "lon", "lat", "plon", "plat", "yr", "sa")]
-    cat =  snowcrab.db("cat.initial")
-    cat = merge( cat, set, by=c("trip", "set"), all.x=T, all.y=F, sort=F, suffixes=c("",".set") )
-    cat$totmass = cat$totmass / cat$sa
-    cat$totno = cat$totno / cat$sa
-
-    cat$sa.set = NULL
-    save(cat, file=fn,compress=T)
-  }
-
-
-  # -------------------------------
-
-
-  if (DS %in% c("set.logbook", "set.logbook.redo" )) {
-
-    outdir = file.path( project.datadirectory("bio.snowcrab"), "data" )
-    dir.create(path=outdir, recursive=T, showWarnings=F)
-    fn = file.path( outdir, "set.logbook.rdata" )
-
-    if (DS =="set.logbook") {
-      if ( file.exists( fn) ) load(fn)
-      return(set)
-    }
-
-    set0 = snowcrab.db( DS="set.complete" )
-    set = logbook.fisheries.stats.merge( set0 )
-    save ( set, file=fn, compress=T )
-    return (fn)
-  }
-
 
 }  ## end snowcrab.db
 

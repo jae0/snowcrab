@@ -2,7 +2,7 @@
 
 p = bio.snowcrab::load.environment()
 
-  w = snowcrab.db( DS ="set.complete", p=p )
+  w = snowcrab.db( DS ="set.biologicals", p=p )
   w = w[ filter.region.polygon( w, "cfanorth"),]
 
   out = data.frame( cbind(

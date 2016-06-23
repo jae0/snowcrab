@@ -1,9 +1,9 @@
 
   habitat.usage = function( usevar, covariate, outdir ) {
 
-    b = snowcrab.db("set.complete")
+    b = snowcrab.db("set.biologicals")
     logbook = logbook.db(DS="fisheries.complete")
-    
+
     logbook$landings = logbook$landings / 1000  # convert kg to t
     L = logbook[ which(logbook$depth<500 & logbook$depth > 20),]
 
@@ -13,14 +13,14 @@
     if (usevar == "totno.male.mat")     ylab=expression(paste("Number of mature males (1000 / ",km^2, ")"))
     if (usevar == "totno.male.imm")   ylab=expression(paste("Number of immature males (1000 / ",km^2, ")"))
     if (usevar == "totmass.male.mat")     ylab=expression(paste("Number of mature males (1000 / ",km^2, ")"))
-    
+
 
     if (covariate=="depth") {
       # survey densities
       freq1 = errorbars( b=b, v=c("z", usevar), br=30, nfilter=10, lowess=0.25, trim=0.1,
           xlab="Depth (m)", ylab=ylab, db="snowcrab")
       Pr(dev="png", dname=outdir, fname=paste("survey.depth", usevar, sep=".") )
-     
+
       # dockside landings
       usevar = "landings"
       freq1 = errorbars( b=L, v= c("depth", usevar), br=50, nfilter=10, lowess=0.25,  trim=0.1,
@@ -41,7 +41,7 @@
       Pr(dev="png", dname=outdir, fname=paste("survey.temperatures", usevar, sep=".") )
     }
 
-    if (covariate=="bottom.slope") {     
+    if (covariate=="bottom.slope") {
       # survey densities
       freq1 = errorbars( b=b, v=c("dZ", usevar), br=50, nfilter=10, lowess=0.25, trim=0.1,
           xlab="ln (abs( Slope; m/m) )", ylab=ylab, db="snowcrab")
@@ -66,7 +66,7 @@
       freq1 = errorbars( b=b, v=c("ddZ", usevar), br=50, nfilter=10, lowess=0.25, trim=0.1,
           xlab="ln (abs ( Curvature; m/m2) ) )", ylab=ylab, db="snowcrab")
       Pr(dev="png", dname=outdir, fname=paste("survey.curvature", usevar, sep=".") )
-    
+
       # dockside landings
       usevar = "landings"
       freq1 = errorbars( b=L, v= c("ddZ", usevar), br=50, nfilter=10, lowess=0.25,  trim=0.1,
@@ -86,7 +86,7 @@
       freq1 = errorbars( b=b, v=c("substrate.mean", usevar), br=50, nfilter=10, lowess=0.25, trim=0.1,
           xlab="ln ( substrate grainsize; mm )", ylab=ylab, db="snowcrab")
       Pr(dev="png", dname=outdir, fname=paste("survey.curvature", usevar, sep=".") )
-    
+
       # dockside landings
       usevar = "landings"
       freq1 = errorbars( b=L, v= c("substrate.mean", usevar), br=50, nfilter=10, lowess=0.25,  trim=0.1,
@@ -99,9 +99,9 @@
           xlab="ln ( substrate grainsize; mm )", ylab="CPUE (kg/trap haul)", db="snowcrab")
       Pr(dev="png", dname=outdir, fname=paste("cpue.curvature", usevar, sep="."))
 
- 
+
     }
 
   }
-   
+
 

@@ -20,7 +20,7 @@ figure.crab.groundfish.survey <- function(species , outdir=file.path(project.dat
 #	                   "redcrab", "atlanticrockcrab", "toadcrab", "snowcrab",'atlanticwolffish','halibut','smoothskate','winterskate')
 	      #cod, halibut, thornyskate, wolfish, lessertoadcrab, jonahcrab, smoothskate, winterskate, northernshrimp,
 	      species = c(10, 30, 201, 50, 2521, 2511, 202, 204, 2211)
- set = snowcrab.db( DS="set.complete")
+ set = snowcrab.db( DS="set.biologicals")
  set = set[which(set$yr>2003),]
  ii  = names(set)[grep(paste("^ms.mass.",species,"$",sep=""),names(set))]
 

@@ -238,7 +238,7 @@ p = bio.snowcrab::load.environment( year.assessment=2016)
   # counts of stations in each area
 
     # check towquality .. this should always == 1
-    set = snowcrab.db("set.complete")
+    set = snowcrab.db("set.clean")
     if (length( unique( set$towquality) ) != 1 ) print("error -- not good tows")
 
     out = data.frame(yr=sort( unique(set$yr )) )

@@ -1,7 +1,9 @@
   map.set.information = function(p, outdir, method="gmt" ) {
 
-    set = snowcrab.db( DS="set.complete")
+    set = snowcrab.db( DS="set.biologicals")
     variables = variable.list.expand("all.data")
+    variables = intersect( variables, names(set) )
+
     #variables = c('totmass.male.com', 'totmass.female.mat')
 
     if (method =="gmt") {

@@ -1,7 +1,7 @@
 
 
 #  ----- experimental / tests / ideas
-  s =  snowcrab.db( DS ="set.complete" )
+  s =  snowcrab.db( DS ="set.biologicals" )
   d =   snowcrab.db( DS ="det.georeferenced" )
   l = merge( d, s[, c("trip", "set", "t")], by=c("trip", "set"), all.x=T, all.y=F)
   rm(s,d); gc()

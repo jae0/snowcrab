@@ -1,34 +1,33 @@
 
   figure.timeseries.survey = function(p, areas="", from.file=F) {
-     
-    set = snowcrab.db( DS ="set.logbook" ) 
-     
+
+    set = snowcrab.db( DS ="set.biologicals" )
+
     if ( areas=="small.areas" ) { # default
-      areas = c( "cfa20", "cfa21", "cfa22", "cfa23", "cfa24", "cfa4x", 
+      areas = c( "cfa20", "cfa21", "cfa22", "cfa23", "cfa24", "cfa4x",
       "cfa23slope", "cfa24slope")  # i.e., must be mutually exclusive categories
-      for (r in areas) {  
+      for (r in areas) {
         qr = filter.region.polygon(set, r)
         set$region[qr] = r
       }
     } else if (areas=="cfall" ) {
       set$region = factor("cfall", labels="Scotian.Shelf")
     } else {  # default
-        set$region = factor( set$cfa, 
-        levels = c("cfa4x", "cfasouth", "cfanorth" ), 
-        labels = c("4X", "S-ENS", "N-ENS") 
+        set$region = factor( set$cfa,
+        levels = c("cfa4x", "cfasouth", "cfanorth" ),
+        labels = c("4X", "S-ENS", "N-ENS")
       )
     }
 
     #na.omit()
     variables =  c( variable.list.expand("all.to.model"), variable.list.expand("snowcrab.cw"), variable.list.expand("physical"),"landings", "cpue", "notraps", "effort" )
     #variables = c('RO.mass', 'R1.no', 'totno.female')
-
     names.set = names(set)
+    variables = intersect( variables, names(set))
+
     for ( v in variables ) {
       cex=1
-      main = list(v, cex=cex) 
-  
-      if (!( v %in% names.set))  next() 
+      main = list(v, cex=cex)
       B = set[, c( v, "yr", "region" )]
       B[,1] = variable.recode( B[,1], v, direction="forward", db="snowcrab" )
       oo = which( B[,1] > 0 | is.finite( B[,1] ) )

@@ -1,4 +1,13 @@
 
+  # --------------------------------------------------------------
+  #  Ensure the following scritps complete:
+  #  these external dependencies permit lookup of data, complete:
+  #  better to run manually than hoping the following will complete automatically -- it won't ;)
+
+  source( system.file(package="bio.indicators", "scripts", "01.indicators.r")  )
+  source( system.file(package="bio.indicators", "scripts", "02.interpolations.r")  )
+
+
   # --------------------------
   # 0. Initialise work space
 
@@ -19,6 +28,34 @@
   # p$vars.to.model = c("R0.mass", "R0.no", "R1.no", "totno.female.primiparous","totno.female.multiparous", "totno.female.berried", "fecundity","totno.female.imm", "totno.male.imm" )
   # p$vars.to.model = c("R0.no", "R1.no", "totno.female.primiparous","totno.female.multiparous", "totno.female.berried", "fecundity","totno.female.imm", "totno.male.imm" )
   p$years.to.model=2000:2015
+
+
+
+
+# --------------------------------------------------------------
+# using environmental data ... estimate/lookup missing environmental data ..
+  logbook.db( DS  ="fisheries.complete.redo", p=p )
+  snowcrab.db( DS ="set.complete.redo", p=p )
+
+
+
+# -------------------------------------------------------------------------------------
+# snow crab found in external databases tapped into for habitat determination
+# for ( vs in c( "R0.mass", "male.large", "male.small", "female.large", "female.small" ) ) {
+  ### -------- not yet finished this one ...  TODO
+  vs="R0.mass"
+  snowcrab.external.db(p=p, DS="set.snowcrab.in.groundfish.survey.redo", vname=vs, year.current=p$year.assessment )
+
+  # ---- TODO !!! must replace this with survey.db processing step
+
+# simple geometric means of raw data:  used by indicators ordination and some figures
+# takes many hours ... need to make parallel  TODO
+tsdata =  get.time.series ( x=snowcrab.db( DS="set.biologicals"),
+regions=p$regions, vars=variable.list.expand("all.data"), from.file=F, trim=0 )
+
+
+
+
 
 
   debug = F
@@ -180,7 +217,7 @@
 
       ### --------- prediction success:
 
-      set = snowcrab.db( DS="set.logbook" )
+      set = snowcrab.db( DS="set.complete" )
       set = set[ set$yr %in% p$years.to.model ,]
       set$total.landings.scaled = scale( set$total.landings, center=T, scale=T )
       set = presence.absence( set, "R0.mass", p$habitat.threshold.quantile )  # determine presence absence(Y) and weighting(wt)

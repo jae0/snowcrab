@@ -2,7 +2,7 @@
 
 p = bio.snowcrab::load.environment()
 
-dat = snowcrab.db('set.complete')
+dat = snowcrab.db('set.biologicals')
 pp = read.csv(find.bio.gis('StAnnsMPA.csv'))
 require(PBSmapping)
 

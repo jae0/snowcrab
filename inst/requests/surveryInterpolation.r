@@ -10,7 +10,7 @@ p = bio.snowcrab::load.environment()
 
 if(do.interpolation) {
 #get crab data new
-	det <- snowcrab.db('set.complete')
+	det <- snowcrab.db('set.biologicals')
 	gps <- c('totno.male.imm','totno.female.imm','totno.male.mat','totno.female.mat')
 	det <- det[,c('trip','station','set','plat','plon',gps,'yr')]
 	d 	<- aggregate(trip~station,data=det,FUN=length)

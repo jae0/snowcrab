@@ -20,7 +20,7 @@ p = bio.snowcrab::load.environment()
 
  # Fred Kennedy's request
  # Carapace condition breakdown by year
-  set = snowcrab.db("set.with.det")
+  set = snowcrab.db("set.biologicals")
   x = set[ filter.region(set$cfa, "cfa23"), ]
 
   vars = c("totmass.male.com.CC1", "totmass.male.com.CC2", "totmass.male.com.CC3", "totmass.male.com.CC4", "totmass.male.com.CC5")
@@ -54,9 +54,9 @@ p = bio.snowcrab::load.environment()
   #  == R2 + R3 + R4
 
 
-p = bio.snowcrab::load.environment()
+  p = bio.snowcrab::load.environment()
 
-  set = snowcrab.db("set.complete")
+  set = snowcrab.db("set.biologicals")
   # overrides:
   p$regions.to.model = "cfa.23ab.24ab"
   p$vars.to.model = "pre.recruit.no"
@@ -95,8 +95,6 @@ p = bio.snowcrab::load.environment()
 
 
 p = bio.snowcrab::load.environment()
-
-  set = snowcrab.db("set")
 
   # overrides:
   p$regions.to.model = c( "cfanorth", "cfasouth", "cfa22outer", "cfa23a", "cfanorth.not.glace.bay" )
@@ -144,7 +142,7 @@ p = bio.snowcrab::load.environment()
   } else if (redo.data) {
 
     det = snowcrab.db("det")
-    set = snowcrab.db("set.netmind.sanity.checked")
+    set = snowcrab.db("set.clean")
     v = c( "male", "female")
     varstokeep = c("lon", "lat", "trip", "set", "yr", "cw", "sa.x", "sex", "shell", "durometer", "mat", "stage.fmat", "eggPr")
 
@@ -382,7 +380,7 @@ p = bio.snowcrab::load.environment()
 
 p = bio.snowcrab::load.environment()
 
-  set = snowcrab.db("set")
+  set = snowcrab.db("set.biologicals")
 
   # overrides:
   p$regions.to.model = c("cfa23", "cfa24")
@@ -490,10 +488,9 @@ p = bio.snowcrab::load.environment()
 
   # results location: ~/bio.snowcrab/issues/briefing.note.glace.bay/2006
 
-
 p = bio.snowcrab::load.environment()
 
-  set = snowcrab.db("set")
+  set = snowcrab.db("set.biologicals")
 
   # overrides:
   p$regions.to.model = c( "cfanorth", "cfasouth", "cfa22outer", "cfa23a", "cfanorth.not.glace.bay" )
@@ -668,7 +665,7 @@ write.csv( Y, file="~/tmp/jim.csv" )
 p = bio.snowcrab::load.environment()
 
 yrs = c(2005:2012)
-Z = snowcrab.db( DS="set.complete" )
+Z = snowcrab.db( DS="set.biologicals" )
 Z = Z[which(Z$yr %in% yrs ) , ]
 Z = Z[, c("trip", "set", "yr", "lon", "lat")]
 
@@ -694,7 +691,7 @@ write.csv( Y, file="~/tmp/jim.csv" )
 
 
 p = bio.snowcrab::load.environment()
-set = snowcrab.db("set")
+set = snowcrab.db("set.biologicals")
 set = set[,c( "yr", "lon", "lat", "t", "sa", "R0.mass", "totmass.female.mat", "totmass.male.imm", "totmass.female.imm" )]
 nens = filter.region.polygon( set, region="cfanorth" )
 innergutter = intersect( nens, which(set$lon < -59.8 ) )

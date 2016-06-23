@@ -1,6 +1,6 @@
 
   figure.timeseries.CW = function( outdir, all.areas=T, type="trawl" ) {
-    
+
     if (all.areas) {
       areas = c("cfa4x", "cfasouth", "cfanorth" )
       regions = c("4X", "S-ENS", "N-ENS")
@@ -28,13 +28,9 @@
 
     }
     if (type == "observer") {
-      odb = observer.db( DS="odb" )
-      odb = odb[ which(odb$cw>=95),]
-      v = "cw"
-      fn = file.path( outdir, paste( v, "combined.observer.pdf", sep="." ) )
-      td =  get.time.series (odb, areas, v, outfile=file.path(tempdir(), "ts.tmp.csv") )
+        td = snowcrab.timeseries.db( DS="observer" )
     }
- 
+
     td = td[ order(td$region, td$year) , ]
     td$region = factor(td$region, levels=areas, labels =regions)
     #   td[ which(td$region=="4X" & td$year < 2004), c("mean", "se", "ub", "lb", "n")] = NA
@@ -47,7 +43,7 @@
     ylim[1]=rg[1] - rg[2]*0.02
 
     xlabels = seq(min(xlim), max(xlim), 1)
-   # xlabels = c(xlim[1], xlim[1]+4, xlim[1]+8, xlim[1]+12, xlim[1]+16, xlim[1]+18) 
+   # xlabels = c(xlim[1], xlim[1]+4, xlim[1]+8, xlim[1]+12, xlim[1]+16, xlim[1]+18)
     ylabels = round(seq(as.numeric(rg[1]), round(as.numeric(rg[2]), 0), length.out=6),0)
 
 
@@ -57,15 +53,15 @@
     setup.lattice.options()
     pl = xyplot( mean~year|region, data=td, ub=td$ub, lb=td$lb,
     #    layout=c(1,n.areas), xlim=xlim, scales = list(y = "free"),
-        layout=c(1,n.areas), 
+        layout=c(1,n.areas),
         par.strip.text = list(cex=1),
         par.settings=list(
-        axis.text=list(cex=0.75), 
+        axis.text=list(cex=0.75),
         par.main.text = list(cex=1),
         layout.heights=list(strip=1, panel=1, main=0.3 ),
-        strip.background=list(col="lightgrey"), 
-        box.umbrella = list(col = "black"), 
-        box.rectangle = list(col="black"), 
+        strip.background=list(col="lightgrey"),
+        box.umbrella = list(col = "black"),
+        box.rectangle = list(col="black"),
         box.dot = list(col = "black", pch = 3, cex=2),
         plot.symbol=list(col='black', fill='darkgrey', cex=0.75, pch=21)
         ),
@@ -80,8 +76,8 @@
            #panel.abline(h=0, col="gray75", ...)
        }
     )
-   
-    print(pl) 
+
+    print(pl)
     dev.off()
    # cmd( "convert   -trim -quality 9  -geometry 200% -frame 2% -mattecolor white -antialias ", paste(fn, "pdf", sep="."),  paste(fn, "png", sep=".") )
      return("Done")

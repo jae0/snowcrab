@@ -31,7 +31,7 @@ with(out,arrows(x0=yr-1,y0=meancpue,y1=meancpue-sdcpue,length=0.05,angle=90))
 
 
 # survey data
- k = snowcrab.db(DS = 'set.complete', p = p)
+ k = snowcrab.db(DS = 'set.biologicals', p = p)
 
  l = aggregate(totmass.male.com~cfa+yr,data = k, FUN = mean)
  m = aggregate(totmass.male.com~cfa+yr,data = k, FUN = sd)

@@ -1,9 +1,11 @@
   map.set.information.diff = function(p, outdir, method="levelplot" ) {
 
-    set = snowcrab.db( DS="set.complete")
+    set = snowcrab.db( DS="set.biologicals")
     #variables = variable.list.expand("all.data")
+
     #variables = c('totmass.male.com', 'totmass.female.mat')
     variables = 'R0.mass'
+    variables = intersect( variables, names( set) )
 
     if (method =="gmt") {
       # overrides to defaults

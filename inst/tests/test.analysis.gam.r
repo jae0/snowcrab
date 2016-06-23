@@ -18,7 +18,7 @@ Test:     Biomass estimation via GAM / LME
     # quantile at which to consider zero-valued abundance
     p$habitat.threshold.quantile = 0.05
 
-    set = snowcrab.db( DS="set.logbook" )
+    set = snowcrab.db( DS="set.complete" )
     set$Y = set$R0.mass
 
     set$plon= jitter(set$plon)
