@@ -228,8 +228,8 @@
               next()
             } else {
 
-              bcp = list(id=id, nr=nrow(M), YR=yr, tdif.min=3, tdif.max=10, time.gate=time.gate,
-                         depth.min=20, depth.range=c(-30,20), eps.depth = 2 ,
+              bcp = list(id=id, nr=nrow(M), YR=yr, tdif.min=3, tdif.max=11, time.gate=time.gate,
+                         depth.min=20, depth.range=c(-25,15), eps.depth = 2 ,
                          smooth.windowsize=5, modal.windowsize=5,
                          noisefilter.trim=0.025, noisefilter.target.r2=0.85, noisefilter.quants=c(0.025, 0.975) )
               bcp = bottom.contact.parameters( bcp ) # add other default parameters .. not specified above

@@ -57,7 +57,7 @@
       if(is.null(set_timestamp)) settimestamp=t0
       time.gate =  list( t0=settimestamp - dminutes(6), t1=settimestamp + dminutes(12) )
 
-      bcp = list(id=N$netmind_uid[1], nr=nrow(M), YR=yr, tdif.min=3, tdif.max=10, time.gate=time.gate,
+      bcp = list(id=N$netmind_uid[1], nr=nrow(M), YR=yr, tdif.min=3, tdif.max=11, time.gate=time.gate,
                    depth.min=20, depth.range=c(-25,15), eps.depth=3,
                    smooth.windowsize=5, modal.windowsize=5,
                    noisefilter.trim=0.05, noisefilter.target.r2=0.8, noisefilter.quants=c(0.05, 0.95) )

@@ -26,7 +26,7 @@ snowcrab.timeseries.db = function( DS="default", p=NULL, regions=c( "cfa4x", "cf
     datX = dat[, vn]
     for (v in vn) {
       if ( !is.numeric( datX[,v] ) ) next()
-      datX[,v] = variable.recode( datX[,v], v, direction="forward", db="snowcrab" ) # transform variables where necessary
+      datX[,v] = bio.indicators::variable.recode( datX[,v], v, direction="forward", db="snowcrab" ) # transform variables where necessary
     }
 
     for ( i in 1:nrow(tsdata) ) {
@@ -40,11 +40,11 @@ snowcrab.timeseries.db = function( DS="default", p=NULL, regions=c( "cfa4x", "cf
       svn = length(sv)
       svmean = mean (sv, trim=trim, na.rm=TRUE)
       svse = sd( sv, na.rm=T)/ sqrt( svn-1)
-      tsdata$mean[i] = variable.recode ( svmean, v,  direction="backward", db="snowcrab" )
+      tsdata$mean[i] = bio.indicators::variable.recode ( svmean, v,  direction="backward", db="snowcrab" )
       tsdata$n[i] = svn
       tsdata$se[i] = svse  # leave on transformed scale
-      tsdata$ub[i] = variable.recode ( svmean + svse*1.96, v,  direction="backward", db="snowcrab" )
-      tsdata$lb[i] = variable.recode ( svmean - svse*1.96, v,  direction="backward", db="snowcrab" )
+      tsdata$ub[i] = bio.indicators::variable.recode ( svmean + svse*1.96, v,  direction="backward", db="snowcrab" )
+      tsdata$lb[i] = bio.indicators::variable.recode ( svmean - svse*1.96, v,  direction="backward", db="snowcrab" )
     }
     return(tsdata)
   }
@@ -84,7 +84,7 @@ snowcrab.timeseries.db = function( DS="default", p=NULL, regions=c( "cfa4x", "cf
     datX = dat[, vn]
     for (v in vn) {
       if ( !is.numeric( datX[,v] ) ) next()
-      datX[,v] = variable.recode( datX[,v], v, direction="forward", db="snowcrab" ) # transform variables where necessary
+      datX[,v] = bio.indicators::variable.recode( datX[,v], v, direction="forward", db="snowcrab" ) # transform variables where necessary
     }
 
     for ( i in 1:nrow(tsdata) ) {
@@ -98,11 +98,11 @@ snowcrab.timeseries.db = function( DS="default", p=NULL, regions=c( "cfa4x", "cf
       svn = length(sv)
       svmean = mean (sv, trim=trim, na.rm=TRUE)
       svse = sd( sv, na.rm=T)/ sqrt( svn-1)
-      tsdata$mean[i] = variable.recode ( svmean, v,  direction="backward", db="snowcrab" )
+      tsdata$mean[i] = bio.indicators::variable.recode ( svmean, v,  direction="backward", db="snowcrab" )
       tsdata$n[i] = svn
       tsdata$se[i] = svse  # leave on transformed scale
-      tsdata$ub[i] = variable.recode ( svmean + svse*1.96, v,  direction="backward", db="snowcrab" )
-      tsdata$lb[i] = variable.recode ( svmean - svse*1.96, v,  direction="backward", db="snowcrab" )
+      tsdata$ub[i] = bio.indicators::variable.recode ( svmean + svse*1.96, v,  direction="backward", db="snowcrab" )
+      tsdata$lb[i] = bio.indicators::variable.recode ( svmean - svse*1.96, v,  direction="backward", db="snowcrab" )
     }
 
     save( tsdata, file=fn, compress=TRUE )
@@ -148,7 +148,7 @@ snowcrab.timeseries.db = function( DS="default", p=NULL, regions=c( "cfa4x", "cf
     datX = dat[, vn]
     for (v in vn) {
       if ( !is.numeric( datX[,v] ) ) next()
-      datX[,v] = variable.recode( datX[,v], v, direction="forward", db="snowcrab" ) # transform variables where necessary
+      datX[,v] = bio.indicators::variable.recode( datX[,v], v, direction="forward", db="snowcrab" ) # transform variables where necessary
     }
 
     for ( i in 1:nrow(tsdata) ) {
@@ -162,11 +162,11 @@ snowcrab.timeseries.db = function( DS="default", p=NULL, regions=c( "cfa4x", "cf
       svn = length(sv)
       svmean = mean (sv, trim=trim, na.rm=TRUE)
       svse = sd( sv, na.rm=T)/ sqrt( svn-1)
-      tsdata$mean[i] = variable.recode ( svmean, v,  direction="backward", db="snowcrab" )
+      tsdata$mean[i] = bio.indicators::variable.recode ( svmean, v,  direction="backward", db="snowcrab" )
       tsdata$n[i] = svn
       tsdata$se[i] = svse  # leave on transformed scale
-      tsdata$ub[i] = variable.recode ( svmean + svse*1.96, v,  direction="backward", db="snowcrab" )
-      tsdata$lb[i] = variable.recode ( svmean - svse*1.96, v,  direction="backward", db="snowcrab" )
+      tsdata$ub[i] = bio.indicators::variable.recode ( svmean + svse*1.96, v,  direction="backward", db="snowcrab" )
+      tsdata$lb[i] = bio.indicators::variable.recode ( svmean - svse*1.96, v,  direction="backward", db="snowcrab" )
     }
 
     save( tsdata, file=fn, compress=TRUE )
@@ -208,7 +208,7 @@ snowcrab.timeseries.db = function( DS="default", p=NULL, regions=c( "cfa4x", "cf
     datX = dat[, vn]
     for (v in vn) {
       if ( !is.numeric( datX[,v] ) ) next()
-      datX[,v] = variable.recode( datX[,v], v, direction="forward", db="snowcrab" ) # transform variables where necessary
+      datX[,v] = bio.indicators::variable.recode( datX[,v], v, direction="forward", db="snowcrab" ) # transform variables where necessary
     }
 
     for ( i in 1:nrow(tsdata) ) {
@@ -222,11 +222,11 @@ snowcrab.timeseries.db = function( DS="default", p=NULL, regions=c( "cfa4x", "cf
       svn = length(sv)
       svmean = mean (sv, trim=trim, na.rm=TRUE)
       svse = sd( sv, na.rm=T)/ sqrt( svn-1)
-      tsdata$mean[i] = variable.recode ( svmean, v,  direction="backward", db="snowcrab" )
+      tsdata$mean[i] = bio.indicators::variable.recode ( svmean, v,  direction="backward", db="snowcrab" )
       tsdata$n[i] = svn
       tsdata$se[i] = svse  # leave on transformed scale
-      tsdata$ub[i] = variable.recode ( svmean + svse*1.96, v,  direction="backward", db="snowcrab" )
-      tsdata$lb[i] = variable.recode ( svmean - svse*1.96, v,  direction="backward", db="snowcrab" )
+      tsdata$ub[i] = bio.indicators::variable.recode ( svmean + svse*1.96, v,  direction="backward", db="snowcrab" )
+      tsdata$lb[i] = bio.indicators::variable.recode ( svmean - svse*1.96, v,  direction="backward", db="snowcrab" )
     }
 
     save( tsdata, file=fn, compress=TRUE )
