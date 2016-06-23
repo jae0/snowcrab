@@ -103,7 +103,7 @@ if (obtain.database.snapshot) {
   # create simple timeseries
   snowcrab.timeseries.db( DS="observer.redo" )
   snowcrab.timeseries.db( DS="biologicals.redo" )
-  snowcrab.timeseries.db( DS="biologicals.2014.redo" )  # reduced subset that matches 2014 station ..
+  snowcrab.timeseries.db( DS="biologicals.2014.redo" )  # reduced subset that matches 2014 station id's ..
 
   # example: or to get a quick one for a few vars of interest, region of interest ... no saving to file
   snowcrab.timeseries.db( DS="biologicals.direct", regions='cfa4x', vn=c('R0.mass','t'), trim=0 )  # returns the data

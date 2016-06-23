@@ -27,9 +27,10 @@ snowcrab.timeseries.db = function( DS="default", p=NULL, regions=c( "cfa4x", "cf
     tsdata$ub = NA
     tsdata$lb = NA
 
-    for (v in vn) {
+    for (vi in 1:length(vn) ) {
+      v = vn[vi]
       if ( !is.numeric( dat[,v] ) ) next()
-      print(v)
+      print( paste( vi, v) )
       XX = bio.indicators::variable.recode( dat[,v], v, direction="forward", db="snowcrab" ) # transform variables where necessary
       for (r in regions) {
         ri = which( dat[,r] == r)
@@ -62,7 +63,6 @@ snowcrab.timeseries.db = function( DS="default", p=NULL, regions=c( "cfa4x", "cf
       if (file.exists( fn) ) load(fn)
       return(tsdata)
     }
-    print( "This will take a bit of time... make this parallel ..." )
 
     dat = snowcrab.db( DS ="set.biologicals", p=p )
     dat$year = as.character(dat$yr)
@@ -70,6 +70,9 @@ snowcrab.timeseries.db = function( DS="default", p=NULL, regions=c( "cfa4x", "cf
     vn = setdiff( colnames(dat), c("trip", "set", "set_type", "station", "lon1", "lat1", "towquality",
                                    "lon", "lat", "plon", "plat", "seabird_uid", "minilog_uid", "netmind_uid" ) )
     yrs = sort(unique(dat$yr))
+
+    print( "This will take a bit of time... " )
+    print( paste( "There are", length(vn), "variables" ) )
 
     #area designations
     for (a in regions) {
@@ -86,9 +89,10 @@ snowcrab.timeseries.db = function( DS="default", p=NULL, regions=c( "cfa4x", "cf
     tsdata$ub = NA
     tsdata$lb = NA
 
-    for (v in vn) {
+    for (vi in 1:length(vn) ) {
+      v = vn[vi]
       if ( !is.numeric( dat[,v] ) ) next()
-      print(v)
+      print( paste( vi, v) )
       XX = bio.indicators::variable.recode( dat[,v], v, direction="forward", db="snowcrab" ) # transform variables where necessary
       for (r in regions) {
         ri = which( dat[,r] == r)
@@ -124,7 +128,6 @@ snowcrab.timeseries.db = function( DS="default", p=NULL, regions=c( "cfa4x", "cf
       if (file.exists( fn) ) load(fn)
       return(tsdata)
     }
-    print( "This will take a bit of time... " )
 
     dat = snowcrab.db( DS ="set.biologicals", p=p )
     dat$year = as.character(dat$yr)
@@ -134,6 +137,9 @@ snowcrab.timeseries.db = function( DS="default", p=NULL, regions=c( "cfa4x", "cf
     vn = setdiff( colnames(dat), c("trip", "set", "set_type", "station", "lon1", "lat1", "towquality",
                                    "lon", "lat", "plon", "plat", "seabird_uid", "minilog_uid", "netmind_uid" ) )
     yrs = sort(unique(dat$yr))
+
+    print( "This will take a bit of time... " )
+    print( paste( "There are", length(vn), "variables" ) )
 
     #area designations
     for (a in regions) {
@@ -150,8 +156,10 @@ snowcrab.timeseries.db = function( DS="default", p=NULL, regions=c( "cfa4x", "cf
     tsdata$ub = NA
     tsdata$lb = NA
 
-    for (v in vn) {
+    for (vi in 1:length(vn) ) {
+      v = vn[vi]
       if ( !is.numeric( dat[,v] ) ) next()
+      print( paste( vi, v) )
       XX = bio.indicators::variable.recode( dat[,v], v, direction="forward", db="snowcrab" ) # transform variables where necessary
       for (r in regions) {
         ri = which( dat[,r] == r)
@@ -194,6 +202,9 @@ snowcrab.timeseries.db = function( DS="default", p=NULL, regions=c( "cfa4x", "cf
     vn = c( "cw", "totmass", "abdomen", "chela", "shell", "durometer",  "cpue.kg.trap", "mass", "mat" )
     yrs = sort(unique(dat$yr))
 
+    print( "This will take a bit of time... " )
+    print( paste( "There are", length(vn), "variables" ) )
+
     #area designations
     for (a in regions) {
       dat[,a] = NA
@@ -209,8 +220,10 @@ snowcrab.timeseries.db = function( DS="default", p=NULL, regions=c( "cfa4x", "cf
     tsdata$ub = NA
     tsdata$lb = NA
 
-    for (v in vn) {
+    for (vi in 1:length(vn) ) {
+      v = vn[vi]
       if ( !is.numeric( dat[,v] ) ) next()
+      print( paste( vi, v) )
       XX = bio.indicators::variable.recode( dat[,v], v, direction="forward", db="snowcrab" ) # transform variables where necessary
       for (r in regions) {
         ri = which( dat[,r] == r)
