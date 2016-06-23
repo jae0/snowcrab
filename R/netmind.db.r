@@ -196,7 +196,6 @@ netmind.db = function( DS, Y=NULL, plotdata=TRUE ) {
       fn = file.path( netmind.dir, paste( "netmind.stats", yr, "rdata", sep=".") )
       Stats = NULL
       basedata = netmind.db( DS="basedata", Y=yr )
-
       ii = which( set$yr==yr & !is.na(set$netmind_uid) )
       nii =  length( ii )
       if ( nii== 0 ) next()
@@ -204,7 +203,6 @@ netmind.db = function( DS, Y=NULL, plotdata=TRUE ) {
       Stats = NULL
       for ( i in 1:nii  ){
         print(i)
-        if ( rid$set_type[i] != 1) next()  # process only "good tows"
         id = rid$netmind_uid[i]
         print(rid[i,])
         bdi = which( basedata$netmind_uid==id )
@@ -215,8 +213,9 @@ netmind.db = function( DS, Y=NULL, plotdata=TRUE ) {
         # not really required but just in case missing values cause confusion with rbind
         Stats = rbind( Stats, l )
       }
-      Stats$t0 = as.POSIXct(Stats$t0,origin=lubridate::origin, tz="UTC" )
-      Stats$t1 = as.POSIXct(Stats$t1,origin=lubridate::origin, tz="UTC")
+      if (is.null(Stats)) next()
+      Stats$t0 = as.POSIXct(Stats$t0, origin=lubridate::origin, tz="UTC" )
+      Stats$t1 = as.POSIXct(Stats$t1, origin=lubridate::origin, tz="UTC")
       Stats$dt = difftime( Stats$t1, Stats$t0 )
       save( Stats, file=fn, compress=TRUE )
     }

@@ -60,7 +60,7 @@
       bcp = list(id=N$netmind_uid[1], nr=nrow(M), YR=yr, tdif.min=3, tdif.max=9, time.gate=time.gate,
                    depth.min=20, depth.range=c(-25,15), eps.depth=3,
                    smooth.windowsize=5, modal.windowsize=5,
-                   noisefilter.trim=0.025, noisefilter.target.r2=0.85, noisefilter.quants=c(0.025, 0.975) )
+                   noisefilter.trim=0.05, noisefilter.target.r2=0.8, noisefilter.quants=c(0.05, 0.95) )
 
       bcp = bottom.contact.parameters( bcp ) # add other default parameters
       bc = NULL
@@ -71,12 +71,13 @@
       }
       if ( is.null(bc) || (!is.null( bc$res) && ( ( !is.finite(bc$res$t0 ) || !is.finite(bc$res$t1 ) ) ) )) {
         # try once more with random settings
-        bcp$noisefilter.inla.h =  0.025
+        bcp$noisefilter.inla.h =  0.05
         bcp$noisefilter.target.r2= 0.75
         bc = bottom.contact( x=M, bcp=bcp )
       }
       if ( is.null(bc) || (!is.null( bc$res) && ( ( !is.finite(bc$res$t0 ) || !is.finite(bc$res$t1 ) ) ) )) {
-        # try once more with random settings
+        # try once more with more random settings .. noise is high in netminds data
+        bcp$eps.depth = 5
         M$depth = jitter( M$depth, amount = bcp$eps.depth/10 )
         bcp$noisefilter.inla.h =  0.1
         bc = bottom.contact( x=M, bcp=bcp )

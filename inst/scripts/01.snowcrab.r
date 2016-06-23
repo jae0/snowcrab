@@ -77,7 +77,6 @@ if (obtain.database.snapshot) {
 Error in as.environment(where) : invalid 'pos' argument
 
 
-
   # merge in netmind, minilog, seabird, esonar data and do some sanity checks
   snowcrab.db( DS="set.clean.redo", p=p )  # sanity checks
     problems = data.quality.check( type="minilog.mismatches", p=p )
@@ -109,7 +108,6 @@ Error in as.environment(where) : invalid 'pos' argument
   # create simple timeseries
   snowcrab.timeseries.db( DS="observer.redo" )
   snowcrab.timeseries.db( DS="biologicals.redo" )
-  snowcrab.timeseries.db( DS="biologicals" )
   snowcrab.timeseries.db( DS="biologicals.2014.redo" )  # reduced subset that matches 2014 station ..
 
   # example: or to get a quick one for a few vars of interest, region of interest ... no saving to file
