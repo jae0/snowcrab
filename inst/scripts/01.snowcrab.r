@@ -106,8 +106,12 @@ Error in as.environment(where) : invalid 'pos' argument
   # update a database of simple transformation ranges, etc.. for plotting range, etc.
   REPOS = bio.indicators::recode.variable.initiate.db ( db="snowcrab" )
 
+  # create simple timeseries
   snowcrab.timeseries.db( DS="observer.redo" )
   snowcrab.timeseries.db( DS="biologicals.redo" )
   snowcrab.timeseries.db( DS="biologicals" )
   snowcrab.timeseries.db( DS="biologicals.2014.redo" )  # reduced subset that matches 2014 station ..
+
+  # example: or to get a quick one for a few vars of interest, region of interest ... no saving to file
+  snowcrab.timeseries.db( DS="biologicals.direct", regions='cfa4x', vn=c('R0.mass','t'), trim=0 )  # returns the data
 

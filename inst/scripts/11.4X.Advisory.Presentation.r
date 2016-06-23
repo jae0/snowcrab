@@ -458,7 +458,9 @@ addPoints(s4,pch=16,col='red')
 savePlot(file.path(outdir,paste('survey.stations.2014','png',sep=".")),type='png')
 
 
-   td =  get.time.series ( from.file=T,reduced.stations=T )
+  td = snowcrab.timeseries.db( DS="biologicals" )
+  # td = snowcrab.timeseries.db( DS="biologicals.2014" )  # reduced subset due to incomplete survey in 2014
+
   td = td[which(td$region=='cfa4x'),]
 td = td[order(td$year),]
   plot(td$year,td$mean,type='b',col='red',xlab='Year',ylab='Geometric mean t / km^2',ylim=c(0,0.8),pch=16)

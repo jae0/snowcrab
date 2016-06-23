@@ -48,14 +48,6 @@
 
   # ---- TODO !!! must replace this with survey.db processing step
 
-# simple geometric means of raw data:  used by indicators ordination and some figures
-# takes many hours ... need to make parallel  TODO
-tsdata =  get.time.series ( x=snowcrab.db( DS="set.biologicals"),
-regions=p$regions, vars=variable.list.expand("all.data"), from.file=F, trim=0 )
-
-
-
-
 
 
   debug = F

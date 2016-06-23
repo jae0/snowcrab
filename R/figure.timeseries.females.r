@@ -1,8 +1,8 @@
 
   figure.timeseries.females = function( outdir, vars="totno.female",  all.areas=T ) {
- 
+
     set = snowcrab.db( DS="set.biologicals")
-  
+
     if (all.areas) {
       areas = c("cfa4x", "cfasouth", "cfanorth" )
       regions = c("4X", "S-ENS", "N-ENS")
@@ -13,13 +13,13 @@
 
     n.regions = length(regions)
     n.areas = length(areas)
-    
+
     varnames = names(set)
     vars = varnames[ grep ( vars, varnames) ]
 
     for (v in vars ) {
 
-      td =  get.time.series ( from.file=T )
+      td = snowcrab.timeseries.db( DS="biologicals" )
       ii =  which( td$variable == v)
       if (length(ii) < 5) next()
       td = td[ii ,]
@@ -31,8 +31,8 @@
       ylim=NULL
       ylim[2]=max(td$ub) *0.8
       ylim[1]=round(min(td$lb), 0) - (max(td$ub)*0.05)
-      
-      #xlabels = c(xlim[1]+1, xlim[1]+5, xlim[1]+9, xlim[1]+13, xlim[1]+17, xlim[1]+20) 
+
+      #xlabels = c(xlim[1]+1, xlim[1]+5, xlim[1]+9, xlim[1]+13, xlim[1]+17, xlim[1]+20)
       xlabels = seq(min(xlim), max(xlim), 2)
 
       ylabels = round(seq(0, round(ylim[2], -2), length.out=6),-1)
@@ -61,7 +61,7 @@
              #panel.abline(h=0.5, col="gray75", ...)
          }
       )
-    
+
     print(pl)
     dev.off()
    #cmd( "convert   -trim -quality 9  -geometry 200% -frame 2% -mattecolor white -antialias ", paste(fn, "pdf", sep="."),  paste(fn, "png", sep=".") )

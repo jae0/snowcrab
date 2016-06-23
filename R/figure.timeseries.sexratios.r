@@ -4,7 +4,7 @@
     set = snowcrab.db("set.biologicals")
     #set2015 = set[which(set$yr == 2015),]
     #print(head(set2015))
-  
+
     if (all.areas) {
       areas = c("cfa4x", "cfasouth", "cfanorth" )
       regions = c("4X", "S-ENS", "N-ENS")
@@ -24,7 +24,7 @@
       v = "sexratio.mat"
       outfile =  paste(v, ".pdf", sep="")
       figure.title = "Sex ratios -- mature"
-      td =  get.time.series ( from.file=T )
+      td = snowcrab.timeseries.db( DS="biologicals" )
       td = td[ which( td$variable == v) ,]
       # td = td[ - which(td$region=="cfa4x" ),]
       td = td[ order(td$region, td$year) , ]
@@ -45,7 +45,7 @@
       v = "sexratio.imm"
       outfile = paste (v, ".pdf", sep="")
       figure.title = "Sex ratios -- immature"
-      td =  get.time.series ( from.file=T )
+      td = snowcrab.timeseries.db( DS="biologicals" )
       td = td[ which( td$variable == v) ,]
       td = td[ order(td$region, td$year) , ]
       td$region = factor(td$region, levels=areas, labels =regions )
@@ -70,7 +70,7 @@
     #Cairo( file=fn, type="png", bg="white",  units="in", width=4, height=6, dpi=350)
     setup.lattice.options()
     pl = xyplot( mean~year|region, data=td, ub=td$ub, lb=td$lb,
-          layout=c(1,n.regions), 
+          layout=c(1,n.regions),
           par.strip.text = list(cex=1.0),
           par.settings=list(
             plot.symbol=list(col='black', fill='darkgrey', cex=0.75, pch=21),
@@ -88,7 +88,7 @@
                 #panel.abline(h=0.5, col="gray75", ...)
          }
       )
-    
+
     print(pl)
     dev.off()
    #cmd( "convert   -trim -quality 9  -geometry 200% -frame 2% -mattecolor white -antialias ", paste(fn, "pdf", sep="."),  paste(fn, "png", sep=".") )

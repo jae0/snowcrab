@@ -20,7 +20,7 @@
       set = snowcrab.db("set.biologicals")
       v = "cw.comm.mean"
       fn = file.path( outdir, paste( v, "combined.pdf", sep="." ) )
-      td =  get.time.series ( from.file=T )
+      td = snowcrab.timeseries.db( DS="biologicals" )
       td = td[ which( td$variable == v) ,]
       td$mean =  10^td$mean
       td$ub = 10^td$ub

@@ -1,8 +1,8 @@
 
   figure.timeseries.egg.production= function( outdir=file.path(project.datadirectory('bio.snowcrab'), "assessments","2013"), vars='fecundity', all.areas=T ) {
- 
+
      set = snowcrab.db( DS="set.biologicals")
-  
+
     if (all.areas) {
       areas = c("cfa4x", "cfasouth", "cfanorth" )
       regions = c("4X", "S-ENS", "N-ENS")
@@ -17,8 +17,7 @@
 #    vars = varnames[ grep ( vars, varnames) ]
 
     for (v in vars ) {
-
-      td =  get.time.series ( from.file=T )
+      td = snowcrab.timeseries.db( DS="biologicals" )
       ii =  which( td$variable == v)
       if (length(ii) < 5) next()
       td = td[ii ,]
@@ -33,12 +32,12 @@
       Cairo( file=fn, type="png", bg="white",  units="in", width=5, height=6, dpi=300)
       setup.lattice.options()
       pl = xyplot( mean~year|region, data=td, ub=td$ub, lb=td$lb,
-        layout=c(1,n.areas), 
+        layout=c(1,n.areas),
         par.strip.text = list(cex=3.0),
-        par.settings=list(  
-          axis.text=list(cex=2.5), 
+        par.settings=list(
+          axis.text=list(cex=2.5),
           par.main.text = list(cex=4),
-          layout.heights=list(strip=0.2, panel=1, main=0.5 ) 
+          layout.heights=list(strip=0.2, panel=1, main=0.5 )
         ),
         xlim=xlim, scales = list(y = "free"),
         main=v, xlab=list("Year", cex=3), ylab=list("Geometric mean '000 / km^2", cex=3),
@@ -48,11 +47,10 @@
           panel.abline(h=0, col="gray75", lwd=5, ...)
         }
       )
-       
+
       print(pl)
       dev.off()
       cmd( "convert -trim -frame 10x10 -mattecolor white ", fn, fn )
-    
     }
 
     return("Done")

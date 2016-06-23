@@ -1,8 +1,8 @@
 
   figure.timeseries.R2 = function( outdir, all.areas=T ) {
- 
+
     set = snowcrab.db( DS="set.biologicals")
-  
+
     if (all.areas) {
       areas = c("cfa4x", "cfasouth", "cfanorth" )
       regions = c("4X", "S-ENS", "N-ENS")
@@ -16,7 +16,7 @@
 
     v = "R2.no"
 
-    td =  get.time.series ( from.file=T )
+    td = snowcrab.timeseries.db( DS="biologicals" )
     td = td[ which( td$variable == v) ,]
     td = td[ order(td$region, td$year) , ]
     td$region = factor(td$region, levels=areas, labels =regions)
@@ -45,7 +45,7 @@
              panel.abline(h=0.5, col="gray75", ...)
          }
       )
-    
+
     print(pl)
     dev.off()
    cmd( "convert   -trim -quality 9  -geometry 200% -frame 2% -mattecolor white -antialias ", paste(fn, "pdf", sep="."),  paste(fn, "png", sep=".") )

@@ -1,8 +1,57 @@
-snowcrab.timeseries.db = function( DS="default", p=NULL, regions=c( "cfa4x", "cfanorth", "cfasouth", "cfaall" ), trim=0 ) {
+snowcrab.timeseries.db = function( DS="default", p=NULL, regions=c( "cfa4x", "cfanorth", "cfasouth", "cfaall" ), trim=0, vn=NULL ) {
 
   tsoutdir = project.datadirectory( "bio.snowcrab", "R" )
 
   if (DS == "default") return( snowcrab.timeseries.db( DS="biologicals") )
+
+  if (DS == "biologicals.direct" ) {
+    # \\ no saving .. just a direct one-off
+    dat = snowcrab.db( DS ="set.biologicals", p=p )
+    if (is.null(vn)) vn = c( "R0.mass", "t", "R1.mass" )
+    yrs = sort(unique(dat$yr))
+    #area designations
+    for (a in regions) {
+      dat[,a] = NA
+      ai = NULL
+      ai = filter.region.polygon(dat, a)
+      if (length(ai) > 0) dat[ai,a] = a
+    }
+    tsdata = expand.grid( region=regions, year=yrs, variable=vn, stringsAsFactors=FALSE, KEEP.OUT.ATTRS=FALSE )
+    tsdata$mean = NA
+    tsdata$se = NA
+    tsdata$n = NA
+    tsdata$ub = NA
+    tsdata$lb = NA
+
+    datX = dat[, vn]
+    for (v in vn) {
+      if ( !is.numeric( datX[,v] ) ) next()
+      datX[,v] = variable.recode( datX[,v], v, direction="forward", db="snowcrab" ) # transform variables where necessary
+    }
+
+    for ( i in 1:nrow(tsdata) ) {
+      v = tsdata$variable[i]
+      a = tsdata$region[i]
+      y = tsdata$year[i]
+      if ( !is.numeric( dat[,v] ) ) next()  # yes dat is correct
+      si = which( dat[,a] == a ) # test on original dat
+      if (length(si)==0) next()
+      sv = datX[si,v]   # only usage of datX
+      svn = length(sv)
+      svmean = mean (sv, trim=trim, na.rm=TRUE)
+      svse = sd( sv, na.rm=T)/ sqrt( svn-1)
+      tsdata$mean[i] = variable.recode ( svmean, v,  direction="backward", db="snowcrab" )
+      tsdata$n[i] = svn
+      tsdata$se[i] = svse  # leave on transformed scale
+      tsdata$ub[i] = variable.recode ( svmean + svse*1.96, v,  direction="backward", db="snowcrab" )
+      tsdata$lb[i] = variable.recode ( svmean - svse*1.96, v,  direction="backward", db="snowcrab" )
+    }
+    return(tsdata)
+  }
+
+
+  # -------------------
+
 
   if (DS %in% c( "biologicals", "biologicals.redo" ) ) {
     fn = file.path( tsoutdir, "snowcrab.timeseries.rdata" )

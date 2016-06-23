@@ -3,7 +3,7 @@
  #browser()
     outdir=file.path(p$annual.results, "timeseries", "survey")
     set = snowcrab.db( DS="set.biologicals")
-  
+
     if (all.areas) {
       areas = c("cfa4x", "cfasouth", "cfanorth" )
       regions = c("4X", "S-ENS", "N-ENS")
@@ -16,10 +16,10 @@
     n.areas = length(areas)
 
     v = "ms.mass.30"
-    #cod, halibut, thornyskate, wolfish, lessertoadcrab, jonahcrab, smoothskate, winterskate, northernshrimp, 
-    #species = c(10, 30, 201, 50, 2521, 2511, 202, 204, 2211) 
+    #cod, halibut, thornyskate, wolfish, lessertoadcrab, jonahcrab, smoothskate, winterskate, northernshrimp,
+    #species = c(10, 30, 201, 50, 2521, 2511, 202, 204, 2211)
 
-    td =  get.time.series ( from.file=T, outfile = file.path( project.datadirectory("bio.snowcrab"), "R", "tsbycatch.rdata" ) )
+    td = snowcrab.timeseries.db( DS="biologicals" )
     td = td[ which( td$variable == v) ,]
     td = td[ order(td$region, td$year) , ]
     td$region = factor(td$region, levels=areas, labels =regions)
@@ -50,12 +50,12 @@
             par.main.text=list(cex=1),
             layout.heights=list(strip=1, panel=1, main=0.5),
             strip.background=list(col='lightgrey')),
-            #xlim=xlim, 
+            #xlim=xlim,
             ylim=(c(as.numeric(ylim[1]), as.numeric(ylim[2]))),
             scales=list(y=list(at=ylabels, labels=ylabels, cex=0.65), x=list(at=xlabels, labels=xlabels, rot=50, cex=0.65)),
               main="Halibut Biomass", xlab=list("Year", cex=1), ylab=list("Geometric mean kg / km^2", cex=1),
-              #cex.lab=cex.lab, 
-              cex.axis=cex.axis, 
+              #cex.lab=cex.lab,
+              cex.axis=cex.axis,
               cex.main = cex.main,
               panel = function(x, y, subscripts, ub, lb, ...) {
              larrows(x, lb[subscripts], x, ub[subscripts], angle = 90, code = 3, length=0.05)
@@ -63,7 +63,7 @@
              panel.abline(h=median(y), col="gray", ...)
         }
       )
-    
+
     print(pl)
     dev.off()
    #cmd( "convert   -trim -quality 9  -geometry 200% -frame 2% -mattecolor white -antialias ", paste(fn, "pdf", sep="."),  paste(fn, "png", sep=".") )
