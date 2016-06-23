@@ -76,6 +76,8 @@ if (obtain.database.snapshot) {
 [1] "109 : minilog.S10112004.10.125.NA.NA.165"
 Error in as.environment(where) : invalid 'pos' argument
 
+[1] "92 : minilog.S10092004.5.333.NA.NA.59"
+
 
   # merge in netmind, minilog, seabird, esonar data and do some sanity checks
   snowcrab.db( DS="set.clean.redo", p=p )  # sanity checks
