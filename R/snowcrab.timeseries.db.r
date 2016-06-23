@@ -8,8 +8,11 @@ snowcrab.timeseries.db = function( DS="default", p=NULL, regions=c( "cfa4x", "cf
   if (DS == "biologicals.direct" ) {
     # \\ no saving .. just a direct one-off
     dat = snowcrab.db( DS ="set.biologicals", p=p )
+    dat$year = as.character(dat$yr)
+
     if (is.null(vn)) vn = c( "R0.mass", "t", "R1.mass" )
     yrs = sort(unique(dat$yr))
+
     #area designations
     for (a in regions) {
       dat[,a] = NA
@@ -26,6 +29,7 @@ snowcrab.timeseries.db = function( DS="default", p=NULL, regions=c( "cfa4x", "cf
 
     for (v in vn) {
       if ( !is.numeric( dat[,v] ) ) next()
+      print(v)
       XX = bio.indicators::variable.recode( dat[,v], v, direction="forward", db="snowcrab" ) # transform variables where necessary
       for (r in regions) {
         ri = which( dat[,r] == r)
@@ -61,11 +65,11 @@ snowcrab.timeseries.db = function( DS="default", p=NULL, regions=c( "cfa4x", "cf
     print( "This will take a bit of time... make this parallel ..." )
 
     dat = snowcrab.db( DS ="set.biologicals", p=p )
+    dat$year = as.character(dat$yr)
+
     vn = setdiff( colnames(dat), c("trip", "set", "set_type", "station", "lon1", "lat1", "towquality",
                                    "lon", "lat", "plon", "plat", "seabird_uid", "minilog_uid", "netmind_uid" ) )
     yrs = sort(unique(dat$yr))
-
-    dat$year = as.character(dat$yr)
 
     #area designations
     for (a in regions) {
@@ -84,6 +88,7 @@ snowcrab.timeseries.db = function( DS="default", p=NULL, regions=c( "cfa4x", "cf
 
     for (v in vn) {
       if ( !is.numeric( dat[,v] ) ) next()
+      print(v)
       XX = bio.indicators::variable.recode( dat[,v], v, direction="forward", db="snowcrab" ) # transform variables where necessary
       for (r in regions) {
         ri = which( dat[,r] == r)
@@ -122,6 +127,7 @@ snowcrab.timeseries.db = function( DS="default", p=NULL, regions=c( "cfa4x", "cf
     print( "This will take a bit of time... " )
 
     dat = snowcrab.db( DS ="set.biologicals", p=p )
+    dat$year = as.character(dat$yr)
     stations.in.2014 = unique( dat$station[ which(dat$yr==2014) ] )
     dat = dat[ which(dat$station %in% stations.in.2014 ),]
 
@@ -183,6 +189,7 @@ snowcrab.timeseries.db = function( DS="default", p=NULL, regions=c( "cfa4x", "cf
     }
 
     dat = observer.db( DS="odb" )
+    dat$year = as.character(dat$yr)
     dat = dat[ which( dat$cw >= 95),]
     vn = c( "cw", "totmass", "abdomen", "chela", "shell", "durometer",  "cpue.kg.trap", "mass", "mat" )
     yrs = sort(unique(dat$yr))
@@ -201,7 +208,6 @@ snowcrab.timeseries.db = function( DS="default", p=NULL, regions=c( "cfa4x", "cf
     tsdata$n = NA
     tsdata$ub = NA
     tsdata$lb = NA
-
 
     for (v in vn) {
       if ( !is.numeric( dat[,v] ) ) next()
@@ -223,7 +229,6 @@ snowcrab.timeseries.db = function( DS="default", p=NULL, regions=c( "cfa4x", "cf
         tsdata[ tsi,"ub"] = bio.indicators::variable.recode (XXub[ tsdata[ tsi, "year"] ], v, direction="backward", db="snowcrab" )
       }
     }
-
 
     save( tsdata, file=fn, compress=TRUE )
     return( fn)
