@@ -1,3 +1,4 @@
+
 snowcrab.timeseries.db = function( DS="default", p=NULL, regions=c( "cfa4x", "cfanorth", "cfasouth", "cfaall" ), trim=0, vn=NULL ) {
 
   tsoutdir = project.datadirectory( "bio.snowcrab", "R" )
@@ -60,6 +61,7 @@ snowcrab.timeseries.db = function( DS="default", p=NULL, regions=c( "cfa4x", "cf
       if (file.exists( fn) ) load(fn)
       return(tsdata)
     }
+    print( "This will take a bit of time... make this parallel ..." )
 
     dat = snowcrab.db( DS ="set.biologicals", p=p )
     vn = setdiff( colnames(dat), c("trip", "set", "set_type", "station", "lon1", "lat1", "towquality",
@@ -121,6 +123,7 @@ snowcrab.timeseries.db = function( DS="default", p=NULL, regions=c( "cfa4x", "cf
       if (file.exists( fn) ) load(fn)
       return(tsdata)
     }
+    print( "This will take a bit of time... " )
 
     dat = snowcrab.db( DS ="set.biologicals", p=p )
     stations.in.2014 = unique( dat$station[ which(dat$yr==2014) ] )
@@ -172,6 +175,7 @@ snowcrab.timeseries.db = function( DS="default", p=NULL, regions=c( "cfa4x", "cf
     save( tsdata, file=fn, compress=TRUE )
     return( fn)
   }
+
 
   # -------------------
 
@@ -232,8 +236,6 @@ snowcrab.timeseries.db = function( DS="default", p=NULL, regions=c( "cfa4x", "cf
     save( tsdata, file=fn, compress=TRUE )
     return( fn)
   }
-
-
 
 }
 
