@@ -21,6 +21,7 @@ snowcrab.timeseries.db = function( DS="default", p=NULL, regions=c( "cfa4x", "cf
       if (length(ai) > 0) dat[ai,a] = a
     }
     tsdata = expand.grid( region=regions, year=yrs, variable=vn, stringsAsFactors=FALSE, KEEP.OUT.ATTRS=FALSE )
+    tsdata$year = as.character( tsdata$year)
     tsdata$mean = NA
     tsdata$se = NA
     tsdata$n = NA
@@ -49,6 +50,7 @@ snowcrab.timeseries.db = function( DS="default", p=NULL, regions=c( "cfa4x", "cf
         tsdata[ tsi,"ub"] = bio.indicators::variable.recode (XXub[ tsdata[ tsi, "year"] ], v, direction="backward", db="snowcrab" )
       }
     }
+    tsdata$year = as.numeric( tsdata$year)
     return(tsdata)
   }
 
@@ -82,7 +84,8 @@ snowcrab.timeseries.db = function( DS="default", p=NULL, regions=c( "cfa4x", "cf
       if (length(ai) > 0) dat[ai,a] = a
     }
 
-    tsdata = expand.grid( region=regions, year=as.character(yrs), variable=vn, stringsAsFactors=FALSE, KEEP.OUT.ATTRS=FALSE )
+    tsdata = expand.grid( region=regions, year=yrs, variable=vn, stringsAsFactors=FALSE, KEEP.OUT.ATTRS=FALSE )
+    tsdata$year = as.character( tsdata$year)
     tsdata$mean = NA
     tsdata$se = NA
     tsdata$n = NA
@@ -111,7 +114,7 @@ snowcrab.timeseries.db = function( DS="default", p=NULL, regions=c( "cfa4x", "cf
         tsdata[ tsi,"ub"] = bio.indicators::variable.recode (XXub[ tsdata[ tsi, "year"] ], v, direction="backward", db="snowcrab" )
       }
     }
-
+    tsdata$year = as.numeric( tsdata$year)
     save( tsdata, file=fn, compress=TRUE )
     return( fn)
   }
@@ -150,6 +153,7 @@ snowcrab.timeseries.db = function( DS="default", p=NULL, regions=c( "cfa4x", "cf
     }
 
     tsdata = expand.grid( region=regions, year=yrs, variable=vn, stringsAsFactors=FALSE, KEEP.OUT.ATTRS=FALSE )
+    tsdata$year = as.character( tsdata$year)
     tsdata$mean = NA
     tsdata$se = NA
     tsdata$n = NA
@@ -178,7 +182,7 @@ snowcrab.timeseries.db = function( DS="default", p=NULL, regions=c( "cfa4x", "cf
         tsdata[ tsi,"ub"] = bio.indicators::variable.recode (XXub[ tsdata[ tsi, "year"] ], v, direction="backward", db="snowcrab" )
       }
     }
-
+    tsdata$year = as.numeric( tsdata$year)
     save( tsdata, file=fn, compress=TRUE )
     return( fn)
   }
@@ -190,7 +194,7 @@ snowcrab.timeseries.db = function( DS="default", p=NULL, regions=c( "cfa4x", "cf
   if (DS %in% c( "observer", "observer.redo" ) ) {
     #\\ "reduced" subset of stations found in 2014 ... to be comparable with smaller survey
     fn = file.path( tsoutdir, "snowcrab.observer.timeseries.rdata" )
-    if (DS=="odb") {
+    if (DS=="observer") {
       tsdata = NULL
       if (file.exists( fn) ) load(fn)
       return(tsdata)
@@ -219,6 +223,7 @@ snowcrab.timeseries.db = function( DS="default", p=NULL, regions=c( "cfa4x", "cf
     tsdata$n = NA
     tsdata$ub = NA
     tsdata$lb = NA
+    tsdata$year = as.character( tsdata$year)
 
     for (vi in 1:length(vn) ) {
       v = vn[vi]
@@ -242,7 +247,7 @@ snowcrab.timeseries.db = function( DS="default", p=NULL, regions=c( "cfa4x", "cf
         tsdata[ tsi,"ub"] = bio.indicators::variable.recode (XXub[ tsdata[ tsi, "year"] ], v, direction="backward", db="snowcrab" )
       }
     }
-
+    tsdata$year = as.numeric( tsdata$year)
     save( tsdata, file=fn, compress=TRUE )
     return( fn)
   }
