@@ -21,7 +21,7 @@
         sset$totno = log10( sset$totno )  ###### ---------------------- log transform done here as "totno" is not part of the snowcrab recoed db
         # must  sum the catches or numbers by set/trip (across species) before plotting
         # incase multiple species are selected
-        gmt.map.variables( sset, params=p, variables=variables, plottimes=p$plottimes, basedir=basedir, conversions=p$conversions, libs=p$libs )
+        gmt.map.variables( sset, params=p, variables=variables, plottimes=p$plottimes, basedir=basedir, conversions=p$conversions )
        }
     }
     return( "Done" )

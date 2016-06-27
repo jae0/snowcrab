@@ -15,7 +15,7 @@
       x = x[ is.finite(rowSums(x[, c("yr", "lon", "lat")])), ]
       basedir = "maturity"
       outdir = file.path( basedir, paste("sex",sex,sep=""), p$spatial.domain )
-      gmt.map.variables( x, p, variables, plottimes=p$plottimes, outdir, p$conversions, libs=p$libs )
+      gmt.map.variables( x, p, variables, plottimes=p$plottimes, outdir, p$conversions )
     }
   }
 

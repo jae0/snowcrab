@@ -14,7 +14,7 @@
       p$interpres = "-nb"
       outdir = file.path( outdir, p$spatial.domain )
       gmt.map.variables( set, p=p, variables=variables, plottimes=p$plottimes,
-        basedir=outdir, conversions=p$conversions, libs=p$libs )
+        basedir=outdir, conversions=p$conversions )
     }
 
     if (method=="levelplot") {

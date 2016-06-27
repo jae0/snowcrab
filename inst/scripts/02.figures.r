@@ -191,6 +191,6 @@
 
   # ------------------------------------------
   # Map: Larval distributions from the Scotian Shelf Ichtyoplankton Program data
-    map.larvae( p, outdir=file.path(project.datadirectory("bio.snowcrab"), "R", "maps", "larvae"), conversions=conversions, libs=p$libs )
+    map.larvae( p, outdir=file.path(project.datadirectory("bio.snowcrab"), "R", "maps", "larvae"), conversions=conversions )
 
 
