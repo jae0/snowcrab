@@ -203,16 +203,16 @@
 
     }
 
-    outdir = file.path( project.datadirectory("snowcrab"), "R", "kriging" )
+    outdir = file.path( project.datadirectory("bio.snowcrab"), "R", "kriging" )
     dir.create(path=outdir, recursive=T, showWarnings=F)
 
 
     if ( DS %in% c( "UK.redo", "UK.point.PS", "UK.conditional.simulation.PS", "UK.conditional.simulation.K", "UK.conditional.simulation.K.complete" ) ) {
 
 
-      loc.Pnt = file.path( project.datadirectory("snowcrab"), "R", "kriging", "point" )
-      loc.sol = file.path( project.datadirectory("snowcrab"), "R", "kriging", "predictions" )
-      loc.res = file.path( project.datadirectory("snowcrab"), "R", "kriging", "results" )
+      loc.Pnt = file.path( project.datadirectory("bio.snowcrab"), "R", "kriging", "point" )
+      loc.sol = file.path( project.datadirectory("bio.snowcrab"), "R", "kriging", "predictions" )
+      loc.res = file.path( project.datadirectory("bio.snowcrab"), "R", "kriging", "results" )
 
       if (p$transgaussian.kriging) {
         loc.Pnt = file.path( loc.Pnt, "trans.gaussian" )

@@ -39,7 +39,7 @@
       ylab = list( paste("Geometric mean", v) , cex=cex)
       xlab = list("Year", cex=cex)
 
-      fn = file.path( project.datadirectory("snowcrab"), "R", "timeseries", "survey", paste( v, "png", sep="." ) )
+      fn = file.path( project.datadirectory("bio.snowcrab"), "R", "timeseries", "survey", paste( v, "png", sep="." ) )
       dir.create( dirname(fn), recursive=T, showWarnings=F )
       ftype="png"
       if (grepl( "png$", fn)) ftype="png"
