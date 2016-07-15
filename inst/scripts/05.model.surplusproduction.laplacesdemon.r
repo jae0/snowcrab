@@ -7,6 +7,73 @@ p = bio.snowcrab::load.environment( year.assessment=2016)
 res = biomass.summary.survey.nosa.db(p=p)
 
 
+# install_github("lazycrazyowl/LaplacesDemon")
+# install_github("lazycrazyowl/LaplacesDemonCpp")
+require(LaplacesDemon)
+require(LaplacesDemonCpp)
+
+# data object
+region = "cfanorth"
+biomassindex = res$B[[region]]
+catch = res$L[[region]]
+yrs = as.numeric(rownames( res$B))
+sb = list(
+  O = biomassindex, # observed index of abundance
+  removals = catch , # removalsches  , assume 20% handling mortality and illegal landings
+  er = 0.2,  # target exploitation rate
+  N = length( biomassindex ) , # no years with data
+  M = 5, # no years for projections
+  MN = length( biomassindex ) + 5,
+  ty = which(yrs==2004) ,  # index of the transition year (2004) between spring and fall surveys
+  r0= log(1),
+  K0= log(max(biomassindex, na.rm=TRUE)*1.25),
+  q0= log(1),
+  S0= log(0.6), # normalised
+  cv = 0.5,
+  smax =1.25,
+  ii = 2:length(biomassindex),
+  jj = 1:(length(biomassindex)-1),
+  eps = 1e-6
+)
+
+# set up the model
+sb = bio.snowcrab::surplus.production.laplacesdemon( sb )  
+
+
+Fit = LaplaceApproximation(sb$Model, Data=sb, parm=sb$PGF(sb), Iterations=1000)
+#Fit = LaplaceApproximation(sb$Model, Data=sb, parm=sb$PGF(sb), Iterations=5000, Method="TR" )
+#Fit = LaplaceApproximation(sb$Model, Data=sb, parm=sb$PGF(sb), Iterations=5000, Method="SPG" )
+#Fit = LaplaceApproximation(sb$Model, Data=sb, parm=sb$PGF(sb), Iterations=5000, Method="LBFGS", Stop.Tolerance=1.0E-6, Interval=1.0E-6 )
+
+Initial.Values <- as.initial.values(Fit)
+
+# check ACF
+Fit = LaplacesDemon(sb$Model, Data=sb, Initial.Values=Initial.Values, Covar=Fit$Covar, Iterations=1000, Status=100, Thinning=1 )
+Consort(Fit)
+plot(Fit, Data=sb)
+Initial.Values <- as.initial.values(Fit)
+# run with correct thinning, etc
+Fit = LaplacesDemon(sb$Model, Data=sb, Initial.Values=Initial.Values, Covar=Fit$Covar, Iterations=10000, Status=1000, Thinning=100)
+Fit = LaplacesDemon(sb$Model, Data=sb, Initial.Values=Initial.Values, Covar=Fit$Covar, Iterations=30000, Status=1000, Thinning=35, Algorithm="AMWG", Specs=list(B=NULL, n=1000, Periodicity=35 ) )
+Fit <- LaplacesDemon(sb$Model, Data=sb, Initial.Values,
+     Covar=Fit$Covar, Iterations=10000, Status=1000, Thinning=105,
+     Algorithm="AFSS", Specs=list(A=Inf, B=NULL, m=100,
+     n=0, w=1))
+
+r         0.85643415  0.3167142 0.010648512 857.0000  0.3798297  0.80862527   1.6165487
+K        90.79691849 30.1522004 1.061363364 857.0000 48.9131560 84.93342563 163.1208426
+q         0.87225691
+
+# alternate methods
+
+Fit = VariationalBayes(sb$Model, Data=sb, parm=Initial.Values, Iterations=1000,  Samples=1000, CPUs=5 )
+
+Fit = IterativeQuadrature(sb$Model, Data=sb, parm=Initial.Values, Iterations=100, Algorithm="AGH",
+ Specs=list(N=5, Nmax=7, Packages=NULL, Dyn.libs=NULL) )
+
+
+
+
 # construct data structured for LaplacesDemon:
   sb = list(
     b.min = 0.001, # scaled to 1 but allow overshooting
@@ -78,6 +145,7 @@ res = biomass.summary.survey.nosa.db(p=p)
   sb$IRECcv[ cfa.nodata , sb$cfa4x ] = mean( sb$IRECcv[,sb$cfa4x] ,na.rm=T )
 
   sb$IREC = log( sb$IREC )
+
 
 
 
