@@ -5,7 +5,7 @@ p = bio.snowcrab::load.environment( year.assessment=2016)
   rjags::load.module("dic")
   rjags::load.module("glm")
 
-	bioLibrary( "bayesian")
+	bioLibrary( "bio.models")
 
   ###  all data follow this sequence: c("cfanorth", "cfasouth", "cfa4x")
   redo.data=F

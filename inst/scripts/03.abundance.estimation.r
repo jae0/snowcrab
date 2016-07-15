@@ -238,6 +238,14 @@ if (debug) {
 
 
 
+  # update data summaries of the above results
+    biomass.summary.db("complete.redo", p=p) #Uses the model results to create a habitat area expanded survey index
+    biomass.summary.survey.db("complete.redo", p=p)#Uses average surface area from the past 5 years if a habitat area expanded surface area is not possible
+
+
+
+
+
   ---
 
 

@@ -2,25 +2,12 @@
 p = bio.snowcrab::load.environment( year.assessment=2016)
 
 
-  require(rjags)
-  rjags::load.module("dic")
-  rjags::load.module("glm")
+# choose data
+# res =  biomass.summary.survey.db(p=p)
+res = biomass.summary.survey.nosa.db(p=p)
 
 
-  bioLibrary( "bio.models" )
-
-  ###  all data follow this sequence: c("cfanorth", "cfasouth", "cfa4x")
-
-  # curve( dnorm(x, mean=1, sd=1*0.5), from=0.1, to=4  )
-  # curve( dlnorm(x, meanlog=log(1), sdlog=1),  from=0.1, to=100  )
-  # curve( dbeta(x, 10, 10),  from=0.01, to=1  )
-  # curve( dgamma(x, shape=0.001, rate=0.001),  from=0.01, to=2  )
-
-  # res =  biomass.summary.survey.db(p=p)
-    res = biomass.summary.survey.nosa.db(p=p)
-
-  #load(file.path(project.datadirectory('bio.snowcrab'),"R","assessmentmodeldata2014.Rdata"))
-
+# construct data structured for LaplacesDemon:
   sb = list(
     b.min = 0.001, # scaled to 1 but allow overshooting
     b.max = 1.1, # scaled to 1 but allow overshooting
