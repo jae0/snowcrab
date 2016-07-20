@@ -13,21 +13,25 @@ require(LaplacesDemon)
 require(LaplacesDemonCpp)
 
 # data object
-region = "cfanorth"
+region = "cfasouth"
 biomassindex = res$B[[region]]
 catch = res$L[[region]]
 yrs = as.numeric(rownames( res$B))
+
+
 sb = list(
   O = biomassindex, # observed index of abundance
+  Omissing0 = mean(biomassindex, na.rm=TRUE ),
   removals = catch , # removalsches  , assume 20% handling mortality and illegal landings
+  removalsmissing0 = mean(catch, na.rm=TRUE ),
   er = 0.2,  # target exploitation rate
   N = length( biomassindex ) , # no years with data
   M = 5, # no years for projections
   MN = length( biomassindex ) + 5,
   ty = which(yrs==2004) ,  # index of the transition year (2004) between spring and fall surveys
   r0= log(1),
-  K0= log(max(biomassindex, na.rm=TRUE)*1.25),
-  q0= log(1),
+  K0= log(100*1.25),
+  q0= log(mean(biomassindex, na.rm=TRUE)/100 ),
   S0= log(0.6), # normalised
   cv = 0.5,
   smax =1.25,
@@ -36,39 +40,62 @@ sb = list(
   eps = 1e-6
 )
 
+loadfunctions( "bio.snowcrab", "R", "surplus.production.lapacesdemon.setup.r" )
+
+
 # set up the model
-sb = bio.snowcrab::surplus.production.laplacesdemon( sb )  
+sb = surplus.production.simple.laplacesdemon.setup( sb )  
 
 
-Fit = LaplaceApproximation(sb$Model, Data=sb, parm=sb$PGF(sb), Iterations=1000)
-#Fit = LaplaceApproximation(sb$Model, Data=sb, parm=sb$PGF(sb), Iterations=5000, Method="TR" )
-#Fit = LaplaceApproximation(sb$Model, Data=sb, parm=sb$PGF(sb), Iterations=5000, Method="SPG" )
-#Fit = LaplaceApproximation(sb$Model, Data=sb, parm=sb$PGF(sb), Iterations=5000, Method="LBFGS", Stop.Tolerance=1.0E-6, Interval=1.0E-6 )
+n.iter = 500 
 
-Initial.Values <- as.initial.values(Fit)
+tol = 1.0E-8
+# algorithms = c( "TR", "LM", "CG", "NR", "NM", "SPG", "LBFGS", "BFGS", "PSO", "SR1", "HAR", "DFP", "BHHH", "HJ", "Rprop" ) # available
+# NOTES: NM is slow
+# algorithms = c( "CG", "NM", "SPG", "LBFGS", "BFGS", "PSO", "SR1", "HAR", "DFP", "Rprop" ) # reliably working
+algorithms = c( "CG", "LBFGS", "BFGS", "PSO", "SR1", "HAR", "DFP", "Rprop" ) # reliably working
 
-# check ACF
-Fit = LaplacesDemon(sb$Model, Data=sb, Initial.Values=Initial.Values, Covar=Fit$Covar, Iterations=1000, Status=100, Thinning=1 )
-Consort(Fit)
-plot(Fit, Data=sb)
-Initial.Values <- as.initial.values(Fit)
-# run with correct thinning, etc
-Fit = LaplacesDemon(sb$Model, Data=sb, Initial.Values=Initial.Values, Covar=Fit$Covar, Iterations=10000, Status=1000, Thinning=100)
-Fit = LaplacesDemon(sb$Model, Data=sb, Initial.Values=Initial.Values, Covar=Fit$Covar, Iterations=30000, Status=1000, Thinning=35, Algorithm="AMWG", Specs=list(B=NULL, n=1000, Periodicity=35 ) )
-Fit <- LaplacesDemon(sb$Model, Data=sb, Initial.Values,
-     Covar=Fit$Covar, Iterations=10000, Status=1000, Thinning=105,
-     Algorithm="AFSS", Specs=list(A=Inf, B=NULL, m=100,
-     n=0, w=1))
+f = LaplaceApproximation(sb$Model, Data=sb, parm=sb$PGF(sb) ) # fast spin up of paramters
+for (a in algorithms) {
+  print(a)
+  ft = try( LaplaceApproximation(sb$Model, Data=sb, parm=as.initial.values(f), Method=a, Stop.Tolerance=tol, Iterations=n.iter, Covar=f$Covar ) )
+  if (! class(ft) %in% "try-error" ) if (ft$Converged) if( ft$LP.Final > f$LP.Final )  {
+    f = ft
+    f$Method = a 
+  }
+}
 
-r         0.85643415  0.3167142 0.010648512 857.0000  0.3798297  0.80862527   1.6165487
-K        90.79691849 30.1522004 1.061363364 857.0000 48.9131560 84.93342563 163.1208426
-q         0.87225691
+plot(f, Data=sb)
 
-# alternate methods
+# MCMC ... look at ACF
+f = LaplacesDemon(sb$Model, Data=sb, Initial.Values=as.initial.values(f), Covar=f$Covar, 
+  Iterations=1000, Status=100, Thinning=1, Algorithm="CHARM" )
+Consort(f)
+plot(f, Data=sb)
 
-Fit = VariationalBayes(sb$Model, Data=sb, parm=Initial.Values, Iterations=1000,  Samples=1000, CPUs=5 )
+# MCMC: run with appropriate thinning and other options:
+f = LaplacesDemon(sb$Model, Data=sb, as.initial.values(f),
+  Covar=NULL, Iterations=100000, Status=1000, Thinning=1000, Algorithm="CHARM", Specs=NULL)
 
-Fit = IterativeQuadrature(sb$Model, Data=sb, parm=Initial.Values, Iterations=100, Algorithm="AGH",
+f = LaplacesDemon(sb$Model, Data=sb, as.initial.values(f),
+  Covar=f$Covar , Iterations=50000, Status=10204, Thinning=1000, Algorithm="CHARM", Specs=list(alpha.star=0.44))
+
+
+f = LaplacesDemon(sb$Model, Data=sb, 
+  Initial.Values=as.initial.values(f), Covar=f$Covar, 
+  Iterations=10000, Status=1000, Thinning=100)
+
+f = LaplacesDemon(sb$Model, Data=sb, 
+  Initial.Values=as.initial.values(f), Covar=f$Covar, 
+  Iterations=30000, Status=1000, Thinning=35, Algorithm="AMWG", Specs=list(B=NULL, n=1000, Periodicity=35 ) )
+
+f <- LaplacesDemon(sb$Model, Data=sb,
+  Initial.Values=as.initial.values(f), Covar=f$Covar, 
+  Iterations=10000, Status=1000, Thinning=105, Algorithm="AFSS", Specs=list(A=Inf, B=NULL, m=100, n=0, w=1))
+
+f = VariationalBayes(sb$Model, Data=sb,  parm=as.initial.values(f), Iterations=100,  Samples=10, CPUs=5 )
+
+f = IterativeQuadrature(sb$Model, Data=sb, parm=as.initial.values(f), Iterations=100, Algorithm="AGH",
  Specs=list(N=5, Nmax=7, Packages=NULL, Dyn.libs=NULL) )
 
 
