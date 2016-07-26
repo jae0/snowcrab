@@ -1,8 +1,6 @@
 
   # surplus production analysis -- comparison of methods
 
-setwd("/tmp")
-
 # base data
 res = bio.snowcrab::biomass.summary.db()
 yrs = as.numeric( rownames( res$B) )
@@ -20,11 +18,11 @@ R = res$L[, which(colnames(res$L)=="cfanorth")]  # removals/loss
 
 # install_github("lazycrazyowl/LaplacesDemon")
 # install_github("lazycrazyowl/LaplacesDemonCpp")
-require(LaplacesDemon)
+# require(LaplacesDemon)
 require(LaplacesDemonCpp)
 
 # data object
-Data = list(
+LD = list(
   O = O, # observed index of abundance
   removals = R , # removalsches  , assume 20% handling mortality and illegal landings
   er = 0.2,  # target exploitation rate
@@ -32,10 +30,10 @@ Data = list(
   M = 5, # no years for projections
   MN = length( O ) + 5,
   ty = which(yrs==2004) ,  # index of the transition year (2004) between spring and fall surveys
-  r0= log(1),
-  K0= log(max(O, na.rm=TRUE)*1.25),
-  q0= log(1),
-  S0= log(0.6), # normalised
+  r0= 1,
+  K0= 5,
+  q0= 1,
+  S0= 0.6, # normalised
   cv = 0.5,
   smax =1.25,
   ii = 2:length(O),
@@ -43,105 +41,107 @@ Data = list(
   eps = 1e-6
 )
 
-
-Data$PGF = function(Data) {
+LD$PGF = function(LD) {
   # parameter generating function
-  r=rnorm(1, Data$r0, sd=Data$cv )
-  K=rnorm(1, Data$K0, sd=Data$cv ) # log scale
-  q=rnorm(1, Data$q0, sd=Data$cv )
-  S_sd=runif( Data$N )
-  O_sd=runif( Data$N )
-  S=rnorm( Data$N, Data$S0, sd=Data$cv )
-  S0=rnorm(1, Data$S0, sd=Data$cv )
-  return( c(r, K, q, S_sd, O_sd, S, S0) )
+  r = rnorm(1, LD$r0, sd=LD$cv )
+  K = rlnorm(1, log(LD$K0), sd=LD$cv ) # log scale
+  q = rnorm(1, LD$q0, sd=LD$cv )
+  q_sd = rhalfcauchy(1, LD$q0 )  
+  r_sd = rhalfcauchy(1, LD$r0 ) 
+  K_sd = rhalfcauchy(1, LD$K0/5 ) 
+  S_sd = rhalfcauchy(1, LD$cv)
+  O_sd = rhalfcauchy(1, LD$cv)
+  S = rlnorm( LD$N, log(LD$S0), sd=LD$cv )
+  S0 = rnorm(1, LD$S0, sd=LD$cv )
+  return( c(r, K, q, q_sd, r_sd, K_sd, S_sd, O_sd, S, S0) )
 }
 
-
 # paramater names and initial values
-Data$parm.names = as.parm.names( list(
-  r = Data$r0,
-  K = Data$K0,
-  q = Data$q0,
-  S_sd = rep( Data$cv, Data$N),
-  O_sd = rep( Data$cv, Data$N),
-  S = rep( Data$S0, Data$N),
-  S0 = Data$S0
+LD$parm.names = as.parm.names( list(
+  r = LD$r0,
+  K = LD$K0,
+  q = LD$q0,
+  q_sd = LD$cv*LD$q0,
+  r_sd = LD$cv*LD$r0,
+  K_sd = LD$cv*LD$K0,
+  S_sd = LD$cv,
+  O_sd = LD$cv,
+  S = rep( LD$S0, LD$N ),
+  S0 = LD$S0
 ))
 
-
-
 # index position of paramaters
-Data$pos = list(
-  r=grep("\\<r\\>", Data$parm.names),
-  K=grep("\\<K\\>", Data$parm.names),
-  q=grep("\\<q\\>", Data$parm.names),
-  S_sd=grep("\\<S_sd\\>", Data$parm.names),
-  O_sd=grep("\\<O_sd\\>", Data$parm.names),
-  S=grep("\\<S\\>", Data$parm.names),
-  S0=grep("\\<S0\\>", Data$parm.names)
+LD$i = list(
+  r=grep("\\<r\\>", LD$parm.names),
+  K=grep("\\<K\\>", LD$parm.names),
+  q=grep("\\<q\\>", LD$parm.names),
+  r_sd=grep("\\<r_sd\\>", LD$parm.names),
+  K_sd=grep("\\<K_sd\\>", LD$parm.names),
+  q_sd=grep("\\<q_sd\\>", LD$parm.names),
+  S_sd=grep("\\<S_sd\\>", LD$parm.names),
+  O_sd=grep("\\<O_sd\\>", LD$parm.names),
+  S=grep("\\<S\\>", LD$parm.names),
+  S0=grep("\\<S0\\>", LD$parm.names)
 )
 
+LD$mon.names = c("LP", "r", "K", "q" )
+# LD$mon.names = c("LP", "r", "K", "q", paste0("AR",1:(LD$N-1) ) )
+# LD$mon.names = c("LP", "r", "K", "q", paste0("S",1:LD$N))
 
-Data$mon.names = c("LP", "r", "K", "q", paste0("AR",1:(Data$N-1) ) )
-# Data$mon.names = c("LP", "r", "K", "q", paste0("S",1:Data$N))
 
+Model = function(parm, LD) {
 
-Model = function(parm, Data) {
+  Spred = AR = Opred = ER = F = rep(0, LD$N )   # initialize
 
-  Spred = Opred = ER = F = rep(0, Data$N )   # initialize
-
-  # Parameters: back transform to force positive only solutions
-  # parm = .Internal(pmax( na.rm=TRUE, Data$eps, parm))
-
-  # Priors .. remember that these are on log-scale
+  # Priors
   loglik = c()
-  loglik[Data$parm.names] = 0
-  loglik[Data$pos$q] = dnorm( parm[Data$pos$q], Data$q0, Data$cv,  TRUE ) ;
-  loglik[Data$pos$r] = dnorm( parm[Data$pos$r], Data$r0, Data$cv, TRUE ) ;
-  loglik[Data$pos$K] = dnorm( parm[Data$pos$K], Data$K0, Data$cv, TRUE ) ;
-  loglik[Data$pos$S0] = dnorm( parm[Data$pos$S0], Data$S0, Data$cv, TRUE ) ;
+  loglik[LD$parm.names] = 0
 
+  q = parm[LD$i$q] = interval( parm[LD$i$q], LD$eps, Inf )
+  r = parm[LD$i$r] = interval( parm[LD$i$r], LD$eps, Inf )
+  K = parm[LD$i$K] = interval( parm[LD$i$K], LD$eps, Inf )
+  q_sd = parm[LD$i$q_sd] = interval( parm[LD$i$q_sd], LD$eps, Inf )
+  r_sd = parm[LD$i$r_sd] = interval( parm[LD$i$r_sd], LD$eps, Inf )
+  K_sd = parm[LD$i$K_sd] = interval( parm[LD$i$K_sd], LD$eps, Inf )
+  O_sd = parm[LD$i$O_sd] = interval( parm[LD$i$O_sd], LD$eps, Inf )
+  S_sd = parm[LD$i$S_sd] = interval( parm[LD$i$S_sd], LD$eps, Inf )
+  
+  loglik[LD$i$q] = dnorm( q, LD$q0, q_sd,  TRUE ) ;
+  loglik[LD$i$r] = dnorm( r, LD$r0, r_sd, TRUE ) ;
+  loglik[LD$i$K] = dnorm( K, LD$K0, K_sd, TRUE ) ;
+  loglik[LD$i$q_sd] = dhalfcauchy( q_sd, LD$r0/5, log=TRUE)
+  loglik[LD$i$r_sd] = dhalfcauchy( r_sd, LD$q0/5, log=TRUE)
+  loglik[LD$i$K_sd] = dhalfcauchy( K_sd, LD$K0/5,  log=TRUE)
+  loglik[LD$i$S0] = dnorm( parm[LD$i$S0], LD$S0, LD$cv, TRUE ) ;
+  loglik[LD$i$O_sd] = dhalfcauchy( O_sd, LD$cv, TRUE );
+  loglik[LD$i$S_sd] = dhalfcauchy( S_sd, LD$cv, TRUE );
 
-  # update params
-  # do above first as on log scale, then return to normal scale
-  r = exp( parm[Data$pos$r] );
-  K = exp( parm[Data$pos$K] );
-  q = exp( parm[Data$pos$q] );
-  Spred[1] = exp( parm[Data$pos$S0] );
-  S = exp( parm[Data$pos$S] ) ;
-
-  O_sd = exp(parm[Data$pos$O_sd])
-  S_sd = exp(parm[Data$pos$S_sd])
-
-  # these are SD's on log scale (0,1) is sufficient
-  # continue with SD priors as these are now on correct scale
-  loglik[Data$pos$O_sd] = dnorm( O_sd, Data$cv, 0.1, TRUE );
-  loglik[Data$pos$S_sd] = dnorm( S_sd, Data$cv, 0.1, TRUE );
-  # parm[Data$pos$S_sd] = interval( parm[Data$pos$S_sd], Data$eps, 1 )
-  # parm[Data$pos$O_sd] = interval( parm[Data$pos$S_sd], Data$eps, 1 )
-
-
-  # Likelihoods
-  R = Data$removals/K ;
-
-  # 1. process model
-  AR = 1.0 + r*(1-S[Data$jj]) ;
-  Spred[ Data$ii ] = S[Data$jj] * AR - R[Data$jj] ;  # simple logistic
-  Spred = .Internal(pmax(na.rm=TRUE, Spred, Data$eps )) ;
-  loglik[Data$pos$S] = dnorm( log(S), log(Spred), S_sd, TRUE );
+  S = parm[LD$i$S] = interval( parm[LD$i$S], LD$eps, LD$smax )
+  R = LD$removals/K ;
+  loglik[LD$i$S] = 0
+  for ( i in 1:LD$N) {
+    if (i==1) {
+      Spred = exp( parm[LD$i$S0] );
+    } else {
+      AR[i] = 1.0 + r*(1-S[i-1]) ;
+      Spred = S[i-1] * AR[i] - R[i-1] ;  # simple logistic
+      Spred = .Internal(pmax(na.rm=TRUE, Spred, LD$eps )) ;
+    }
+    loglik[LD$i$S][i] = dnorm( log(Spred), log(S[i]), S_sd, TRUE );
+  }
 
   # 2. observation model
   Kq = K*q
   i = 1 ;
     Opred[i] = S[i] - R[i] ;
-  i = 2:(Data$ty-1)
+  i = 2:(LD$ty-1)
     Opred[i] = S[i] - R[i-1] ;
-  i = Data$ty
+  i = LD$ty
     Opred[i] = S[i] - (R[i-1] + R[i])/2 ;
-  i = (Data$ty+1):Data$N
+  i = (LD$ty+1):LD$N
     Opred[i] = S[i] - R[i] ;
 
-  Opred = .Internal(pmax( na.rm=TRUE, Kq*Opred, Data$eps ) ) ;
+  Opred = .Internal(pmax( na.rm=TRUE, Kq*Opred, LD$eps ) ) ;
   ll_obs = dnorm( log(O), log(Opred), O_sd, TRUE )
 
   # Removals
@@ -150,7 +150,7 @@ Model = function(parm, Data) {
 #  }
 
 # forecast and monitoring
-#  for( i 1:Data$N ){
+#  for( i 1:LD$N ){
 #    ER[i] = R[i] / S[i] ;
   #  B(i) <- S(i)*K
   #  C(i) <- R(i)*K
@@ -160,81 +160,62 @@ Model = function(parm, Data) {
   LL = sum( ll_obs )  # no priors ...
   LP = LL + sum( loglik )
 
-  # for ML/optim:
-  if (!is.null(Data$Method) && Data$Method=="ML")  {
-    print(-LL)
-    return( -LL )
-  }
-
-  if (!is.null(Data$Method) && Data$Method=="PML") {
-    print(paste(-LL, -LP))
-    return( -LP )
-  }
-
-  out = list( LP=LP, Dev=-2*LL, Monitor=c(LP, r, K, q, AR), yhat=S*K, parm=parm )
+  out = list( LP=LP, Dev=-2*LL, Monitor=c(LP, r, K, q), yhat=S*K, parm=parm )
 
   return( out  )
 }
 
 Model <- compiler::cmpfun(Model) #Consider byte-compiling for more speed
 
+ML  = function(...) (Model(...)$Dev / 2)  # i.e. - log likelihood
+PML = function(...) (- Model(...)$LP)  #i.e., - log posterior 
 
 # test
-Model( parm=Data$PGF(Data), Data=Data)
+Model( parm=LD$PGF(LD), LD=LD)
 
-
-# ML
-Data$Method = "ML"  # maximum likelihood ... unstable .. will not converge with many methods
-# Fit.ml = optim( par=Data$PGF(Data), fn=Model, Data=Data, hessian=TRUE, method="CG", control=list(maxit=4000)  )
-Fit.ml = optim( par=Data$PGF(Data), fn=Model, Data=Data, hessian=TRUE, control=list(maxit=5000)  )
-names(Fit.ml$par ) = Data$parm.names
-exp(Fit.ml$par)
-str(Fit.ml) # check convergence
+# maximum likelihood
+# Fit.ml = optim( par=LD$PGF(LD), fn=ML, LD=LD, hessian=TRUE, method="CG", control=list(maxit=4000)  )
+Fit.ml = optim( par=LD$PGF(LD), fn=ML, LD=LD, hessian=TRUE, control=list(maxit=5000)  )
+names(Fit.ml$par ) = LD$parm.names
+Fit.ml$par # check convergence
 print(sqrt( diag( solve(Fit.ml$hessian) )) ) # asymptotic standard errors
 
 
 # PML .. better ("penalised ML")
-Data$Method = "PML"  # penalized maximum likelihood .. better but still a little unstable depending on algorithm
-#Fit.pml = optim( par=Data$PGF(Data), fn=Model, Data=Data,  method="L-BFGS-B", control=list(maxit=5000), hessian=TRUE )
-#Fit.pml = optim( par=Data$PGF(Data), fn=Model, Data=Data,  method="BFGS", control=list(maxit=5000), hessian=TRUE )
-Fit.pml = optim( par=Data$PGF(Data), fn=Model, Data=Data,  control=list(maxit=5000), hessian=TRUE )
-names(Fit.pml$par ) = Data$parm.names
-exp(Fit.pml$par)
+# penalized maximum likelihood .. better but still a little unstable depending on algorithm
+#Fit.pml = optim( par=LD$PGF(LD), fn=PML, LD=LD,  method="L-BFGS-B", control=list(maxit=5000), hessian=TRUE )
+#Fit.pml = optim( par=LD$PGF(LD), fn=PML, LD=LD,  method="BFGS", control=list(maxit=5000), hessian=TRUE )
+Fit.pml = optim( par=LD$PGF(LD), fn=PML, LD=LD,  control=list(maxit=5000), hessian=TRUE )
+names(Fit.pml$par ) = LD$parm.names
+Fit.pml$par
+
 str(Fit.pml) # check convergence
 print(sqrt( diag( solve(Fit.pml$hessian) )) ) # assymptotic standard errors
 
 
-# LD ... best: Bayesian estimates
-Data$Method = "LD"  # LaplacesDemon (Bayesian)
-Fit = LaplaceApproximation(Model, Data=Data, parm=Data$PGF(Data), Iterations=1000)
-#Fit = LaplaceApproximation(Model, Data=Data, parm=Data$PGF(Data), Iterations=5000, Method="TR" )
-#Fit = LaplaceApproximation(Model, Data=Data, parm=Data$PGF(Data), Iterations=5000, Method="SPG" )
-#Fit = LaplaceApproximation(Model, Data=Data, parm=Data$PGF(Data), Iterations=5000, Method="LBFGS", Stop.Tolerance=1.0E-6, Interval=1.0E-6 )
+# Bayesian estimates
+Fit = LaplaceApproximation(Model, Data=LD, parm=LD$PGF(LD), Iterations=1000) # quick centering
+Fit = LaplaceApproximation(Model, Data=LD, parm=as.initial.values(Fit), Iterations=2000, Method="LBFGS", Stop.Tolerance=1.0E-6)
 
-Initial.Values <- as.initial.values(Fit)
+
+#Fit = LaplaceApproximation(Model, Data=LD, parm=as.initial.values(Fit), Iterations=5000, Method="TR" )
+#Fit = LaplaceApproximation(Model, Data=LD, parm=as.initial.values(Fit), Iterations=5000, Method="SPG" )
 
 # check ACF
-Fit = LaplacesDemon(Model, Data=Data, Initial.Values=Initial.Values, Covar=Fit$Covar, Iterations=1000, Status=100, Thinning=1 )
+Fit = LaplacesDemon(Model, Data=LD, as.initial.values(Fit)=as.initial.values(Fit), Covar=Fit$Covar, Iterations=1000, Status=100, Thinning=1 )
 Consort(Fit)
-plot(Fit, Data=Data)
-Initial.Values <- as.initial.values(Fit)
+plot(Fit, Data=LD)
 # run with correct thinning, etc
-Fit = LaplacesDemon(Model, Data=D ata, Initial.Values=Initial.Values, Covar=Fit$Covar, Iterations=10000, Status=1000, Thinning=100)
-Fit = LaplacesDemon(Model, Data=Data, Initial.Values=Initial.Values, Covar=Fit$Covar, Iterations=30000, Status=1000, Thinning=35, Algorithm="AMWG", Specs=list(B=NULL, n=1000, Periodicity=35 ) )
-Fit <- LaplacesDemon(Model, Data=Data, Initial.Values,
+Fit = LaplacesDemon(Model, Data=LD, as.initial.values(Fit)=as.initial.values(Fit), Covar=Fit$Covar, Iterations=10000, Status=1000, Thinning=100)
+Fit = LaplacesDemon(Model, Data=LD, as.initial.values(Fit)=as.initial.values(Fit), Covar=Fit$Covar, Iterations=30000, Status=1000, Thinning=35, Algorithm="AMWG", Specs=list(B=NULL, n=1000, Periodicity=35 ) )
+Fit <- LaplacesDemon(Model, Data=LD, as.initial.values(Fit),
      Covar=Fit$Covar, Iterations=10000, Status=1000, Thinning=105,
      Algorithm="AFSS", Specs=list(A=Inf, B=NULL, m=100,
      n=0, w=1))
 
-r         0.85643415  0.3167142 0.010648512 857.0000  0.3798297  0.80862527   1.6165487
-K        90.79691849 30.1522004 1.061363364 857.0000 48.9131560 84.93342563 163.1208426
-q         0.87225691
-
 # alternate methods
-
-Fit = VariationalBayes(Model, Data=Data, parm=Initial.Values, Iterations=1000,  Samples=1000, CPUs=5 )
-
-Fit = IterativeQuadrature(Model, Data=Data, parm=Initial.Values, Iterations=100, Algorithm="AGH",
+Fit = VariationalBayes(Model, Data=LD, parm=as.initial.values(Fit), Iterations=1000,  Samples=1000, CPUs=5 )
+Fit = IterativeQuadrature(Model, Data=LD, parm=as.initial.values(Fit), Iterations=100, Algorithm="AGH",
  Specs=list(N=5, Nmax=7, Packages=NULL, Dyn.libs=NULL) )
 
 
@@ -242,9 +223,7 @@ Fit = IterativeQuadrature(Model, Data=Data, parm=Initial.Values, Iterations=100,
 # --------------------------------------
 # 2. using TMB
 
-
 tmb.model = paste0( "
-
 #include <TMB.hpp>
 
 template<class Type>
@@ -266,8 +245,8 @@ Type objective_function<Type>::operator() ()
   PARAMETER( logr );
   PARAMETER( logK );
   PARAMETER( logq );
-  PARAMETER_VECTOR( logS_sd ); // system process error
-  PARAMETER_VECTOR( logO_sd ); // system index observation error
+  PARAMETER( logS_sd ); // system process error
+  PARAMETER( logO_sd ); // system index observation error
 //  PARAMETER( logcv_R ); // catch observation error
   PARAMETER_VECTOR( logS );
 
@@ -276,8 +255,8 @@ Type objective_function<Type>::operator() ()
   Type q=exp(logq);
   Type penalty=0;   // penalty associated with posfun test
 
-  vector<Type> S_sd=exp(logS_sd);
-  vector<Type> O_sd=exp(logO_sd) ;
+  Type S_sd=exp(logS_sd);
+  Type O_sd=exp(logO_sd) ;
   vector<Type> S=exp(logS) ;
 
   // Derived quantities
@@ -330,7 +309,7 @@ Type objective_function<Type>::operator() ()
     Spred[i] = posfun( Spred[i], eps, penalty ) ;
     nloglik[0] -= penalty ;
     Slog = log( Spred[i] ) ;
-    nloglik[0] -= dnorm( log(S[i]), Slog, S_sd[i], true ) ;
+    nloglik[0] -= dnorm( log(S[i]), Slog, S_sd, true ) ;
   }
 
 
@@ -344,7 +323,7 @@ Type objective_function<Type>::operator() ()
     Opred[i] = posfun( Opred[i], eps, penalty ) ;
     nloglik[0] -= penalty ;
     Olog = log( Opred[i] ) ;
-    nloglik[1] -= dnorm( log(O[i]), Olog, O_sd[i], true );
+    nloglik[1] -= dnorm( log(O[i]), Olog, O_sd, true );
   }
 
 
@@ -388,9 +367,11 @@ Type objective_function<Type>::operator() ()
 
 Data = list( O=O, removals=R )
 N =  length(O)
-Params = list( logr=log(1), logK=log( max(O, na.rm=TRUE)),  logq=log(1),
-               logS_sd=log(rep( 1, N)), logO_sd=log(rep(1,N)), logS=log( rep(0.6, N)) )
+Params = list( logr=log(1), logK=log(5),  logq=log(1),
+               logS_sd=log(0.5), logO_sd=log(0.5), logS=log( rep(0.6, N)) )
 
+
+setwd("/tmp")
 wd = getwd()
 fn = tempfile(pattern="tmb_", tmpdir=wd, fileext=".cpp" )
 print(fn)
@@ -480,6 +461,7 @@ model {
   # monitoring nodes and parameter estimates for output
 #  MSY    <- r* K / 4  # maximum height of of the latent productivity (yield)
 #  BMSY   <- K/2  # S at MSY
+
 #  FMSY   <- 2 * MSY / K # fishing mortality at MSY
 
 }
@@ -633,7 +615,7 @@ model {
   K ~ normal( exp(K0), K0sd ) T[Kmin,Kmax];
 
   for (i in 1:N) {
-    if (i==1)     Spred[i] ~ normal( exp(S0), cv ) T[eps,smax]; // guess, S0 is log scale .. exp ensures positive values:w
+    if (i==1)     Spred[i] ~ normal( exp(S0), cv ) T[eps,smax]; // guess, S0 is log scale .. exp ensures positive values
     if (i>1)      Spred[i] = S[i-1]*( 1 + r*(1-S[i-1])) - removals[i-1]/K ;
     Spred[i] = fmax( eps, Spred[i] );
     S[i] ~ lognormal( Spred[i], Ssd[i] ) T[eps,smax];

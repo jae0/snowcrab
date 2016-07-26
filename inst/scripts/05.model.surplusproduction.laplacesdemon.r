@@ -10,7 +10,7 @@ res = biomass.summary.survey.nosa.db(p=p)
 # install_github("lazycrazyowl/LaplacesDemon")
 # install_github("lazycrazyowl/LaplacesDemonCpp")
 require(LaplacesDemon)
-require(LaplacesDemonCpp)
+# require(LaplacesDemonCpp)
 
 # data object
 region = "cfasouth"
@@ -29,10 +29,10 @@ sb = list(
   M = 5, # no years for projections
   MN = length( biomassindex ) + 5,
   ty = which(yrs==2004) ,  # index of the transition year (2004) between spring and fall surveys
-  r0= log(1),
-  K0= log(100*1.25),
-  q0= log(mean(biomassindex, na.rm=TRUE)/100 ),
-  S0= log(0.6), # normalised
+  r0= 1,
+  K0= 100*1.25,
+  q0= mean(biomassindex, na.rm=TRUE)/100,
+  S0= 0.6, # normalised
   cv = 0.5,
   smax =1.25,
   ii = 2:length(biomassindex),
@@ -40,31 +40,102 @@ sb = list(
   eps = 1e-6
 )
 
-loadfunctions( "bio.snowcrab", "R", "surplus.production.lapacesdemon.setup.r" )
+loadfunctions( "bio.snowcrab", "R", "surplus.production.simple.laplacesdemon.setup.r" )
 
 
 # set up the model
 sb = surplus.production.simple.laplacesdemon.setup( sb )  
 
+sb$Model( parm=sb$PGF(sb), Data=sb )
+
+
 
 n.iter = 500 
+tol = 1.0E-6
 
-tol = 1.0E-8
-# algorithms = c( "TR", "LM", "CG", "NR", "NM", "SPG", "LBFGS", "BFGS", "PSO", "SR1", "HAR", "DFP", "BHHH", "HJ", "Rprop" ) # available
+f.ml = optim( par=sb$PGF(sb), fn=sb$Model.ML, Data=sb, hessian=TRUE, control=list(maxit=5000)  )
+names(f.ml$par ) = sb$parm.names
+f.ml$par # check convergence
+print(sqrt( diag( solve(f.ml$hessian) )) ) # asymptotic standard errors
+
+
+# PML .. better ("penalised ML")
+# penalized maximum likelihood .. better but still a little unstable depending on algorithm
+#f.pml = optim( par=sb$PGF(sb), fn=sb$Model.PML, Data=sb,  method="L-BFGS-B", control=list(maxit=5000), hessian=TRUE )
+#f.pml = optim( par=sb$PGF(sb), fn=sb$Model.PML, Data=sb,  method="BFGS", control=list(maxit=5000), hessian=TRUE )
+f.pml = optim( par=sb$PGF(sb), fn=sb$Model.PML, Data=sb,  control=list(maxit=5000), hessian=TRUE )
+names(f.pml$par ) = sb$parm.names
+f.pml$par
+
+str(f.pml) # check convergence
+print(sqrt( diag( solve(f.pml$hessian) )) ) # assymptotic standard errors
+
+
+
+Data=sb
+parm=sb$PGF(sb)
+Model = sb$Model
+Method="optim"
+optim.params=list(method="BFGS")
+Interval=1.0E-6
+Iterations=100
+Samples=1000
+CovEst="Hessian"
+sir=TRUE
+Stop.Tolerance=1.0E-5
+ CPUs=1
+Type="PSOCK"
+Method="optim"
+optim.params=list(method="BFGS")
+
+     optim.params$maxit=5
+     if (!exists("reltol", optim.params) ) optim.params$reltol=Stop.Tolerance
+
+     if (exists("optim.method", optim.params)) {
+          optim.method= optim.params$method 
+     } else { 
+          optim.method="BFGS"
+     }
+     optim.params$method  = NULL
+
+
+f = LaplaceApproximation(sb$Model, Data=sb, parm=sb$PGF(sb) ) 
+
+
+f = LaplaceApproximation(sb$Model, Data=sb, parm=as.initial.values(f), Method="optim", Stop.Tolerance=1e-12, Iterations = 5000, method="Nelder-Mead", control=list(maxit=5, reltol=1e-12 ) )
+f
+
+f = LaplaceApproximation(sb$Model, Data=sb, parm=as.initial.values(f), Method="optim", Stop.Tolerance=1e-8, Iterations = 5000, method="Nelder-Mead", control=list(maxit=5, reltol=1e-8 ) )
+
+
+f = LaplaceApproximation(sb$Model, Data=sb, parm=as.initial.values(f), Method="optim", optim.params=list(method="BFGS") , Stop.Tolerance=1e-9, Iterations = 1000  )
+
+
+f = LaplaceApproximation(sb$Model, Data=sb, parm=as.initial.values(f)  ) # fast spin up of paramters
+f = LaplaceApproximation(sb$Model, Data=sb, parm=as.initial.values(f), Method="BFGS", Stop.Tolerance=1e-8  ) 
+
+Deviance  1.530190e+01  0    0 1000  1.530190e+01  1.530190e+01  1.530190e+01
+LP       -1.778748e+03  0    0 1000 -1.778748e+03 -1.778748e+03 -1.778748e+03
+r         7.970775e-01  0    0 1000  7.970775e-01  7.970775e-01  7.970775e-01
+K         6.277875e+01  0    0 1000  6.277875e+01  6.277875e+01  6.277875e+01
+q         8.223097e-03  0    0 1000  8.223097e-03  8.223097e-03  8.223097e-03
+
+f = LaplaceApproximation(sb$Model, Data=sb, parm=as.initial.values(f), Method="LBFGS"  ) 
+
+
 # NOTES: NM is slow
+# algorithms = c( "TR", "LM", "CG", "NR", "NM", "SPG", "LBFGS", "BFGS", "PSO", "SR1", "HAR", "DFP", "BHHH", "HJ", "Rprop" ) # available
 # algorithms = c( "CG", "NM", "SPG", "LBFGS", "BFGS", "PSO", "SR1", "HAR", "DFP", "Rprop" ) # reliably working
 algorithms = c( "CG", "LBFGS", "BFGS", "PSO", "SR1", "HAR", "DFP", "Rprop" ) # reliably working
-
-f = LaplaceApproximation(sb$Model, Data=sb, parm=sb$PGF(sb) ) # fast spin up of paramters
 for (a in algorithms) {
   print(a)
-  ft = try( LaplaceApproximation(sb$Model, Data=sb, parm=as.initial.values(f), Method=a, Stop.Tolerance=tol, Iterations=n.iter, Covar=f$Covar ) )
+  ft = try( LaplaceApproximation(sb$Model, Data=sb, parm=as.initial.values(f), Method=a, Stop.Tolerance=tol, Iterations=n.iter ) )
   if (! class(ft) %in% "try-error" ) if (ft$Converged) if( ft$LP.Final > f$LP.Final )  {
     f = ft
     f$Method = a 
   }
 }
-
+str(f)
 plot(f, Data=sb)
 
 # MCMC ... look at ACF
@@ -82,22 +153,23 @@ f = LaplacesDemon(sb$Model, Data=sb, as.initial.values(f),
 
 
 f = LaplacesDemon(sb$Model, Data=sb, 
-  Initial.Values=as.initial.values(f), Covar=f$Covar, 
-  Iterations=10000, Status=1000, Thinning=100)
+  Initial.Values=as.initial.values(f), Covar=f$Covar, Iterations=10000, Status=1000, Thinning=100)
 
 f = LaplacesDemon(sb$Model, Data=sb, 
-  Initial.Values=as.initial.values(f), Covar=f$Covar, 
-  Iterations=30000, Status=1000, Thinning=35, Algorithm="AMWG", Specs=list(B=NULL, n=1000, Periodicity=35 ) )
+  Initial.Values=as.initial.values(f), Covar=f$Covar, Iterations=30000, Status=1000, Thinning=35, 
+  Algorithm="AMWG", Specs=list(B=NULL, n=1000, Periodicity=35 ) )
 
 f <- LaplacesDemon(sb$Model, Data=sb,
-  Initial.Values=as.initial.values(f), Covar=f$Covar, 
-  Iterations=10000, Status=1000, Thinning=105, Algorithm="AFSS", Specs=list(A=Inf, B=NULL, m=100, n=0, w=1))
+  Initial.Values=as.initial.values(f), Covar=f$Covar, Iterations=10000, Status=1000, Thinning=105, 
+  Algorithm="AFSS", Specs=list(A=Inf, B=NULL, m=100, n=0, w=1))
 
+# medium speed .. increase Iterations til convergence
 f = VariationalBayes(sb$Model, Data=sb,  parm=as.initial.values(f), Iterations=100,  Samples=10, CPUs=5 )
+f = VariationalBayes(sb$Model, Data=sb,  parm=as.initial.values(f), Iterations=500,  Samples=10, CPUs=5 )
 
-f = IterativeQuadrature(sb$Model, Data=sb, parm=as.initial.values(f), Iterations=100, Algorithm="AGH",
+# slow
+f = IterativeQuadrature(sb$Model, Data=sb, parm=as.initial.values(f), Iterations=10, Algorithm="AGH",
  Specs=list(N=5, Nmax=7, Packages=NULL, Dyn.libs=NULL) )
-
 
 
 

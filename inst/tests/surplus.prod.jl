@@ -1,118 +1,172 @@
+using DataArrays, DataFrames, DataFramesMeta, RCall
 
-using Distributions
-using Optim
+R"p = bio.snowcrab::load.environment( year.assessment=2016)
+res = biomass.summary.survey.nosa.db(p=p)
+region = 'cfasouth' 
+biomassindex = res$B[[region]]
+catch = res$L[[region]]
+yrs = as.numeric(rownames( res$B))
+"
 
+R"sb = list(
+  O = biomassindex, # observed index of abundance
+  Omissing0 = mean(biomassindex, na.rm=TRUE ),
+  removals = catch , # removalsches  , assume 20% handling mortality and illegal landings
+  removalsmissing0 = mean(catch, na.rm=TRUE ),
+  er = 0.2,  # target exploitation rate
+  N = length( biomassindex ) , # no years with data
+  M = 5, # no years for projections
+  MN = length( biomassindex ) + 5,
+  ty = which(yrs==2004) ,  # index of the transition year (2004) between spring and fall surveys
+  r0= 1,
+  K0= 100,
+  q0= mean(biomassindex, na.rm=TRUE)/100 ,
+  S0= 0.6, # normalised
+  cv = 0.5,
+  smax =1.25,
+  eps = 1e-6
+)"
 
-# data
-O = [ 60.00000 60.00000 60.00000 77.53333 62.65507 31.18533 30.62145 41.31591 32.66703 40.07025 39.74323 51.51829 33.07368 32.29060 35.07408 42.91545 ]
+@rget sb
 
-removals = [ 1.558000  2.700000  8.701000  9.048000  8.891000  8.836000  8.095283  6.412215  4.489686 4.946139  8.265875 10.760470 12.760896 12.160676 11.717945 11.351338 ]
-
-
-# constants
-r0 =  1
-K0 = 75
-q0 = 1
-S0 = 0.6
-er = 0.2
-N = length(O)
-M =  5
-MN = M + N
-ty = 7
-eps = 1e-06
-
-qSD = 0.2 ;
-rSD = 0.2 ;
-KSD = 10 ;
-
-
-Spred = rand(Uniform(), N)
-Osd   = rand(Uniform(), N)
-Ssd   = rand(Uniform(), N)
-
-
-# params
-pm = [ K0; r0; q0; S0; Spred; Osd; Ssd ]
-
-# indices of params
-iK = 1
-ir = 2
-iq = 3
-iS0 = 4
-iS = 5 + [1:N]
-iOsd = maximum(iS) + [1:N]
-iSsd = maximum(iOsd) + [1:N]
+using Distributions, Optim, Mamba
+## @everywhere eval(extensions)
 
 
-function bd(pm::Vector)
+samples = 10000
+burnin = 250
+thin = 1
+nchains = 1
 
-  # unpack and transform params
-  r=exp(pm[ir]);
-  K=exp(pm[iK]);
-  q=exp(pm[iq]);
-  S_sd=exp(pm[iSsd]);
-  O_sd=exp(pm[iOsd] ;
-  S=exp(pm[iS]) ;
+sn = Dict{Symbol,Any}()
+for i in 1:sb[:N]
+  Scur = symbol(string("S", i))
+  sn[:($Scur)] = rand( Normal(0.5, 0.1), 1 )
+end
 
-  R = removals/K ;
-  // penalties for priors and hyperpriors
+inits = [
+  Dict{Symbol, Any}(
+    :q => sb[:q0],
+    :r => sb[:r0],
+    :K => sb[:K0],
+    :S0 => sb[:S0],
+    :S_sd => sb[:cv],
+    :O_sd => sb[:cv],
+    :S_nodes => sn
+  )
+  for i in 1:nchains
+]
 
-  // priors of key stochastic nodes for estimation
-  nloglik[2] -= dnorm( q, qPrior, qSD, true ) ;
-  nloglik[2] -= dnorm( r, rPrior, rSD, true ) ;
-  nloglik[2] -= dnorm( K, KPrior, KSD, true ) ;
-  nloglik[2] -= dnorm( S0, S0Prior, S0SD, true ) ;
-
-  //process model
-  for( int i=0; i<nt; i++){
-    if (i==0) Spred[0] = S0;
-    if (i>0) {
-      Spred[i] = S[i-1] * ( 1.0 + r*(1-S[i-1])) - R[i-1] ;  // simple logistic
-      // Spred[i] = S[i-1] * (1.0 + r*( 1 - pow( exp(S[i-1]), theta ) )) - R[i-1] ;  // theta logistic  .. double check parameterizatio ... TODO
-    }
-    Spred[i] = posfun( Spred[i], eps, penalty ) ;
-    nloglik[0] -= penalty ;
-    Slog = log( Spred[i] ) ;
-    if( !isNA(Slog)) nloglik[0] -= dnorm( log(S[i]), Slog, S_sd[i], true ) ;
-  }
-
-  //observation model
-  for( int i=0; i<nt; i++){
-    if ( i==0 )           Opred[i] = K*q*(S[i] - R[i]) ;
-    if ( i>0 & i<(ty-1) ) Opred[i] = K*q*(S[i] - R[i-1]) ;
-    if ( i==ty )          Opred[i] = K*q*(S[i] - (R[i-1] + R[i])/2 ) ;
-    if ( i>ty )           Opred[i] = K*q*(S[i] - R[i]) ;
-    Opred[i] = posfun( Opred[i], eps, penalty ) ;
-    nloglik[0] -= penalty ;
-    Olog = log( Opred[i] ) ;
-    if( !isNA(Olog)) nloglik[1] -= dnorm( log(O[i]), Olog, O_sd[i], true );
-  }
-
-
-
-  for( int i=0; i<nt; i++){
-    ER[i] = R[i] / S[i] ;
-  //  B(i) <- S(i)*K
-  //  C(i) <- R(i)*K
-    F[i] = -log(1 - ER[i] ) ; // fishing mortality
-  }
-
-  // forecast
-
-  // Removals
-//  for( int i=1; i<nt; i++){
-//    nloglik[2] -= dnorm( R(i-1), Rp(i-1), Rp(i-1)*cv_R, true );
-//  }
-
-  // Total likelihood
-  Type nllik = nloglik.sum();
-
-}
-
-
-
+# AR process model needs to be specified outside the model 
+S_nodes = Dict{Symbol,Any}()
+S_nodes[:S1] = Stochastic( (S0, S_sd) -> LogNormal( log(S0), S_sd ) )
+for i in 2:sb[:N]
+  global Scur = symbol(string("S", i)),
+         Spre = symbol(string("S", i-1))
+  @eval begin
+    S_nodes[:($Scur)] = Stochastic( 
+      ($Spre, r, R, S_sd) -> UnivariateDistribution[
+        Sp = $Spre * ( 1.0 + r*(1.0 - $Spre) ) - R[i-1]
+        Sp > 0 ? LogNormal( log(Sp), S_sd ) : Flat() 
+      ]
+    )
+  end
 end
 
 
-res = optimize( bd, pm, autodiff=true )
+bd = Model(;
+  S_nodes...,
+  S = Logical( 1, (S_nodes) -> (
+    for i in 1:sb[:N]
+      Scur = symbol(string("S", i))
+      S[i] = S_nodes[:($Scur)] 
+    end )
+  ),
+  q = Stochastic( (q0, cv) -> LogNormal( log(q0), cv )), 
+  r = Stochastic( (r0, cv) -> LogNormal( log(r0), cv )), 
+  K = Stochastic( (K0, cv) -> LogNormal( log(K0), cv )), 
+  S_sd = Stochastic( (eps) -> Truncated( Cauchy(0, 25), eps, 1 )),
+  O_sd = Stochastic( (eps) -> Truncated( Cauchy(0, 25), eps, 1 )),
+  R = Logical( 1, (removals,K) -> removals/K, false ),  
+  O = Stochastic( 1, (K, q, S, R, O_sd, N) -> UnivariateDistribution[
+    begin 
+      if i==1            
+        Op = K*q*(S[i] - R[i])
+      elseif i > 1 && i < ty  
+        Op = K*q*(S[i] - R[i-1]) 
+      elseif i == ty           
+        Op = K*q*(S[i] - (R[i-1] + R[i])/2 ) 
+      else         
+        Op = K*q*(S[i] - R[i]) 
+      end
+      Op > 0 ? LogNormal( log(Op), O_sd ) : Flat()
+    end
+    for i in 1:N] , true ),
+  AR = Logical( 1, (r,S) -> ( 1.0 + r*(1.0 - S) ) ), 
+  ER = Logical( 1, (R,S) -> R/S ),
+  F  = Logical( 1, (ER) -> -log(1-ER) ),
+  B  = Logical( 1, (S,K) -> S*K ) ,
+  C  = Logical( 1, (R,K) -> R*K ) 
+)
+
+
+draw(bd)
+
+showall(bd)
+logpdf(bd)
+
+setsamplers!(bd, [NUTS([:q, :r, :K,  :S_sd, :O_sd])])
+
+sim = mcmc(bd, sb, inits, samples, burnin=burnin, thin=thin, chains=nchains)
+
+
+gelmandiag(sim1, mpsrf=true, transform=true) |> showall
+gewekediag(sim1) |> showall
+heideldiag(sim1) |> showall
+
+rafterydiag(sim1) |> showall
+
+describe(sim)
+hpd(sim1)
+cor(sim1)
+
+## Write to and Read from an External File
+write("sim1.jls", sim1)
+sim1 = read("sim1.jls", ModelChains)
+
+## Restart the Sampler
+sim = mcmc(sim1, 5000)
+describe(sim)
+
+## Default summary plot (trace and density plot
+p = plot(sim1)
+
+## Write plot to file
+draw(p, filename="summaryplot.svg")
+
+## Autocorrelation and running mean plots
+p = plot(sim1, [:autocor, :mean], legend=true)
+draw(p, nrow=3, ncol=2, filename="autocormeanplot.svg")
+
+## Pairwise contour plots
+p = plot(sim1, :contour)
+draw(p, nrow=2, ncol=2, filename="contourplot.svg")
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
