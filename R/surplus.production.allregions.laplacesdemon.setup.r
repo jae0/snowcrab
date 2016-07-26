@@ -3,6 +3,7 @@ surplus.production.allregions.laplacesdemon.setup = function(Data) {
   
   stop( "NOT FINISHED yet .. must add region-specific form" )
 
+
   # zeta = as.vector(mvtnorm::rmvnorm(1, rep(0,Data$S), Sigma, method="chol" ))
 
   # set up model for a simple surplus production model 
@@ -31,7 +32,7 @@ surplus.production.allregions.laplacesdemon.setup = function(Data) {
   if (is.null( Data$PGF )) {
     # Parameter Generating Function
     Data$PGF = function(Data) {
-      r=rnorm(1, Data$r0, sd=Data$cv )
+      r=rnorm(Data$nregions, Data$r0, sd=Data$cv )
       K=rnorm(1, log(Data$K0), sd=Data$cv ) # log scale
       q=rnorm(1, Data$q0, sd=Data$cv )
       S_sd=runif( 1 )
@@ -159,7 +160,6 @@ surplus.production.allregions.laplacesdemon.setup = function(Data) {
       }
       ll_obs = dnorm( log(Data$O), log(Opred), O_sd, TRUE )
 
-      
       Smon = Rmon = ER = F = B = C = rep(0, Data$MN )
       
       Smon[1:Data$N] = S

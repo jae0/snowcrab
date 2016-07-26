@@ -698,7 +698,7 @@ Data = list(
   Kmax = max(O, na.rm=TRUE) * 2,
   ii = 2:length(O),
   jj = 1:(length(O)-1),
-  eps = 1e-6
+  eps = 1e-6mO
 )
 
 
