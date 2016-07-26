@@ -90,7 +90,8 @@ surplus.production.simple.laplacesdemon.setup = function(Data) {
 
   if (is.null( Data$Model )) {
     Data$Model = function(parm, Data) {
-      Spred = Opred = ER = F = rep(0, Data$N )   # initialize
+      
+      Spred = Opred = rep(0, Data$N )   # initialize a few storage vectors
 
       # constraints:
       parm[Data$idx$q] = interval( parm[Data$idx$q], Data$eps, 2 );
@@ -102,29 +103,29 @@ surplus.production.simple.laplacesdemon.setup = function(Data) {
       parm[Data$idx$O_sd] = interval( parm[Data$idx$O_sd], Data$eps, 1)
       parm[Data$idx$S_sd] = interval( parm[Data$idx$S_sd], Data$eps, 1)
 
-      q = parm[Data$idx$q]
-      r = parm[Data$idx$r]
-
-      K = exp( parm[Data$idx$K] )
-      Spred[1] = exp( parm[Data$idx$S0] );
-      S = exp( parm[Data$idx$S] ) ;
-      
-      O_sd = parm[Data$idx$O_sd]
-      S_sd = parm[Data$idx$S_sd]
-
       # these are SD's on log scale (0,1) is sufficient
       # continue with SD priors as these are now on correct scale
       
       loglik = c()
       loglik[Data$parm.names] = 0
-      loglik[Data$idx$q] = dnorm( parm[Data$idx$q], Data$q0, Data$cv,  TRUE ) ;
+      loglik[Data$idx$q] = dhalfcauchy( parm[Data$idx$q], Data$cv,  TRUE ) ;
+      # loglik[Data$idx$q] = dnorm( parm[Data$idx$q], Data$q0, Data$cv,  TRUE ) ;
       loglik[Data$idx$r] = dnorm( parm[Data$idx$r], Data$r0, Data$cv, TRUE ) ;
       loglik[Data$idx$K] = dnorm( parm[Data$idx$K], log(Data$K0), Data$cv, TRUE ) ;
       loglik[Data$idx$S0] = dnorm( parm[Data$idx$S0], log(Data$S0), Data$cv, TRUE ) ;
-      loglik[Data$idx$O_sd] = dnorm( O_sd, Data$cv, 0.1, TRUE );
-      loglik[Data$idx$S_sd] = dnorm( S_sd, Data$cv, 0.1, TRUE );
+      loglik[Data$idx$O_sd] = dhalfcauchy( parm[Data$idx$O_sd], Data$cv, TRUE );
+      loglik[Data$idx$S_sd] = dhalfcauchy( parm[Data$idx$S_sd], Data$cv, TRUE );
+      #loglik[Data$idx$O_sd] = dnorm( O_sd, Data$cv, 0.1, TRUE );
+      #loglik[Data$idx$S_sd] = dnorm( S_sd, Data$cv, 0.1, TRUE );
 
-      # Likelihoods for process model
+      q = parm[Data$idx$q]
+      r = parm[Data$idx$r]
+      K = exp( parm[Data$idx$K] )
+      Spred[1] = exp( parm[Data$idx$S0] );
+      S = exp( parm[Data$idx$S] ) ;
+      O_sd = parm[Data$idx$O_sd]
+      S_sd = parm[Data$idx$S_sd]
+
       R = Data$removals/K ;
       if (exists( "Missing", Data ) ) {
         if (Data$Missing$nremovals > 0) {
@@ -135,6 +136,7 @@ surplus.production.simple.laplacesdemon.setup = function(Data) {
             log(R[Data$Missing$removals ]), Data$cv )
         }
       }
+
       AR = 1.0 + r*(1-S[Data$jj]) ;  # autocorelation component
       Spred[ Data$ii ] = S[Data$jj] * AR - R[Data$jj] ;  # simple logistic
       Spred = .Internal(pmax(na.rm=TRUE, Spred, Data$eps )) ;
@@ -155,19 +157,24 @@ surplus.production.simple.laplacesdemon.setup = function(Data) {
       }
       ll_obs = dnorm( log(Data$O), log(Opred), O_sd, TRUE )
 
-      # Removals
-    #  for( int i=1; i<nt; i++){
-    #    nloglik[2] -= dnorm( R(i-1), Rp(i-1), Rp(i-1)*cv_R, true );
-    #  }
-
-    # forecast and monitoring
-    #  for( i 1:Data$N ){
-    #    ER[i] = R[i] / S[i] ;
-      #  B(i) <- S(i)*K
-      #  C(i) <- R(i)*K
-    #    F[i] = -log(1 - ER[i] ) ; # fishing mortality
-    #  }
-
+      
+      Smon = Rmon = ER = F = B = C = rep(0, Data$MN )
+      
+      Smon[1:Data$N] = S
+      Rmon[1:Data$N] = R
+      for( i in (Data$N+1):Data$MN ){
+        Smon[i] = Smon[i-1] * (1.0 + r*(1.0-Smon[i-1]) ) - Rmon[i-1]
+        Rmon[i] = Smon[i-1] * Data$er 
+      }
+      Smon = .Internal(pmax( na.rm=TRUE, Smon, Data$eps ) )
+      Rmon = .Internal(pmax( na.rm=TRUE, Rmon, Data$eps ) )
+      
+      # monitoring
+      ER = Rmon / Smon ;
+      B = Smon*K
+      C = Rmon*K
+      F = -log( 1 - ER) ; # fishing mortality
+            
       LL = sum( ll_obs )  # log likelihood (of the data)
       LP = LL + sum( loglik )  # log posterior
       out = list( LP=LP, Dev=-2*LL, Monitor=c(LP, r, K, q), yhat=S*K, parm=parm )

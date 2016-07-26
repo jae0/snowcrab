@@ -71,41 +71,15 @@ str(f.pml) # check convergence
 print(sqrt( diag( solve(f.pml$hessian) )) ) # assymptotic standard errors
 
 
+f = LaplacesDemon(sb$Model, Data=sb, Initial.Values=sb$PGF(sb), Iterations=1000000, Status=2000, Thinning=1000)
 
-Data=sb
-parm=sb$PGF(sb)
-Model = sb$Model
-Method="optim"
-optim.params=list(method="BFGS")
-Interval=1.0E-6
-Iterations=100
-Samples=1000
-CovEst="Hessian"
-sir=TRUE
-Stop.Tolerance=1.0E-5
- CPUs=1
-Type="PSOCK"
-Method="optim"
-optim.params=list(method="BFGS")
-
-     optim.params$maxit=5
-     if (!exists("reltol", optim.params) ) optim.params$reltol=Stop.Tolerance
-
-     if (exists("optim.method", optim.params)) {
-          optim.method= optim.params$method 
-     } else { 
-          optim.method="BFGS"
-     }
-     optim.params$method  = NULL
-
-
+# quick solution: "burn-in"
 f = LaplaceApproximation(sb$Model, Data=sb, parm=sb$PGF(sb) ) 
 
-
-f = LaplaceApproximation(sb$Model, Data=sb, parm=as.initial.values(f), Method="optim", Stop.Tolerance=1e-12, Iterations = 5000, method="Nelder-Mead", control=list(maxit=5, reltol=1e-12 ) )
+f = LaplaceApproximation(sb$Model, Data=sb, parm=as.initial.values(f), Method="optim", Stop.Tolerance=1e-8, Iterations = 5000, method="Nelder-Mead", control=list(maxit=5, reltol=1e-9 ) )
 f
 
-f = LaplaceApproximation(sb$Model, Data=sb, parm=as.initial.values(f), Method="optim", Stop.Tolerance=1e-8, Iterations = 5000, method="Nelder-Mead", control=list(maxit=5, reltol=1e-8 ) )
+f = LaplaceApproximation(sb$Model, Data=sb, parm=as.initial.values(f), Method="optim", Stop.Tolerance=1e-8, Iterations = 1000, method="L-BFGS-B", control=list(maxit=10, reltol=1e-8 ) )
 
 
 f = LaplaceApproximation(sb$Model, Data=sb, parm=as.initial.values(f), Method="optim", optim.params=list(method="BFGS") , Stop.Tolerance=1e-9, Iterations = 1000  )
@@ -144,9 +118,25 @@ f = LaplacesDemon(sb$Model, Data=sb, Initial.Values=as.initial.values(f), Covar=
 Consort(f)
 plot(f, Data=sb)
 
+ PosteriorChecks(f)
+     #caterpillar.plot(f, Parms="beta")
+     #plot(f, Data, PDF=FALSE)
+     #Pred <- predict(f, Model, Data, CPUs=1)
+
+  #summary(Pred, Discrep="Chi-Square")
+     #plot(Pred, Style="Covariates", Data=Data)
+     #plot(Pred, Style="Density", Rows=1:9)
+     #plot(Pred, Style="Fitted")
+     #plot(Pred, Style="Jarque-Bera")
+     #plot(Pred, Style="Predictive Quantiles")
+     #plot(Pred, Style="Residual Density")
+     #plot(Pred, Style="Residuals")
+     #Levene.Test(Pred)
+     #Importance(f, Model, Data, Discrep="Chi-Square")
+
 # MCMC: run with appropriate thinning and other options:
 f = LaplacesDemon(sb$Model, Data=sb, as.initial.values(f),
-  Covar=NULL, Iterations=100000, Status=1000, Thinning=1000, Algorithm="CHARM", Specs=NULL)
+  Covar=NULL, Iterations=10000, Status=1000, Thinning=1000, Algorithm="CHARM", Specs=NULL)
 
 f = LaplacesDemon(sb$Model, Data=sb, as.initial.values(f),
   Covar=f$Covar , Iterations=50000, Status=10204, Thinning=1000, Algorithm="CHARM", Specs=list(alpha.star=0.44))
@@ -165,7 +155,7 @@ f <- LaplacesDemon(sb$Model, Data=sb,
 
 # medium speed .. increase Iterations til convergence
 f = VariationalBayes(sb$Model, Data=sb,  parm=as.initial.values(f), Iterations=100,  Samples=10, CPUs=5 )
-f = VariationalBayes(sb$Model, Data=sb,  parm=as.initial.values(f), Iterations=500,  Samples=10, CPUs=5 )
+f = VariationalBayes(sb$Model, Data=sb,  parm=as.initial.values(f), Iterations=1000,  Samples=1000, CPUs=5 Stop.Tolerance=1e-9)
 
 # slow
 f = IterativeQuadrature(sb$Model, Data=sb, parm=as.initial.values(f), Iterations=10, Algorithm="AGH",
