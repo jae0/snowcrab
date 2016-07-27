@@ -29,9 +29,9 @@ surplus.production.simple.laplacesdemon.setup = function(Data) {
   if (is.null( Data$PGF )) {
     # Parameter Generating Function
     Data$PGF = function(Data) {
-      r=rnorm(1, Data$r0, sd=Data$cv )
+      r=rnorm(1, log(Data$r0), sd=Data$cv )
       K=rnorm(1, log(Data$K0), sd=Data$cv ) # log scale
-      q=rnorm(1, Data$q0, sd=Data$cv )
+      q=rnorm(1, log(Data$q0), sd=Data$cv )
       S_sd=runif( 1 )
       O_sd=runif( 1 )
       S=rnorm( Data$N, log(Data$S0), sd=Data$cv ) # log scale 
@@ -93,35 +93,25 @@ surplus.production.simple.laplacesdemon.setup = function(Data) {
       
       Spred = Opred = rep(0, Data$N )   # initialize a few storage vectors
 
-      # constraints:
-      parm[Data$idx$q] = LaplacesDemonCpp::interval( parm[Data$idx$q], Data$eps, 2 );
-      parm[Data$idx$r] = LaplacesDemonCpp::interval( parm[Data$idx$r], Data$eps, 2 );
-      parm[Data$idx$K] = LaplacesDemonCpp::interval( parm[Data$idx$K], log(Data$eps), log(Data$K0*2) );
-      parm[Data$idx$S0] = LaplacesDemonCpp::interval( parm[Data$idx$S0], log(Data$eps), log(Data$smax) );
-      parm[Data$idx$S] = LaplacesDemonCpp::interval( parm[Data$idx$S], log(Data$eps), log(Data$smax) );
-
-      parm[Data$idx$O_sd] = LaplacesDemonCpp::interval( parm[Data$idx$O_sd], Data$eps, 1)
-      parm[Data$idx$S_sd] = LaplacesDemonCpp::interval( parm[Data$idx$S_sd], Data$eps, 1)
-
-      # these are SD's on log scale (0,1) is sufficient
-      # continue with SD priors as these are now on correct scale
+      parm_exp = exp(parm) # all parms in log-space to keep positive valued .. return to correct scale
+      # NOTE: for lognormal: cv = sqrt(exp(sigma^2) - 1); 
+      # or sigma = sqrt(log(cv^2+ 1) ) ==> sigma = sqrt( log(0.25^2 + 1)) = 0.246 ~ cv -- i.e. cv ~ sd
+      q = parm_exp[Data$idx$q]
+      r = parm_exp[Data$idx$r]
+      K =  parm_exp[Data$idx$K] 
+      Spred[1] =  parm_exp[Data$idx$S0] 
+      S =  parm_exp[Data$idx$S] 
+      O_sd = parm_exp[Data$idx$O_sd] 
+      S_sd = parm_exp[Data$idx$S_sd] 
       
       loglik = c()
       loglik[Data$parm.names] = 0
-      loglik[Data$idx$q] = LaplacesDemonCpp::dhalfcauchy( parm[Data$idx$q], Data$cv,  TRUE ) ;
-      loglik[Data$idx$r] = dnorm( parm[Data$idx$r], Data$r0, Data$cv, TRUE ) ;
+      loglik[Data$idx$q] = dnorm( parm[Data$idx$r], log(Data$q0), Data$cv, TRUE ) ;
+      loglik[Data$idx$r] = dnorm( parm[Data$idx$r], log(Data$r0), Data$cv, TRUE ) ;
       loglik[Data$idx$K] = dnorm( parm[Data$idx$K], log(Data$K0), Data$cv, TRUE ) ;
       loglik[Data$idx$S0] = dnorm( parm[Data$idx$S0], log(Data$S0), Data$cv, TRUE ) ;
       loglik[Data$idx$O_sd] = LaplacesDemonCpp::dhalfcauchy( parm[Data$idx$O_sd], Data$cv, TRUE );
       loglik[Data$idx$S_sd] = LaplacesDemonCpp::dhalfcauchy( parm[Data$idx$S_sd], Data$cv, TRUE );
-    
-      q = parm[Data$idx$q]
-      r = parm[Data$idx$r]
-      K = exp( parm[Data$idx$K] )
-      Spred[1] = exp( parm[Data$idx$S0] );
-      S = exp( parm[Data$idx$S] ) ;
-      O_sd = parm[Data$idx$O_sd]
-      S_sd = parm[Data$idx$S_sd]
 
       R = Data$removals/K ;
       if (exists( "Missing", Data ) ) {
@@ -134,9 +124,9 @@ surplus.production.simple.laplacesdemon.setup = function(Data) {
         }
       }
 
-      AR = 1.0 + r*(1-S[Data$jj]) ;  # autocorelation component
+      AR = 1.0 + r*(1-S[Data$jj]) ;  # "autocorelation" component
       Spred[ Data$ii ] = S[Data$jj] * AR - R[Data$jj] ;  # simple logistic
-      Spred = .Internal(pmax(na.rm=TRUE, Spred, Data$eps )) ;
+      Spred = bio.utilities::truncate.vector( Spred, lower=Data$eps ) ;
       loglik[Data$idx$S] = dnorm( parm[Data$idx$S], log(Spred), S_sd, TRUE );
 
       # Likelihoods for observation model
@@ -144,7 +134,7 @@ surplus.production.simple.laplacesdemon.setup = function(Data) {
       i = 2:(Data$ty-1);        Opred[i] = S[i] - R[i-1] ;
       i = Data$ty;              Opred[i] = S[i] - (R[i-1] + R[i])/2 ;
       i = (Data$ty+1):Data$N ;  Opred[i] = S[i] - R[i] ;
-      Opred = .Internal(pmax( na.rm=TRUE, K*q*Opred, Data$eps ) ) ;
+      Opred = bio.utilities::truncate.vector( K*q*Opred, lower=Data$eps )  ;
       if (exists( "Missing", Data ) ) {
         if (Data$Missing$nO > 0) {
           Data$O[Data$Missing$O ] = rlnorm( Data$Missing$nO, parm[Data$idx$Omissing], sd=Data$cv )
@@ -153,21 +143,21 @@ surplus.production.simple.laplacesdemon.setup = function(Data) {
         }
       }
       ll_obs = dnorm( log(Data$O), log(Opred), O_sd, TRUE )
-
       
       Smon = Rmon = ER = F = B = C = rep(0, Data$MN )
-      
       Smon[1:Data$N] = S
       Rmon[1:Data$N] = R
       for( i in (Data$N+1):Data$MN ){
         Smon[i] = Smon[i-1] * (1.0 + r*(1.0-Smon[i-1]) ) - Rmon[i-1]
         Rmon[i] = Smon[i-1] * Data$er 
       }
-      Smon = .Internal(pmax( na.rm=TRUE, Smon, Data$eps ) )
-      Rmon = .Internal(pmax( na.rm=TRUE, Rmon, Data$eps ) )
+      Smon = bio.utilities::truncate.vector( Smon, lower=Data$eps ) 
+      Rmon = bio.utilities::truncate.vector( Rmon, lower=Data$eps ) 
       
       # monitoring
       ER = Rmon / Smon ;
+      ER = bio.utilities::truncate.vector( ER, Data$eps, 1-Data$eps ) 
+      
       B = Smon*K
       C = Rmon*K
       F = -log( 1 - ER) ; # fishing mortality

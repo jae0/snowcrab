@@ -9,7 +9,8 @@ surplusproduction.db = function( DS, sourcedata="default", debug.region="cfanort
     }
 
   #\\ Create data required for surplus production modelling
-
+  #\\ NOTE: for lognormal: cv = sqrt(exp(sigma^2) - 1); 
+  #\\ or sigma = sqrt(log(cv^2+ 1) ) ==> sigma = sqrt( log(0.25^2 + 1)) = 0.246 ~ cv -- i.e. cv ~ sd
   if (DS %in% c("jags.2013")) {
 
     sb = list(
@@ -95,7 +96,7 @@ surplusproduction.db = function( DS, sourcedata="default", debug.region="cfanort
       cv.normal.max = 0.4, # upper limit of CV for normally distributed variables ~ 0.5 covers a reasonably large range, try:   curve( dnorm(x, mean=1, sd=0.5), from=0.1, to=4  )
       cv.lognormal.min = 0.05, #  curve( dlnorm(x, meanlog=log(1), sdlog=0.25), from=0.01, to=2 )
       cv.lognormal.max = 0.4, #  curve( dlnorm(x, meanlog=log(1), sdlog=0.25), from=0.01, to=2 )
-    # for lognormal: cv = sqrt(exp(sigma^2) - 1); or sigma = sqrt(log(cv^2+ 1) ) ==> sigma = sqrt( log(0.25^2 + 1)) = 0.246 ~ cv -- i.e. cv ~ sd
+  
       IOA = as.matrix(res$B), # observed index of abundance
       IOAcv = as.matrix(res$B.sd ), # observed index of log abundance SD estimates ~ CV
       IREC = as.matrix(res$R), # observed index of abundance
