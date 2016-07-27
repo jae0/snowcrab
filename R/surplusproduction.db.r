@@ -1,5 +1,5 @@
 
-surplusproduction.db = function( DS, sourcedata="default" ) {
+surplusproduction.db = function( DS, sourcedata="default", debug.region="cfanorth" ) {
     # sb = surplusproduction.db( DS="jags.2015", sourcedata="nosa" ) 
     if (is.data.frame(sourcedata)) {
       res= sourcedata 
@@ -140,10 +140,10 @@ surplusproduction.db = function( DS, sourcedata="default" ) {
   }
 
   if ( DS %in% c("jags", "jags.2015")  ) {
-    #hard coded landings for sens 2004-2014
+    #AMC: hard coded landings for sens 2004-2014
     res$L[9:19,2] <- c(8.022, 6.407, 4.486,4.942,8.253,10.645,13.150,12.135,11.733,11.309,11.267)
 
-    #hard coded landings for cfa4x 2004-2014
+    #AMC: hard coded landings for cfa4x 2004-2014
     res$L[1:9,3] <- c(.004,res$L[1:8,3])
 
     ###  all data follow this sequence: c("cfanorth", "cfasouth", "cfa4x")
@@ -285,6 +285,39 @@ surplusproduction.db = function( DS, sourcedata="default" ) {
     sb$tomonitor = c( "r", "K", "q", "qs", "r.mu", "r.sd", "b","bp.sd", "bo.sd","b0", "b0.sd", "rem", "rem.sd", "rem.mu","REM", "MSY", "BMSY", "FMSY", "Fcrash", "Bdrop", "BX2MSY", "F", "TAC",  "C", "P", "B" )
 
     sb$jagsmodelname = "biomassdynamic_nonhyper_2014.bugs"
+    return(sb)
   }
+
+
+  if (DS %in% c("LaplacesDemon.debug")) {
+    # single region test
+
+    biomassindex = res$B[[debug.region]]
+    catch = res$L[[debug.region]]
+    yrs = as.numeric(rownames( res$B))
+    sb = list(
+      O = biomassindex, # observed index of abundance
+      Omissing0 = mean(biomassindex, na.rm=TRUE ),
+      removals = catch , # removalsches  , assume 20% handling mortality and illegal landings
+      removalsmissing0 = mean(catch, na.rm=TRUE ),
+      er = 0.2,  # target exploitation rate
+      N = length( biomassindex ) , # no years with data
+      M = 5, # no years for projections
+      MN = length( biomassindex ) + 5,
+      ty = which(yrs==2004) ,  # index of the transition year (2004) between spring and fall surveys
+      r0= 1,
+      K0= 65,
+      q0= mean(biomassindex, na.rm=TRUE)/65,
+      S0= 0.6, # normalised
+      cv = 0.5,
+      smax =1.25,
+      ii = 2:length(biomassindex),
+      jj = 1:(length(biomassindex)-1),
+      eps = 1e-6
+    )
+    
+    return(sb)
+  }
+
 
 }

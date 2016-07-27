@@ -94,30 +94,27 @@ surplus.production.simple.laplacesdemon.setup = function(Data) {
       Spred = Opred = rep(0, Data$N )   # initialize a few storage vectors
 
       # constraints:
-      parm[Data$idx$q] = interval( parm[Data$idx$q], Data$eps, 2 );
-      parm[Data$idx$r] = interval( parm[Data$idx$r], Data$eps, 2 );
-      parm[Data$idx$K] = interval( parm[Data$idx$K], log(Data$eps), log(Data$K0*2) );
-      parm[Data$idx$S0] = interval( parm[Data$idx$S0], log(Data$eps), log(Data$smax) );
-      parm[Data$idx$S] = interval( parm[Data$idx$S], log(Data$eps), log(Data$smax) );
+      parm[Data$idx$q] = LaplacesDemonCpp::interval( parm[Data$idx$q], Data$eps, 2 );
+      parm[Data$idx$r] = LaplacesDemonCpp::interval( parm[Data$idx$r], Data$eps, 2 );
+      parm[Data$idx$K] = LaplacesDemonCpp::interval( parm[Data$idx$K], log(Data$eps), log(Data$K0*2) );
+      parm[Data$idx$S0] = LaplacesDemonCpp::interval( parm[Data$idx$S0], log(Data$eps), log(Data$smax) );
+      parm[Data$idx$S] = LaplacesDemonCpp::interval( parm[Data$idx$S], log(Data$eps), log(Data$smax) );
 
-      parm[Data$idx$O_sd] = interval( parm[Data$idx$O_sd], Data$eps, 1)
-      parm[Data$idx$S_sd] = interval( parm[Data$idx$S_sd], Data$eps, 1)
+      parm[Data$idx$O_sd] = LaplacesDemonCpp::interval( parm[Data$idx$O_sd], Data$eps, 1)
+      parm[Data$idx$S_sd] = LaplacesDemonCpp::interval( parm[Data$idx$S_sd], Data$eps, 1)
 
       # these are SD's on log scale (0,1) is sufficient
       # continue with SD priors as these are now on correct scale
       
       loglik = c()
       loglik[Data$parm.names] = 0
-      loglik[Data$idx$q] = dhalfcauchy( parm[Data$idx$q], Data$cv,  TRUE ) ;
-      # loglik[Data$idx$q] = dnorm( parm[Data$idx$q], Data$q0, Data$cv,  TRUE ) ;
+      loglik[Data$idx$q] = LaplacesDemonCpp::dhalfcauchy( parm[Data$idx$q], Data$cv,  TRUE ) ;
       loglik[Data$idx$r] = dnorm( parm[Data$idx$r], Data$r0, Data$cv, TRUE ) ;
       loglik[Data$idx$K] = dnorm( parm[Data$idx$K], log(Data$K0), Data$cv, TRUE ) ;
       loglik[Data$idx$S0] = dnorm( parm[Data$idx$S0], log(Data$S0), Data$cv, TRUE ) ;
-      loglik[Data$idx$O_sd] = dhalfcauchy( parm[Data$idx$O_sd], Data$cv, TRUE );
-      loglik[Data$idx$S_sd] = dhalfcauchy( parm[Data$idx$S_sd], Data$cv, TRUE );
-      #loglik[Data$idx$O_sd] = dnorm( O_sd, Data$cv, 0.1, TRUE );
-      #loglik[Data$idx$S_sd] = dnorm( S_sd, Data$cv, 0.1, TRUE );
-
+      loglik[Data$idx$O_sd] = LaplacesDemonCpp::dhalfcauchy( parm[Data$idx$O_sd], Data$cv, TRUE );
+      loglik[Data$idx$S_sd] = LaplacesDemonCpp::dhalfcauchy( parm[Data$idx$S_sd], Data$cv, TRUE );
+    
       q = parm[Data$idx$q]
       r = parm[Data$idx$r]
       K = exp( parm[Data$idx$K] )
