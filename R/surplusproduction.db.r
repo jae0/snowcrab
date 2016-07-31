@@ -267,7 +267,6 @@ surplusproduction.db = function( DS, sourcedata="default", debug.region="cfanort
     sb$IRECcv[ cfa.north.bad.data, cfa.north ] = mean( sb$IRECcv[,cfa.north ] ,na.rm=T )
     sb$IREC[ cfa.north.bad.data, cfa.north ] = mean( sb$IREC[,cfa.north ] ,na.rm=T )
 
-
     cfa.south =  2 # column index
     cfa.south.bad.data = which( as.numeric(rownames(sb$IOA)) <= 1998 )
     sb$IOA[ cfa.south.bad.data, cfa.south ] = NA
@@ -291,32 +290,36 @@ surplusproduction.db = function( DS, sourcedata="default", debug.region="cfanort
 
 
   if (DS %in% c("LaplacesDemon.debug")) {
-    # single region test
 
-    biomassindex = res$B[[debug.region]]
-    catch = res$L[[debug.region]]
+    # single region test
+    K0est =list()
+    K0est[["cfanorth"]] = 5
+    K0est[["cfasouth"]] = 65
+    K0est[["cfa4x"]] = 5
+        
     yrs = as.numeric(rownames( res$B))
+    nforecasts = 5
+    
     sb = list(
-      O = biomassindex, # observed index of abundance
-      Omissing0 = mean(biomassindex, na.rm=TRUE ),
-      removals = catch , # removalsches  , assume 20% handling mortality and illegal landings
-      removalsmissing0 = mean(catch, na.rm=TRUE ),
+      Ndata = length(yrs),
+      Nforecasts = nforecasts, # no years for projections
+      O = res$B[[debug.region]], # observed index of abundance
+      log_O0 = mean( log(res$B[[debug.region]]), na.rm=TRUE ),
+      Omax = max( res$B[[debug.region]] *1.5 , na.rm=TRUE),
+      removals = res$L[[debug.region]] , # removalsches  , assume 20% handling mortality and illegal landings
+      log_removals0 = mean(log(res$L[[debug.region]]), na.rm=TRUE ),
       er = 0.2,  # target exploitation rate
-      N = length( biomassindex ) , # no years with data
-      M = 5, # no years for projections
-      MN = length( biomassindex ) + 5,
       ty = which(yrs==2004) ,  # index of the transition year (2004) between spring and fall surveys
       r0= 1,
-      K0= 65,
-      q0= mean(biomassindex, na.rm=TRUE)/65,
+      K0= K0est[[debug.region]],
+      q0= mean(res$B[[debug.region]], na.rm=TRUE)/K0est[[debug.region]],
       S0= 0.6, # normalised
-      cv = 0.5,
+      cv = 0.4,
       smax =1.25,
-      ii = 2:length(biomassindex),
-      jj = 1:(length(biomassindex)-1),
-      eps = 1e-6
+      eps = 1e-6, 
+      eps_1 = 1 - 1e-6
     )
-    
+
     return(sb)
   }
 
