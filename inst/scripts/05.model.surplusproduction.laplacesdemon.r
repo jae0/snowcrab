@@ -1,6 +1,6 @@
 
 
-require(LaplacesDemon)
+# require(LaplacesDemon)
 require(LaplacesDemonCpp)
 
 p = bio.snowcrab::load.environment( year.assessment=2016)
@@ -32,14 +32,17 @@ f.pml$par
 #print(sqrt( diag( solve(f.pml$hessian) )) ) # assymptotic standard errors
 
 
-f = LaplaceApproximation(sb$Model, Data=sb, parm=as.initial.values(f), Iterations=1000 ) 
+f = LaplacesDemon(sb$Model, Data=sb, Initial.Values=sb$PGF(sb), Iterations=1000, Status=100, Thinning=10) # quickly find main optima
 
-f = LaplacesDemon(sb$Model, Data=sb, Initial.Values=as.initial.values(f), Iterations=1000, Status=100, Thinning=1, Covar=f$Covar)  
+# f = LaplacesDemon.hpc(sb$Model, Data=sb, Initial.Values=as.initial.values(f), Iterations=1000, Status=100, Thinning=1, Covar=f$Covar)  
+
+f = LaplaceApproximation(sb$Model, Data=sb, parm=as.initial.values(f), Method="Roptim", method="BFGS", Stop.Tolerance=1e-9, Iterations = 5000  )
+f
+
 Consort(f)
 plot(f, Data=sb)
 
- PosteriorChecks(f)
-
+PosteriorChecks(f)
 
 
 # 4. quick solution: acts as "burn-in" .. do a few times in case solution is unstable
@@ -48,19 +51,19 @@ f = LaplaceApproximation(sb$Model, Data=sb, parm=as.initial.values(f), Iteration
 f = LaplaceApproximation(sb$Model, Data=sb, parm=as.initial.values(f), Method="BFGS", Stop.Tolerance=1e-8, Iterations=1000  ) 
 
 
-f = LaplacesDemon(sb$Model, Data=sb, Initial.Values=sb$PGF(sb), Iterations=5, Status=1, Thinning=1, Algorithm="NUTS", Covar=f$Covar, Specs=list(A=100, delta=0.6, epsilon=NULL, Lmax=Inf))  # A=burnin, delta=target acceptance rate
+f = LaplacesDemon(sb$Model, Data=sb, Initial.Values=sb$PGF(sb), Iterations=5000, Status=10, Thinning=10, Algorithm="NUTS", Covar=f$Covar, Specs=list(A=100, delta=0.6, epsilon=NULL, Lmax=Inf))  # A=burnin, delta=target acceptance rate
 
 f = LaplacesDemon.hpc(sb$Model, Data=sb, Initial.Values=sb$PGF(sb), Iterations=10, Status=1, Thinning=1, Algorithm="NUTS", Covar=f$Covar, Specs=list(A=100, delta=0.6, epsilon=NULL, Lmax=Inf))  # A=burnin, delta=target acceptance rate
 
 f = LaplacesDemon(sb$Model, Data=sb, Initial.Values=sb$PGF(sb), Iterations=1000, Status=100, Thinning=1)
 
-f = LaplaceApproximation(sb$Model, Data=sb, parm=as.initial.values(f), Method="optim", Stop.Tolerance=1e-8, Iterations = 5000, method="Nelder-Mead", control=list(maxit=5, reltol=1e-9 ) )
+f = LaplaceApproximation(sb$Model, Data=sb, parm=as.initial.values(f), Method="Roptim", Stop.Tolerance=1e-8, Iterations = 5000, method="Nelder-Mead", control=list(maxit=5, reltol=1e-9 ) )
 f
 
-f = LaplaceApproximation(sb$Model, Data=sb, parm=as.initial.values(f), Method="optim", Stop.Tolerance=1e-8, Iterations = 1000, method="L-BFGS-B", control=list(maxit=10, reltol=1e-8 ) )
+f = LaplaceApproximation(sb$Model, Data=sb, parm=as.initial.values(f), Method="Roptim", Stop.Tolerance=1e-8, Iterations = 1000, method="L-BFGS-B", control=list(maxit=10, reltol=1e-8 ) )
 
 
-f = LaplaceApproximation(sb$Model, Data=sb, parm=as.initial.values(f), Method="optim", method="BFGS", Stop.Tolerance=1e-9, Iterations = 1000  )
+f = LaplaceApproximation(sb$Model, Data=sb, parm=as.initial.values(f), Method="Roptim", method="BFGS", Stop.Tolerance=1e-9, Iterations = 1000  )
 
 
 f = LaplaceApproximation(sb$Model, Data=sb, parm=as.initial.values(f)  ) # fast spin up of paramters
@@ -125,7 +128,7 @@ f <- LaplacesDemon(sb$Model, Data=sb,
 
 # medium speed .. increase Iterations til convergence
 f = VariationalBayes(sb$Model, Data=sb,  parm=as.initial.values(f), Iterations=100,  Samples=10, CPUs=5 )
-f = VariationalBayes(sb$Model, Data=sb,  parm=as.initial.values(f), Iterations=1000,  Samples=1000, CPUs=5 Stop.Tolerance=1e-9)
+f = VariationalBayes(sb$Model, Data=sb,  parm=as.initial.values(f), Iterations=5000,  Samples=100, CPUs=5 ,Stop.Tolerance=1e-9)
 
 # slow
 f = IterativeQuadrature(sb$Model, Data=sb, parm=as.initial.values(f), Iterations=10, Algorithm="AGH",

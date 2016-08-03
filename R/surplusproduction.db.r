@@ -310,9 +310,9 @@ surplusproduction.db = function( DS, sourcedata="default", debug.region="cfanort
       log_removals0 = mean(log(res$L[[debug.region]]), na.rm=TRUE ),
       er = 0.2,  # target exploitation rate
       ty = which(yrs==2004) ,  # index of the transition year (2004) between spring and fall surveys
-      r0= 1,
-      K0= K0est[[debug.region]],
-      q0= mean(res$B[[debug.region]], na.rm=TRUE)/K0est[[debug.region]],
+      log_r0= log(1),
+      log_K0= log(K0est[[debug.region]]),
+      log_q0= log(mean(res$B[[debug.region]], na.rm=TRUE)/K0est[[debug.region]]),
       S0= 0.6, # normalised
       cv = 0.4,
       smax =1.25,
