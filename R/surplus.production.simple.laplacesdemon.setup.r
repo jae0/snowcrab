@@ -88,14 +88,14 @@ surplus.production.simple.laplacesdemon.setup = function(Data) {
   # Parameter Generating Function
   # these parameters are operate on the log-scale to force positive values ...
   Data$PGF = function(Data) {
-    r = runif( 1, log(0.5), log(1.5) )
-    K = runif( 1, log(Data$K0/2), log(Data$K0*2) ) 
-    q = runif( 1, log(Data$eps),  log(1.5) )
-    S_sd = runif( 1, log(Data$eps), log(Data$cv*2) );
-    O_sd = runif( 1, log(Data$eps), log(Data$cv*2) );
-    S = log( rbeta( Data$N, 5, 5 ) + Data$eps ) 
-    S0 = runif( 1, log(0.1), log(0.8) ); 
-    out = c(r, K, q, S_sd, O_sd, S, S0) 
+    r = runif( 1, 0.5, 1.5 )
+    K = runif( 1, Data$K0/2, Data$K0*2 ) 
+    q = runif( 1, Data$eps,  1.5 )
+    S_sd = runif( 1, Data$eps, Data$cv*2 );
+    O_sd = runif( 1, Data$eps, Data$cv*2 );
+    S =  rbeta( Data$N, 5, 5 ) + Data$eps  
+    S0 = runif( 1, 0.1, 0.8 ); 
+    out = log(c(r, K, q, S_sd, O_sd, S, S0) )
     return( out  )
   }
   Data$PGF = compiler::cmpfun(Data$PGF)
@@ -116,7 +116,7 @@ surplus.production.simple.laplacesdemon.setup = function(Data) {
     
     S = pm[Data$pos$S] 
     O_sd = pm[Data$pos$O_sd]  
-    S_sd = pm[Data$pos$S_sd] ()
+    S_sd = pm[Data$pos$S_sd] 
     Spred[1] = pm[Data$pos$S0] 
     
     llkimpute = 0

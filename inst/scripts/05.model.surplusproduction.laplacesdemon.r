@@ -21,28 +21,47 @@ sb$mon.names = c("LP", "r", "K", "q")
 sb$Model( parm=sb$PGF(sb), Data=sb ) 
 
 # 2. maximum likelihood solution
-f.ml = optim( par=sb$PGF(sb), fn=sb$Model.ML, Data=sb,  method="BFGS", hessian=TRUE, control=list(maxit=5000, trace=1)  )
+f.ml = optim( par=sb$PGF(sb), fn=sb$Model.ML, Data=sb,  method="CG", hessian=TRUE, control=list(maxit=5000, trace=1)  )
 names(f.ml$par ) = sb$parm.names
-f.ml$par
+exp(f.ml$par)
 
 # 3. penalized maximum likelihood .. better but still a little unstable depending on algorithm
-f.pml = optim( par=sb$PGF(sb), fn=sb$Model.PML, Data=sb,  method="BFGS", control=list(maxit=5000, trace=1), hessian=TRUE )
+f.pml = optim( par=sb$PGF(sb), fn=sb$Model.PML, Data=sb,  method="CG", control=list(maxit=5000, trace=1), hessian=TRUE )
 names(f.pml$par ) = sb$parm.names
 f.pml$par
 #print(sqrt( diag( solve(f.pml$hessian) )) ) # assymptotic standard errors
-
+exp(f.pml$par)
 
 f = LaplacesDemon(sb$Model, Data=sb, Initial.Values=sb$PGF(sb), Iterations=1000, Status=100, Thinning=10) # quickly find main optima
 
-# f = LaplacesDemon.hpc(sb$Model, Data=sb, Initial.Values=as.initial.values(f), Iterations=1000, Status=100, Thinning=1, Covar=f$Covar)  
+f = LaplacesDemon.hpc(sb$Model, Data=sb, Initial.Values=as.initial.values(f), Iterations=5000, Status=100, Thinning=100, Covar=f$Covar)  
 
-f = LaplaceApproximation(sb$Model, Data=sb, parm=as.initial.values(f), Method="Roptim", method="BFGS", Stop.Tolerance=1e-9, Iterations = 5000  )
+f = LaplaceApproximation(sb$Model, Data=sb, parm=as.initial.values(f), Method="Roptim", method="BFGS", Stop.Tolerance=1e-12, Iterations = 10000  )
 f
 
 Consort(f)
 plot(f, Data=sb)
 
 PosteriorChecks(f)
+
+
+f0 = LaplacesDemon(sb$Model, Data=sb, Initial.Values=sb$PGF(sb), Iterations=1000, Status=100, Thinning=1)
+
+
+f = LaplaceApproximation(sb$Model, Data=sb, parm=as.initial.values(f0), Method="SR1", Iterations=10000  ) 
+
+f = LaplaceApproximation(sb$Model, Data=sb, parm=as.initial.values(f0), Method="TR", Iterations=10000  ) 
+
+
+f = LaplaceApproximation(sb$Model, Data=sb, parm=as.initial.values(f0), Method="BFGS", Iterations=10000  ) 
+
+
+f = LaplaceApproximation(sb$Model, Data=sb, parm=as.initial.values(f0), Method="PSO", Iterations=10000  ) 
+
+
+f = LaplaceApproximation(sb$Model, Data=sb, parm=as.initial.values(f0), Method="SPG", Iterations=10000  ) 
+
+
 
 
 # 4. quick solution: acts as "burn-in" .. do a few times in case solution is unstable
@@ -60,10 +79,8 @@ f = LaplacesDemon(sb$Model, Data=sb, Initial.Values=sb$PGF(sb), Iterations=1000,
 f = LaplaceApproximation(sb$Model, Data=sb, parm=as.initial.values(f), Method="Roptim", Stop.Tolerance=1e-8, Iterations = 5000, method="Nelder-Mead", control=list(maxit=5, reltol=1e-9 ) )
 f
 
-f = LaplaceApproximation(sb$Model, Data=sb, parm=as.initial.values(f), Method="Roptim", Stop.Tolerance=1e-8, Iterations = 1000, method="L-BFGS-B", control=list(maxit=10, reltol=1e-8 ) )
+f = LaplaceApproximation(sb$Model, Data=sb, parm=as.initial.values(f), Method="Roptim", Stop.Tolerance=1e-8, Iterations = 1000, method="L-BFGS-B", control=list(maxit=10, reltol=1e-10 ) )
 
-
-f = LaplaceApproximation(sb$Model, Data=sb, parm=as.initial.values(f), Method="Roptim", method="BFGS", Stop.Tolerance=1e-9, Iterations = 1000  )
 
 
 f = LaplaceApproximation(sb$Model, Data=sb, parm=as.initial.values(f)  ) # fast spin up of paramters
@@ -73,10 +90,12 @@ f = LaplaceApproximation(sb$Model, Data=sb, parm=as.initial.values(f), Method="B
 # NOTES: NM is slow
 # algorithms = c( "TR", "LM", "CG", "NR", "NM", "SPG", "LBFGS", "BFGS", "PSO", "SR1", "HAR", "DFP", "BHHH", "HJ", "Rprop" ) # available
 # algorithms = c( "CG", "NM", "SPG", "LBFGS", "BFGS", "PSO", "SR1", "HAR", "DFP", "Rprop" ) # reliably working
+f = LaplacesDemon(sb$Model, Data=sb, Initial.Values=sb$PGF(sb), Iterations=500, Status=100, Thinning=1)
+
 algorithms = c( "CG", "LBFGS", "BFGS", "PSO", "SR1", "HAR", "DFP", "Rprop" ) # reliably working
 for (a in algorithms) {
   print(a)
-  ft = try( LaplaceApproximation(sb$Model, Data=sb, parm=as.initial.values(f), Method=a, Stop.Tolerance=tol, Iterations=n.iter ) )
+  ft = try( LaplaceApproximation(sb$Model, Data=sb, parm=as.initial.values(f), Method=a, Stop.Tolerance=1e-9, Iterations=5000 ) )
   if (! class(ft) %in% "try-error" ) if (ft$Converged) if( ft$LP.Final > f$LP.Final )  {
     f = ft
     f$Method = a 
