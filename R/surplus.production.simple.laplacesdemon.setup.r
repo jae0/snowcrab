@@ -12,7 +12,12 @@ surplus.production.simple.laplacesdemon.setup = function(Data) {
 
   # compute a few things here that are constant in the model
   Data$N = Data$Ndata + Data$Nforecasts # no years with data + projections
+  Data$q0 = exp( Data$log_q0) 
+  Data$r0 = exp( Data$log_r0) 
   Data$K0 = exp( Data$log_K0) 
+  Data$removals0 = exp(Data$log_removals0)
+  Data$O0 = exp(Data$log_O0)
+  Data$O_range = range( Data$O, na.rm=TRUE)
 
   # ----------------------------------
 
@@ -57,11 +62,16 @@ surplus.production.simple.laplacesdemon.setup = function(Data) {
   # ----------------------------------
   # paramater names and initial values
   Data$parm.names = as.parm.names( list(
-    r = Data$log_r0,
-    K = Data$log_K0,
-    q = Data$log_q0,
-    S_sd = Data$cv,
-    O_sd = Data$cv,
+    r = Data$r0,
+    K = Data$K0,
+    q = Data$q0,
+    r_sd = Data$r0,
+    K_sd = Data$K0,
+    q_sd = Data$q0,
+    S0_sd = Data$S0,
+    S_sd = Data$S0,
+    O_sd = Data$O0,
+    R_sd = Data$removals0,
     S = rep( Data$S0, Data$N),
     S0 = Data$S0
   ) )
@@ -72,8 +82,13 @@ surplus.production.simple.laplacesdemon.setup = function(Data) {
     r=grep("\\<r\\>", Data$parm.names),
     K=grep("\\<K\\>", Data$parm.names),
     q=grep("\\<q\\>", Data$parm.names),
+    r_sd = grep("\\<r_sd\\>", Data$parm.names), 
+    K_sd = grep("\\<K_sd\\>", Data$parm.names),
+    q_sd = grep("\\<q_sd\\>", Data$parm.names),
+    S0_sd = grep("\\<S0_sd\\>", Data$parm.names),
     S_sd=grep("\\<S_sd\\>", Data$parm.names),
     O_sd=grep("\\<O_sd\\>", Data$parm.names),
+    R_sd =grep("\\<R_sd\\>", Data$parm.names),
     S=grep("\\<S\\>", Data$parm.names),
     S0=grep("\\<S0\\>", Data$parm.names)
   )
@@ -88,11 +103,16 @@ surplus.production.simple.laplacesdemon.setup = function(Data) {
   # Parameter Generating Function
   # these parameters are operate on the log-scale to force positive values ...
   Data$PGF = function(Data) {
-    r = runif( 1, 0.5, 1.5 )
+    r = runif( 1, Data$r0/2, Data$r0*2 )
     K = runif( 1, Data$K0/2, Data$K0*2 ) 
-    q = runif( 1, Data$eps,  1.5 )
-    S_sd = runif( 1, Data$eps, Data$cv*2 );
-    O_sd = runif( 1, Data$eps, Data$cv*2 );
+    q = runif( 1, Data$q0/2, Data$q0*2 )
+    r_sd = runif( Data$eps, Data$r0/2)
+    K_sd = runif( Data$eps, Data$K0/2)
+    q_sd = runif( Data$eps, Data$q0/2)
+    S0_sd = runif( Data$eps, Data$S0/2)
+    S_sd = runif( 1, Data$eps, 0.5 );
+    O_sd = runif( 1, Data$eps, Data$O0/2 );
+    R_sd = runif( 1, Data$eps, Data$removals0/2 );
     S =  rbeta( Data$N, 5, 5 ) + Data$eps  
     S0 = runif( 1, 0.1, 0.8 ); 
     out = log(c(r, K, q, S_sd, O_sd, S, S0) )
@@ -113,41 +133,54 @@ surplus.production.simple.laplacesdemon.setup = function(Data) {
     q = pm[Data$pos$q]
     r = pm[Data$pos$r]
     K = pm[Data$pos$K]
-    
     S = pm[Data$pos$S] 
-    O_sd = pm[Data$pos$O_sd]  
-    S_sd = pm[Data$pos$S_sd] 
     Spred[1] = pm[Data$pos$S0] 
+   
+   # SD params stay on log-scale
+    q_sd = parm[Data$pos$q_sd]
+    r_sd = parm[Data$pos$r_sd]
+    K_sd = parm[Data$pos$K_sd]
+    S0_sd = parm[Data$pos$S0_sd]
+    O_sd = parm[Data$pos$O_sd]  
+    S_sd = parm[Data$pos$S_sd] 
+    R_sd = parm[Data$pos$r_sd] 
     
     llkimpute = 0
     llkprior = c()
     llkprior[Data$parm.names] = 0
-    llkprior[Data$pos$q] = dnorm( parm[Data$pos$q], Data$log_q0, Data$cv, TRUE ) ;
-    llkprior[Data$pos$r] = dnorm( parm[Data$pos$r], Data$log_r0, Data$cv, TRUE ) ;
-    llkprior[Data$pos$K] = dnorm( parm[Data$pos$K], Data$log_K0, Data$cv, TRUE ) ;
-    llkprior[Data$pos$S0] = dnorm( parm[Data$pos$S0], log(Data$S0), Data$cv, TRUE ) ;
-    llkprior[Data$pos$O_sd] = dnorm( parm[Data$pos$O_sd], log(Data$cv), Data$cv, TRUE );
-    llkprior[Data$pos$S_sd] = dnorm( parm[Data$pos$S_sd], log(Data$cv), Data$cv, TRUE );
+    llkprior[Data$pos$q] = dnorm( parm[Data$pos$q], Data$log_q0, q_sd, TRUE ) ;
+    llkprior[Data$pos$r] = dnorm( parm[Data$pos$r], Data$log_r0, r_sd, TRUE ) ;
+    llkprior[Data$pos$K] = dnorm( parm[Data$pos$K], Data$log_K0, K_sd, TRUE ) ;
+    llkprior[Data$pos$S0] = dnorm( parm[Data$pos$S0], log(Data$S0), S0_sd, TRUE ) ;
+
+    llkprior[Data$pos$q_sd] = dhalfcauchy( pm[Data$pos$q_sd], Data$q0, TRUE );
+    llkprior[Data$pos$r_sd] = dhalfcauchy( pm[Data$pos$r_sd], Data$r0, TRUE );
+    llkprior[Data$pos$K_sd] = dhalfcauchy( pm[Data$pos$K_sd], Data$K0, TRUE );
+    llkprior[Data$pos$S0_sd] = dhalfcauchy( pm[Data$pos$S0_sd], Data$S0, TRUE );
+    llkprior[Data$pos$O_sd] = dhalfcauchy( pm[Data$pos$O_sd], Data$O_range[2], TRUE );
+    llkprior[Data$pos$S_sd] = dhalfcauchy( pm[Data$pos$S_sd], 1, TRUE );
+    llkprior[Data$pos$R_sd] = dhalfcauchy( pm[Data$pos$R_sd], Data$removals0, TRUE );
 
     R = Data$removals/K ;# make sure it is producing sensible values:
     # impute missing data 
 
     if ( Data$Missing$removals$n > 0 ) {
       R[Data$Missing$removals$idx ] = runif( Data$Missing$removals$n, Data$eps, Data$K0 )
-      llkimpute = llkimpute + sum( dnorm( log(R[Data$Missing$removals$idx ]), Data$log_removals0, Data$cv, TRUE ) );
+      llkimpute = llkimpute + sum( dnorm( log(R[Data$Missing$removals$idx ]), Data$log_removals0, R_sd, TRUE ) );
     }
     if ( Data$Missing$O$n > 0 ) {
       Data$O[Data$Missing$O$idx ] = runif( Data$Missing$O$n, Data$eps, Data$K0 )
-      llkimpute = llkimpute + sum(dnorm( log(Data$O[Data$Missing$O$idx ]), Data$log_O0, Data$cv, TRUE ) ) ;    
+      llkimpute = llkimpute + sum(dnorm( log(Data$O[Data$Missing$O$idx ]), Data$log_O0, O_sd, TRUE ) ) ;    
     }
     if ( Data$Forecasts$n > 0 ) {
       R[Data$Forecasts$idx] = S[Data$Forecasts$idx_1] * Data$er 
-      llkimpute = llkimpute + sum(dnorm( log(R[Data$Forecasts$idx]), Data$log_removals0, Data$cv, TRUE )) ;
+      llkimpute = llkimpute + sum(dnorm( log(R[Data$Forecasts$idx]), Data$log_removals0, R_sd, TRUE )) ;
+      Data$O[Data$Forecasts$idx] = runif( Data$Forecasts$n, Data$O_range[1], Data$O_range[2]  )
+      # likelihood below
     }
 
-    # process model
-    AR = 1.0 + r*{1-S[Data$idx$iprevious]} ;  # "autocorelation" component
-    Spred[ Data$idx$icurrent] = S[Data$idx$iprevious] * AR - R[Data$idx$iprevious] ;  # simple logistic
+    # process model -- simple logistic
+    Spred[ Data$idx$icurrent] = S[Data$idx$iprevious] * 1.0 + r*{1-S[Data$idx$iprevious]} - R[Data$idx$iprevious] ;  # 
     Spred = bio.utilities::truncate.vector( Spred, lower=Data$eps ) 
     llkprior[Data$pos$S] = dnorm( parm[Data$pos$S] , log(Spred), S_sd, TRUE ) 
 
@@ -158,7 +191,7 @@ surplus.production.simple.laplacesdemon.setup = function(Data) {
     Opred[Data$idx$t4] = S[Data$idx$t4] - R[Data$idx$t4] ;
     Opred = K*q*Opred
     Opred = bio.utilities::truncate.vector( Opred, Data$eps )
-    llkdata = dnorm( log(Data$O[Data$idx$idata]), log(Opred[Data$idx$idata]), O_sd, TRUE )
+    llkdata = dnorm( log(Data$O), log(Opred), O_sd, TRUE )
  
     # additional computed variables of interest 
     ER = R / S ;
@@ -166,7 +199,8 @@ surplus.production.simple.laplacesdemon.setup = function(Data) {
     B = S*K
     C = R*K
     F = -log( 1 - ER) ; # fishing mortality
-          
+    AR = S[ Data$idx$icurrent] / S[Data$idx$iprevious] ;  # "autocorelation" component
+
     LL = sum( llkdata )  # log likelihood (of the data)
     LP = LL + sum( llkprior ) + sum(llkimpute) # log posterior
     out = list( LP=LP, Dev=-2*LL, Monitor=c(LP, r, K, q), yhat=S*K, parm=parm )
