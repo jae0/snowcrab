@@ -1,6 +1,5 @@
 
 
-# require(LaplacesDemon)
 require(LaplacesDemonCpp)
 
 p = bio.snowcrab::load.environment( year.assessment=2016)
@@ -21,20 +20,28 @@ sb$mon.names = c("LP", "r", "K", "q")
 sb$Model( parm=sb$PGF(sb), Data=sb ) 
 
 # 2. maximum likelihood solution
-f.ml = optim( par=sb$PGF(sb), fn=sb$Model.ML, Data=sb,  method="CG", hessian=TRUE, control=list(maxit=5000, trace=1)  )
+f.ml = optim( par=sb$PGF(sb), fn=sb$Model.ML, Data=sb, control=list(maxit=5000, trace=1)  )
 names(f.ml$par ) = sb$parm.names
 exp(f.ml$par)
 
 # 3. penalized maximum likelihood .. better but still a little unstable depending on algorithm
-f.pml = optim( par=sb$PGF(sb), fn=sb$Model.PML, Data=sb,  method="CG", control=list(maxit=5000, trace=1), hessian=TRUE )
+f.pml = optim( par=sb$PGF(sb), fn=sb$Model.PML, Data=sb,  control=list(maxit=5000, trace=1) )
 names(f.pml$par ) = sb$parm.names
 f.pml$par
 #print(sqrt( diag( solve(f.pml$hessian) )) ) # assymptotic standard errors
 exp(f.pml$par)
 
-f = LaplacesDemon(sb$Model, Data=sb, Initial.Values=sb$PGF(sb), Iterations=1000, Status=100, Thinning=10) # quickly find main optima
 
-f = LaplacesDemon.hpc(sb$Model, Data=sb, Initial.Values=as.initial.values(f), Iterations=5000, Status=100, Thinning=100, Covar=f$Covar)  
+f = LaplacesDemon(sb$Model, Data=sb, Initial.Values=sb$PGF(sb), Iterations=1000, Status=100, Thinning=10) # quickly find main optima
+Initial.Values <- as.initial.values(f)
+f <- LaplacesDemon(sb$Model, Data=sb, Initial.Values,
+     Covar=f$Covar, Iterations=20000, Status=1000, Thinning=1000,
+     Algorithm="CHARM", Specs=NULL)
+
+
+f = LaplacesDemon.hpc(sb$Model, Data=sb, Initial.Values=as.initial.values(f), Iterations=10000, Status=100, Thinning=100, Covar=f$Covar)  
+
+
 
 f = LaplaceApproximation(sb$Model, Data=sb, parm=as.initial.values(f), Method="Roptim", method="BFGS", Stop.Tolerance=1e-12, Iterations = 10000  )
 f
@@ -53,7 +60,7 @@ f = LaplaceApproximation(sb$Model, Data=sb, parm=as.initial.values(f0), Method="
 f = LaplaceApproximation(sb$Model, Data=sb, parm=as.initial.values(f0), Method="TR", Iterations=10000  ) 
 
 
-f = LaplaceApproximation(sb$Model, Data=sb, parm=as.initial.values(f0), Method="BFGS", Iterations=10000  ) 
+f = LaplaceApproximation(sb$Model, Data=sb, parm=as.initial.values(f0), Method="BFGS", Iterations=1000  ) 
 
 
 f = LaplaceApproximation(sb$Model, Data=sb, parm=as.initial.values(f0), Method="PSO", Iterations=10000  ) 

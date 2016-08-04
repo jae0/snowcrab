@@ -106,16 +106,16 @@ surplus.production.simple.laplacesdemon.setup = function(Data) {
     r = runif( 1, Data$r0/2, Data$r0*2 )
     K = runif( 1, Data$K0/2, Data$K0*2 ) 
     q = runif( 1, Data$q0/2, Data$q0*2 )
-    r_sd = runif( Data$eps, Data$r0/2)
-    K_sd = runif( Data$eps, Data$K0/2)
-    q_sd = runif( Data$eps, Data$q0/2)
-    S0_sd = runif( Data$eps, Data$S0/2)
+    r_sd = runif( 1, Data$eps, Data$r0/4)
+    K_sd = runif( 1, Data$eps, Data$K0/4)
+    q_sd = runif( 1, Data$eps, Data$q0/4)
+    S0_sd = runif( 1, Data$eps, Data$S0/4)
     S_sd = runif( 1, Data$eps, 0.5 );
-    O_sd = runif( 1, Data$eps, Data$O0/2 );
-    R_sd = runif( 1, Data$eps, Data$removals0/2 );
+    O_sd = runif( 1, Data$eps, Data$O0/4 );
+    R_sd = runif( 1, Data$eps, Data$removals0/4 );
     S =  rbeta( Data$N, 5, 5 ) + Data$eps  
     S0 = runif( 1, 0.1, 0.8 ); 
-    out = log(c(r, K, q, S_sd, O_sd, S, S0) )
+    out = log(c(r, K, q, r_sd, K_sd, q_sd, S0_sd, S_sd, O_sd, R_sd, S, S0) )
     return( out  )
   }
   Data$PGF = compiler::cmpfun(Data$PGF)
