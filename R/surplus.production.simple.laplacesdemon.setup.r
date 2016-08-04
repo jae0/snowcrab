@@ -137,13 +137,13 @@ surplus.production.simple.laplacesdemon.setup = function(Data) {
     Spred[1] = pm[Data$pos$S0] 
    
    # SD params stay on log-scale
-    q_sd = parm[Data$pos$q_sd]
-    r_sd = parm[Data$pos$r_sd]
-    K_sd = parm[Data$pos$K_sd]
-    S0_sd = parm[Data$pos$S0_sd]
-    O_sd = parm[Data$pos$O_sd]  
-    S_sd = parm[Data$pos$S_sd] 
-    R_sd = parm[Data$pos$r_sd] 
+    q_sd = pm[Data$pos$q_sd]
+    r_sd = pm[Data$pos$r_sd]
+    K_sd = pm[Data$pos$K_sd]
+    S0_sd = pm[Data$pos$S0_sd]
+    O_sd = pm[Data$pos$O_sd]  
+    S_sd = pm[Data$pos$S_sd] 
+    R_sd = pm[Data$pos$r_sd] 
     
     llkimpute = 0
     llkprior = c()
@@ -157,8 +157,8 @@ surplus.production.simple.laplacesdemon.setup = function(Data) {
     llkprior[Data$pos$r_sd] = dhalfcauchy( pm[Data$pos$r_sd], Data$r0, TRUE );
     llkprior[Data$pos$K_sd] = dhalfcauchy( pm[Data$pos$K_sd], Data$K0, TRUE );
     llkprior[Data$pos$S0_sd] = dhalfcauchy( pm[Data$pos$S0_sd], Data$S0, TRUE );
-    llkprior[Data$pos$O_sd] = dhalfcauchy( pm[Data$pos$O_sd], Data$O_range[2], TRUE );
-    llkprior[Data$pos$S_sd] = dhalfcauchy( pm[Data$pos$S_sd], 1, TRUE );
+    llkprior[Data$pos$O_sd] = dhalfcauchy( pm[Data$pos$O_sd], Data$O0, TRUE );
+    llkprior[Data$pos$S_sd] = dhalfcauchy( pm[Data$pos$S_sd], 0.5, TRUE );
     llkprior[Data$pos$R_sd] = dhalfcauchy( pm[Data$pos$R_sd], Data$removals0, TRUE );
 
     R = Data$removals/K ;# make sure it is producing sensible values:
