@@ -307,7 +307,7 @@ surplusproduction.db = function( DS, sourcedata="default", debug.region="cfanort
       log_O0 = mean( log(res$B[[debug.region]]), na.rm=TRUE ),
       Omax = max( res$B[[debug.region]] *1.5 , na.rm=TRUE),
       removals = res$L[[debug.region]] , # removalsches  , assume 20% handling mortality and illegal landings
-      log_removals0 = mean(log(res$L[[debug.region]]), na.rm=TRUE ),
+      log_R0 = log(mean(res$L[[debug.region]], na.rm=TRUE )/K0est[[debug.region]]),
       er = 0.2,  # target exploitation rate
       ty = which(yrs==2004) ,  # index of the transition year (2004) between spring and fall surveys
       log_r0= log(1),

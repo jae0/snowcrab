@@ -4,9 +4,9 @@ require(LaplacesDemonCpp)
 
 p = bio.snowcrab::load.environment( year.assessment=2016)
 
-debug.region="cfanorth" 
-debug.region="cfasouth"
 debug.region="cfa4x"
+debug.region="cfasouth"
+debug.region="cfanorth" 
 
 sb = surplusproduction.db( DS="LaplacesDemon.debug", sourcedata="nosa", debug.region=debug.region) 
 sb = surplus.production.simple.laplacesdemon.setup( sb )   # set up the model
@@ -15,21 +15,19 @@ sb = surplus.production.simple.laplacesdemon.setup( sb )   # set up the model
 # sb$mon.names = c("LP", "r", "K", "q", paste0("S",1:Data$N), paste0("AR",1:(Data$N-1) ) ) 
 sb$mon.names = c("LP", "r", "K", "q") 
 
-# make sure it is producing sensible values:
-# 1. one pass:
-sb$Model( parm=sb$PGF(sb), Data=sb ) 
 
 # 2. maximum likelihood solution
-f.ml = optim( par=sb$PGF(sb), fn=sb$Model.ML, Data=sb, control=list(maxit=5000, trace=1)  )
+f.ml = optim( par=sb$PGF(sb), fn=sb$Model.ML, Data=sb, control=list(maxit=5000, trace=0), hessian=TRUE  )
 names(f.ml$par ) = sb$parm.names
-exp(f.ml$par)
+#print(sqrt( diag( solve(f.ml$hessian) )) ) # assymptotic standard errors
+(f.ml$par)
 
 # 3. penalized maximum likelihood .. better but still a little unstable depending on algorithm
-f.pml = optim( par=sb$PGF(sb), fn=sb$Model.PML, Data=sb,  control=list(maxit=5000, trace=1) )
+f.pml = optim( par=sb$PGF(sb), fn=sb$Model.PML, Data=sb,  control=list(maxit=5000, trace=0), hessian=TRUE )
 names(f.pml$par ) = sb$parm.names
 f.pml$par
 #print(sqrt( diag( solve(f.pml$hessian) )) ) # assymptotic standard errors
-exp(f.pml$par)
+(f.pml$par)
 
 
 f = LaplacesDemon(sb$Model, Data=sb, Initial.Values=sb$PGF(sb), Iterations=1000, Status=100, Thinning=10) # quickly find main optima
@@ -39,7 +37,7 @@ f <- LaplacesDemon(sb$Model, Data=sb, Initial.Values,
      Algorithm="CHARM", Specs=NULL)
 
 
-f = LaplacesDemon.hpc(sb$Model, Data=sb, Initial.Values=as.initial.values(f), Iterations=10000, Status=100, Thinning=100, Covar=f$Covar)  
+f = LaplacesDemon(sb$Model, Data=sb, Initial.Values=as.initial.values(f), Iterations=5000, Status=100, Thinning=25, Covar=f$Covar)  
 
 
 

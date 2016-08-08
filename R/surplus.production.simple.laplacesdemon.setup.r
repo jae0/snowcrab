@@ -6,6 +6,7 @@ surplus.production.simple.laplacesdemon.setup = function(Data) {
   # set up model for a simple surplus production model 
   # to be solved by the Rlibrary: LaplacesDemon (or alternately via penalized Maximum Likelihood) 
 
+  
 
   # ----------------------------------
   # Identify location and number of missing values -- prediction locations are treated the same way
@@ -15,7 +16,7 @@ surplus.production.simple.laplacesdemon.setup = function(Data) {
   Data$q0 = exp( Data$log_q0) 
   Data$r0 = exp( Data$log_r0) 
   Data$K0 = exp( Data$log_K0) 
-  Data$removals0 = exp(Data$log_removals0)
+  Data$R0 = exp(Data$log_R0)
   Data$O0 = exp(Data$log_O0)
   Data$O_range = range( Data$O, na.rm=TRUE)
 
@@ -61,7 +62,7 @@ surplus.production.simple.laplacesdemon.setup = function(Data) {
 
   # ----------------------------------
   # paramater names and initial values
-  Data$parm.names = as.parm.names( list(
+  Data$parm.names = list(
     r = Data$r0,
     K = Data$K0,
     q = Data$q0,
@@ -71,10 +72,13 @@ surplus.production.simple.laplacesdemon.setup = function(Data) {
     S0_sd = Data$S0,
     S_sd = Data$S0,
     O_sd = Data$O0,
-    R_sd = Data$removals0,
+    R_sd = Data$R0,
     S = rep( Data$S0, Data$N),
     S0 = Data$S0
-  ) )
+  ) 
+  if (Data$Missing$removals$n > 0) Data$parm.names$removals_imp = rep(0, Data$Missing$removals$n)
+  if (Data$Missing$O$n > 0) Data$parm.names$O_imp = rep(0, Data$Missing$O$n)
+  Data$parm.names = as.parm.names( Data$parm.names )
 
   # ----------------------------------
   # index position of paramaters
@@ -92,7 +96,9 @@ surplus.production.simple.laplacesdemon.setup = function(Data) {
     S=grep("\\<S\\>", Data$parm.names),
     S0=grep("\\<S0\\>", Data$parm.names)
   )
- 
+  if (Data$Missing$removals$n > 0) Data$pos$removals_imp = grep("\\<removals_imp\\>", Data$parm.names)
+  if (Data$Missing$O$n > 0) Data$pos$O_imp = grep("\\<O_imp\\>", Data$parm.names)
+
   # ----------------------------------
   # monitoring nodes
   Data$mon.names = c("LP", "r", "K", "q" )
@@ -112,10 +118,18 @@ surplus.production.simple.laplacesdemon.setup = function(Data) {
     S0_sd = runif( 1, Data$eps, Data$S0/4)
     S_sd = runif( 1, Data$eps, 0.5 );
     O_sd = runif( 1, Data$eps, Data$O0/4 );
-    R_sd = runif( 1, Data$eps, Data$removals0/4 );
+    R_sd = runif( 1, Data$eps, Data$R0/4 );
     S =  rbeta( Data$N, 5, 5 ) + Data$eps  
     S0 = runif( 1, 0.1, 0.8 ); 
-    out = log(c(r, K, q, r_sd, K_sd, q_sd, S0_sd, S_sd, O_sd, R_sd, S, S0) )
+    out = c(r, K, q, r_sd, K_sd, q_sd, S0_sd, S_sd, O_sd, R_sd, S, S0) 
+    if (Data$Missing$removals$n > 0) {
+      removals_imp = runif( Data$Missing$removals$n, Data$eps, 1 )
+      out = c( out, removals_imp )
+    }
+    if (Data$Missing$O$n > 0) {
+      O_imp = runif( Data$Missing$O$n, Data$eps, Data$K0 )
+      out = c(out, O_imp )
+    }
     return( out  )
   }
   Data$PGF = compiler::cmpfun(Data$PGF)
@@ -128,61 +142,62 @@ surplus.production.simple.laplacesdemon.setup = function(Data) {
     Spred = Opred = rep(0, Data$N )   # initialize a few storage vectors
       # NOTE: for lognormal: cv = sqrt(exp(sigma^2) - 1); 
     # or sigma = sqrt(log(cv^2+ 1) ) ==> sigma = sqrt( log(0.25^2 + 1)) = 0.246 ~ cv -- i.e. cv ~ sd
-    pm = exp(parm)
-
-    q = pm[Data$pos$q]
-    r = pm[Data$pos$r]
-    K = pm[Data$pos$K]
-    S = pm[Data$pos$S] 
-    Spred[1] = pm[Data$pos$S0] 
+    parm[Data$pos$q] = q = LaplacesDemonCpp::interval( parm[Data$pos$q], Data$eps, 2)
+    parm[Data$pos$r] = r = LaplacesDemonCpp::interval( parm[Data$pos$r], Data$eps, 3)
+    parm[Data$pos$K] = K = LaplacesDemonCpp::interval( parm[Data$pos$K], Data$K0/2, Data$K0*2 )
+    parm[Data$pos$S] = S = LaplacesDemonCpp::interval( parm[Data$pos$S], Data$eps, Data$smax ) 
+    parm[Data$pos$S0] = Spred[1] = LaplacesDemonCpp::interval( parm[Data$pos$S0] , Data$eps, Data$smax ) 
    
    # SD params stay on log-scale
-    q_sd = pm[Data$pos$q_sd]
-    r_sd = pm[Data$pos$r_sd]
-    K_sd = pm[Data$pos$K_sd]
-    S0_sd = pm[Data$pos$S0_sd]
-    O_sd = pm[Data$pos$O_sd]  
-    S_sd = pm[Data$pos$S_sd] 
-    R_sd = pm[Data$pos$r_sd] 
+    parm[Data$pos$q_sd] = q_sd = LaplacesDemonCpp::interval(parm[Data$pos$q_sd], Data$eps, Data$q0/2 ) 
+    parm[Data$pos$r_sd] = r_sd = LaplacesDemonCpp::interval(parm[Data$pos$r_sd], Data$eps, Data$r0/2 ) 
+    parm[Data$pos$K_sd] = K_sd = LaplacesDemonCpp::interval(parm[Data$pos$K_sd], Data$eps, Data$K0/2 ) 
+    parm[Data$pos$S0_sd] = S0_sd = LaplacesDemonCpp::interval(parm[Data$pos$S0_sd], Data$eps, Data$S0/2 ) 
+    parm[Data$pos$O_sd]  = O_sd = LaplacesDemonCpp::interval(parm[Data$pos$O_sd], Data$eps, Data$O0/2 )   
+    parm[Data$pos$S_sd] = S_sd = LaplacesDemonCpp::interval(parm[Data$pos$S_sd], Data$eps, Data$smax/2 )  
+    parm[Data$pos$R_sd] = R_sd = LaplacesDemonCpp::interval(parm[Data$pos$R_sd], Data$eps, Data$smax/2 )  
     
+    
+
+
     llkimpute = 0
     llkprior = c()
     llkprior[Data$parm.names] = 0
-    llkprior[Data$pos$q] = dnorm( parm[Data$pos$q], Data$log_q0, q_sd, TRUE ) ;
-    llkprior[Data$pos$r] = dnorm( parm[Data$pos$r], Data$log_r0, r_sd, TRUE ) ;
-    llkprior[Data$pos$K] = dnorm( parm[Data$pos$K], Data$log_K0, K_sd, TRUE ) ;
-    llkprior[Data$pos$S0] = dnorm( parm[Data$pos$S0], log(Data$S0), S0_sd, TRUE ) ;
-
-    llkprior[Data$pos$q_sd] = dhalfcauchy( pm[Data$pos$q_sd], Data$q0, TRUE );
-    llkprior[Data$pos$r_sd] = dhalfcauchy( pm[Data$pos$r_sd], Data$r0, TRUE );
-    llkprior[Data$pos$K_sd] = dhalfcauchy( pm[Data$pos$K_sd], Data$K0, TRUE );
-    llkprior[Data$pos$S0_sd] = dhalfcauchy( pm[Data$pos$S0_sd], Data$S0, TRUE );
-    llkprior[Data$pos$O_sd] = dhalfcauchy( pm[Data$pos$O_sd], Data$O0, TRUE );
-    llkprior[Data$pos$S_sd] = dhalfcauchy( pm[Data$pos$S_sd], 0.5, TRUE );
-    llkprior[Data$pos$R_sd] = dhalfcauchy( pm[Data$pos$R_sd], Data$removals0, TRUE );
+    llkprior[Data$pos$q] = dnorm( log(parm[Data$pos$q]), Data$log_q0, q_sd, log=TRUE ) ;
+    llkprior[Data$pos$r] = dnorm( log(parm[Data$pos$r]), Data$log_r0, r_sd, log=TRUE ) ;
+    llkprior[Data$pos$K] = dnorm( log(parm[Data$pos$K]), Data$log_K0, K_sd, log=TRUE ) ;
+    llkprior[Data$pos$S0] = dnorm( log(parm[Data$pos$S0]), log(Data$S0), S0_sd, log=TRUE ) ;
+    llkprior[Data$pos$q_sd] = dgamma( parm[Data$pos$q_sd], shape=Data$q0, scale=100, log=TRUE );
+    llkprior[Data$pos$r_sd] = dgamma( parm[Data$pos$r_sd], shape=Data$r0, scale=100, log=TRUE );
+    llkprior[Data$pos$K_sd] = dgamma( parm[Data$pos$K_sd], shape=Data$K0, scale=100, log=TRUE );
+    llkprior[Data$pos$S0_sd] = dgamma( parm[Data$pos$S0_sd], shape=Data$S0, scale=100, log=TRUE );
+    llkprior[Data$pos$O_sd] = dgamma( parm[Data$pos$O_sd], shape=Data$O0, scale=100, log=TRUE );
+    llkprior[Data$pos$S_sd] = dgamma( parm[Data$pos$S_sd], shape=0.5, scale=100, log=TRUE );
+    llkprior[Data$pos$R_sd] = dgamma( parm[Data$pos$R_sd], shape=Data$R0, scale=100, log=TRUE );
 
     R = Data$removals/K ;# make sure it is producing sensible values:
     # impute missing data 
-
     if ( Data$Missing$removals$n > 0 ) {
-      R[Data$Missing$removals$idx ] = runif( Data$Missing$removals$n, Data$eps, Data$K0 )
-      llkimpute = llkimpute + sum( dnorm( log(R[Data$Missing$removals$idx ]), Data$log_removals0, R_sd, TRUE ) );
+      parm[Data$pos$removals_imp] = R[Data$Missing$removals$idx ] = LaplacesDemonCpp::interval( parm[Data$pos$removals_imp], Data$eps, Data$smax)  
+      llkimpute = llkimpute + sum( dnorm( log(R[Data$Missing$removals$idx ]), Data$log_R0, R_sd, log=TRUE ) );
     }
+
     if ( Data$Missing$O$n > 0 ) {
-      Data$O[Data$Missing$O$idx ] = runif( Data$Missing$O$n, Data$eps, Data$K0 )
-      llkimpute = llkimpute + sum(dnorm( log(Data$O[Data$Missing$O$idx ]), Data$log_O0, O_sd, TRUE ) ) ;    
+      parm[Data$pos$O_imp] = Data$O[Data$Missing$O$idx ] = LaplacesDemonCpp::interval( parm[Data$pos$O_imp], Data$eps, Data$K0)  
+      llkimpute = llkimpute + sum(dnorm( log(Data$O[Data$Missing$O$idx ]), Data$log_O0, O_sd, log=TRUE ) ) ;    
     }
+
     if ( Data$Forecasts$n > 0 ) {
       R[Data$Forecasts$idx] = S[Data$Forecasts$idx_1] * Data$er 
-      llkimpute = llkimpute + sum(dnorm( log(R[Data$Forecasts$idx]), Data$log_removals0, R_sd, TRUE )) ;
+      llkimpute = llkimpute + sum(dnorm( log(R[Data$Forecasts$idx]), Data$log_R0, R_sd, log=TRUE )) ;
       Data$O[Data$Forecasts$idx] = runif( Data$Forecasts$n, Data$O_range[1], Data$O_range[2]  )
-      # likelihood below
+      # likelihood for Data$O is below
     }
 
     # process model -- simple logistic
     Spred[ Data$idx$icurrent] = S[Data$idx$iprevious] * 1.0 + r*{1-S[Data$idx$iprevious]} - R[Data$idx$iprevious] ;  # 
     Spred = bio.utilities::truncate.vector( Spred, lower=Data$eps ) 
-    llkprior[Data$pos$S] = dnorm( parm[Data$pos$S] , log(Spred), S_sd, TRUE ) 
+    llkprior[Data$pos$S] = dnorm( log(parm[Data$pos$S]), log(Spred), S_sd, log=TRUE ) 
 
     # observation model
     Opred[Data$idx$t1] = S[Data$idx$t1] - R[Data$idx$t1] ; # first year approximation
@@ -191,7 +206,7 @@ surplus.production.simple.laplacesdemon.setup = function(Data) {
     Opred[Data$idx$t4] = S[Data$idx$t4] - R[Data$idx$t4] ;
     Opred = K*q*Opred
     Opred = bio.utilities::truncate.vector( Opred, Data$eps )
-    llkdata = dnorm( log(Data$O), log(Opred), O_sd, TRUE )
+    llkdata = dnorm( log(Data$O), log(Opred), O_sd, log=TRUE )
  
     # additional computed variables of interest 
     ER = R / S ;
@@ -210,6 +225,8 @@ surplus.production.simple.laplacesdemon.setup = function(Data) {
   Data$Model.ML  = compiler::cmpfun( function(...) (Data$Model(...)$Dev / 2) )  # i.e. - log likelihood
   Data$Model.PML = compiler::cmpfun( function(...) (- Data$Model(...)$LP) ) #i.e., - log posterior 
   Data$Model = compiler::cmpfun(Data$Model) #  byte-compiling for more speed .. use RCPP if you want more speed
+
+  print (Data$Model( parm=Data$PGF(Data), Data=Data ) ) # test to see if return values are sensible
 
   return (Data)
 
