@@ -108,28 +108,25 @@ surplus.production.simple.laplacesdemon.setup = function(Data) {
   # ----------------------------------
   # Parameter Generating Function
   # these parameters are operate on the log-scale to force positive values ...
+  Data$param$means = c( 
+    r=Data$r0, K=Data$K0, q=Data$q0, 
+    r_sd=Data$r0/2, K_sd=Data$K0/2,  q_sd=Data$q0/2, 
+    S0_sd=Data$S0/2, S_sd=0.2, O_sd=Data$O0/2, R_sd=Data$R0/2,
+    S=rep( 0.5, Data$N), S0=Data$S0
+  )
+  if (Data$Missing$removals$n > 0) {
+    Data$param$means = c( Data$param$means, removals_imp=rep(Data$R0, Data$Missing$removals$n ) )
+  }
+  if (Data$Missing$O$n > 0) {
+    Data$param$means = c( Data$param$means, O_imp=rep(Data$O0, Data$Missing$O$n) )
+  }
+  Data$param$sd = Data$param$means / 2 
+  Data$param$n = length(Data$param$means)
+
   Data$PGF = function(Data) {
-    r = runif( 1, Data$r0/2, Data$r0*2 )
-    K = runif( 1, Data$K0/2, Data$K0*2 ) 
-    q = runif( 1, Data$q0/2, Data$q0*2 )
-    r_sd = runif( 1, Data$eps, Data$r0/4)
-    K_sd = runif( 1, Data$eps, Data$K0/4)
-    q_sd = runif( 1, Data$eps, Data$q0/4)
-    S0_sd = runif( 1, Data$eps, Data$S0/4)
-    S_sd = runif( 1, Data$eps, 0.5 );
-    O_sd = runif( 1, Data$eps, Data$O0/4 );
-    R_sd = runif( 1, Data$eps, Data$R0/4 );
-    S =  rbeta( Data$N, 5, 5 ) + Data$eps  
-    S0 = runif( 1, 0.1, 0.8 ); 
-    out = c(r, K, q, r_sd, K_sd, q_sd, S0_sd, S_sd, O_sd, R_sd, S, S0) 
-    if (Data$Missing$removals$n > 0) {
-      removals_imp = runif( Data$Missing$removals$n, Data$eps, 1 )
-      out = c( out, removals_imp )
-    }
-    if (Data$Missing$O$n > 0) {
-      O_imp = runif( Data$Missing$O$n, Data$eps, Data$K0 )
-      out = c(out, O_imp )
-    }
+    out = LaplacesDemonCpp::rnorm(Data$param$n, Data$param$means, Data$param$sd )
+    i = which( out < Data$eps )
+    if (length(i)>0) out[i] = -out[i] # reflect onto positive side
     return( out  )
   }
   Data$PGF = compiler::cmpfun(Data$PGF)
@@ -142,24 +139,24 @@ surplus.production.simple.laplacesdemon.setup = function(Data) {
     Spred = Opred = rep(0, Data$N )   # initialize a few storage vectors
       # NOTE: for lognormal: cv = sqrt(exp(sigma^2) - 1); 
     # or sigma = sqrt(log(cv^2+ 1) ) ==> sigma = sqrt( log(0.25^2 + 1)) = 0.246 ~ cv -- i.e. cv ~ sd
-    parm[Data$pos$q] = q = LaplacesDemonCpp::interval( parm[Data$pos$q], Data$eps, 2)
-    parm[Data$pos$r] = r = LaplacesDemonCpp::interval( parm[Data$pos$r], Data$eps, 3)
-    parm[Data$pos$K] = K = LaplacesDemonCpp::interval( parm[Data$pos$K], Data$K0/2, Data$K0*2 )
-    parm[Data$pos$S] = S = LaplacesDemonCpp::interval( parm[Data$pos$S], Data$eps, Data$smax ) 
-    parm[Data$pos$S0] = Spred[1] = LaplacesDemonCpp::interval( parm[Data$pos$S0] , Data$eps, Data$smax ) 
+    i = which( parm < Data$eps )
+    if (length(i)>0) parm[i] = -parm[i] # reflect onto positive side
+
+    q =  parm[Data$pos$q]
+    r =  parm[Data$pos$r]
+    K =  parm[Data$pos$K]
+    S =  parm[Data$pos$S]
+    Spred[1] =  parm[Data$pos$S0]
    
    # SD params stay on log-scale
-    parm[Data$pos$q_sd] = q_sd = LaplacesDemonCpp::interval(parm[Data$pos$q_sd], Data$eps, Data$q0/2 ) 
-    parm[Data$pos$r_sd] = r_sd = LaplacesDemonCpp::interval(parm[Data$pos$r_sd], Data$eps, Data$r0/2 ) 
-    parm[Data$pos$K_sd] = K_sd = LaplacesDemonCpp::interval(parm[Data$pos$K_sd], Data$eps, Data$K0/2 ) 
-    parm[Data$pos$S0_sd] = S0_sd = LaplacesDemonCpp::interval(parm[Data$pos$S0_sd], Data$eps, Data$S0/2 ) 
-    parm[Data$pos$O_sd]  = O_sd = LaplacesDemonCpp::interval(parm[Data$pos$O_sd], Data$eps, Data$O0/2 )   
-    parm[Data$pos$S_sd] = S_sd = LaplacesDemonCpp::interval(parm[Data$pos$S_sd], Data$eps, Data$smax/2 )  
-    parm[Data$pos$R_sd] = R_sd = LaplacesDemonCpp::interval(parm[Data$pos$R_sd], Data$eps, Data$smax/2 )  
+    q_sd = parm[Data$pos$q_sd]
+    r_sd = parm[Data$pos$r_sd]
+    K_sd = parm[Data$pos$K_sd]
+    S0_sd = parm[Data$pos$S0_sd]
+    O_sd = parm[Data$pos$O_sd]
+    S_sd = parm[Data$pos$S_sd]
+    R_sd = parm[Data$pos$R_sd]
     
-    
-
-
     llkimpute = 0
     llkprior = c()
     llkprior[Data$parm.names] = 0
@@ -167,13 +164,13 @@ surplus.production.simple.laplacesdemon.setup = function(Data) {
     llkprior[Data$pos$r] = dnorm( log(parm[Data$pos$r]), Data$log_r0, r_sd, log=TRUE ) ;
     llkprior[Data$pos$K] = dnorm( log(parm[Data$pos$K]), Data$log_K0, K_sd, log=TRUE ) ;
     llkprior[Data$pos$S0] = dnorm( log(parm[Data$pos$S0]), log(Data$S0), S0_sd, log=TRUE ) ;
-    llkprior[Data$pos$q_sd] = dgamma( parm[Data$pos$q_sd], shape=Data$q0, scale=100, log=TRUE );
-    llkprior[Data$pos$r_sd] = dgamma( parm[Data$pos$r_sd], shape=Data$r0, scale=100, log=TRUE );
-    llkprior[Data$pos$K_sd] = dgamma( parm[Data$pos$K_sd], shape=Data$K0, scale=100, log=TRUE );
-    llkprior[Data$pos$S0_sd] = dgamma( parm[Data$pos$S0_sd], shape=Data$S0, scale=100, log=TRUE );
-    llkprior[Data$pos$O_sd] = dgamma( parm[Data$pos$O_sd], shape=Data$O0, scale=100, log=TRUE );
-    llkprior[Data$pos$S_sd] = dgamma( parm[Data$pos$S_sd], shape=0.5, scale=100, log=TRUE );
-    llkprior[Data$pos$R_sd] = dgamma( parm[Data$pos$R_sd], shape=Data$R0, scale=100, log=TRUE );
+    llkprior[Data$pos$q_sd] = dgamma( q_sd, shape=Data$q0, scale=100, log=TRUE );
+    llkprior[Data$pos$r_sd] = dgamma( r_sd, shape=Data$r0, scale=100, log=TRUE );
+    llkprior[Data$pos$K_sd] = dgamma( K_sd, shape=Data$K0, scale=100, log=TRUE );
+    llkprior[Data$pos$S0_sd] = dgamma( S0_sd, shape=Data$S0, scale=100, log=TRUE );
+    llkprior[Data$pos$O_sd] = dgamma( O_sd, shape=Data$O0, scale=100, log=TRUE );
+    llkprior[Data$pos$S_sd] = dgamma( S_sd, shape=0.5, scale=100, log=TRUE );
+    llkprior[Data$pos$R_sd] = dgamma( R_sd, shape=Data$R0, scale=100, log=TRUE );
 
     R = Data$removals/K ;# make sure it is producing sensible values:
     # impute missing data 

@@ -11,9 +11,6 @@ debug.region="cfanorth"
 sb = surplusproduction.db( DS="LaplacesDemon.debug", sourcedata="nosa", debug.region=debug.region) 
 sb = surplus.production.simple.laplacesdemon.setup( sb )   # set up the model
 
-# update list of vars to monitor
-# sb$mon.names = c("LP", "r", "K", "q", paste0("S",1:Data$N), paste0("AR",1:(Data$N-1) ) ) 
-sb$mon.names = c("LP", "r", "K", "q") 
 
 
 # 2. maximum likelihood solution
@@ -25,12 +22,19 @@ names(f.ml$par ) = sb$parm.names
 # 3. penalized maximum likelihood .. better but still a little unstable depending on algorithm
 f.pml = optim( par=sb$PGF(sb), fn=sb$Model.PML, Data=sb,  control=list(maxit=5000, trace=0), hessian=TRUE )
 names(f.pml$par ) = sb$parm.names
-f.pml$par
-#print(sqrt( diag( solve(f.pml$hessian) )) ) # assymptotic standard errors
 (f.pml$par)
 
+#print(sqrt( diag( solve(f.pml$hessian) )) ) # assymptotic standard errors
 
-f = LaplacesDemon(sb$Model, Data=sb, Initial.Values=sb$PGF(sb), Iterations=1000, Status=100, Thinning=10) # quickly find main optima
+
+
+f = LaplacesDemon(sb$Model, Data=sb, Initial.Values=sb$PGF(sb), Iterations=1000, Status=100, Thinning=10) # 
+
+f = LaplacesDemon(sb$Model, Data=sb, Initial.Values=as.initial.values(f), Iterations=1000, Status=100, Thinning=10) # 
+
+f = LaplacesDemon(sb$Model, Data=sb, Initial.Values=as.initial.values(f), Iterations=5000, Status=10, Thinning=20, Method="NUTS") #
+
+
 Initial.Values <- as.initial.values(f)
 f <- LaplacesDemon(sb$Model, Data=sb, Initial.Values,
      Covar=f$Covar, Iterations=20000, Status=1000, Thinning=1000,
@@ -41,7 +45,7 @@ f = LaplacesDemon(sb$Model, Data=sb, Initial.Values=as.initial.values(f), Iterat
 
 
 
-f = LaplaceApproximation(sb$Model, Data=sb, parm=as.initial.values(f), Method="Roptim", method="BFGS", Stop.Tolerance=1e-12, Iterations = 10000  )
+f = LaplaceApproximation(sb$Model, Data=sb, parm=sb$PGF(sb), Method="Roptim", method="BFGS", Stop.Tolerance=1e-9, Iterations = 5000  )
 f
 
 Consort(f)
