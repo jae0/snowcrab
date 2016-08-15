@@ -14,13 +14,13 @@ sb = surplus.production.simple.laplacesdemon.setup( sb )   # set up the model
 
 
 # 2. maximum likelihood solution
-f.ml = optim( par=sb$PGF(sb), fn=sb$Model.ML, Data=sb, control=list(maxit=5000, trace=0), hessian=TRUE  )
+f.ml = optim( par=sb$PGF(sb), fn=sb$Model.ML, Data=sb, method="BFGS", control=list(maxit=5000, trace=0), hessian=TRUE  )
 names(f.ml$par ) = sb$parm.names
 #print(sqrt( diag( solve(f.ml$hessian) )) ) # assymptotic standard errors
 (f.ml$par)
 
 # 3. penalized maximum likelihood .. better but still a little unstable depending on algorithm
-f.pml = optim( par=sb$PGF(sb), fn=sb$Model.PML, Data=sb,  control=list(maxit=5000, trace=0), hessian=TRUE )
+f.pml = optim( par=sb$PGF(sb), fn=sb$Model.PML, Data=sb, method="BFGS", control=list(maxit=5000, trace=0), hessian=TRUE )
 names(f.pml$par ) = sb$parm.names
 (f.pml$par)
 
@@ -45,7 +45,7 @@ f = LaplacesDemon(sb$Model, Data=sb, Initial.Values=as.initial.values(f), Iterat
 
 
 
-f = LaplaceApproximation(sb$Model, Data=sb, parm=sb$PGF(sb), Method="Roptim", method="BFGS", Stop.Tolerance=1e-9, Iterations = 5000  )
+f = LaplaceApproximation(sb$Model, Data=sb, parm=sb$PGF(sb), Method="Roptim", method="BFGS", Stop.Tolerance=1e-9, Iterations = 10000  )
 f
 
 Consort(f)

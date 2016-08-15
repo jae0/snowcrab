@@ -193,7 +193,7 @@ surplus.production.simple.laplacesdemon.setup = function(Data) {
 
     # process model -- simple logistic
     Spred[ Data$idx$icurrent] = S[Data$idx$iprevious] * 1.0 + r*{1-S[Data$idx$iprevious]} - R[Data$idx$iprevious] ;  # 
-    Spred = bio.utilities::truncate.vector( Spred, lower=Data$eps ) 
+    Spred = LaplacesDemonCpp::interval_random( Spred, Data$eps, Data$smax, 0.01 ) 
     llkprior[Data$pos$S] = dnorm( log(parm[Data$pos$S]), log(Spred), S_sd, log=TRUE ) 
 
     # observation model
@@ -202,12 +202,12 @@ surplus.production.simple.laplacesdemon.setup = function(Data) {
     Opred[Data$idx$t3] = S[Data$idx$t3] - (R[Data$idx$t3_1] + R[Data$idx$t3])/2 ; # transition year from Spring to Autumn survey
     Opred[Data$idx$t4] = S[Data$idx$t4] - R[Data$idx$t4] ;
     Opred = K*q*Opred
-    Opred = bio.utilities::truncate.vector( Opred, Data$eps )
+    Opred = LaplacesDemonCpp::interval_random( Opred, Data$eps, Inf, 0.01 )
     llkdata = dnorm( log(Data$O), log(Opred), O_sd, log=TRUE )
  
     # additional computed variables of interest 
     ER = R / S ;
-    ER = bio.utilities::truncate.vector( ER, Data$eps, Data$eps_1 ) 
+    ER = LaplacesDemonCpp::interval_random( ER, Data$eps, Data$eps_1, 0.01 ) 
     B = S*K
     C = R*K
     F = -log( 1 - ER) ; # fishing mortality
