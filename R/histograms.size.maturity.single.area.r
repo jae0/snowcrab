@@ -49,9 +49,10 @@ if(grepl('4x',tolower(areas))) years = 2004:p$year.assessment
 
 
       # males
-      fn = file.path(  outdir, areas )
+      fn = file.path(  outdir, paste0(areas,".pdf") )
       
-      Cairo( file=fn, type="pdf", bg="white", units="in", width=8, height=10 )
+      pdf(file=fn, width=8, height=10, bg='white')
+      #Cairo( file=fn, type="pdf", bg="white", units="in", width=8, height=10 )
       sexes = c(0,1)
       ncols = length(sexes)
       nrows = length(years)
@@ -111,7 +112,7 @@ if(grepl('4x',tolower(areas))) years = 2004:p$year.assessment
      mtext("Female", side=3, outer=T, line=1, at=0.66, cex=1.2)
      
   dev.off()
-  cmd( "convert   -trim -quality 9  -geometry 200% -frame 2% -mattecolor white -antialias ", paste(fn, "pdf", sep="."),  paste(fn, "png", sep=".") )
+  #cmd( "convert   -trim -quality 9  -geometry 200% -frame 2% -mattecolor white -antialias ", paste(fn, "pdf", sep="."),  paste(fn, "png", sep=".") )
    
   return("Done")
   }

@@ -721,8 +721,8 @@ snowcrab.db = function( DS, p=NULL, yrs=NULL) {
     set$cfa = NULL
     set$gear = NULL
 
-  #  set2015= set[which(set$yr==2015),]
-  #  print(head(set2015))
+    #  set2015= set[which(set$yr==2015),]
+    #  print(head(set2015))
     save( set, file=fn, compress=TRUE )
     return(fn)
   }
@@ -767,7 +767,6 @@ snowcrab.db = function( DS, p=NULL, yrs=NULL) {
     cat$sa.set = NULL
     save(cat, file=fn,compress=T)
   }
-
 
 
 
@@ -862,10 +861,10 @@ snowcrab.db = function( DS, p=NULL, yrs=NULL) {
       X = merge(x=X, y=y,  by=factors, all.x=T )
       X$cw.male.imm.n = X$cw.male.imm.n / X$sa
 
-  # ------------------------------------------------------------------------------------------------
-  # add biomass of various components of the snowcrab population
-  #      X = setmerge(X, det, varname="totmass.all", filter="all", variable="mass")
-  #      ... better to use the total catch tables as subsampling may be used in the future
+    # ------------------------------------------------------------------------------------------------
+    # add biomass of various components of the snowcrab population
+    #      X = setmerge(X, det, varname="totmass.all", filter="all", variable="mass")
+    #      ... better to use the total catch tables as subsampling may be used in the future
 
     print( "Biomass density estimates complete" )
 
@@ -876,10 +875,10 @@ snowcrab.db = function( DS, p=NULL, yrs=NULL) {
       X[, vars[i,1] ] = X[, vars[i,1] ] / 10^6 # grams .. convert to metric tons
     }
 
-  # ------------------------------------------------------------------------------------------------
-  # add numbers of various components of the snowcrab population
-  #      X = setmerge(X, Y, varname="totno.all", filter="all", variable="number")
-  #       ... better to use the total catch tables as subsampling may be used in the future
+    # ------------------------------------------------------------------------------------------------
+    # add numbers of various components of the snowcrab population
+    #      X = setmerge(X, Y, varname="totno.all", filter="all", variable="number")
+    #       ... better to use the total catch tables as subsampling may be used in the future
 
     vars = lookup.numbers.vars()
 
@@ -890,9 +889,9 @@ snowcrab.db = function( DS, p=NULL, yrs=NULL) {
 
     print( "Numerical density estimates complete" )
 
-  # ------------------------------------------------------------------------------------------------
-  # add biomass and numbers directly from the catch (cat) tables (e.g. for multi-species analysis)
-  # using a separate system of analysis and access is probably better
+    # ------------------------------------------------------------------------------------------------
+    # add biomass and numbers directly from the catch (cat) tables (e.g. for multi-species analysis)
+    # using a separate system of analysis and access is probably better
 
     rm(Y); gc()
     set = X
