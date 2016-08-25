@@ -47,7 +47,7 @@
         }
         out = NULL
         for ( i in flist ) {
-          load( i )
+          load( i ) # loads a thing called metadata
           out= rbind( out, metadata )
         }
         return( out )
