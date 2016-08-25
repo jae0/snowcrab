@@ -199,6 +199,7 @@
         if (nrow(rid) == 0 ) next()
 
         for ( i in 1:nrow(rid)  ) {
+          #browser()
           id = rid$minilog_uid[i]
           sso.trip = rid$trip[i]
           sso.set = rid$set[i]
