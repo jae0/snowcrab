@@ -57,7 +57,9 @@ PosteriorChecks(f)
 f0 = LaplacesDemon(sb$Model, Data=sb, Initial.Values=sb$PGF(sb), Iterations=1000, Status=100, Thinning=1)
 
 
-f = LaplaceApproximation(sb$Model, Data=sb, parm=as.initial.values(f0), Method="SR1", Iterations=10000  ) 
+f = LaplaceApproximation(sb$Model, Data=sb, parm=as.initial.values(f0), Method="HAR", Iterations=1000  ) 
+
+f = LaplaceApproximation(sb$Model, Data=sb, parm=as.initial.values(f0), Method="SR1", Iterations=1000  ) 
 
 f = LaplaceApproximation(sb$Model, Data=sb, parm=as.initial.values(f0), Method="TR", Iterations=10000  ) 
 
