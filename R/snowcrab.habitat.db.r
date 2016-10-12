@@ -36,7 +36,7 @@
 				PS$dyear = p$prediction.dyear  # must be same as above
 				PS$t = NA
 
-        PST = temperature.db( p=p, DS="spatial.interpolation", yr=y  )
+        PST = temperature.db( p=p, DS="spacetime.prediction", yr=y  )
 				if (is.null(PST)) next ()
 
         dyears = (c(1:(p$nw+1))-1)  / p$nw # intervals of decimal years... fractional year breaks
