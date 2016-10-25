@@ -12,7 +12,7 @@ source( system.file(package="bio.indicators", "scripts", "02.interpolations.r") 
 # 0. Initialise work space
 
 p = bio.snowcrab::load.environment(
-  year.assessment=2016,
+  year.assessment=2015,
   libs = c("parallel", "lubridate", "bigmemory", "mgcv", "sp", "parallel",
        "grid" , "lattice", "fields", "rgdal", "raster")
 )
@@ -28,12 +28,12 @@ p$vars.to.model = c("R0.mass")
 # p$vars.to.model = c("R0.mass", "R0.no", "R1.no", "totno.female.primiparous","totno.female.multiparous", "totno.female.berried", "fecundity","totno.female.imm", "totno.male.imm" )
 # p$vars.to.model = c("R0.no", "R1.no", "totno.female.primiparous","totno.female.multiparous", "totno.female.berried", "fecundity","totno.female.imm", "totno.male.imm" )
 
-# p$years.to.model=2000:2015
+ p$years.to.model=2005:2012
 
 
 # --------------------------------------------------------------
 # using environmental data ... estimate/lookup missing environmental data ..
-logbook.db( DS  ="fisheries.complete.redo", p=p )
+logbook.db( DS ="fisheries.complete.redo", p=p )
 snowcrab.db( DS ="set.complete.redo", p=p )
 
 
