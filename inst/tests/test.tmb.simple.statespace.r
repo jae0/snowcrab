@@ -40,10 +40,10 @@ rfGeoR = geoR::grf( nsim=1, cov.model="matern", cov.pars=c(sigmasq=0.8, phi=0.75
 
 RandomFields methods ...
 
-
+require(bio.spacetime)
 # est cov params
-vg = bio.spacetime::spacetime.variogram( locs_xy, z, methods="gstat" )
-vg = bio.spacetime::spacetime.variogram( locs_xy, z, methods="geoR" )
+vg = bio.spacetime::spacetime_variogram( locs_xy, z, methods="gstat" )
+vg = bio.spacetime::spacetime_variogram( locs_xy, z, methods="geoR" )
 
 # prep data for spTimer
 
@@ -158,7 +158,7 @@ cat( tmb.model, file=fn)
 
 library( TMB )
 TMB::compile( fn )
-dyn.load( dynlib( basename(fn) ) )
+dyn.load( dynlib( strsplit(basename(fn), "\\.")[[1]][1] ) )
 Obj = MakeADFun( data=Data, parameters=Params, random=Random )
 Opt = nlminb( start=Obj$par, objective=Obj$fn, gradient=Obj$gr, control=list(trace=1, eval.max=1e4, iter.max=1e4))
 Opt[["final_diagnostics"]] = data.frame( "Name"=names(Obj$par), "final_gradient"=Obj$gr(Opt$par))
