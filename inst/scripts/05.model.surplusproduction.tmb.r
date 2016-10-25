@@ -1,4 +1,14 @@
 
+p = bio.snowcrab::load.environment( year.assessment=2016)
+
+debug.region="cfa4x"
+debug.region="cfasouth"
+debug.region="cfanorth" 
+
+sb = surplusproduction.db( DS="LaplacesDemon.debug", sourcedata="nosa", debug.region=debug.region) 
+sb = surplus.production.simple.laplacesdemon.setup( sb )   # set up the model
+
+
 ############################################################################
 # Compile model cpp file in TMB
 ############################################################################
