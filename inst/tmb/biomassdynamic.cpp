@@ -1,57 +1,82 @@
+
 #include <TMB.hpp>
 template<class Type>
 Type objective_function<Type>::operator() () {
-  
+ 
   // Data
-  DATA_INTEGER(U);
   DATA_INTEGER(N);
-  DATA_ARRAY(IOA);
-  DATA_ARRAY(CAT);
-
+  DATA_VECTOR(IOA);
+  DATA_VECTOR(CAT);
  
   // Parameters:
-  PARAMETER_VECTOR(log_sigma);       // process noise
-  PARAMETER_VECTOR(log_tau);   // observation noise for commercial
-  PARAMETER_VECTOR(q);                   // catchability for commercial size
-  PARAMETER_VECTOR(log_r);                   // catchability for commercial size
-  PARAMETER_VECTOR(log_K);                   // catchability for commercial size
-  PARAMETER_ARRAY(log_P);        // unobserved state, commercial size
+  PARAMETER(log_sigmap);       // process noise
+  PARAMETER(log_sigmao);   // observation noise for commercial
+  PARAMETER(log_Q);                   // catchability for commercial size
+  PARAMETER(log_r);                   // catchability for commercial size
+  PARAMETER(log_K);                   // catchability for commercial size
+  PARAMETER_VECTOR(log_P);        // unobserved state, commercial size
   
-  vector<Type> sigma=exp(log_sigma);
-  vector<Type> tau=exp(log_tau);
-  vector<Type> r=exp(log_r);
-  vector<Type> K=exp(log_K);
-  matrix<Type> P=exp(log_P);
+  Type sigmap=exp(log_sigmap);
+  Type sigmao=exp(log_sigmao);
+  Type Q=exp(log_Q);
+  Type r=exp(log_r);
+  Type K=exp(log_K);
+  vector<Type> P=exp(log_P);
 
-  // ############################################################################
+  vector<Type> Ppred(N);
+  vector<Type> Ipred(N);
+  vector<Type> B(N);
+
   // Objective function: negative log likelihood
   Type nll = 0.0; // initialize neg loglik
   
-  // -------------------  
+  // ############################################################################
 
-  for (int j=1; j<U; j++) {
    
-    for(int i=1; i<N; i++){
+  for(int i=1; i<N; i++){
+  
+    // Dynamics equation (Ppred is the log of the predicted scaled biomass from the biomass dynamics)
+    Ppred(i) = P(i-1) + r * P(i-1) * (1 - P(i-1)) - CAT(i-1)/K;
     
-      // Dynamics equation (Pmed is the log of the predicted scaled biomass from the biomass dynamics)
-      Pmed[i,j] = P[i-1,j] + r * P[i-1,j] * (1 - P[i-1,j]) - CAT[i-1,j]/K[j];
-      
-      // Process equation (Pmed is fit to the 'actual' scaled biomass (P) using the estimated process error (sigma) 
-      nll -= dnorm(log(P[i,j]), log(Pmed[i,j]), sigma[j], true);
-    }
-
-    // Observation model: commercial size
-    vector<Type> Omed(N);
-    for(int i=0; i<NY; i++){
-
-      // Observation equation (Omed is the log of the predicted index of abundance)
-      Omed[i,j] = log(q[j] * K[j] * P[i,j]);      
-
-      nll -= dnorm(log(IOA[i,j]), log(Omed[i,j]), tau[j], true);
-    }
+    // Process equation (Ppred is fit to the 'actual' scaled biomass (P) using the estimated process error (sigma) 
+    nll -= dnorm(P(i), Ppred(i), Ppred(i)*sigmap, true);
   }
+
+  // Observation model: commercial size
+  for(int i=0; i<N; i++){
+
+    // Observation equation (Omed is the log of the predicted index of abundance)
+    B(i) = P(i) * K;
+    Ipred(i) = Q * B(i);      
+
+    nll -= dnorm(IOA(i), Ipred(i), Ipred(i)*sigmao, true);
+  }
+  
+
+  // ############################################################################
+  
+
+  // Report
+  REPORT(B);
+  REPORT(Ipred);
+  REPORT(K);
+  REPORT(r);
+  REPORT(Q);
+  REPORT(sigmap);
+  REPORT(sigmao);
+  REPORT(nll);
+  
+  ADREPORT(B);
+  ADREPORT(Ipred);
+  ADREPORT(K);
+  ADREPORT(r);
+  ADREPORT(Q);
+  ADREPORT(sigmap);
+  ADREPORT(sigmao);
+  ADREPORT(nll);
+
     
-  return(nll);
+  return nll;
 }
 
 
