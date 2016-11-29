@@ -20,7 +20,8 @@ sb = switch( as.character(p$year.assessment),
   "2014" = surplusproduction.db( DS="jags.2014", sourcedata="nosa" ) ,
   "2015" = surplusproduction.db( DS="jags.2015", sourcedata="nosa" ) ,
   "2016" = surplusproduction.db( DS="jags.2016", sourcedata="nosa" ) 
-}
+  )
+
 
 
 dir.output = file.path(project.datadirectory('bio.snowcrab'),"assessments",p$year.assessment)
