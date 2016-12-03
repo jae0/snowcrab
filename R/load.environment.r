@@ -81,7 +81,7 @@ load.environment = function( year.assessment=NULL, libs=NULL, p=NULL ) {
   p$plottimes=c("annual", "globalaverage")
   p$conversions=c("ps2png")
 
-  p = spacetime_parameters( p=p ) # region and lon/lats, projections
+  p = spatial_parameters( p=p ) # region and lon/lats, projections
   p = gmt.parameters( p=p )
 
   return(p)

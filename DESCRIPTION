@@ -42,6 +42,7 @@ Imports:
   bio.utilities 
 Suggests:
   bio.groundfish,
+  conker,
   netmensuration,
   bio.habitat,
   bio.habitatsuitability,
