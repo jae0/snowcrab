@@ -1,5 +1,5 @@
 
-p = bio.snowcrab::load.environment( year.assessment=2016)
+p = bio.snowcrab::load.environment( year.assessment=2015)
 
 require(rjags)
 rjags::load.module("dic")
@@ -27,6 +27,7 @@ sb = switch( as.character(p$year.assessment),
 dir.output = file.path(project.datadirectory('bio.snowcrab'),"assessments",p$year.assessment)
 dir.create( dir.output, recursive=T, showWarnings=F )
 fnres = file.path( project.datadirectory("bio.snowcrab"), "R", paste( "surplus.prod.mcmc", p$year.assessment,"rdata", sep=".") )
+fnres = file.path( project.datadirectory("bio.snowcrab"), "R", paste( "surplus.prod.mcmc", p$year.assessment,"survey_final.rdata", sep=".") )
 
 
 m = jags.model( file=fishery.model.jags ( DS=sb$jagsmodelname ), data=sb, n.chains=n.chains, n.adapt=n.adapt ) # recruitment + spring/summer q's + all observed CVs
@@ -64,6 +65,23 @@ y = jags.samples(m, variable.names=tomonitor, n.iter=n.iter.final, thin=n.thin) 
 save(y, file=fnres, compress=T)
 # load( fnres )
 
+
+
+## 
+b1=apply( y$B[,1,,], 1,quantile , probs=c(0.025,0.5,0.975), na.rm=T  )
+f1=apply( y$F[,1,,], 1,quantile , probs=c(0.5), na.rm=T  )
+NENS=data.frame(t(b1),F=f1,row.names=1996:2018)
+
+b2=apply( y$B[,2,,], 1,quantile , probs=c(0.025,0.5,0.975), na.rm=T  )
+f2=apply( y$F[,2,,], 1,quantile , probs=c(0.5), na.rm=T  )
+SENS=data.frame(t(b2),F=f2,row.names=1996:2018)
+
+b3=apply( y$B[,3,,], 1,quantile , probs=c(0.025,0.5,0.975), na.rm=T  )
+f3=apply( y$F[,3,,], 1,quantile , probs=c(0.5), na.rm=T  )
+CFA4X=data.frame(t(b3),F=f3,row.names=1996:2018)
+
+
+
 # Figures
 graphics.off()
 
@@ -77,11 +95,11 @@ figure.bugs( "bo.sd", y=y, sb=sb, fn=file.path(dir.output, "bo.sd.density.png" )
 figure.bugs( "bp.sd", y=y, sb=sb, fn=file.path(dir.output, "bp.sd.density.png" ) )
 
 # timeseries
-figure.bugs( type="timeseries", vname="biomass", y=y, sb=sb, fn=file.path(dir.output, "biomass.timeseries.png" ) )
+figure.bugs( type="timeseries", vname="biomass", y=y, sb=sb, fn=file.path(dir.output, "biomass.timeseries.png" ), save.plot=F )
 figure.bugs( type="timeseries", vname="fishingmortality", y=y, sb=sb, fn=file.path(dir.output, "fishingmortality.timeseries.png" ) )
 
 # Harvest control rules
-figure.bugs( type="hcr", vname="default", y=y, sb=sb, fn=file.path(dir.output, "hcr.default.png" ) )
+figure.bugs( type="hcr", vname="default", y=y, sb=sb, fn=file.path(dir.output, "hcr.default.png" ), save.plot=F  )
 figure.bugs( type="hcr", vname="simple", y=y, sb=sb, fn=file.path(dir.output, "hcr.simple.png" ) )
 
 # diagnostics

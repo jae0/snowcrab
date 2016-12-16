@@ -1,6 +1,6 @@
 
 
-p = bio.snowcrab::load.environment( year.assessment=2016 )
+p = bio.snowcrab::load.environment( year.assessment=2015 )
 
 
 # get data tables from Oracle server and store local copies
