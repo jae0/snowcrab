@@ -42,7 +42,7 @@ Imports:
   bio.utilities 
 Suggests:
   bio.groundfish,
-  lstfilter,
+  hivemod,
   netmensuration,
   bio.habitat,
   bio.habitatsuitability,

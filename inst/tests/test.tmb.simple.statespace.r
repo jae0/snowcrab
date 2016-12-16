@@ -42,8 +42,8 @@ RandomFields methods ...
 
 
 # est cov params
-vg = lstfilter::lstfilter_variogram( locs_xy, z, methods="gstat" )
-vg = lstfilter::lstfilter_variogram( locs_xy, z, methods="geoR" )
+vg = hivemod::hivemod_variogram( locs_xy, z, methods="gstat" )
+vg = hivemod::hivemod_variogram( locs_xy, z, methods="geoR" )
 
 # prep data for spTimer
 
