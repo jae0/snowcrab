@@ -1,5 +1,5 @@
 
-
+require(bio.base)
 p = bio.snowcrab::load.environment( year.assessment=2016 )
 
 
