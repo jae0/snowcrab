@@ -67,7 +67,7 @@ load.environment = function( year.assessment=NULL, libs=NULL, p=NULL ) {
   p$nw = 10  # from temperature.r, number of intervals in a year
   p$default.spatial.domain = "canada.east"  # for temperature/habitat lookups
 
-  p$kformula = as.formula( "kv ~ z + t + tamp + wmin + dZ + ddZ + substrate.mean" )  # model in 2006-2008
+  p$kformula = as.formula( "kv ~ z + t + tamp + wmin + dZ + ddZ + log.substrate.grainsize" )  # model in 2006-2008
   p$klocs = as.formula ( "~plon+plat" )
   p$vgm.dist = unique(sort(c( seq(10, 60, 4), seq(50, 100, 10), seq( 80, 160, 20) )))
   p$knmax=100  # must be greater than 30 for convergence
