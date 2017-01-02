@@ -8,7 +8,7 @@
 
   p$auxilliary.data = c(
             "t", "tmean", "tmean.cl", "tamp", "wmin",
-            "z", "substrate.mean", "dZ", "ddZ",
+            "z", "log.substrate.grainsize", "dZ", "ddZ",
             "ca1", "ca2",
             "nss.rsquared", "nss.shannon",
             "smr", "Ea", "A", "qm", "mass",

@@ -42,8 +42,8 @@ RandomFields methods ...
 
 require(bio.spacetime)
 # est cov params
-vg = hivemod::hivemod_variogram( locs_xy, z, methods="gstat" )
-vg = hivemod::hivemod_variogram( locs_xy, z, methods="geoR" )
+vg = lbm::lbm_variogram( locs_xy, z, methods="gstat" )
+vg = lbm::lbm_variogram( locs_xy, z, methods="geoR" )
 
 # prep data for spTimer
 

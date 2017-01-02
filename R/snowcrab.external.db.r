@@ -115,7 +115,7 @@
       # return planar coords to ungridded resolution
       set = lonlat2planar( set, proj.type=p$internal.projection )
 
-      set = set[ which( is.finite( set$z + set$t + set$substrate.mean ) ), ]
+      set = set[ which( is.finite( set$z + set$t + set$log.substrate.grainsize ) ), ]
       gc()
 
       # convert non-zero values quantiles,
