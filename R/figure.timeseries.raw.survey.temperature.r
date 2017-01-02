@@ -30,7 +30,7 @@
       td$region = factor(td$region, levels=areas, labels =regions)
 
       ylim='NULL'
-      ylim[2]=max(td$ub)
+      ylim[2]=max(td$ub,na.rm=T)
       ylim[1]=round(min(td$lb), 0) - (max(td$ub)*0.05)
       xlim=range(td$year); xlim[1]=xlim[1]; xlim[2]=xlim[2]
 

@@ -150,7 +150,7 @@ if (debug) {
       p$clusters = c( rep( "localhost", 20) )
       # p$clusters = rep( "localhost", 2)
       p = make.list( list(v=c("R0.mass.environmentals.only", "R0.mass") ), Y=p )
-        habitat.model.db (DS="habitat.redo", p=p )
+        habitat.model.db (DS="habitat.redo", p=p, v=p$v )
       p = make.list( list(y=1970:p$year.assessment, v=c("R0.mass.environmentals.only", "R0.mass") ), Y=p )
         parallel.run( snowcrab.habitat.db, p=p )
       # or

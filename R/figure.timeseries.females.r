@@ -29,7 +29,7 @@
       #ylim=range(c(td$mean), na.rm=T); ylim[1]=ylim[1]-0.1*ylim[2]; ylim[2] = ylim[2]+ylim[2]*0.2
       xlim=range(td$year); xlim[1]=xlim[1]-1; xlim[2]=xlim[2]+1
       ylim=NULL
-      ylim[2]=max(td$ub) *0.8
+      ylim[2]=max(td$ub,na.rm=T) *0.8
       ylim[1]=round(min(td$lb), 0) - (max(td$ub)*0.05)
 
       #xlabels = c(xlim[1]+1, xlim[1]+5, xlim[1]+9, xlim[1]+13, xlim[1]+17, xlim[1]+20)

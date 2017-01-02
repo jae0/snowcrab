@@ -6,6 +6,8 @@
     # if GAMM speeds improve try again
     # currently fast GAM == "bam" is used
 
+    if(is.null(v))v=p$v
+
     if (DS %in% c("large.male.auxillary.data", "large.male.auxillary.data.redo") ) {
 
       outdir = project.datadirectory("bio.snowcrab", "R"  )
