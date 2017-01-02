@@ -337,7 +337,7 @@ snowcrab.db = function( DS, p=NULL, yrs=NULL) {
     outfile.e =  file.path( fn.e, paste("morphologyerrors", yr.e, ".csv", sep=""))
 
     #Sex.e: Unknown Sex
-    sex.e <- det[which(det$sex==0),]
+    sex.e <- det[which(det$sex==sex.unknown),]
     sex.e.2015 <- sex.e[grep("2015", sex.e$trip),]
     sex.e$error <- 'sex.e'
     #Cw.e: Carapace Width below 5 or greater than 185
@@ -353,10 +353,10 @@ snowcrab.db = function( DS, p=NULL, yrs=NULL) {
     mass.e <- det[which( det$mass < 1 | det$mass > 1500  ),]
     mass.e$error <- 'mass.e'
     #Sex.a: Indeterminate sex based on measurements taken (abdomen values where sex=male)
-    sex.a <- det[which(is.finite( det$abdomen ) & det$sex==1),]
+    sex.a <- det[which(is.finite( det$abdomen ) & det$sex==male),]
     sex.a$error <- 'sex.a'
     #Sex.c: Indeterminate sex based on measurements taken (chela values where sex=female
-    sex.c <- det[which(is.finite( det$chela ) & det$sex==2),]
+    sex.c <- det[which(is.finite( det$chela ) & det$sex==female),]
     sex.c$error <- 'sex.c'
 
 

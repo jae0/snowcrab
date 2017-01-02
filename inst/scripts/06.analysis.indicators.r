@@ -1,7 +1,7 @@
 
   p = bio.snowcrab::load.environment( year.assessment=2016)
 
-	p$libs = unique( c( p$libs, bioLibrary( "spacetime", "bio.utilities", "parallel", "sorted.ordination", "bio.indicators") ) )
+	p$libs = unique( c( p$libs, bioLibrary( "bio.spacetime", "bio.utilities", "parallel", "sorted.ordination", "bio.indicators") ) )
 
   # setwd( project.datadirectory("bio.indicators") )
 

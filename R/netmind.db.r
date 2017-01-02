@@ -207,8 +207,7 @@ netmind.db = function( DS, Y=NULL, plotdata=TRUE ) {
         print(rid[i,])
         bdi = which( basedata$netmind_uid==id )
         if (length(bdi) < 5 ) next()
-        l = net.configuration( basedata[ bdi ,], t0=rid$t0[i], t1=rid$t1[i],
-          set_timestamp=rid$timestamp[i], yr=yr, plotdata=plotdata )
+        l = net.configuration( basedata[ bdi ,], t0=rid$t0[i], t1=rid$t1[i], set_timestamp=rid$timestamp[i], yr=yr, plotdata=plotdata )
         l$netmind_uid = id
         # not really required but just in case missing values cause confusion with rbind
         Stats = rbind( Stats, l )

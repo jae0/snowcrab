@@ -28,7 +28,7 @@
       ylim=NULL
 
       #ylim=range(c(td$mean), na.rm=T); ylim[1]=ylim[1]-0.1*ylim[2]; ylim[2] = ylim[2]+ylim[2]*0.4 +200
-      ylim[2]=max(td$ub)
+      ylim[2]=max(td$ub,na.rm=T)
       ylim[1]=round(min(td$lb), 0) - (max(td$ub)*0.05)
       xlim=range(td$year); xlim[1]=xlim[1]; xlim[2]=xlim[2]+1
 

@@ -22,8 +22,8 @@
     #   td[ which(td$region=="4X" & td$year < 2004), c("mean", "se", "ub", "lb", "n")] = NA
 
     ylim='NULL'
-    ylim[2]=max(td$ub)
-    ylim[1]=round(min(td$lb), 0) - (max(td$ub)*0.05)
+    ylim[2]=max(td$ub,na.rm=T)
+    ylim[1]=round(min(td$lb,na.rm=T), 0) - (max(td$ub,na.rm=T)*0.05)
     #ylim=range(c(td$mean), na.rm=T); ylim[1]=ylim[1]-0.1*ylim[2]; ylim[2] = ylim[2]+ylim[2]*0.2
     xlim=range(td$year); xlim[1]=xlim[1]; xlim[2]=xlim[2]
 
