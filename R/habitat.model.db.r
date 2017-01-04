@@ -52,7 +52,6 @@
       Z = bathymetry.db( DS="baseline", p=p )
       Z$plon = floor(Z$plon / 10)*10
       Z$plat = floor(Z$plat / 10)*10
-      Z = Z[, c("plon", "plat") ]
       ii = which(duplicated(Z))
       if (length(ii)>0) Z = Z[-ii,] # thinned list of locations
 
