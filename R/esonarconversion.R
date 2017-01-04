@@ -4,11 +4,11 @@
 # netmind file branch
 
 esonar2netmind = function(fn = NULL) {
-
-  nfn = gsub("netmind", "esonar", fn, ignore.case = T)
+  #Changing operation so that we simply convert esonar archive into netmind archive. -Brent
+  nfn = gsub("esonar","netmind", fn, ignore.case = T)
   if (!file.exists(dirname(nfn)))  dir.create(dirname(nfn), recursive = T)
 
-    file.copy(fn,  nfn, overwrite = T)
+    #file.copy(fn,  nfn, overwrite = T)
     ew = read.csv(fn, nrows = 1, colClasses = c("character"),header=F)
     print(fn)
     if(!grepl('FileName',ew[1])) {
@@ -27,7 +27,7 @@ esonar2netmind = function(fn = NULL) {
       l1 = paste("FileName: ", fn, sep = "")
       l2 = paste("Local Time: ", esonar$CPUDateTime[which(esonar$CPUDateTime != "")][1], sep = "")
       l3 = ""
-      l4 = paste("Ship:  Trip:", unlist(strsplit(header, ","))[2], " Tow: ", unlist(strsplit(header, ","))[3])
+      l4 = paste("Ship:  Trip:", toupper(unlist(strsplit(header, ","))[2]), " Tow: ", unlist(strsplit(header, ","))[3])
       l5 = "Comments:"
 
       stop( "Must verify time formats in esonar inputs and converted netmind output")
@@ -61,7 +61,7 @@ esonar2netmind = function(fn = NULL) {
       esonar$Heading = NULL
       colnames(esonar) = c("Date","Time","Latitude","Longitude","Speed","Primary","Secondary","DoorSpread","Depth", "Temperature" )
 
-      sink(fn )
+      sink(nfn )
 
       cat(l1, "\n")
       cat(l2, "\n")
