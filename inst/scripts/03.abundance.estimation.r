@@ -117,7 +117,6 @@ if (debug) {
     p$optimizers = c( "perf", "nlm", "bfgs", "newton", "Nelder-Mead" )  # used by GAM
 		p$prediction.dyear = 9/12 # predict for ~ Sept 1
     p$nw = 10
-    p$default.spatial.domain = "canada.east"
 
     p$threshold.distance = 15  # limit to extrapolation/interpolation in km
 
