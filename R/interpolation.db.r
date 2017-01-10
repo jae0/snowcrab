@@ -102,14 +102,14 @@
 
         PS$z = log(PS$z)
         PS$dt.seasonal = PS$tmean - PS$t
-        PS$dt.annual = PS$tmean - PS$tmean.cl
+        PS$dt.annual = PS$tmean - PS$tmean.climatology
         PS$sa = 1
         PS$dyear = p$prediction.dyear
 
         # PS$dZ = log( PS$dZ)
         # PS$ddZ = log( PS$ddZ)
         if (exists("tamp", PS)) PS$tamp = log(PS$tamp)
-        if (exists("tamp.cl", PS)) PS$tamp.cl = log(PS$tamp.cl)
+        if (exists("tamplitude.climatology", PS)) PS$tamplitude.climatology = log(PS$tamplitude.climatology)
 
 				# posterior simulations
         Hmodel = NULL

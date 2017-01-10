@@ -52,7 +52,7 @@
 
       if(V == 'simple.2015'){
          out = formula( Y ~  s(t, k = 5, bs = 'ds') +  
-            + s(tmean.cl , k = 5, bs = 'ds') + s(z, k=4,bs = 'ds') + s(dZ, k=4, bs="ds" ) + s(log.substrate.grainsize, k=4, bs="ds" )             
+            + s(tmean.climatology , k = 5, bs = 'ds') + s(z, k=4,bs = 'ds') + s(dZ, k=4, bs="ds" ) + s(log.substrate.grainsize, k=4, bs="ds" )             
             + s(plon, plat, k=100,bs="ds",by=as.factor(yr)) +   s(A,k=4,bs='ds')+  s(mass,k=4,bs='ds')+
             s(Z,k=4,bs='ds') + as.factor(yr) )# nonsig-- s(smr,k=4,bs='ds')+s(Ea,k=4,bs='ds')+ s(Npred,k=4,bs='ds')+s(qm,k=4,bs='ds')
       }

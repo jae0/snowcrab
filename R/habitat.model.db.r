@@ -128,12 +128,12 @@
       # set = set[ which (is.finite(set$Y + set$t + set$plon + set$wt)) ,]
 
       set$dt.seasonal = set$tmean -  set$t
-      set$dt.annual = set$tmean - set$tmean.cl
+      set$dt.annual = set$tmean - set$tmean.climatology
       set$wgts = 1
       set$dZ = log(set$dZ)
       set$ddZ = log(set$ddZ)
       if (exists("tamp", set)) set$tamp = log(set$tamp)
-      if (exists("tamp.cl", set)) set$tamp.cl = log(set$tamp.cl)
+      if (exists("tamplitude.climatology", set)) set$tamplitude.climatology = log(set$tamplitude.climatology)
 
       # remove extremes where variance is high due to small n
       set = filter.independent.variables( x=set )

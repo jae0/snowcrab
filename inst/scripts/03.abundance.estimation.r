@@ -99,7 +99,7 @@ if (debug) {
 
     # Define controlling parameters
     p$auxilliary.data = c(
-          "t", "tmean", "tmean.cl", "tamp", "wmin",
+          "t", "tmean", "tmean.climatology", "tamp", "wmin",
           "z", "log.substrate.grainsize", "dZ", "ddZ"
           )
           # "ca1", "ca2",
@@ -214,7 +214,7 @@ if (debug) {
 #      set$weekno = floor(set$julian / 365 * 52) + 1
 #      set$dyear = floor(set$julian / 365 ) + 1
     set$dt.seasonal = set$tmean -  set$t
-    set$dt.annual = set$tmean - set$tmean.cl
+    set$dt.annual = set$tmean - set$tmean.climatology
 
     H = habitat.model.db( DS="habitat", p=p, v="R0.mass" )
     set$predicted.pa = predict( H, set, type="response" )
@@ -269,7 +269,7 @@ if (debug) {
 
   PS$z = log(PS$z)
   PS$dt.seasonal = PS$tmean - PS$t
-  PS$dt.annual = PS$tmean - PS$tmean.cl
+  PS$dt.annual = PS$tmean - PS$tmean.climatology
   PS$sa = 1
 
 	# posterior simulations
