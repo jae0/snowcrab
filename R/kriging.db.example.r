@@ -77,7 +77,7 @@
 
       # debug
       # x = snowcrab.habitat.db.old(DS="habitat", model.type=p$model.type, vclass=vclass, pyears=yr )
-      # x11(); levelplot( x$fit ~ plon+plat, indicators.db( DS="baseline", p=p), aspect="iso" )
+      # x11(); levelplot( x$fit ~ plon+plat, indicators.db( DS="static", p=p), aspect="iso" )
 
       if ( point.kriging) {
         # this is to point krige and then map results

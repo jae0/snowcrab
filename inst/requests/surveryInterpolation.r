@@ -17,7 +17,7 @@ if(do.interpolation) {
 	det	<- det[det$yr>2003 & det$station %in% d[d[,2]>3,1],]
 
 	geo.mean=T
-
+  
 	for(i in 1:length(gps)) {
 		de 				<- det[,c('station',gps[i],'plat','plon','trip','set')]
 		names(de)[2] 	<- 'gg'
@@ -27,7 +27,7 @@ if(do.interpolation) {
 
 		dp$limm 		<- log(dp[,'gg']+1)
 		params 			<- list(nmax=15,drange=15,power=0.8)
-		fp 				<- interpol.grid(dp[,c('plon','plat','limm')],locs=expand.grid(x=p$plons,y=p$plats),method='inv.dist.gstat',params=params,outfile='iminterp.dat')
+		fp 				<- interpol.grid(dp[,c('plon','plat','limm')],locs=spatial_grid(p=p, nm=c("x","y")) ,method='inv.dist.gstat',params=params,outfile='iminterp.dat')
 		er 				<- with(dp[dp$limm>0,],quantile(limm,probs=c(0.025,0.975)))
 		datarange 		<- c(0,seq( er[1], er[2], length.out=100))
         corners 		<- data.frame(rbind( cbind( plon=c(220, 990), plat=c(4750, 5270) )))

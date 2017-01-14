@@ -1,21 +1,20 @@
 
+IN development .. do not use yet
+
+
 # --------------------------------------------------------------
 #  Ensure the following scripts complete without error:
 #  these external dependencies permit lookup of data, fir snowcrab.db("complete.redo") :
 #  better to run manually than hoping the following will complete automatically -- it won't ;)
-
-source( system.file(package="bio.indicators", "scripts", "01.indicators.r")  )
-source( system.file(package="bio.indicators", "scripts", "02.interpolations.r")  )
+#  source( system.file(package="bio.indicators", "scripts", "01.indicators.r")  )
+#  source( system.file(package="bio.indicators", "scripts", "02.interpolations.r")  )
 
 
 # --------------------------
 # 0. Initialise work space
 
-p = bio.snowcrab::load.environment(
-  year.assessment=2015,
-  libs = c("parallel", "lubridate", "bigmemory", "mgcv", "sp", "parallel",
-       "grid" , "lattice", "fields", "rgdal", "raster")
-)
+p = bio.snowcrab::load.environment( year.assessment=2015 )
+
 
 # --------------------------
 # 1. Define some additional starting parameters for debugging

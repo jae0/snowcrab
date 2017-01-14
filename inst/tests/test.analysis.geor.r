@@ -8,7 +8,7 @@ vg = variog( coords=Q[,c("plon", "plat")], data=Q$t, max.dist=100 )
 vgm = variofit(vg); rm(vg) ;gc()
 
 # requires 32 GB
-pred.grid = expand.grid( plon=p$plons, plat=p$plats)
+pred.grid = spatial_grid(p)
 inside = filter.region.polygon( pred.grid[,c(1:2)], region="cfaall", planar=T,  proj.type=p$internal.projection )
 pred.grid = pred.grid [ inside ,]
 rm(inside); gc()
