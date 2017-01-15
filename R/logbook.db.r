@@ -254,8 +254,8 @@
       
       grid = spatial_grid(p=p, DS="planar.coords")
 
-      x$plon = grid.internal( x$plon, grid$plons )
-      x$plat = grid.internal( x$plat, grid$plats )
+      x$plon = grid.internal( x$plon, grid$plon )
+      x$plat = grid.internal( x$plat, grid$plat )
       yrs = c(T,F)
       for ( Y in yrs ) {
         if (Y) {
@@ -390,8 +390,8 @@
       logbook = lonlat2planar( logbook,  proj.type=p$internal.projection )
       grid = spatial_grid(p=p, DS="planar.coords")
 
-      logbook$plon = grid.internal( logbook$plon, grid$plons )
-      logbook$plat = grid.internal( logbook$plat, grid$plats )
+      logbook$plon = grid.internal( logbook$plon, grid$plon )
+      logbook$plat = grid.internal( logbook$plat, grid$plat )
 
 			logbook$timestamp = as.POSIXct( logbook$date.landed, tz="America/Halifax", origin=lubridate::origin  )  # required for temperature lookups
       logbook$timestamp = with_tz( logbook$timestamp, "UTC")

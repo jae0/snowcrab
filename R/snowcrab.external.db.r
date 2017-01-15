@@ -68,8 +68,8 @@
       
       grid = spatial_grid(p=p, DS="planar.coords")
 
-      set$plon = grid.internal( set$plon, grid$plons )
-      set$plat = grid.internal( set$plat, grid$plats )
+      set$plon = grid.internal( set$plon, grid$plon )
+      set$plat = grid.internal( set$plat, grid$plat )
 
       set = set[ which( is.finite( set$plon + set$plat) ) , ]
       if (nrow(set)==0) return()
