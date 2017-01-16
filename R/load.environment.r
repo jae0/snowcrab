@@ -65,7 +65,6 @@ load.environment = function( year.assessment=NULL, libs=NULL, p=NULL ) {
   p$prediction.dyear = 9/12  # time of year as fractional year to predict 1 Sept
 
   p$nw = 10  # from temperature.r, number of intervals in a year
-  p$default.spatial.domain = "canada.east"  # for temperature/habitat lookups
 
   p$kformula = as.formula( "kv ~ z + t + tamp + wmin + dZ + ddZ + log.substrate.grainsize" )  # model in 2006-2008
   p$klocs = as.formula ( "~plon+plat" )

@@ -95,7 +95,7 @@ ms.mass = paste( "ms.mass", S, sep="." )
 ms.no = paste( "ms.no", S, sep="." )
 
 other = c( "total.effort" ,"total.cpue" , "total.landings", "total.visits", "cpue", "landings", "visits" )
-hab = c( "log.substrate.grainsize" , "dZ", "ddZ" , "tmean" , "tamp", "wmin" , "thp" , "tsd.H", "t" , "tamp.cl" , "wmin.cl", "tsd" , "t" , "tsd", "z"  )
+hab = c( "log.substrate.grainsize" , "dZ", "ddZ" , "tmean" , "tamp", "wmin" , "thp" , "tsd.H", "t" , "tamplitude.climatology" , "wmin.climatology", "tsd" , "t" , "tsd", "z"  )
 crab = c( "cw.male.mat.mean","cw.fem.mat.mean","totmass.female.berried","totmass.female.primiparous","totmass.female.multiparous","mi123.no","mi4.no","mi5.no","mi6.no","mi7.no","mi8.no","mi9.no","mi10.no","mi11.no","mi12.no","fi1234.no", "fi5.no", "fi6.no" ,"fi7.no", "fi8.no", "fi9.no", "fi10.no", "R0.no", "R1.no", "R2.no", "R3.no", "R4.no", "R5p.no", "dwarf.no", "ma9.no", "ma10.no" ,"ma11.no", "ma12.no", "ma13.no", "fa7.no", "fa8.no" ,"fa9.no","fa10.no"  )
 
 log10Y = log10( set$Y + min(set$Y[set$Y>0])/2 )

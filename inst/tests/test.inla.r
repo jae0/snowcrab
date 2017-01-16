@@ -88,7 +88,7 @@ inla.setOption(scale.model.default = TRUE)  # better numerical performance of IG
   p$vars.to.model = c("R0.mass")
 
   p$auxilliary.data = c(
-            "t", "tmean", "tmean.cl", "tamp", "wmin",
+            "t", "tmean", "tmean.climatology", "tamp", "wmin",
             "z", "log.substrate.grainsize", "dZ", "ddZ",
             "ca1", "ca2",
             "nss.rsquared", "nss.shannon",
@@ -1006,7 +1006,7 @@ abline(0:1, col=gray(.7))
   p$vars.to.model = c("R0.mass")
 
   p$auxilliary.data = c(
-            "t", "tmean", "tmean.cl", "tamp", "wmin",
+            "t", "tmean", "tmean.climatology", "tamp", "wmin",
             "z", "log.substrate.grainsize", "dZ", "ddZ",
             "ca1", "ca2",
             "nss.rsquared", "nss.shannon",

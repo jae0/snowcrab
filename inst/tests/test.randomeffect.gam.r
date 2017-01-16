@@ -95,7 +95,7 @@ Q1d 214.52285 1256.456  k=256 -- not enough data in some years
 
   PS$z = log(PS$z)
   PS$dt.seasonal = PS$tmean - PS$t
-  PS$dt.annual = PS$tmean - PS$tmean.cl
+  PS$dt.annual = PS$tmean - PS$tmean.climatology
   PS$sa = 1
 
 
