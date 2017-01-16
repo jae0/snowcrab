@@ -1,4 +1,4 @@
-  map.set.information = function(p, outdir, method="gmt" ) {
+  map.set.information = function(p, outdir, method="gmt", theta=p$pres*75 ) {
 
     set = snowcrab.db( DS="set.biologicals")
     variables = variable.list.expand("all.data")
@@ -27,12 +27,20 @@
       if ( is.null(id)) id = c(1: p$nruns )
       id = as.numeric(id)
 
+      outlocs= bio.bathymetry::bathymetry.db(p=p, DS="baseline")
+
       for (i in id ) {
         v = p$runs[i,1]
         y = p$runs[i,2]
         outfn = paste( "test", sep=".")
         outloc = file.path( getwd() )
-        xyz = set[ which(set$yr==y), c("plon","plat",v) ]
+        set_xyz = set[ which(set$yr==y), c("plon","plat",v) ]
+        
+        u= fastTps(x=set_xyz[,c("plon","plat"] , Y=set_xyz[,v], theta=theta )
+        v = predict(u, xnew=x)
+
+        xyz = cbind( outlocs, v)
+
         er = empirical.ranges( db="snowcrab", v )  # range of all years
         datarange = seq( er[1], er[2], length.out=50)
         corners = data.frame(rbind( cbind( plon=c(220, 990), plat=c(4750, 5270) )))
