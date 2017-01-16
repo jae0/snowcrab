@@ -42,7 +42,6 @@
       set$distance[j] = mean( set$distance, na.rm=TRUE )
     }
  
-
     #---------------------------------------------------------------
     # net spread 
     spread.thresholds = c(0.004, 0.016) # initially fixed at realisitc values based upon net configuration 

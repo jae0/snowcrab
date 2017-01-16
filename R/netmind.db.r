@@ -13,7 +13,8 @@ netmind.db = function( DS, Y=NULL, plotdata=TRUE ) {
 
     if(is.null(Y) | any(Y < 2014)) stop('This only begins in 2014')
     for(y in Y) {
-      esonar.raw.location = file.path(netmind.rawdata.location, y)
+      #Changing to convert esonar directly to netmind. -Brent
+      esonar.raw.location = file.path(project.datadirectory("bio.snowcrab", "data", "esonar" ), y)
       flist = list.files(path=esonar.raw.location, full.names=T, recursive=FALSE)
       for(fl in  flist){
         esonar2netmind(fl)
@@ -202,12 +203,13 @@ netmind.db = function( DS, Y=NULL, plotdata=TRUE ) {
       rid = set[ ii,]
       Stats = NULL
       for ( i in 1:nii  ){
-        print(i)
+       print(i)
         id = rid$netmind_uid[i]
         print(rid[i,])
         bdi = which( basedata$netmind_uid==id )
         if (length(bdi) < 5 ) next()
         l = net.configuration( basedata[ bdi ,], t0=rid$t0[i], t1=rid$t1[i], set_timestamp=rid$timestamp[i], yr=yr, plotdata=plotdata )
+        #if(is.na(l$surfacearea))browser()
         l$netmind_uid = id
         # not really required but just in case missing values cause confusion with rbind
         Stats = rbind( Stats, l )

@@ -228,6 +228,11 @@ snowcrab.db = function( DS, p=NULL, yrs=NULL) {
       print("2015 debugging complete")
     }
 
+    dbug.2016 = T
+    if(dbug.2016) {
+       i = which(set$trip == 'S20092016' &set$set==4)
+      set$lon[i] = 63.599
+    }
 
     set = set[,setvars]
     set$sa[ which(set$sa==0) ] = NA
@@ -636,7 +641,7 @@ snowcrab.db = function( DS, p=NULL, yrs=NULL) {
 
     set = merge( set, set_sb, by=c("trip", "set" ), all.x=TRUE, all.y=FALSE, sort=FALSE )
     set = merge( set, set_ml, by=c("trip", "set" ), all.x=TRUE, all.y=FALSE, sort=FALSE, suffixes=c("", ".ml" ))
-
+    
     # use seabird data as the standard, replace with minilog data where missing
     ii = which(!is.finite( set$t0) )
     if (length(ii) > 0 )  set$t0[ ii] = set$t0.ml[ii]
@@ -716,7 +721,7 @@ message("probably do not need to grid any longer")
     set$plat = grid.internal( set$plat, grid$plat )
 
     # merge surfacearea from net mesnuration into the database
-    set = clean.surface.area( set )
+    set = clean.surface.area( set, qreject = c( 0, 1 ))
 
     set$slon = NULL
     set$slat = NULL

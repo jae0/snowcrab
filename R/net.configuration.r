@@ -13,7 +13,7 @@
     out = data.frame( slon=NA, slat=NA, distance=NA, spread=NA, spread_sd=NA,
       surfacearea=NA, vel=NA, vel_sd=NA, netmind_n=NA, t0=NA, t1=NA, dt=NA, yr=NA )
 
-    n.req = 30
+    n.req = 10
 
     if (!is.null(t0)) {
       if (length(t0)>1) {t0 = NULL}
@@ -62,6 +62,9 @@
                    smooth.windowsize=5, modal.windowsize=5,
                    noisefilter.trim=0.05, noisefilter.target.r2=0.8, noisefilter.quants=c(0.05, 0.95) )
 
+      if(yr<2007)bcp$from.manual.archive=FALSE # manual touchdown only done since 2007
+
+
       bcp = bottom.contact.parameters( bcp ) # add other default parameters
       bc = NULL
       bc = bottom.contact( x=M, bcp=bcp )
@@ -107,7 +110,6 @@
 
     # if we are here, it is because a reasonable amount of data is present ..
     # do some more checks and get a first estimate of some parameters in case other errors/limits are found
-
     out$slon=N$lon[1]
     out$slat=N$lat[1]
     out$spread=mean( N$doorspread, na.rm=T ) / 1000  # though called doorspread it is actually wingspread
@@ -119,7 +121,7 @@
     ihl = which( N$doorspread < hl[1] | N$doorspread > hl[2] )
     if (length (ihl)>0 ) N$doorspread[ihl] = NA
     quantiles.to.trim = c(0.05, 0.95)
-    qnt =  quantile( N$doorspread, quantiles.to.trim, na.rm=T)
+    qnt =  quantile( N$doorspread[N$doorspread>0], quantiles.to.trim, na.rm=T)
     iqnt = which( N$doorspread < qnt[1] | N$doorspread > qnt[2] )
     N$doorspread[ iqnt ] = NA
     gooddoor =  which(   is.finite(N$doorspread) )
@@ -203,7 +205,6 @@
       if ( length( which( is.finite( n$doorspread.predicted ) ) ) < 10 ) {
         n$doorspread.predicted = mean( n$doorspread , na.rm=T, trim=0.1 )
       }
-
       mean.doorspreads = ( n$doorspread.predicted[1:(end-1)] + n$doorspread.predicted[2:(end)] ) / 2 / 1000  # mean between two ends
       partial.area =  delta.distance * mean.doorspreads
       out$surfacearea = sum( partial.area )  # km^2

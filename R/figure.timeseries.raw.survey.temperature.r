@@ -43,6 +43,7 @@
       dir.create( outdir, recursive=T, showWarnings=F )
       fn = file.path( outdir, paste( 'temperature', "combined.pdf",  sep="." ) )
       #Cairo( file=fn, type="png", bg="white",  units="in", width=5, height=8, dpi=450 )
+      #browser()
       pdf(file=fn, width=5, height=8, bg='white')
       setup.lattice.options()
       pl = xyplot( mean~year|region, data=td, ub=td$ub, lb=td$lb,
@@ -62,7 +63,7 @@
           panel = function(x, y, subscripts, ub, lb, ...) {
           larrows(x, lb[subscripts], x, ub[subscripts], angle = 90, code = 3, length=0.05)
              panel.xyplot(x, y, type="b", lty=1, lwd=1.5, pch=21, fill= 'darkgrey', col="black", ...)
-             panel.abline(median(y), col="gray75", ...)
+             panel.abline(median(y,na.rm=T), col="gray75", ...)
          }
       )
 
