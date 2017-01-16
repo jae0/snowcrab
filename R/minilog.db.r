@@ -81,6 +81,7 @@
 
       for ( yr in Y ) {
         print(yr)
+        #browser()
         fn.meta = file.path( minilog.dir, paste( "minilog", "metadata", yr, "rdata", sep="." ) )
         fn.raw = file.path( minilog.dir, paste( "minilog", "basedata", yr, "rdata", sep="." ) )
         fs = filelist[ which( as.numeric(filelist[,3])==yr ) , 2 ]
@@ -139,7 +140,7 @@
           }
           if (length(mm) > 0 ) flist= flist[mm]
         }
-        mini.stat = NULL
+       mini.stat = NULL
         for ( i in flist ) {
           load( i )
           mini.stat = rbind( mini.stat, miniStats )
@@ -147,13 +148,12 @@
         mini.meta = minilog.db( DS="metadata", Y=Y )
         res = merge( mini.meta, mini.stat,  by="minilog_uid", all.x=TRUE, all.y=FALSE, sort=FALSE )
         if(any(duplicated(res[,c('trip','set')]))) {
-            res = removeDuplicateswithNA(res,cols=c('trip','set'),idvar='dt')
+            res = removeDuplicateswithNA(res,cols=c('trip','set'),idvar='t')
           }
         #res$t0 = as.POSIXct( res$t0, tz="UTC", origin=lubridate::origin )
         #res$t1 = as.POSIXct( res$t1, tz="UTC", origin=lubridate::origin )
         #res$dt = difftime( res$t1, res$t0 )
-
-        return (res)
+       return (res)
       }
 
       # "stats.redo" is the default action
@@ -199,7 +199,6 @@
         if (nrow(rid) == 0 ) next()
 
         for ( i in 1:nrow(rid)  ) {
-          #browser()
           id = rid$minilog_uid[i]
           sso.trip = rid$trip[i]
           sso.set = rid$set[i]
@@ -225,12 +224,13 @@
             res$zsd = sd(M$depth[rii], na.rm=TRUE)
             res$tsd = sd(M$temperature[rii], na.rm=TRUE)
           }
-
           if (! ( id %in% bad.list ) ) {
+
             ndat = length( which( !is.na(M$depth) ))
             if (ndat ==0 ) print ("No depth data in minilogs")
             if( ndat < 30 ) {
               miniStats = rbind(miniStats, cbind( minilog_uid=id, res ) )
+
               next()
             } else {
 
@@ -238,8 +238,12 @@
                          depth.min=20, depth.range=c(-25,15), eps.depth = 2 ,
                          smooth.windowsize=5, modal.windowsize=5,
                          noisefilter.trim=0.025, noisefilter.target.r2=0.85, noisefilter.quants=c(0.025, 0.975) )
+
+              if(yr<2007)bcp$from.manual.archive=FALSE # manual touchdown only done since 2007
+              
               bcp = bottom.contact.parameters( bcp ) # add other default parameters .. not specified above
               bc =  NULL
+
               bc = bottom.contact( x=M, bcp=bcp )
 
               redo = FALSE
@@ -279,10 +283,10 @@
                 miniStats = rbind(miniStats, cbind( minilog_uid=id, res ) )
               }
             } #end if dat
+
           } # end if badlist
 
         } #end nrow id
-
         # time needs to be reset as posix as it gets lost with rbind/cbind
         miniStats$minilog_uid =  as.character(miniStats$minilog_uid)
         miniStats$t0 = as.POSIXct(miniStats$t0,origin=lubridate::origin, tz="UTC" )

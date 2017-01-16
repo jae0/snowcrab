@@ -44,7 +44,7 @@ p = bio.snowcrab::load.environment()
   # Roger Pettipas .. bottom temperatures of Scotian shelf
   set = snowcrab.db( "set.biologicals" )
   varstoextract = c("t0", "lon", "lat", "z", "zsd", "t", "tsd")
-  t = set[ which(set$yr==2012), varstoextract]
+  t = set[ which(set$yr==2016), varstoextract]
 
   write.table(t, file="petipas.csv", col.names = T, row.names=F, quote=F, sep=" ; ")
 
