@@ -20,7 +20,7 @@ load.environment = function( year.assessment=NULL, libs=NULL, p=NULL ) {
 
   rlibs = RLibrary ( "geosphere", "lubridate", "mgcv", "parallel", "DBI", "Cairo", "Hmisc",
       "vegan", "akima", "fields", "lattice", "gstat", "maptools",  "boot", "grid",
-      "RColorBrewer", "raster","rgdal", "sp", "rgeos", "bigmemory" ,"numDeriv")
+      "RColorBrewer", "rgdal", "sp", "rgeos", "bigmemory" ,"numDeriv")
 
   blibs = bioLibrary( "bio.snowcrab", "bio.spacetime", "bio.utilities",
       "bio.polygons", "bio.groundfish", "netmensuration", "bio.coastline",

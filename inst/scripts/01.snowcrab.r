@@ -1,7 +1,7 @@
 
 require(bio.base)
 p = bio.snowcrab::load.environment( year.assessment=2016 )
-
+#loadfunctions('bio.snowcrab')
 
 # get data tables from Oracle server and store local copies
 # !!!!!! --------- these should be run on a windows machine: !!!!!!!!! <--------- READ THIS
