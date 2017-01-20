@@ -78,7 +78,7 @@ p = bio.snowcrab::load.environment( year.assessment=2016)
     names(S)[which(names(S)==iv0[i])] = iv[i]
   }
 
-  corevars = c( "totno.all", "yr", "cfa", "plon", "plat", "t", "tamp", "wmin", "z", "log.substrate.grainsize", "dZ", "ddZ" )
+  corevars = c( "totno.all", "yr", "cfa", "plon", "plat", "t", "tamp", "z", "log.substrate.grainsize", "dZ", "ddZ" )
   tolog =  c("R0.mass", "totno.all", iv )
   for( i in tolog) S[,i] = log(S[,i] + 1 )
   allvars = c( iv, corevars )
@@ -89,7 +89,7 @@ p = bio.snowcrab::load.environment( year.assessment=2016)
     "StripedAtlanticWolffish_50", "SpottedWolffish_51", "NorthernWolffish_52","Capelin_64", "BarndoorSkate_200",
     "ThornySkate_201","SmoothSkate_202", "WinterSkate_204", "SpinyDogfish_220","NorthernHagfish_241", "LonghornSculpin_300",
     "AmericanSandLance_599", "PandalusBorealis_2211", "ToadCrab_2520","AtlanticRockCrab_2513", "NorthernStone_2523")
-  depvars = c(  "t", "tamp", "wmin", "z", "log.substrate.grainsize", "dZ", "ddZ",  iv )
+  depvars = c(  "t", "tamp", "z", "log.substrate.grainsize", "dZ", "ddZ",  iv )
 
   # depvars = depvars[ - which(depvars=="SnowCrabQueen_2526") ]
 
@@ -97,7 +97,7 @@ p = bio.snowcrab::load.environment( year.assessment=2016)
 
   # linear model
 
-  fl = "totno.all~1 +  t  +  tamp+  wmin+  z  +  log.substrate.grainsize  +  dZ  +  ddZ  +  AtlanticCod_10  +  Haddock_11  +  WhiteHake_12  +  RedHake_13  +  SilverHake_14  +   Pollock_16  +  AtlanticTomcod_17  +  Hakesp_18  +   Redfishsp_23  +  AtlanticHalibut_30  +  TurbotGreenlandHalibut_31  +  AmericanPlaice_40  +    YellowtailFlounder_42  +  WinterFlounder_43  +  GulfStreamFlounder_44  +  NorthernSennet_46  +  WhiteMullet_47  +  StripedAtlanticWolffish_50  +  SpottedWolffish_51  +  NorthernWolffish_52  +  Wolffish_59  +  HerringAtlantic_60  +    Capelin_64  +  AtlanticMackerel_70  +  CrevalleJack_86  +    LongfinHake_112  +  FourbeardRockling_114  +  BlueWhiting_117  +  GreenlandCod_118  +  RosefishBlackBelly_123  +  BrillWindowpane_143  +    BarndoorSkate_200  +  ThornySkate_201  +  LittleSkate_203  +  WinterSkate_204  +   NorthernHagfish_241  +  Dogfish_274  +    Sculpinfamily_311  +   MonkfishGoosefishAngler_400  +  MarlinSpikeGrenadier_410  +  RoughheadGrenadier_411  +  RockGrenadierRoundnose_414  +  Seasnails_500  +  SeasnailGelatinous_505   +  SandLances_590  +  AmericanSandLance_599  +  AmericanEel_600  +  EelpoutNewfoundland_619  +  RadiatedShanny_625   +  CuskEels_660  +   AtlanticSauryNeedlefish_720  +  WhiteBarracudina_727  +    SeaPotato_1823  +  PandalusBorealis_2211  +  PandalusMontagui_2212 +  Argissp_2410  +  Crangonsp_2416  +  JonahCrab_2511 "
+  fl = "totno.all~1 +  t  +  tamp+  z  +  log.substrate.grainsize  +  dZ  +  ddZ  +  AtlanticCod_10  +  Haddock_11  +  WhiteHake_12  +  RedHake_13  +  SilverHake_14  +   Pollock_16  +  AtlanticTomcod_17  +  Hakesp_18  +   Redfishsp_23  +  AtlanticHalibut_30  +  TurbotGreenlandHalibut_31  +  AmericanPlaice_40  +    YellowtailFlounder_42  +  WinterFlounder_43  +  GulfStreamFlounder_44  +  NorthernSennet_46  +  WhiteMullet_47  +  StripedAtlanticWolffish_50  +  SpottedWolffish_51  +  NorthernWolffish_52  +  Wolffish_59  +  HerringAtlantic_60  +    Capelin_64  +  AtlanticMackerel_70  +  CrevalleJack_86  +    LongfinHake_112  +  FourbeardRockling_114  +  BlueWhiting_117  +  GreenlandCod_118  +  RosefishBlackBelly_123  +  BrillWindowpane_143  +    BarndoorSkate_200  +  ThornySkate_201  +  LittleSkate_203  +  WinterSkate_204  +   NorthernHagfish_241  +  Dogfish_274  +    Sculpinfamily_311  +   MonkfishGoosefishAngler_400  +  MarlinSpikeGrenadier_410  +  RoughheadGrenadier_411  +  RockGrenadierRoundnose_414  +  Seasnails_500  +  SeasnailGelatinous_505   +  SandLances_590  +  AmericanSandLance_599  +  AmericanEel_600  +  EelpoutNewfoundland_619  +  RadiatedShanny_625   +  CuskEels_660  +   AtlanticSauryNeedlefish_720  +  WhiteBarracudina_727  +    SeaPotato_1823  +  PandalusBorealis_2211  +  PandalusMontagui_2212 +  Argissp_2410  +  Crangonsp_2416  +  JonahCrab_2511 "
 
 
   fl = paste( yvar, "1", sep="~" )

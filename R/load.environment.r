@@ -62,11 +62,11 @@ load.environment = function( year.assessment=NULL, libs=NULL, p=NULL ) {
   p$recode.data = TRUE
   p$map.results=TRUE
 
-  p$prediction.dyear = 9/12  # time of year as fractional year to predict 1 Sept
+  p$prediction.dyear = lubridate::decimal_date( lubridate::ymd("0000/Sep/01"))  # time of year as fractional year to predict .. match it to temperature.db("timeslice")
 
   p$nw = 10  # from temperature.r, number of intervals in a year
 
-  p$kformula = as.formula( "kv ~ z + t + tamp + wmin + dZ + ddZ + log.substrate.grainsize" )  # model in 2006-2008
+  p$kformula = as.formula( "kv ~ z + t + tamp +dZ + ddZ + log.substrate.grainsize" )  # model in 2006-2008
   p$klocs = as.formula ( "~plon+plat" )
   p$vgm.dist = unique(sort(c( seq(10, 60, 4), seq(50, 100, 10), seq( 80, 160, 20) )))
   p$knmax=100  # must be greater than 30 for convergence

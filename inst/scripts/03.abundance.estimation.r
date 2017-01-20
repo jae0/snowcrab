@@ -98,7 +98,7 @@ if (debug) {
 
     # Define controlling parameters
     p$auxilliary.data = c(
-          "t", "tmean", "tmean.climatology", "tamp", "wmin",
+          "t", "tmean", "tmean.climatology", "tamp",
           "z", "log.substrate.grainsize", "dZ", "ddZ"
           )
           # "ca1", "ca2",
@@ -114,7 +114,7 @@ if (debug) {
 
     p$habitat.threshold.quantile = 0.05 # quantile at which to consider zero-valued abundance
     p$optimizers = c( "perf", "nlm", "bfgs", "newton", "Nelder-Mead" )  # used by GAM
-		p$prediction.dyear = 9/12 # predict for ~ Sept 1
+		p$prediction.dyear = lubridate::decimal_date( lubridate::ymd("0000/Sep/01")) # predict for ~ Sept 1
     p$nw = 10
 
     p$threshold.distance = 15  # limit to extrapolation/interpolation in km

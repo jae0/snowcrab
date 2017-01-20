@@ -88,7 +88,7 @@ inla.setOption(scale.model.default = TRUE)  # better numerical performance of IG
   p$vars.to.model = c("R0.mass")
 
   p$auxilliary.data = c(
-            "t", "tmean", "tmean.climatology", "tamp", "wmin",
+            "t", "tmean", "tmean.climatology", "tamp",
             "z", "log.substrate.grainsize", "dZ", "ddZ",
             "ca1", "ca2",
             "nss.rsquared", "nss.shannon",
@@ -967,12 +967,7 @@ abline(0:1, col=gray(.7))
   tdb <- raster(ncols=100, nrows=100, crs=proj4string( set ) )
   tdb = rasterize( set )
 
-
-  tdb = temperature.db( p=p, DS="temporal.interpolation.redo", yr=2000 )
-
-
-
-
+  tdb = temperature.db( p=p, DS="predictions", yr=2000, ret="mean"  )
 
 
 
@@ -1006,7 +1001,7 @@ abline(0:1, col=gray(.7))
   p$vars.to.model = c("R0.mass")
 
   p$auxilliary.data = c(
-            "t", "tmean", "tmean.climatology", "tamp", "wmin",
+            "t", "tmean", "tmean.climatology", "tamp",
             "z", "log.substrate.grainsize", "dZ", "ddZ",
             "ca1", "ca2",
             "nss.rsquared", "nss.shannon",

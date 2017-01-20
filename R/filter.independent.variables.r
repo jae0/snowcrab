@@ -45,10 +45,6 @@
         if (length(ii) > 0) x$dt.seasonal[ ii ] = 3
       }
       
-      if (exists( "wmin", x)) {
-        ii =  which( x$wmin< -7   ) 
-        if (length(ii) > 0) x$wmin[ ii ] = -7
-      }
       
       if (exists( "smr", x)) {
         ii =  which( x$smr < 0.0045  ) 

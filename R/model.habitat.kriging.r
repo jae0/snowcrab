@@ -26,9 +26,9 @@
       require(mgcv)
       require(arm)
 
-#      .M.gam = formula( Y ~  s( yr ) + s( tmean ) + s( I(t-tmean) ) + s( tamp) + s( wmin ) + s( plon, plat) + s( z)
+#      .M.gam = formula( Y ~  s( yr ) + s( tmean ) + s( I(t-tmean) ) + s( tamp) + s( plon, plat) + s( z)
 #        + s( log.substrate.grainsize) + s( ddZ) +s( dZ)  )
-      .M.gam = formula( Y ~  s( yr ) + s( t )  + s( tamp) + s( wmin) + s( plon, plat) + s( z)
+      .M.gam = formula( Y ~  s( yr ) + s( t )  + s( tamp) + s( plon, plat) + s( z)
         + s( log.substrate.grainsize) + s( ddZ) +s( dZ)  )
       Q = gam( .M.gam, data=set, na.action="na.pass", family=binomial() )
       AIC (Q) # = 3367.65
@@ -50,7 +50,7 @@
       }
 
       # interaction terms were significant but were heaviliy influenced by extremes in data .. they were dropped
-      .M.splines = formula( Y ~  bs(yr, df=4)+  tmean + I(t-tmean) + bs(tamp, df=3) +  bs(wmin, df=3) + bs( plon, df=3)* bs(plat,df=4)+  bs(z, df=4) + bs(log.substrate.grainsize, df=3) + bs(dZ, df=3)+  bs(ddZ, df=3)
+      .M.splines = formula( Y ~  bs(yr, df=4)+  tmean + I(t-tmean) + bs(tamp, df=3) + bs( plon, df=3)* bs(plat,df=4)+  bs(z, df=4) + bs(log.substrate.grainsize, df=3) + bs(dZ, df=3)+  bs(ddZ, df=3)
         + bs(dZ,df=3)
       )
       Q = glm( .M.splines, data=set, na.action="na.omit", family=binomial() )
@@ -80,7 +80,7 @@
           set$plon = jitter(set$plon, amount=1)
           set$plat = jitter(set$plat, amount=1)
           # ~ 24 hr
-          Q = gamm(  Y ~ s(yr) + s(z) + s(log.substrate.grainsize) + s(dZ) + s(ddZ) + s( tamp) + s( wmin)+ s( log.substrate.grainsize) , correlation=corGaus(form=~plon+plat),
+          Q = gamm(  Y ~ s(yr) + s(z) + s(log.substrate.grainsize) + s(dZ) + s(ddZ) + s( tamp) + s( log.substrate.grainsize) , correlation=corGaus(form=~plon+plat),
           data=set, na.action="na.omit", family=binomial())
           # r = predict.gam( q.gamm.cor$gam, set, type="response")
           # cor(r,set$Y)^2 =  0.182554
