@@ -1,7 +1,8 @@
 
   # Figures obtained after completion of data assimilation and processing up to the end of "01.snowcrab.r"
-
+  require(bio.base)
   p = bio.snowcrab::load.environment( year.assessment=2016)
+  #loadfunctions('bio.snowcrab')
 
 
    # Think this is fixed now .. ?
@@ -81,42 +82,65 @@
     figure.timeseries.CW( outdir=file.path(p$annual.results,  "timeseries", "survey"), type="observer" )
 
   #Timeseries: geometric mean biomass of by-catch from snow crab survey
-    #cod, halibut, thornyskate, wolfish, lessertoadcrab, jonahcrab, smoothskate, winterskate, northernshrimp
-    #species = c(10, 30, 201, 50, 2521, 2511, 202, 204, 2211)
+    #cod, haddock, halibut, plaice, wolfish, thornyskate, smoothskate, winterskate, northernshrimp, jonahcrab, lessertoadcrab
+    species = c(10, 11, 30, 40, 201, 50, 2521, 2511, 202, 204, 2211)
+    figure.timeseries.bycatch(species, outdir=file.path(p$annual.results, "timeseries", "survey")) 
+
+
     #Predators
-    figure.timeseries.bycatch.halibut(outdir=file.path(p$annual.results, "timeseries", "survey")) #30
-    figure.timeseries.bycatch.cod(outdir=file.path(p$annual.results, "timeseries", "survey")) #10
-    figure.timeseries.bycatch.wolfish(outdir=file.path(p$annual.results, "timeseries", "survey")) #50
-    figure.timeseries.bycatch.thornyskate(outdir=file.path(p$annual.results, "timeseries", "survey")) #201
-    figure.timeseries.bycatch.smoothskate(outdir=file.path(p$annual.results, "timeseries", "survey")) #202
-    figure.timeseries.bycatch.winterskate(outdir=file.path(p$annual.results, "timeseries", "survey")) #204
+   #figure.timeseries.bycatch.halibut(outdir=file.path(p$annual.results, "timeseries", "survey")) #30
+   #figure.timeseries.bycatch.cod(outdir=file.path(p$annual.results, "timeseries", "survey")) #10
+   #figure.timeseries.bycatch.wolfish(outdir=file.path(p$annual.results, "timeseries", "survey")) #50
+   #figure.timeseries.bycatch.thornyskate(outdir=file.path(p$annual.results, "timeseries", "survey")) #201
+   #figure.timeseries.bycatch.smoothskate(outdir=file.path(p$annual.results, "timeseries", "survey")) #202
+   #figure.timeseries.bycatch.winterskate(outdir=file.path(p$annual.results, "timeseries", "survey")) #204
 
-    #Competitors
-    figure.timeseries.bycatch.lessertoadcrab(outdir=file.path(p$annual.results, "timeseries", "survey")) #2512
-    figure.timeseries.bycatch.jonahcrab(outdir=file.path(p$annual.results, "timeseries", "survey")) #2511
+   ##Competitors
+   #figure.timeseries.bycatch.lessertoadcrab(outdir=file.path(p$annual.results, "timeseries", "survey")) #2512
+   #figure.timeseries.bycatch.jonahcrab(outdir=file.path(p$annual.results, "timeseries", "survey")) #2511
 
-    #Prey
-    figure.timeseries.bycatch.northernshrimp(outdir=file.path(p$annual.results, "timeseries", "survey")) #2211
+   ##Prey
+   #figure.timeseries.bycatch.northernshrimp(outdir=file.path(p$annual.results, "timeseries", "survey")) #2211
 
   # ------------------------------------------
   # Map: Basemap of the Scotian Shelf used by all other mapping routines
   #   creating a partial postscript file via GMT
   #   .. only required if changing resolution or spatial extent
-    gmt.basemap (p)
+  #  gmt.basemap (p)
 
     # ------------------------------------------
   # Map: Scotian Shelf with CFA lines and labels  .. using gmt
   # this is the basemap from map.r which is then post-labelled in sodipodi
-    p$outdir = file.path(p$annual.results,"figures")
-    p$outfile.basename = file.path(p$outdir, "map.CFAs")
+  #  p$outdir = file.path(p$annual.results,"figures")
+  #  p$outfile.basename = file.path(p$outdir, "map.CFAs")
     # p$basemap = file.path( project.datadirectory("bio.snowcrab"), "R", p$basemap)
-    map.basemap.with.cfa.lines( p, conversions=c("ps2png")  )
+  #  map.basemap.with.cfa.lines( p, conversions=c("ps2png")  )
 
   # ------------------------------------------
   # Map:  Interpolated mean/geometric mean of various variables in the set data table
   p$do.parallel=F
-    map.set.information( p, outdir=file.path( project.datadirectory("bio.snowcrab"), "R", "maps", "survey" )  )
-    map.set.information.diff( p, outdir=file.path( project.datadirectory("bio.snowcrab"), "R", "maps", "survey.diff" )  )
+  outdir = file.path( project.datadirectory("bio.snowcrab"), "R", "maps", "survey","snowcrab","annual" ) 
+
+    # just for the roadshow
+    map.set.information( p, variables=c('totmass.male.com', 'totmass.female.mat'),mapyears=2014:2016,outdir=outdir) #,plot.method='gmt')
+    
+    # all variables (geometric means)
+    map.set.information( p, outdir=outdir)
+
+    # Means
+    # variables that shouldn't be logged 
+    set = snowcrab.db( DS="set.biologicals")
+    variables = variable.list.expand("all.data")
+    variables = intersect( variables, names(set) )
+ 
+    nolog.variables = c("t","z","sexratio.all","sexratio.mat","sexratio.imm","julian",variables[grep("cw",variables)])
+    map.set.information( p, variables=nolog.variables,outdir=outdir,log.variable=F,add.zeros=F,theta=100)   
+
+    # Geometric Means
+    # all except variables that shouldn't be logged
+    map.set.information( p, variables= variables[!variables%in%nolog.variables],outdir=outdir)
+
+    #map.set.information.diff( p, outdir=file.path( project.datadirectory("bio.snowcrab"), "R", "maps", "survey.diff" )  )
 
 
   # ------------------------------------------
@@ -137,7 +161,7 @@
   # ------------------------------------------
   # Map: Survey locations
 
-    map.survey.locations( p, basedir=file.path(project.datadirectory("bio.snowcrab"), "R", "maps", "survey.locations"),  newyear=F, map.method="lattice"  )
+    map.survey.locations( p, basedir=file.path(project.datadirectory("bio.snowcrab"), "R", "maps", "survey.locations"),  newyear=F, map.method="gmt"  )
     map.survey.locations( p, basedir=file.path(project.datadirectory("bio.snowcrab"), "R", "maps", "survey.locations"),  newyear=F, map.method="googleearth"  )
 
   # ------------------------------------------
