@@ -1,5 +1,7 @@
 
 require(bio.base)
+require(raster)  ## TODO :: remove raster-based routines
+
 p = bio.snowcrab::load.environment( year.assessment=2016 )
 #loadfunctions('bio.snowcrab')
 
@@ -58,15 +60,15 @@ if (obtain.database.snapshot) {
   p$esonar.yToload  = p$year.assessment
 
   #_________________________________________________________________#
-  #                                                                 #    
+  #                                                                 #
   #  BH: These functions need documentation
   #_________________________________________________________________#
   #                                                                 #
-  
+
   seabird.db( DS="load", Y=p$seabird.yToload ) # this begins 2012;
   minilog.db( DS="load", Y=p$minilog.yToload ) # minilog data series "begins" in 1999 -- 60 min?
   netmind.db( DS='esonar2netmind.conversion',Y=p$esonar.yToload )
-  netmind.db( DS="load", Y=p$netmind.yToload) # netmind data series "begins" in 1998 -- 60 min? 
+  netmind.db( DS="load", Y=p$netmind.yToload) # netmind data series "begins" in 1998 -- 60 min?
 
   #JC note: 1998:2002 have about 60 files with no data, just a short header
 
