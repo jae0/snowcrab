@@ -1,5 +1,5 @@
 
-  figure.timeseries.males = function( outdir, vars="totno.male",  all.areas=T ) {
+  figure.timeseries.males = function( outdir, vars="totno.male",  plotyears, all.areas=T ) {
 
     set = snowcrab.db( DS="set.biologicals")
 
@@ -15,13 +15,14 @@
     n.areas = length(areas)
     varnames = names(set)
     vars = varnames[ grep ( vars, varnames) ]
+    tdb = snowcrab.timeseries.db( DS="biologicals" )
+    if(missing(plotyears))plotyears = unique(tdb$year)
 
     for (v in vars ) {
 
-      td = snowcrab.timeseries.db( DS="biologicals" )
-      ii =  which( td$variable == v)
+      ii =  which( tdb$variable == v & tdb$year%in%plotyears)
       if (length(ii) < 5) next()
-      td = td[ii ,]
+      td = tdb[ii ,]
       td = td[ order(td$region, td$year) , ]
       td$region = factor(td$region, levels=areas, labels =regions)
 

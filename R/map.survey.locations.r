@@ -30,13 +30,14 @@
 
       set = set[, c("yr", "plon", "plat")]
       set = set[ is.finite( rowSums(set) ) ,]
+      corners = data.frame(rbind( cbind( plon=c(220, 990), plat=c(4750, 5270) )))
 
       for (y in years) {
         toplot = set[ which(set$yr==y), c("plon", "plat")]
         annot = paste ("Survey locations", y)
         fn = paste("survey.locations", y, sep=".")
         print(fn)
-        map( toplot, cfa.regions=T, depthcontours=T, annot=annot, fn=fn, loc=basedir, corners=p$planar.corners )
+        map( toplot, cfa.regions=T, depthcontours=T, annot=annot, fn=fn, loc=basedir, corners=corners )
 
       }
     }

@@ -1,5 +1,5 @@
 
-  figure.timeseries.raw.survey.temperature = function( outdir, vars="t",  all.areas=T ) {
+  figure.timeseries.raw.survey.temperature = function( outdir, vars="t",  plotyears, all.areas=T ) {
 
 
     set = snowcrab.db( DS="set.biologicals")
@@ -23,19 +23,20 @@
     for (v in vars ) {
 
       td = snowcrab.timeseries.db( DS="biologicals" )
-      ii =  which( td$variable == v)
+      if(missing(plotyears))plotyears = unique(td$year)
+      ii =  which( td$variable == v & td$year%in%plotyears) 
       if (length(ii) < 5) next()
       td = td[ii ,]
       td = td[ order(td$region, td$year) , ]
       td$region = factor(td$region, levels=areas, labels =regions)
 
       ylim='NULL'
-      ylim[2]=max(td$ub,na.rm=T)
+      ylim[2]=max(td$ub,na.rm=T)*1.1
       ylim[1]=round(min(td$lb), 0) - (max(td$ub)*0.05)
       xlim=range(td$year); xlim[1]=xlim[1]; xlim[2]=xlim[2]
 
       xlabels = seq(min(xlim), max(xlim), 2)
-      ylabels = round(seq(0, round(as.numeric(ylim[2]), 1), length.out=8), 1)
+      ylabels =pretty(ylim,8)
 
       #ylim=range(c(td$mean), na.rm=T); ylim[1]=ylim[1]-0.1*ylim[2]; ylim[2] = ylim[2]+ylim[2]*0.2
       #xlim=range(td$year); xlim[1]=xlim[1]-0.5; xlim[2]=xlim[2]+0.5

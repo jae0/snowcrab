@@ -45,7 +45,7 @@
 
   #-----------------------------------------------
   # Time series of survey temperature
-    figure.timeseries.raw.survey.temperature (outdir=file.path(p$annual.results, "timeseries", "survey"))
+    figure.timeseries.raw.survey.temperature (outdir=file.path(p$annual.results, "timeseries", "survey"),plotyears=2001:2016)
 
   # ------------------------------------------
   # Timeseries: geometric mean density of R-1 recruits
@@ -84,10 +84,10 @@
   #Timeseries: geometric mean biomass of by-catch from snow crab survey
     #cod, haddock, halibut, plaice, wolfish, thornyskate, smoothskate, winterskate, northernshrimp, jonahcrab, lessertoadcrab
     species = c(10, 11, 30, 40, 201, 50, 2521, 2511, 202, 204, 2211)
-    figure.timeseries.bycatch(species, outdir=file.path(p$annual.results, "timeseries", "survey")) 
+    figure.timeseries.bycatch(species, plotyears=2004:2016,outdir=file.path(p$annual.results, "timeseries", "survey")) 
 
 
-    #Predators
+   ##Predators
    #figure.timeseries.bycatch.halibut(outdir=file.path(p$annual.results, "timeseries", "survey")) #30
    #figure.timeseries.bycatch.cod(outdir=file.path(p$annual.results, "timeseries", "survey")) #10
    #figure.timeseries.bycatch.wolfish(outdir=file.path(p$annual.results, "timeseries", "survey")) #50
@@ -123,6 +123,7 @@
 
     # just for the roadshow
     map.set.information( p, variables=c('totmass.male.com', 'totmass.female.mat'),mapyears=2014:2016,outdir=outdir) #,plot.method='gmt')
+    map.set.information( p, variables='t',mapyears=2014:2016,outdir=outdir,log.variable=F,add.zeros=F,theta=100)   
     
     # all variables (geometric means)
     map.set.information( p, outdir=outdir)
@@ -161,6 +162,7 @@
   # ------------------------------------------
   # Map: Survey locations
 
+    map.survey.locations( p, basedir=file.path(project.datadirectory("bio.snowcrab"), "R", "maps", "survey.locations"),  newyear=F, map.method="lattice"  )
     map.survey.locations( p, basedir=file.path(project.datadirectory("bio.snowcrab"), "R", "maps", "survey.locations"),  newyear=F, map.method="gmt"  )
     map.survey.locations( p, basedir=file.path(project.datadirectory("bio.snowcrab"), "R", "maps", "survey.locations"),  newyear=F, map.method="googleearth"  )
 

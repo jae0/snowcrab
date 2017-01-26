@@ -28,6 +28,7 @@
 
     if (map.method=="lattice" ) {
 
+      corners = data.frame(rbind( cbind( plon=c(220, 990), plat=c(4750, 5270) )))
       for (y in years) {
         ii =  which(odb$yr==y)
         if ( length(ii)  < 10 ) next()
@@ -35,7 +36,7 @@
         annot = paste ("Observer locations", y)
         fn = paste("observer.locations", y, sep=".")
         print(fn)
-        map( xyz=toplot,  cfa.regions=T, depthcontours=T, annot=annot, fn=fn, loc=basedir, corners=p$planar.corners )
+        map( xyz=toplot,  cfa.regions=T, depthcontours=T, annot=annot, fn=fn, loc=basedir, corners=corners )
 
       }
 
