@@ -151,7 +151,7 @@
 
       iy = which(!is.finite(x$year))
       if (length(iy) > 0) {
-        x$year[iy] = lubridate::years(x$date.landed) [iy]
+        x$year[iy] = lubridate::year(x$date.landed) [iy]
         iy = which(!is.finite(x$year))
         if (length(iy) > 0)  x = x[ -iy, ]
       }
