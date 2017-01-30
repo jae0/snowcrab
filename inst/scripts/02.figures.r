@@ -35,35 +35,16 @@
 
   # ------------------------------------------
   # Timeseries of all survey variables
-    figure.timeseries.males( outdir=file.path(p$annual.results, "timeseries", "survey") )
-    figure.timeseries.females( outdir=file.path(p$annual.results, "timeseries", "survey") )
-
-  # ------------------------------------------
-  # Timeseries of all survey variables
-    #MG fix this one
-    figure.timeseries.survey(p, areas=c("cfanorth", "cfasouth", "cfa4x"), from.file=F ) # goes to file.path( project.datadirectory("bio.snowcrab"), "R", "timeseries", "survey"
-
+  figure.timeseries.survey(outdir=file.path(p$annual.results, "timeseries", "survey"),variables="R0.mass",plotyears=2001:2016,graphic="R") 
+  figure.timeseries.survey(outdir=file.path(p$annual.results, "timeseries", "survey")) 
   #-----------------------------------------------
-  # Time series of survey temperature
-    figure.timeseries.raw.survey.temperature (outdir=file.path(p$annual.results, "timeseries", "survey"))
+  
+  #Timeseries: geometric mean biomass of by-catch from snow crab survey
+    #cod, haddock, halibut, plaice, wolfish, thornyskate, smoothskate, winterskate, northernshrimp, jonahcrab, lessertoadcrab
+    species = c(10, 11, 30, 40, 201, 50, 2521, 2511, 202, 204, 2211)
+    figure.timeseries.bycatch(species, plotyears=2004:2016,outdir=file.path(p$annual.results, "timeseries", "survey")) 
 
-  # ------------------------------------------
-  # Timeseries: geometric mean density of R-1 recruits
-    #figure.timeseries.recruits( outdir=file.path(p$annual.results, "timeseries", "survey") )
-    #MG Fix R2
-    figure.timeseries.R2( outdir=file.path(p$annual.results, "timeseries", "survey") )
-    #MG Try to get a better measure of R1, not being used at this point because it seems to poorly represent recruits
-    figure.timeseries.R1( outdir=file.path(p$annual.results, "timeseries", "survey") )
 
-  #Timeseries: geometric mean density of R0 (fishable Biomass)
-    figure.timeseries.R0( outdir=file.path(p$annual.results, "timeseries", "survey") )
-
-  #To represent the reduced set of stations in 2014
-  #figure.timeseries.R0.reduced.stations( outdir=file.path(p$annual.results, "timeseries", "survey") )
-
-  # ------------------------------------------
-  # Timeseries: geometric mean density of CC5 crab
-    figure.timeseries.CC5( outdir=file.path(p$annual.results,  "timeseries", "survey") )
 
   # ------------------------------------------
   # Timeseries: sex ratios of immature crab
@@ -81,26 +62,9 @@
   # Timeseries: geometric mean carapace width from at-sea observers
     figure.timeseries.CW( outdir=file.path(p$annual.results,  "timeseries", "survey"), type="observer" )
 
-  #Timeseries: geometric mean biomass of by-catch from snow crab survey
-    #cod, haddock, halibut, plaice, wolfish, thornyskate, smoothskate, winterskate, northernshrimp, jonahcrab, lessertoadcrab
-    species = c(10, 11, 30, 40, 201, 50, 2521, 2511, 202, 204, 2211)
-    figure.timeseries.bycatch(species, outdir=file.path(p$annual.results, "timeseries", "survey")) 
 
 
-    #Predators
-   #figure.timeseries.bycatch.halibut(outdir=file.path(p$annual.results, "timeseries", "survey")) #30
-   #figure.timeseries.bycatch.cod(outdir=file.path(p$annual.results, "timeseries", "survey")) #10
-   #figure.timeseries.bycatch.wolfish(outdir=file.path(p$annual.results, "timeseries", "survey")) #50
-   #figure.timeseries.bycatch.thornyskate(outdir=file.path(p$annual.results, "timeseries", "survey")) #201
-   #figure.timeseries.bycatch.smoothskate(outdir=file.path(p$annual.results, "timeseries", "survey")) #202
-   #figure.timeseries.bycatch.winterskate(outdir=file.path(p$annual.results, "timeseries", "survey")) #204
 
-   ##Competitors
-   #figure.timeseries.bycatch.lessertoadcrab(outdir=file.path(p$annual.results, "timeseries", "survey")) #2512
-   #figure.timeseries.bycatch.jonahcrab(outdir=file.path(p$annual.results, "timeseries", "survey")) #2511
-
-   ##Prey
-   #figure.timeseries.bycatch.northernshrimp(outdir=file.path(p$annual.results, "timeseries", "survey")) #2211
 
   # ------------------------------------------
   # Map: Basemap of the Scotian Shelf used by all other mapping routines
@@ -123,6 +87,7 @@
 
     # just for the roadshow
     map.set.information( p, variables=c('totmass.male.com', 'totmass.female.mat'),mapyears=2014:2016,outdir=outdir) #,plot.method='gmt')
+    map.set.information( p, variables='t',mapyears=2014:2016,outdir=outdir,log.variable=F,add.zeros=F,theta=100)   
     
     # all variables (geometric means)
     map.set.information( p, outdir=outdir)
@@ -143,6 +108,19 @@
     #map.set.information.diff( p, outdir=file.path( project.datadirectory("bio.snowcrab"), "R", "maps", "survey.diff" )  )
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
   # ------------------------------------------
   # Map: Numerical density of by-catch species
    p$do.parallel=F
@@ -161,6 +139,7 @@
   # ------------------------------------------
   # Map: Survey locations
 
+    map.survey.locations( p, basedir=file.path(project.datadirectory("bio.snowcrab"), "R", "maps", "survey.locations"),  newyear=F, map.method="lattice"  )
     map.survey.locations( p, basedir=file.path(project.datadirectory("bio.snowcrab"), "R", "maps", "survey.locations"),  newyear=F, map.method="gmt"  )
     map.survey.locations( p, basedir=file.path(project.datadirectory("bio.snowcrab"), "R", "maps", "survey.locations"),  newyear=F, map.method="googleearth"  )
 

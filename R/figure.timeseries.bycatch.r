@@ -1,8 +1,7 @@
 
-  figure.timeseries.bycatch = function(species, outdir, plotyears, all.areas=T ) {
+  figure.timeseries.bycatch = function(outdir, species,  plotyears, type='mass', all.areas=T, graphic='pdf' ) {
  #browser()
     outdir=file.path(p$annual.results, "timeseries", "survey")
-    set = snowcrab.db( DS="set.biologicals")
 
     if (all.areas) {
       areas = c("cfa4x", "cfasouth", "cfanorth" )
@@ -15,9 +14,14 @@
     n.regions = length(regions)
     n.areas = length(areas)
 
-    v = paste("ms.mass",species,sep='.')
+    spcd = bio.groundfish::groundfish.db( DS="spcodes")
     tdb = snowcrab.timeseries.db( DS="biologicals" )
-    spcd = subset(bio.groundfish::groundfish.db( DS="spcodes"),code%in%species)
+    if(missing(species)){
+      cat = snowcrab.db( DS="cat.initial" )
+      species = unique(cat$spec)
+    }
+    v = paste("ms",type,species,sep='.')
+    spcd = subset(spcd,code%in%species)
     if(missing(plotyears))plotyears = unique(tdb$year)
 
 
@@ -41,12 +45,14 @@
       ylabels = pretty(ylim,8)
 
       dir.create( outdir, recursive=T, showWarnings=F )
-      fn = file.path( outdir, paste( v[i], "png",  sep="." ) )
+      fn = file.path( outdir, paste( v[i], graphic,  sep="." ) )
       cex.main = 1.4
       cex.lab = 1
       cex.axis = 0.2
 
-   Cairo( file=fn, type="png", bg="white",  units="in", width=5, height=6.5, dpi=350 )
+   if(graphic=='png')Cairo( file=fn, type="png", bg="white",  units="in", width=5, height=6, dpi=350 )
+   if(graphic=='pdf')pdf(file=fn, width=4, height=6, bg='white')
+   if(graphic=='R')x11(4,6)
       setup.lattice.options()
       pl = xyplot( mean~year|region, data=td, ub=td$ub, lb=td$lb,
             layout=c(1,n.regions),
@@ -71,7 +77,7 @@
         )
 
       print(pl)
-      dev.off()
+      if(graphic!='R')dev.off()
     }
    #cmd( "convert   -trim -quality 9  -geometry 200% -frame 2% -mattecolor white -antialias ", paste(fn, "pdf", sep="."),  paste(fn, "png", sep=".") )
      return("Done")

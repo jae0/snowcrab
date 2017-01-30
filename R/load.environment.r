@@ -43,8 +43,8 @@ load.environment = function( year.assessment=NULL, libs=NULL, p=NULL ) {
   p$annual.results = file.path( project.datadirectory("bio.snowcrab"), "assessments", p$year.assessment ) # output location for year-specific results
 
   p$spatial.domain = "snowcrab"
-  p$ext2 = extent(matrix(c(-66.4, 42.2, -57.2, 47.4), nrow=2, ncol=2)) #MG extent of mapping frame
-  p$extUTM = extent(matrix(c(219287.2, 4677581, 937584, 5265946), nrow=2, ncol=2)) #MG UTM extent of mapping frame
+  #p$ext2 = extent(matrix(c(-66.4, 42.2, -57.2, 47.4), nrow=2, ncol=2)) #MG extent of mapping frame
+  #p$extUTM = extent(matrix(c(219287.2, 4677581, 937584, 5265946), nrow=2, ncol=2)) #MG UTM extent of mapping frame
   p$geog.proj = "+proj=longlat +ellps=WGS84"
   p$annot.cex=2
   p$do.parallel = TRUE
