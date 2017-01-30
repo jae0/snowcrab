@@ -79,7 +79,7 @@ snowcrab.timeseries.db = function( DS="default", p=NULL, regions=c( "cfa4x", "cf
     for (a in regions) {
       dat[,a] = NA
       ai = NULL
-      ai = filter.region.polygon(dat, a)
+      ai = filter.region.polygon(dat, a) 
       if (length(ai) > 0) dat[ai,a] = a
     }
 
@@ -249,6 +249,58 @@ snowcrab.timeseries.db = function( DS="default", p=NULL, regions=c( "cfa4x", "cf
     tsdata$year = as.numeric( tsdata$year)
     save( tsdata, file=fn, compress=TRUE )
     return( fn)
+  }
+
+  # -------------------
+
+
+  if (DS %in% c( "groundfish.t", "groundfish.t.redo" ) ) {
+    #\\ "reduced" subset of stations found in 2014 ... to be comparable with smaller survey
+    fn = file.path( tsoutdir, "groundfish.t.rdata" )
+    if (DS=="groundfish.t") {
+      tsdata = NULL
+      if (file.exists( fn) ) load(fn)
+      return(tsdata)
+    }
+    tsdata = data.frame(r=NA,yrs=NA,V3='t',meanval=NA,se=NA,n=NA,ub=NA,lb=NA)
+    h = groundfish.db('gshyd')
+    g = groundfish.db('gsinf')
+    g = g[,c('id','sdate','lon','lat','bottom_temperature')]
+    h = h[,c('id','temp')]
+    names(h)[2] <- 'bottom_temperature'
+    f <- merge(g,h,by='id',all.x=T)
+    i <- which(is.na(f$bottom_temperature.x) & !is.na(f$bottom_temperature.y))
+    f[i,'bottom_temperature.x'] <- f[i,'bottom_temperature.y']
+    f$yr <- as.numeric(format(f$sdate,'%Y'))
+    f <- fishing.area.designations(f)
+    ar <- unique(f$cfa)
+    yy <- unique(f$yr)
+    yy <- yy[order(yy)]
+    for (r in ar) {
+      for (yrs in yy) {
+        y = f[which(f$yr == yrs & f$cfa ==r & !is.na(f$bottom_temperature.x)),]
+        if(nrow(y)>3) {
+          ym <- min(y$bottom_temperature.x[y$bottom_temperature.x>0])
+          q = log(y$bottom_temperature.x+ym)
+          m =  mean (q, na.rm=T)
+          n = length(q)
+          se = sd(q, na.rm=T)/ sqrt(n-1)
+          meanval = exp(m)-ym
+          ub = exp(m+se*1.96)-ym
+          lb = exp(m-se*1.96)-ym
+          j = as.data.frame(cbind(r, yrs, 't',meanval, se, n, ub, lb))
+          tsdata <- rbind(tsdata,j)
+        }
+      }
+    }
+    #browser()
+    colnames(tsdata) = c("region", "year", "variable","mean", "se","n", "ub", "lb")
+    numbers = c("year", "mean", "se", "n", "ub", "lb")
+    tsdata = factor2number(tsdata, numbers)
+    tsdata <- tsdata[!is.na(tsdata$year),]
+
+    save(tsdata, file=fn, compress=T)
+    return(fn)
   }
 
 }

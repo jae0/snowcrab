@@ -1,5 +1,5 @@
 
-  figure.timeseries.bycatch = function(species, outdir, plotyears, all.areas=T, graphic='pdf' ) {
+  figure.timeseries.bycatch = function(outdir, species,  plotyears, type='mass', all.areas=T, graphic='pdf' ) {
  #browser()
     outdir=file.path(p$annual.results, "timeseries", "survey")
 
@@ -14,9 +14,14 @@
     n.regions = length(regions)
     n.areas = length(areas)
 
-    v = paste("ms.mass",species,sep='.')
+    spcd = bio.groundfish::groundfish.db( DS="spcodes")
     tdb = snowcrab.timeseries.db( DS="biologicals" )
-    spcd = subset(bio.groundfish::groundfish.db( DS="spcodes"),code%in%species)
+    if(missing(species)){
+      cat = snowcrab.db( DS="cat.initial" )
+      species = unique(cat$spec)
+    }
+    v = paste("ms",type,species,sep='.')
+    spcd = subset(spcd,code%in%species)
     if(missing(plotyears))plotyears = unique(tdb$year)
 
 
