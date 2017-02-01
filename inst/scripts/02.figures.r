@@ -35,32 +35,18 @@
 
   # ------------------------------------------
   # Timeseries of all survey variables
-  figure.timeseries.survey(outdir=file.path(p$annual.results, "timeseries", "survey"),variables="R0.mass",plotyears=2001:2016,graphic="R") 
-  figure.timeseries.survey(outdir=file.path(p$annual.results, "timeseries", "survey")) 
+  figure.timeseries.survey(outdir=file.path(p$annual.results, "timeseries", "survey"),variables="R0.mass",plotyears=2001:2016,graphic="R") # just R0 to see
+  figure.timeseries.survey(outdir=file.path(p$annual.results, "timeseries", "survey")) # all variables
+  figure.timeseries.survey(outdir=file.path(p$annual.results, "timeseries", "survey"),type='observer') 
+  figure.timeseries.survey(outdir=file.path(p$annual.results, "timeseries", "survey"),type='groundfish.t') # groundfish survey temperature
   #-----------------------------------------------
   
   #Timeseries: geometric mean biomass of by-catch from snow crab survey
+
+  # predators and competitors
     #cod, haddock, halibut, plaice, wolfish, thornyskate, smoothskate, winterskate, northernshrimp, jonahcrab, lessertoadcrab
     species = c(10, 11, 30, 40, 201, 50, 2521, 2511, 202, 204, 2211)
     figure.timeseries.bycatch(species, plotyears=2004:2016,outdir=file.path(p$annual.results, "timeseries", "survey")) 
-
-
-
-  # ------------------------------------------
-  # Timeseries: sex ratios of immature crab
-    figure.timeseries.sexratios( outdir=file.path(p$annual.results,  "timeseries", "survey" ), type="immature" )
-
-  # ------------------------------------------
-  # Timeseries: sex ratios of mature crab
-    figure.timeseries.sexratios( outdir=file.path(p$annual.results,  "timeseries", "survey"), type="mature" )
-
-  # ------------------------------------------
-  # Timeseries: geometric mean carapace width from trawl surveys
-    figure.timeseries.CW( outdir=file.path(p$annual.results,  "timeseries", "survey"), type="trawl" )
-
-  # ------------------------------------------
-  # Timeseries: geometric mean carapace width from at-sea observers
-    figure.timeseries.CW( outdir=file.path(p$annual.results,  "timeseries", "survey"), type="observer" )
 
 
 
@@ -83,14 +69,21 @@
   # ------------------------------------------
   # Map:  Interpolated mean/geometric mean of various variables in the set data table
   p$do.parallel=F
+  p$corners = data.frame(plon=c(220, 990), plat=c(4750, 5270) )
+
   outdir = file.path( project.datadirectory("bio.snowcrab"), "R", "maps", "survey","snowcrab","annual" ) 
 
     # just for the roadshow
     map.set.information( p, variables=c('totmass.male.com', 'totmass.female.mat'),mapyears=2014:2016,outdir=outdir) #,plot.method='gmt')
     map.set.information( p, variables='t',mapyears=2014:2016,outdir=outdir,log.variable=F,add.zeros=F,theta=100)   
     
+    # bycatch (geometric means)
+    bc.vars = c(paste("ms.mass",species,sep='.'),paste("ms.no",species,sep='.'))
+    map.set.information( p, variables=bc.vars, outdir=outdir,mapyears=2013:2016,probs=c(0,0.975)) #
+
+
     # all variables (geometric means)
-    map.set.information( p, outdir=outdir)
+    #map.set.information( p, outdir=outdir) # takes a long time
 
     # Means
     # variables that shouldn't be logged 
@@ -107,6 +100,21 @@
 
     #map.set.information.diff( p, outdir=file.path( project.datadirectory("bio.snowcrab"), "R", "maps", "survey.diff" )  )
 
+
+  # ------------------------------------------
+  # Map: Survey locations
+
+    map.survey.locations( p, basedir=file.path(project.datadirectory("bio.snowcrab"), "R", "maps", "survey.locations"),  newyear=F, map.method="lattice"  )
+    map.survey.locations( p, basedir=file.path(project.datadirectory("bio.snowcrab"), "R", "maps", "survey.locations"),  newyear=F, map.method="gmt"  )
+    map.survey.locations( p, basedir=file.path(project.datadirectory("bio.snowcrab"), "R", "maps", "survey.locations"),  newyear=F, map.method="googleearth"  )
+
+  # ------------------------------------------
+  # Map: Observer locations
+    map.observer.locations( p, basedir=file.path(project.datadirectory("bio.snowcrab"), "R", "maps","observer.locations" ), newyear=F , map.method="lattice"  )
+
+  # ------------------------------------------
+  # Map: Logbook recorded locations
+    map.logbook.locations( p, basedir=file.path(project.datadirectory("bio.snowcrab"), "R", "maps","logbook.locations" ), newyear=F , map.method="lattice"  )
 
 
 
