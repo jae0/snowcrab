@@ -9,22 +9,6 @@ snowcrab.parameters = function( p=NULL, DS="default", current.year=NULL, varname
     p$project.root = file.path( project.datadirectory( "bio.indicators"), p$project.name )
     p$project.outdir.root = project.datadirectory( p$project.name, "R" ) #required for interpolations and mapping
 
-   
-
-    if (is.null(year.assessment) ) stop( "must define current.year" )
-
-    p$current.year = current.year  # this is a synonym for year.assessment ... will eventually remove one of these
-    p$year.assessment = current.year
-
-    p$yearstomodel = 1998:p$current.year
-    p$seabird.yToload = 2012:p$current.year
-    p$minilog.yToload = 1999:p$current.year
-    p$netmind.yToload = 1999:p$current.year
-    p$esonar.yToload  = 2014:p$current.year
-    p$netmensuration.problems = c()
-
-
-
     rlibs = c( "lubridate", "rgdal", "parallel", "sp", "lattice", "fields", "mgcv" ,
                "geosphere",  "DBI", "Cairo", "Hmisc", "vegan", "akima",   "latticeExtra",  "maptools",  
                "boot", "grid", "RColorBrewer",  "spatstat", "rgeos", "bigmemory" ,"numDeriv")
@@ -36,42 +20,49 @@ snowcrab.parameters = function( p=NULL, DS="default", current.year=NULL, varname
       "bio.snowcrab", "bio.indicators" ) )
     p$libs = unique( p$libs )
 
-    p$data.sources = c("groundfish", "snowcrab")
+    if (is.null(current.year) ) stop( "must define current.year" )
 
-    p$spatial.domain = "snowcrab"
-    p$spatial.domain.subareas = NULL
+    p$current.year = current.year  # this is a synonym for year.assessment ... will eventually remove one of these
+    p$year.assessment = current.year
 
-    p = spatial_parameters( p=p )  # data are from this domain .. so far
+    p$yearstomodel = 1998:p$current.year
+    p$seabird.yToload = 2012:p$current.year
+    p$minilog.yToload = 1999:p$current.year
+    p$netmind.yToload = 1999:p$current.year
+    p$esonar.yToload  = 2014:p$current.year
+    p$netmensuration.problems = c()
 
-    if (!exists( "current.year", p)) p$current.year = current.year
-    if (!exists("yrs", p) ) p$yrs = c(1998:p$current.year)  # 1945 gets sketchy -- mostly interpolated data ... earlier is even more sparse.
-    
+    p$yrs = c(1998:p$current.year)  # same as yearstomodel ... need to clean this up:: TODO
     p$ny = length(p$yrs)
     p$nt = p$ny # must specify, else assumed = 1 (1= no time)  ## nt=ny annual time steps, nt = ny*nw is seassonal
     p$nw = 10 # default value of 10 time steps for all temp and indicators
-
     p$tres = 1/ p$nw # time resolution .. predictions are made with models that use seasonal components
     p$dyears = (c(1:p$nw)-1)  / p$nw # intervals of decimal years... fractional year breaks
     p$dyear_centre = p$dyears[ round(p$nw/2) ] + p$tres/2
-
-    p$prediction.dyear = lubridate::decimal_date( lubridate::ymd("0000/Sep/01")) # used for creating timeslices and predictions  .. needs to match the values in indicators.parameters()
-
+    # used for creating timeslices and predictions  .. needs to match the values in indicators.parameters()
+    p$prediction.dyear = lubridate::decimal_date( lubridate::ymd("0000/Sep/01")) 
     # output timeslices for predictions in decimla years, yes all of them here
     p$prediction.ts = p$yrs + p$prediction.dyear 
 
+
+    p$data.sources = c("groundfish", "snowcrab")
+    p$spatial.domain = "snowcrab"
+    p$spatial.domain.subareas = NULL
+    p = spatial_parameters( p=p )  # data are from this domain .. so far
+
     # output location for year-specific results
     p$annual.results = file.path( project.datadirectory("bio.snowcrab"), "assessments", p$year.assessment ) 
-
+    p$ofname = file.path(p$annual.results, paste("TSresults", p$year.assessment, "rdata", sep=".") )
+    
     p$annot.cex=2
     p$do.parallel = TRUE
 
     p$fisheries.grid.resolution = 2
-    ## these are kriging related parameters:: the method is deprecated
    
     p$regions.to.model = c( "cfanorth", "cfasouth", "cfa4x", "cfaall" )
-
     p$plottimes=c("annual", "globalaverage")
     p$conversions=c("ps2png")
+    p$recode.data = TRUE
 
   
     if (1) {
@@ -80,19 +71,9 @@ snowcrab.parameters = function( p=NULL, DS="default", current.year=NULL, varname
       p$ext2 = extent(matrix(c(-66.4, 42.2, -57.2, 47.4), nrow=2, ncol=2)) #MG extent of mapping frame
       p$extUTM = extent(matrix(c(219287.2, 4677581, 937584, 5265946), nrow=2, ncol=2)) #MG UTM extent of mapping frame
       p$geog.proj = "+proj=longlat +ellps=WGS84"
-      p$ofname = file.path(p$annual.results, paste("TSresults", p$year.assessment, "rdata", sep=".") )
 
+      ## these are kriging related parameters:: the method is deprecated
       p$years.to.model = c(1998:p$year.assessment)
-      p$yearswithTdata = c(1950:p$year.assessment)
-      p$recode.data = TRUE
-      p$map.results=TRUE
-      p$kformula = as.formula( "kv ~ z + t + tamp +dZ + ddZ + log.substrate.grainsize" )  # model in 2006-2008
-      p$klocs = as.formula ( "~plon+plat" )
-      p$vgm.dist = unique(sort(c( seq(10, 60, 4), seq(50, 100, 10), seq( 80, 160, 20) )))
-      p$knmax=100  # must be greater than 30 for convergence
-      p$krige.incremental = FALSE
-      p$plot.variogram = FALSE
-      p$n.conditional.sims = 100
       p$threshold.distance = 5  # in km for merging fisheries data into the trawl data for external drift kriging
       p$optimizers = c(  "bfgs", "nlm", "perf", "newton", "Nelder-Mead" )  # used by GAM
       p = gmt.parameters( p=p )

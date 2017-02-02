@@ -44,8 +44,6 @@ Suggests:
   bio.groundfish,
   lbm,
   netmensuration,
-  bio.habitat,
-  bio.habitatsuitability,
   bio.spacetime, 
   bio.substrate,
   bio.temperature
