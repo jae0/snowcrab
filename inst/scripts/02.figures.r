@@ -96,7 +96,10 @@
 
     # Geometric Means
     # all except variables that shouldn't be logged
-    map.set.information( p, variables= variables[!variables%in%nolog.variables],outdir=outdir)
+    mass.vars = variables[!variables%in%nolog.variables][grep('mass',variables[!variables%in%nolog.variables])]
+    no.vars = variables[!variables%in%nolog.variables][grep('no',variables[!variables%in%nolog.variables])]
+    map.set.information( p, variables= mass.vars,outdir=outdir)
+    map.set.information( p, variables= no.vars,outdir=outdir,probs=c(0,0.975))
 
     #map.set.information.diff( p, outdir=file.path( project.datadirectory("bio.snowcrab"), "R", "maps", "survey.diff" )  )
 
@@ -119,6 +122,11 @@
 
 
 
+  # Map: Logbook data
+  outdir = file.path( project.datadirectory("bio.snowcrab"), "R", "maps", "logbook","snowcrab","annual" ) 
+    map.fishery.information( p, variable= 'effort',outdir=outdir,FUN=sum,probs=c(0,0.975))
+    map.fishery.information( p, variable= 'cpue',outdir=outdir,FUN=mean,probs=c(0,0.975))
+    map.fishery.information( p, variable= 'landings',outdir=outdir,FUN=sum,probs=c(0,0.975))
 
 
 
