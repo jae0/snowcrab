@@ -4,7 +4,7 @@
 
 	raster.map.variables = function(p=p, grid.fun, variables, cell=NULL) {
 
-	  browser()
+	  message( "This is marked for removal ..." ) # TODO
 
 	  K = logbook.db( DS="logbook" )
 	  #x$landings = x$landings/1000  # convert kg to ton #MG code this out so that it calculates quantiles properly
