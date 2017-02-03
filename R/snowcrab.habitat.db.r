@@ -106,6 +106,12 @@ snowcrab.habitat.db = function( ip=NULL, DS=NULL, p=NULL, voi=NULL, y=NULL, sele
     INP = cbind( INP,  sn )
     INP$tamplitude = INP$amplitude
 
+    # additional indicators.db variables
+    sn = indicators.lookup( p=p, DS="spatial.annual", locsmap=locsmap, timestamp=INP[,"timestamp"], varnames=p$indicators.variables, 
+      DB=indicators.db( p=p, DS="baseline", varnames=p$indicators.variables ) )
+    colnames( sn  ) = p$indicators.variables
+    INP = cbind( INP,  sn )
+
     INP = INP[, which(names(INP) %in% c(p$varnames, p$variables$Y, p$variables$TIME, "dyear", "yr" ) ) ]  # a data frame
     oo = setdiff(p$varnames, names(INP))
     if (length(oo) > 0 ) {
@@ -187,16 +193,14 @@ snowcrab.habitat.db = function( ip=NULL, DS=NULL, p=NULL, voi=NULL, y=NULL, sele
     PS = c( PS, u)
 
     # now we add the other covariate fields for modelling and prediction
-    for ( vn in p$indicators.variables ) {
-      u = bio.indicators::indicators.db( p=p, DS="baseline", voi=vn )
-
-    }
+    # additional indicators.db variables
+    DB=indicators.db( p=p, DS="baseline", varnames=p$indicators.variables )
+    PS = c( PS, DB )
 
     save (PS, file=outfile, compress=T )
     return( outfile )
 
   }
-
 
 
 
