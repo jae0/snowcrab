@@ -33,7 +33,7 @@
         annot = paste ("Logbook locations", y)
         fn = paste("logbook.locations", y, sep=".")
         print(fn)
-        map( toplot, cfa.regions=T, depthcontours=T, annot=annot, fn=fn, loc=basedir, corners=p$planar.corners )
+        map( toplot, cfa.regions=T, depthcontours=T, annot=annot, fn=fn, loc=basedir, corners=p$corners )
       }
 
     }

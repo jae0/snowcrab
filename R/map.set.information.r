@@ -52,16 +52,15 @@
        }
         xyzi = na.omit(set_xyz)
         
-        if(nrow(xyz)<minN||is.na(er[1]))next() #skip to next variable if not enough data
+        if(nrow(xyzi)<minN||is.na(er[1]))next() #skip to next variable if not enough data
         
         datarange = seq( ler[1], ler[2], length.out=50)
-        corners = data.frame(rbind( cbind( plon=c(220, 990), plat=c(4750, 5270) )))
 
         #browser()
 
         #!# because 0 in log space is actually 1 in real space, the next line adds the log of a small number (offset)
         #!# surrounding the data to mimic the effect of 0 beyond the range of the data
-        if(add.zeros)  xyzi =na.omit( zeroInflate(set_xyz,corners=corners,type=2,type.scaler=0.5,eff=log(offset),blank.dist=20) )
+        if(add.zeros)  xyzi =na.omit( zeroInflate(set_xyz,corners=p$corners,type=2,type.scaler=0.5,eff=log(offset),blank.dist=20) )
 
         if(interpolate.method=='tps'){
 
@@ -95,9 +94,9 @@
           ckey=list(labels=list(at=log(labs+offset),labels=labs,cex=2))
         }
 
-       try( map( xyz, xyz.coords="planar", cfa.regions=T, depthcontours=T, pts=set_xyz[,c("plon","plat")], annot=y, fn=outfn, loc=outloc, at=datarange , col.regions=cols(length(datarange)+1), colpts=F, corners=p$planar.corners, display=F,colorkey=ckey))
+       try( map( xyz, xyz.coords="planar", cfa.regions=T, depthcontours=T, pts=set_xyz[,c("plon","plat")], annot=y, fn=outfn, loc=outloc, at=datarange , col.regions=cols(length(datarange)+1), colpts=F, corners=p$corners, display=F,colorkey=ckey))
       }
-      if (plot.method=="pbsmapping") {}
+      #if (plot.method=="pbsmapping") {} #nah
 
   }
 
