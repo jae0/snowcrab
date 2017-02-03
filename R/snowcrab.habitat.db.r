@@ -11,7 +11,7 @@ snowcrab.habitat.db = function( ip=NULL, DS=NULL, p=NULL, voi=NULL, y=NULL, sele
 
     outdir = file.path( project.datadirectory("bio.snowcrab"), "lbm"  )
     dir.create(path=outdir, recursive=T, showWarnings=F)
-    fn = file.path( outdir, paste("baseline", selection$name, "rdata", sep=".") )
+    fn = file.path( outdir, paste("baseline", voi, "rdata", sep=".") )
 
     set = NULL
     if ( DS == "baseline" ) {
@@ -26,7 +26,10 @@ snowcrab.habitat.db = function( ip=NULL, DS=NULL, p=NULL, voi=NULL, y=NULL, sele
     # add commerical fishery data
     lgbk = logbook.db( DS="fisheries.complete", p=p )
     lgbk = lgbk[ which( is.finite( lgbk$landings)), ]
-
+    lgbk$totmass = NA # dummy to bring in mass as well 
+    lgbk$data.source = "logbooks"
+    lgbk$lon = lgbk$lat = NULL
+        
     lgbk = presence.absence( X=lgbk, vname="landings", px=p$habitat.threshold.quantile )  # determine presence absence and weighting
 
     # baddata = which( lgbk$z < log(50) | lgbk$z > log(600) )
