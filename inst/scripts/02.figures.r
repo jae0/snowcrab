@@ -37,7 +37,7 @@
   # Timeseries of all survey variables
   figure.timeseries.survey(outdir=file.path(p$annual.results, "timeseries", "survey"),variables="R0.mass",plotyears=2001:2016,graphic="R") # just R0 to see
   figure.timeseries.survey(outdir=file.path(p$annual.results, "timeseries", "survey")) # all variables
-  figure.timeseries.survey(outdir=file.path(p$annual.results, "timeseries", "survey"),type='observer') 
+  figure.timeseries.survey(outdir=file.path(p$annual.results, "timeseries", "observer"),type='observer') 
   figure.timeseries.survey(outdir=file.path(p$annual.results, "timeseries", "survey"),type='groundfish.t') # groundfish survey temperature
   #-----------------------------------------------
   
@@ -124,9 +124,10 @@
 
   # Map: Logbook data
   outdir = file.path( project.datadirectory("bio.snowcrab"), "R", "maps", "logbook","snowcrab","annual" ) 
-    map.fishery.information( p, variable= 'effort',outdir=outdir,FUN=sum,probs=c(0,0.975))
-    map.fishery.information( p, variable= 'cpue',outdir=outdir,FUN=mean,probs=c(0,0.975))
-    map.fishery.information( p, variable= 'landings',outdir=outdir,FUN=sum,probs=c(0,0.975))
+  p$corners = data.frame(plon=c(220, 990), plat=c(4750, 5270) )
+    map.fisheries.data( p, variable= 'effort',outdir=outdir,FUN=sum,probs=c(0,0.975))
+    map.fisheries.data( p, variable= 'cpue',outdir=outdir,FUN=mean,probs=c(0,0.975))
+    map.fisheries.data( p, variable= 'landings',outdir=outdir,FUN=sum,probs=c(0,0.975))
 
 
 
