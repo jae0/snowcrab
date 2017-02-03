@@ -1,5 +1,5 @@
 
-snowcrab.habitat.db = function( ip=NULL, DS=NULL, p=NULL, v=NULL, y=NULL, selection=NULL ) {
+snowcrab.habitat.db = function( ip=NULL, DS=NULL, p=NULL, voi=NULL, y=NULL, selection=NULL ) {
 
 
   # over-ride default dependent variable name if it exists
@@ -199,7 +199,7 @@ snowcrab.habitat.db = function( ip=NULL, DS=NULL, p=NULL, v=NULL, y=NULL, select
 
   if (DS=="PS" ) {
     out = NULL
-      fn.PS = file.path( outdir, paste( "PS", v, y, "rdata", sep="." ) )
+      fn.PS = file.path( outdir, paste( "PS", voi, y, "rdata", sep="." ) )
       if ( ! (file.exists( fn.PS)) ) return(NULL)
       load(fn.PS)
     return (PS)
@@ -207,7 +207,7 @@ snowcrab.habitat.db = function( ip=NULL, DS=NULL, p=NULL, v=NULL, y=NULL, select
 
   if (DS=="K" ) {
     out = NULL
-      fn.K = file.path( outdir, paste( "K", v, y, "rdata", sep="." ) )
+      fn.K = file.path( outdir, paste( "K", voi, y, "rdata", sep="." ) )
       if ( ! (file.exists( fn.K)) ) return(NULL)
       load(fn.K)
     return (K)
