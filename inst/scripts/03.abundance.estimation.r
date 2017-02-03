@@ -7,8 +7,6 @@
 #  system.file(package="bio.indicators", "scripts", "02.*.r")  
 
 
-
-
 # 1. Define some additional starting parameters for debugging
 #    choose various over-rides: these are initially defined in parameters.r
 
@@ -25,174 +23,51 @@ p$vars.to.model = c("R0.mass")
 
 
 # --------------------------------------------------------------
-# using environmental data ... estimate/lookup missing environmental data ..
+# using environmental data ... estimate/lookup missing environmental data .. (t,z)
 logbook.db( DS ="fisheries.complete.redo", p=p )
 snowcrab.db( DS ="set.complete.redo", p=p )
 
+
+# -------------------------------------------------------------------------------------
+# prep data for modelling and interpolation
+
 selection=list( 
-  name = "large.mature.males",
-  sex=0, 
-  mat=1, 
+  name = "snowcrab.large.males",
+  type = "abundance",
+  sex=0, # male
+  # mat=1, # maturity status in groundfish data is suspect
   spec_bio=bio.taxonomy::taxonomy.recode( from="spec", to="parsimonious", tolookup=2526 ),
   len= c( bio.snowcrab::mb(8), 200)/10, #  mm -> cm ; indicators.db in cm
   drop.groundfish.data=TRUE # from 1970 to 1999 measurement of invertebrates was sporatic .. zero-values are dropped as they are unreliable 
 )
 
-snowcrab.habitat.db(p=p, DS="baseline.redo", voi=selection$name )  # create fields for 
+snowcrab.habitat.db(p=p, DS="baseline.redo", voi=selection$name, selection=selection )  # create fields for 
+snowcrab.habitat.db(p=p, DS="lbm_inputs", selection=selection  )  # create fields for 
 
 
-# -------------------------------------------------------------------------------------
+p = bio.indicators::snowcrab.parameters( p=p, DS="lbm", varname=selection$name  )
+p = make.list( list( yrs=p$yrs), Y=p )
 
+DATA='snowcrab.habitat.db( p=p, DS="lbm_inputs" )'
 
-debug = F
-if (debug) {
-  # identify areas to interpolate
-    p$regions = c("cfanorth")
-    p$regions = c("cfa4x", "cfanorth","cfasouth" )
-    p$regions = c("cfa4x", "cfanorth","cfasouth", "cfaall" )
+p = lbm( p=p, DATA=DATA, tasks=c("initiate", "globalmodel") ) # 5 min
+#   p = lbm( p=p, tasks=c( "stage0" ) ) # serial mode
+#   p = lbm( p=p, tasks=c( "continue" ) )    
+p = lbm( p=p, tasks=c( "stage1" ) ) #  8 hrs 
+p = lbm( p=p, tasks=c( "stage2" ) ) #   1 hrs
+p = lbm( p=p, tasks=c( "save" ) )
+parallel.run( snowcrab.habitat.db, p=p, DS="predictions.redo" ) # warp predictions to other grids
+snowcrab.habitat.db( p=p, DS="lbm.stats.redo" ) # warp stats to other grids
+snowcrab.habitat.db ( p=p, DS="complete.redo" )
+snowcrab.habitat.db ( p=p, DS="baseline.redo" )
+snowcrab.habitat.map( p=p )
 
-  # identify variables to interpolate and create abundance estimates
-
-    p$vars.to.model = c("R0.no", "R1.no")
-    p$vars.to.model = c("R0.mass",  "R1.no")
-    p$vars.to.model = c("R1.no")
-    p$vars.to.model = c("R0.mass")
-
-    p$vars.to.model = c("male.large.mass", "male.small.mass", "female.large.mass", "female.small.mass" )
-
-    p$vars.to.model = c("R0.mass", "R0.no", "R1.no", "totno.female.primiparous","totno.female.multiparous", "totno.female.berried", "fecundity","totno.female.imm", "totno.male.imm" )
-
-    p$vars.to.model = c("R0.mass", "R0.no", "R1.no", "R2.no", "R3.no", "R4.no", "R5p.no",
-      "totno.female.berried", "totno.female.imm", "totno.female.mat", "totno.female.primiparous","totno.female.multiparous",
-      "fecundity", "totno.male.com", "totno.male.mat", "totno.male.imm","dwarf.no", "totno.male.skip.moulter", "totno.male.com.CC5"
-    )
-
-  # modify cluster requirements
-    # p$do.parallel =F
-    p$clusters = rep("localhost", detectCores() )
-    # p$clusters = rep( "localhost", 2)  # only need 2 if 2 vars are being modelled
-    # p$clusters = rep( "localhost", 8)
-    # p$clusters = rep( "localhost", 24)
-    # p$clusters = c( rep( "nyx.beowulf", 24), rep("tartarus.beowulf", 24), rep("kaos", 24 ) )
-
-    # p$clusters = rep("tethys", 7 )
-    # p$clusters = rep("kaos",23 )
-    # p$clusters = rep("nyx",24 )
-    # p$clusters = rep("tartarus",24 )
-}
-
-
-# -----------------
-# 2. Abundance estimation via GAM
-
-  # create some intermediary files to speed up analysis
-
-#  habitat.model.db( DS="large.male.auxillary.data.redo", p=p )
-
-
-#   if (abundance.estimation.via.GAM) {
-
-    # Define controlling parameters
-    p$auxilliary.data = c(
-          "t", "tmean", "tmean.climatology", "tamp",
-          "z", "log.substrate.grainsize", "dZ", "ddZ"
-          )
-          # "ca1", "ca2",
-          # "nss.rsquared", "nss.shannon",
-          # "smr", "Ea", "A", "qm", "mass",
-          # "Z", "Npred" )
-
-    print( "Make sure variable list here matches those in bio/habitat/src/habitat.complete.r ")
-    print( "and in the model statement in bio.snowcrab/_Rfunctions/analysis/model.formula.r")
-
-    # p$model.type = "gam.full" # choose method for habitat model :
-    # p$model.type = "gam.simple" # choose method for habitat model :
-    p$threshold.distance = 15  # limit to extrapolation/interpolation in km
-
-    p$use.annual.models = F  ## <<<<< new addition
-    p$movingdatawindow = 0 # c( -1:+1 )  # this is the range in years to supplement data to model
-    p$movingdatawindowyears = length (p$movingdatawindow)
-
-
-
-    # ---------------------
-    # model habitat and intermediate predictions
-    # ~ 1 MB / process  .. use all 24 CPUs
-    # Parameterize habitat space models for various classes,
-    # see: habitat.model.db( DS="habitat.redo" ... )
-
-    p$clusters = rep("localhost", detectCores() )
-
-    moving.window=F
-    if(moving.window) p = make.list( list(v=p$vars.to.model, yrs=p$years.to.model  ), Y=p )
-    if(!moving.window)p = make.list( list(v=p$vars.to.model  ), Y=p )
-
-    parallel.run( habitat.model.db, DS="habitat.redo", p=p )
-    #habitat.model.db( DS="habitat.redo", p=p, yr=p$years.to.model )
-    #  --- parallel mode is not completing ... FIXME
-
-    # ---------------------
-    testing.environmentals.only = FALSE
-    if ( testing.environmentals.only ) {
-      # habitat surface area estimation for R0.mass from 1970 to present --- for timeseries and direct prediction maps
-      p$clusters = c( rep( "localhost", 20) )
-      # p$clusters = rep( "localhost", 2)
-      p = make.list( list(v=c("R0.mass.environmentals.only", "R0.mass") ), Y=p )
-        habitat.model.db (DS="habitat.redo", p=p, v=p$v )
-      p = make.list( list(y=1970:p$year.assessment, v=c("R0.mass.environmentals.only", "R0.mass") ), Y=p )
-        parallel.run( snowcrab.habitat.db, p=p )
-      # or
-      # snowcrab.habitat.db (p=p) -- working?
-    }
-
-
-    # ---------------------
-    # model abundance and intermediate predictions
-    moving.window=F
-    if(moving.window) p = make.list( list(v=p$vars.to.model, yrs=p$years.to.model  ), Y=p )
-    if(!moving.window)p = make.list( list(v=p$vars.to.model  ), Y=p )
-    #parallel.run( habitat.model.db, DS="abundance.redo", p=p )
-    habitat.model.db( DS="abundance.redo", p=p)
-
-
-    # ---------------------
-    # compute posterior simulated estimates using habitat and abundance predictions
-    # and then map, stored in R/gam/maps/
-
-    p$vars.to.model= "R0.mass"
-    p$nsims = 1000 # n=1000 ~ 1 , 15 GB/run for sims
-    p$ItemsToMap = c( "map.habitat", "map.abundance", "map.abundance.estimation" )
-
-    # p$clusters = c( rep( "nyx.beowulf",3), rep("tartarus.beowulf",3), rep("kaos", 3 ) )
-
-    p$clusters = c( rep( "localhost", 2) )
-    p = make.list( list(y=p$years.to.model, v=p$vars.to.model ), Y=p )
-    parallel.run( interpolation.db, DS="interpolation.redo", p=p )
-		# interpolation.db ( DS="interpolation.redo", p=p )
 
     # collect all results into a single file and return:
     K = interpolation.db( DS="interpolation.simulation", p=p  )
     table.view( K )
 
-    abund.v = c("yr", "total", "lbound", "ubound" )
-
-    Pmeta = K[ which( K$region=="cfanorth") ,]
-    Pmeta = K[ which( K$region=="cfasouth") ,]
-    Pmeta = K[ which( K$region=="cfa4x") ,]
-    Pmeta = K[ which( K$region=="cfaall") ,]
-
-    outdir = file.path( project.datadirectory("bio.snowcrab"), "R", "gam", "timeseries")
-    rr = "cfanorth"
-    rr = "cfasouth"
-    rr = "cfa4x"
-    rr = "cfaall"
-
-    vv = "R0.mass"
-    Pmeta = K[ which( as.character(K$vars)==vv & as.character(K$region)==rr ) ,abund.v ]
     figure.timeseries.errorbars( Pmeta, outdir=outdir, fname=paste(vv, rr, sep=".") )
-
-    # TODO :: MUST determine potential habitat stats in historical data ( 1950 to present ) for timeseries plots
-    # use "prediction.surface( p, DS="annual.redo", vclass=vclass )" as an example
 
     ### --------- prediction success:
 
@@ -202,86 +77,12 @@ if (debug) {
     set = presence.absence( set, "R0.mass", p$habitat.threshold.quantile )  # determine presence absence(Y) and weighting(wt)
 #      set$weekno = floor(set$julian / 365 * 52) + 1
 #      set$dyear = floor(set$julian / 365 ) + 1
-    set$dt.seasonal = set$tmean -  set$t
-    set$dt.annual = set$tmean - set$tmean.climatology
-
-    H = habitat.model.db( DS="habitat", p=p, v="R0.mass" )
-    set$predicted.pa = predict( H, set, type="response" )
-    A = habitat.model.db( DS="abundance", p=p, v="R0.mass" )
-    set$predicted.abund = predict( A, set, type="response" )
-
-    set$predicted.R0.mass = set$predicted.abund
-    set$predicted.R0.mass[ which( set$predicted.pa < 0.5) ] = 0
-
-    amin = min( set$predicted.R0.mass[ which( set$predicted.R0.mass >0 )])
-    bmin = min( set$R0.mass[ which( set$R0.mass >0 )])
-
-    plot( set$predicted.R0.mass , set$R0.mass )
-
-    cor( set$predicted.R0.mass , set$R0.mass )^2  # 0.7870114 !!
-
-    save ( set, file="/home/adam/tmp/set.test.rdata")
-
-  }
-
 
 
   # update data summaries of the above results
     biomass.summary.db("complete.redo", p=p) #Uses the model results to create a habitat area expanded survey index
     biomass.summary.survey.db("complete.redo", p=p)#Uses average surface area from the past 5 years if a habitat area expanded surface area is not possible
 
-
-
-
-
-  ---
-
-
-  y = 2012
-  v = "R0.mass"
-
-  PS = indicators.db ( DS="complete", year=y, p=p )
-	PS$dyear = p$prediction.dyear  # must be same as above
-	PS$t = NA
-
-  PST = temperature.db( p=p, DS="spacetime.prediction", yr=y  )
-	if (is.null(PST)) next ()
-
-  dyears = (c(1:(p$nw+1))-1)  / p$nw # intervals of decimal years... fractional year breaks
-  dyr = as.numeric( cut( p$prediction.dyear, breaks=dyears, include.lowest=T, ordered_result=TRUE ) ) # integer representation of season
-  PS$t = PST[, dyr ]
-  PS$t[ which(PS$t < -2) ] = -2
-  PS$t[ which(PS$t > 30) ] = 30
-
-  iitna = which( ! is.finite( PS$t ) )
-  if (length(iitna)>0) PS$t[iitna] = PS$tmean[iitna]
-
-  PS$z = log(PS$z)
-  PS$dt.seasonal = PS$tmean - PS$t
-  PS$dt.annual = PS$tmean - PS$tmean.climatology
-  PS$sa = 1
-
-	# posterior simulations
-	Hmodel = habitat.model.db( DS="habitat", v= v )
-
-  PS$predicted.pa = predict( Hmodel, PS, type="response" )
-
-  levelplot( predicted.pa ~ plon + plat, data=PS, aspect="iso", title=paste("Habitat", y) )
-
-
-  Amodel = habitat.model.db( DS="abundance", v= v )
-
-  PS$abundance = predict( Amodel, PS, type="response" )
-
-  levelplot( log10(abundance) ~ plon + plat, data=PS, aspect="iso", title=paste("Abundance", y)  )
-
-
-  present = which(PS$predicted.pa > p$habitat.threshold.quantile )
-  PS$pa = 0
-  PS$pa[present] = 1
-
-  PS$combined = PS$abundance * PS$pa
-  levelplot( log10(combined) ~ plon + plat, data=PS, aspect="iso", title=paste("Abundance", y)  )
 
 
 
