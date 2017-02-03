@@ -8,8 +8,10 @@ snowcrab.parameters = function( p=NULL, DS="default", current.year=NULL, varname
     p$project.name = "bio.snowcrab"
     p$project.root = file.path( project.datadirectory( "bio.indicators"), p$project.name )
     p$project.outdir.root = project.datadirectory( p$project.name, "R" ) #required for interpolations and mapping
+    
+    message("raster is deprecated .. this will soon be removed as it causes too many conflicts with rgdal")
 
-    rlibs = c( "lubridate", "rgdal", "parallel", "sp", "lattice", "fields", "mgcv" ,
+    rlibs = c( "lubridate", "rgdal", "parallel", "sp", "lattice", "fields", "mgcv" , "raster",
                "geosphere",  "DBI", "Cairo", "Hmisc", "vegan", "akima",   "latticeExtra",  "maptools",  
                "boot", "grid", "RColorBrewer",  "spatstat", "rgeos", "bigmemory" ,"numDeriv")
 
