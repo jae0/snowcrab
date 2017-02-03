@@ -40,6 +40,9 @@ snowcrab.habitat.db = function( ip=NULL, DS=NULL, p=NULL, voi=NULL, y=NULL, sele
     nms = intersect( names(set) , names( lgbk) )
     set = rbind( set[, nms], lgbk[,nms] )
 
+    names(set)[ which( names(set) =="totmass")] = selection$name 
+
+
     # Z = bathymetry.db( DS="baseline", p=p )
     # Z$plon = floor(Z$plon / 10)*10
     # Z$plat = floor(Z$plat / 10)*10
@@ -71,6 +74,7 @@ snowcrab.habitat.db = function( ip=NULL, DS=NULL, p=NULL, voi=NULL, y=NULL, sele
     # set = fishing.area.designations(set, type="lonlat")
 
 
+
     save ( set, file=fn, compress=TRUE )
 
     return (fn)
@@ -82,7 +86,7 @@ snowcrab.habitat.db = function( ip=NULL, DS=NULL, p=NULL, voi=NULL, y=NULL, sele
   if (DS=="lbm_inputs") {
     # mostly based on indicators.db( DS="lbm_inputs") 
 
-    INP = snowcrab.habitat.db(p=p, DS="baseline", selection=list(name="large.mature.males") )
+    INP = snowcrab.habitat.db(p=p, DS="baseline", voi=selection$name )
     INP$tiyr = lubridate::decimal_date( INP$timestamp ) 
 
     locsmap = match( 
@@ -137,15 +141,15 @@ snowcrab.habitat.db = function( ip=NULL, DS=NULL, p=NULL, voi=NULL, y=NULL, sele
 
       return (list(input=INP, output=OUT))
 
-
-
-
   }
 
+  
+  # ----------------
 
+  
   if (DS %in% c("prediction.surface", "prediction.surface.redo") ) {
 
-    outdir = file.path( project.datadirectory("bio.indicators"), "PS", p$spatial.domain )
+    outdir = file.path( project.datadirectory("bio.snowcrab"), "PS", p$spatial.domain )
     dir.create(outdir, recursive=T, showWarnings=F)
 
     dyear_index = 1
