@@ -64,9 +64,15 @@ snowcrab.parameters = function( p=NULL, DS="default", current.year=NULL, varname
     p$conversions=c("ps2png")
     p$recode.data = TRUE
 
+    if (!exists("clusters", p)) p$clusters = rep("localhost", detectCores() )
+    if (!exists("varstomodel", p))    p$varstomodel   = variable.list.expand("all.to.model")
+    if (!exists("vars.to.model", p))  p$vars.to.model = variable.list.expand("all.to.model") # not sure why we have vars.to.model and vartomodel ... clean this up :: TODO
+
+    p$habitat.threshold.quantile = 0.05 # quantile at which to consider zero-valued abundance
+   
   
     if (1) {
-      #     message( "This is marked for removal ..." ) # TODO
+      #  things that will be removed soon :: TODO
 
       p$ext2 = extent(matrix(c(-66.4, 42.2, -57.2, 47.4), nrow=2, ncol=2)) #MG extent of mapping frame
       p$extUTM = extent(matrix(c(219287.2, 4677581, 937584, 5265946), nrow=2, ncol=2)) #MG UTM extent of mapping frame
@@ -78,7 +84,7 @@ snowcrab.parameters = function( p=NULL, DS="default", current.year=NULL, varname
       p$optimizers = c(  "bfgs", "nlm", "perf", "newton", "Nelder-Mead" )  # used by GAM
       p = gmt.parameters( p=p )
 
-    }
+     }
 
   }
 

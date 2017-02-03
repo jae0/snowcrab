@@ -15,10 +15,7 @@ load.environment = function( year.assessment=NULL, libs=NULL, p=NULL ) {
   if (is.null(p)) p = list()
   if (!is.null(libs)) RLibrary(libs)
   if ( exists("libs", p) ) libs = c(libs, p$libs)
-  if (!exists("clusters", p)) p$clusters = rep("localhost", detectCores() )
-  if (!exists("varstomodel", p)) p$varstomodel = variable.list.expand("all.to.model")
-  p$vars.to.model = variable.list.expand("all.to.model")
-
+  
   p = bio.snowcrab::snowcrab.parameters( p=p, DS="default", current.year=year.assessment )
 
   return(p)

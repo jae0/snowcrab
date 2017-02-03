@@ -404,20 +404,18 @@
 			logbook$depth = NULL
       oo =  which( logbook$z < 10 | logbook$z > 500 ) # screen out large z's
       if (length(oo) > 0 )  logbook$z[ oo ] = NA
-			logbook = habitat.lookup( logbook, p=p, DS="depth" )
+      ii = which(!is.finite(logbook$z))
+      if (length(ii)>0){
+        logbook$z[ii] = bio.bathymetry::bathymetry.lookup( p=p, locs=logbook[ii,c("plon", "plat")], vnames="z" )
+      }
       logbook$z = log( logbook$z )
 
       ii = which( ! is.finite( logbook$z) )
       if (length(ii)>0) logbook = logbook[ -ii, ]
 
-		  # bring in time varing features:: temperature
-			logbook$t = NA
-      logbook$t = habitat.lookup( logbook, p=p, DS="temperature" )
-
-			# bring in habitat variables
-			logbook = habitat.lookup( logbook, p=p, DS="all.data" )
-      logbook$z = log(logbook$z)
-
+      # bring in time varing features:: temperature
+      logbook$t = bio.temperature::temperature.lookup( p=p, locs=logbook[, c("plon","plat")], timestamp=logbook$timestamp )
+      
 			save( logbook, file=fn, compress=T )
 
       return  ("Complete")

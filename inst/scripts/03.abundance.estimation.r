@@ -1,24 +1,18 @@
 
-IN development .. do not use yet
-
 
 # --------------------------------------------------------------
 #  Ensure the following scripts complete without error:
-#  these external dependencies permit lookup of data, fir snowcrab.db("complete.redo") :
-#  better to run manually than hoping the following will complete automatically -- it won't ;)
-#  source( system.file(package="bio.indicators", "scripts", "01.indicators.r")  )
-#  source( system.file(package="bio.indicators", "scripts", "02.interpolations.r")  )
+#  these external dependencies permit lookup of data, for snowcrab.db("complete.redo") :
+#  system.file(package="bio.indicators", "scripts", "01.indicators.r")  
+#  system.file(package="bio.indicators", "scripts", "02.*.r")  
 
 
-# --------------------------
-# 0. Initialise work space
-
-p = bio.snowcrab::load.environment( year.assessment=2015 )
 
 
-# --------------------------
 # 1. Define some additional starting parameters for debugging
 #    choose various over-rides: these are initially defined in parameters.r
+
+p = bio.snowcrab::load.environment( year.assessment=2016 )
 
 p$regions = c("cfa4x", "cfanorth","cfasouth" )
 
@@ -27,7 +21,7 @@ p$vars.to.model = c("R0.mass")
 # p$vars.to.model = c("R0.mass", "R0.no", "R1.no", "totno.female.primiparous","totno.female.multiparous", "totno.female.berried", "fecundity","totno.female.imm", "totno.male.imm" )
 # p$vars.to.model = c("R0.no", "R1.no", "totno.female.primiparous","totno.female.multiparous", "totno.female.berried", "fecundity","totno.female.imm", "totno.male.imm" )
 
- p$years.to.model=2005:2012
+ # p$years.to.model=2005:2012
 
 
 # --------------------------------------------------------------
@@ -38,13 +32,6 @@ snowcrab.db( DS ="set.complete.redo", p=p )
 
 
 # -------------------------------------------------------------------------------------
-# snow crab found in external databases tapped into for habitat determination
-# for ( vs in c( "R0.mass", "male.large", "male.small", "female.large", "female.small" ) ) {
-### -------- not yet finished this one ...  TODO
-vs="R0.mass"
-snowcrab.external.db(p=p, DS="set.snowcrab.in.groundfish.survey.redo", vname=vs, year.current=p$year.assessment )
-
-# ---- TODO !!! must replace this with survey.db processing step
 
 
 

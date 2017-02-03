@@ -1,5 +1,8 @@
 
   map.fisheries.data = function(p, gridfun, variables) {
+    
+    message( "Find replacement for 'raster.map.variables' ") # TODO
+    
     x = logbook.db( DS="logbook" )
     #x$landings = x$landings/1000  # convert kg to ton #MG code this out so that it calculates quantiles properly
     x$sa = 1  # this a dummy variable required by the mapping routine
@@ -14,6 +17,8 @@
 
     variables = c("effort", "landings", "cpue")
     grid.fun=mean
+
+
     raster.map.variables(x, p, variables, p$plottimes, polydir, shpdir, rasdir, mapdir, grid.fun=mean)
     return("Mapping Completed")
   }

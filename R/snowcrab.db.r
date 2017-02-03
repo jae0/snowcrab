@@ -994,17 +994,18 @@ message("probably do not need to grid any longer")
     # print(head(set2015))
 
     # bring in time invariant features:: depth
-    print ("Bring in depth")
-    set = habitat.lookup( set,  p=p, DS="depth" )
+    ii = which(!is.finite(set$z))
+    if (length(ii)>0){
+      set$z[ii] = bio.bathymetry::bathymetry.lookup( p=p, locs=set[ii,c("plon", "plat")], vnames="z" )
+    }
     set$z = log( set$z )
 
+ 
     # bring in time varing features:: temperature
-    print ("Bring in temperature")
-    set = habitat.lookup( set, p=p, DS="temperature" )
-
-    # bring in all other habitat variables, use "z" as a proxy of data availability
-    # and then rename a few vars to prevent name conflicts
-    set = habitat.lookup( set,  p=p, DS="all.data" )
+    ii = which(!is.finite(set$t))
+    if (length(ii)>0){
+      set$t[ii] = bio.temperature::temperature.lookup( p=p, locs=set[ii, c("plon","plat")], timestamp=set$timestamp[ii] )
+    }
 
     # return planar coords to correct resolution
     set = lonlat2planar( set, proj.type=p$internal.projection )

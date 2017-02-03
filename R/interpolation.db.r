@@ -1,5 +1,5 @@
 
-  interpolation.db = function( ip=NULL, DS, p=NULL ) {
+  interpolation.db = function( ip=NULL, DS=NULL, p=NULL, voi=NULL ) {
 
     if ( DS %in% c( "interpolation.redo", "interpolation", "interpolation.simulation", "interpolation.simulation.redo",
                     "interpolation.simulation.complete", "interpolation.simulation.PS" ) ) {
