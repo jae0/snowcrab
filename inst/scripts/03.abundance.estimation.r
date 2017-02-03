@@ -31,8 +31,19 @@ snowcrab.db( DS ="set.complete.redo", p=p )
 
 
 
-# -------------------------------------------------------------------------------------
+selection=list( 
+  name = "large.mature.males",
+  sex=0, 
+  mat=1, 
+  spec_bio=bio.taxonomy::taxonomy.recode( from="spec", to="parsimonious", tolookup=2526 ),
+  len= c( bio.snowcrab::mb(8)/10, 20), # in cm
+  drop.groundfish.data=TRUE # from 1970 to 1999 measurement of invertebrates was sporatic .. zero-values are dropped as they are unreliable 
+)
 
+snowcrab.habitat.db(p=p, DS="baseline.redo" )  # create fields for 
+
+
+# -------------------------------------------------------------------------------------
 
 
 debug = F
