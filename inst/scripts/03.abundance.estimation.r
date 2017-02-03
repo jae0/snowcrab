@@ -109,12 +109,6 @@ if (debug) {
 
     # p$model.type = "gam.full" # choose method for habitat model :
     # p$model.type = "gam.simple" # choose method for habitat model :
-
-    p$habitat.threshold.quantile = 0.05 # quantile at which to consider zero-valued abundance
-    p$optimizers = c( "perf", "nlm", "bfgs", "newton", "Nelder-Mead" )  # used by GAM
-		p$prediction.dyear = lubridate::decimal_date( lubridate::ymd("0000/Sep/01")) # predict for ~ Sept 1
-    p$nw = 10
-
     p$threshold.distance = 15  # limit to extrapolation/interpolation in km
 
     p$use.annual.models = F  ## <<<<< new addition
