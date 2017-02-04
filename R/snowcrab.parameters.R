@@ -49,7 +49,7 @@ snowcrab.parameters = function( p=NULL, DS="default", current.year=NULL, varname
 
     p$data.sources = c("groundfish", "snowcrab")
     p$spatial.domain = "snowcrab"
-    p$spatial.domain.subareas = NULL
+    p$spatial.domain.subareas = NULL # add cfa's as subareas .. TODO
     p = spatial_parameters( p=p )  # data are from this domain .. so far
 
     # output location for year-specific results
@@ -129,8 +129,6 @@ snowcrab.parameters = function( p=NULL, DS="default", current.year=NULL, varname
     # p$indicators.variables["biochem"] = intersect( c("..."), p$variables$COV )
     # p$indicators.variables["landings"] = intersect( c("..."), p$variables$COV )
     
-    # etc ..
-
     if (!exists("lbm_variogram_method", p)) p$lbm_variogram_method = "fast"
     if (!exists("lbm_local_modelengine", p)) p$lbm_local_modelengine ="twostep"
     if (!exists("lbm_global_modelengine", p)) p$lbm_global_modelengine ="gam"

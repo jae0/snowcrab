@@ -60,9 +60,9 @@ p = lbm( p=p, tasks=c( "stage2" ) ) #   1 hrs
 p = lbm( p=p, tasks=c( "save" ) )
 parallel.run( snowcrab_lbm, p=p, DS="predictions.redo" ) # warp predictions to other grids
 snowcrab_lbm( p=p, DS="lbm.stats.redo" ) # warp stats to other grids
-snowcrab_lbm ( p=p, DS="complete.redo" )
-snowcrab_lbm ( p=p, DS="baseline.redo" )
-snowcrab.habitat.map( p=p )
+snowcrab_lbm( p=p, DS="complete.redo" )
+snowcrab_lbm( p=p, DS="baseline.redo" )
+snowcrab_lbm( p=p, DS="map.all" )
 
 
     # collect all results into a single file and return:
