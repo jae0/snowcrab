@@ -1,5 +1,5 @@
 
-snowcrab_lbm = function( ip=NULL, DS=NULL, p=NULL, voi=NULL, y=NULL, selection=NULL ) {
+snowcrab_lbm = function( ip=NULL, DS=NULL, p=NULL, voi=NULL, year=NULL, selection=NULL, ret=NULL ) {
 
   # over-ride default dependent variable name if it exists
   if (is.null(voi)) if (!is.null(selection)) if (exists("name", selection)) voi=selection$name
@@ -489,7 +489,7 @@ snowcrab_lbm = function( ip=NULL, DS=NULL, p=NULL, voi=NULL, y=NULL, selection=N
     for (iy in ip ) {
       y = p$runs[iy, "yrs"]
       print(y)
-      H = indicators.db( p=p, DS="predictions", year=y, ret="mean" )
+      H = snowcrab_lbm( p=p, DS="predictions", year=y, ret="mean" )
       if (is.null(H)) next ()
       xyz = cbind(loc, H)
       uu = which( is.finite(rowSums(xyz)))
@@ -504,7 +504,7 @@ snowcrab_lbm = function( ip=NULL, DS=NULL, p=NULL, voi=NULL, y=NULL, selection=N
         loc=projectdir, fn=outfn, annot=annot, at=datarange , col.regions=cols,
         corners=p$corners, spatial.domain=p$spatial.domain ) 
 
-      H = indicators.db( p=p, DS="predictions", year=y, ret="sd" )
+      H = snowcrab_lbm( p=p, DS="predictions", year=y, ret="sd" )
       if (is.null(H)) next ()
       xyz = cbind(loc, H)
       uu = which( is.finite(rowSums(xyz)))
@@ -534,7 +534,7 @@ snowcrab_lbm = function( ip=NULL, DS=NULL, p=NULL, voi=NULL, y=NULL, selection=N
     
     loc = bathymetry.db(p=p, DS="baseline" )
 
-    H = indicators.db( p=p, DS="complete" )
+    H = snowcrab_lbm( p=p, DS="complete" )
     vnames = setdiff( names(H), c("plon", "plat" ))
     
     for (vn in vnames ) {
