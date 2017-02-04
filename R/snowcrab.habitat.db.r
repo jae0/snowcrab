@@ -106,7 +106,7 @@ snowcrab.habitat.db = function( ip=NULL, DS=NULL, p=NULL, voi=NULL, y=NULL, sele
     INP$tamplitude = INP$amplitude
 
     # additional indicators.db variables
-    for (iv in names(p$indicators.variables))
+    for (iv in names(p$indicators.variables)) {
       p0 = bio.indicators::indicators.parameters( p=p, DS="default", current.year=p$current.year )
       p0 = bio.indicators::indicators.parameters( p=p0, DS=iv  )
       p0 = bio.spacetime::spatial_parameters( p=p0, type=p$spatial.domain ) # return to correct domain
@@ -199,7 +199,7 @@ snowcrab.habitat.db = function( ip=NULL, DS=NULL, p=NULL, voi=NULL, y=NULL, sele
 
     # now we add the other covariate fields for modelling and prediction
     # additional indicators.db variables
-    for (iv in names(p$indicators.variables))
+    for (iv in names(p$indicators.variables)) {
       p0 = bio.indicators::indicators.parameters( p=p, DS="default", current.year=p$current.year )
       p0 = bio.indicators::indicators.parameters( p=p0, DS=iv  )
       p0 = bio.spacetime::spatial_parameters( p=p0, type=p$spatial.domain ) # return to correct domain
