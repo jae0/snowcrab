@@ -117,55 +117,59 @@ snowcrab.parameters = function( p=NULL, DS="default", current.year=NULL, varname
       Y = varname, 
       LOCS = c("plon", "plat"), 
       TIME = "tiyr", 
-      COV = c("z", "dZ", "ddZ", "log.substrate.grainsize", "t", "tmean", "tamplitude", "ca1", "ca2" ) )
+      COV = c("z", "dZ", "ddZ", "log.substrate.grainsize", "t", "tmean", "tamplitude", "ca1"  ) )
     p$varnames = c( p$variables$LOCS, p$variables$COV ) 
  
     # additional variable to extract from indicators.db for inputs
     p$indicators.variables = list()
-    p$indicators.variables["speciescomposition"] = c("ca1", "ca2")
-    p$indicators.variables["speciesarea"] = c("Npred")
+    p$indicators.variables["speciescomposition"] = intersect( c("ca1", "ca2", "pca1", "pca2"), p$variables$COV )
+    # p$indicators.variables["speciesarea"] = intersect( c("Npred"), p$variables$COV )
+    # p$indicators.variables["sizespectrum"] = intersect( c("nss"), p$variables$COV )
+    # p$indicators.variables["condition"] = intersect( c("..."), p$variables$COV )
+    # p$indicators.variables["biochem"] = intersect( c("..."), p$variables$COV )
+    # p$indicators.variables["landings"] = intersect( c("..."), p$variables$COV )
+    
     # etc ..
 
     if (!exists("lbm_variogram_method", p)) p$lbm_variogram_method = "fast"
-    
-    p$lbm_local_modelengine ="twostep"
+    if (!exists("lbm_local_modelengine", p)) p$lbm_local_modelengine ="twostep"
+    if (!exists("lbm_global_modelengine", p)) p$lbm_global_modelengine ="gam"
 
     # using covariates as a first pass essentially makes it ~ kriging with external drift
-    p$lbm_global_modelengine = "gam"
-    p$lbm_global_modelformula = formula( paste( 
+    if (!exists("lbm_global_modelformula", p)) p$lbm_global_modelformula = formula( paste( 
       varname, ' ~ s(yr) + s(dyear, k=3, bs="ts") + s(yr, dyear, k=36, bs="ts") ',
       ' + s(ca1, bs="ts") + s(ca2, bs="ts") ', 
       ' + s(t, bs="ts") + s(tmean, bs="ts") + s(tamplitude, bs="ts") + s(z, bs="ts")',
       ' + s(dZ, bs="ts") + s(ddZ, bs="ts")  + s(log.substrate.grainsize, bs="ts") ' ))  # no space or time
 
-    p$lbm_global_family = gaussian()
-    p$lbm_local_family = gaussian()
+    if (!exists("lbm_global_family", p)) p$lbm_global_family = gaussian()
+    if (!exists("lbm_local_family", p)) p$lbm_local_family = gaussian()
 
 
     if (p$lbm_local_modelengine =="twostep") {
 
       # this is the time component (mostly) .. space enters as a rough constraint 
-      p$lbm_local_modelformula = formula( paste(
+      if (!exists("lbm_local_modelformula", p))  p$lbm_local_modelformula = formula( paste(
         varname, '~ s(yr, k=5, bs="ts") + s(cos.w, k=3, bs="ts") + s(sin.w, k=3, bs="ts") ', 
           ' + s(cos.w, sin.w, yr, bs="ts", k=36) ',
           ' + s(plon, bs="ts") + s(plat, bs="ts") + s(plon, plat, k=25, bs="ts") ' ) )
-      p$lbm_local_model_distanceweighted = TRUE
+      if (!exists("lbm_local_model_distanceweighted", p)) p$lbm_local_model_distanceweighted = TRUE
 
       # this is the spatial component
       # p$lbm_twostep_space = "spatial.process"
       # p$lbm_twostep_space = "fft"
       # p$lbm_twostep_space = "tps"
-      p$lbm_twostep_space = "krige"
+      if (!exists("lbm_twostep_space", p))  p$lbm_twostep_space = "krige"
 
     }  else if (p$lbm_local_modelengine == "gam") {
 
-      p$lbm_local_modelformula = formula( paste(
+      if (!exists("lbm_local_modelformula", p))  p$lbm_local_modelformula = formula( paste(
         varname, '~ s(yr, k=5, bs="ts") + s(cos.w, k=3, bs="ts") + s(sin.w, k=3, bs="ts") ', 
           ' + s(cos.w, sin.w, yr, bs="ts", k=36) ',
           ' + s(plon, bs="ts") + s(plat, bs="ts") + s(plon, plat, k=25, bs="ts") ' ) )    
 
-      p$lbm_local_model_distanceweighted = TRUE
-      p$lbm_gam_optimizer="perf"
+      if (!exists("lbm_local_model_distanceweighted", p)) p$lbm_local_model_distanceweighted = TRUE
+      if (!exists("lbm_gam_optimizer", p)) p$lbm_gam_optimizer="perf"
       # p$lbm_gam_optimizer=c("outer", "bfgs") 
     
     }  else if (p$lbm_local_modelengine == "bayesx") {
@@ -185,8 +189,6 @@ snowcrab.parameters = function( p=NULL, DS="default", current.year=NULL, varname
     
     } else {
     
-
-
       message( "The specified lbm_local_modelengine is not tested/supported ... you are on your own ;) ..." )
 
     }

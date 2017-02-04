@@ -31,6 +31,8 @@ snowcrab.db( DS ="set.complete.redo", p=p )
 # -------------------------------------------------------------------------------------
 # prep data for modelling and interpolation
 
+snowcrab_lbm(p=p, DS="prediction.surface.redo" )  # create fields for 
+
 selection=list( 
   name = "snowcrab.large.males",
   type = "abundance",
@@ -41,7 +43,7 @@ selection=list(
   drop.groundfish.data=TRUE # from 1970 to 1999 measurement of invertebrates was sporatic .. zero-values are dropped as they are unreliable 
 )
 
-snowcrab_lbm(p=p, DS="baseline.redo", voi=selection$name, selection=selection )  # create fields for 
+snowcrab_lbm(p=p, DS="baseline.redo", selection=selection )  # create fields for 
 snowcrab_lbm(p=p, DS="lbm_inputs", selection=selection  )  # create fields for 
 
 
