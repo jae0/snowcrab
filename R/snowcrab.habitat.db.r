@@ -1,10 +1,9 @@
 
 snowcrab.habitat.db = function( ip=NULL, DS=NULL, p=NULL, voi=NULL, y=NULL, selection=NULL ) {
 
-
   # over-ride default dependent variable name if it exists
+  if (is.null(voi)) if (!is.null(selection)) if (exists("name", selection)) voi=selection$name
   if (is.null(voi)) if (exists("variables",p)) if(exists("Y", p$variables)) voi=p$variables$Y
-
 
   if (DS %in% c("baseline", "baseline.redo") ) {
     # based upon bio.snowcrab::habitat.model.db()
@@ -107,10 +106,16 @@ snowcrab.habitat.db = function( ip=NULL, DS=NULL, p=NULL, voi=NULL, y=NULL, sele
     INP$tamplitude = INP$amplitude
 
     # additional indicators.db variables
-    sn = indicators.lookup( p=p, DS="spatial.annual", locsmap=locsmap, timestamp=INP[,"timestamp"], varnames=p$indicators.variables, 
-      DB=indicators.db( p=p, DS="baseline", varnames=p$indicators.variables ) )
-    colnames( sn  ) = p$indicators.variables
-    INP = cbind( INP,  sn )
+    for (iv in names(p$indicators.variables))
+      p0 = bio.indicators::indicators.parameters( p=p, DS="default", current.year=p$current.year )
+      p0 = bio.indicators::indicators.parameters( p=p0, DS=iv  )
+      p0 = bio.spacetime::spatial_parameters( p=p0, type=p$spatial.domain ) # return to correct domain
+      vn = p0$indicators.variables[iv]
+      sn = indicators.lookup( p=p0, DS="spatial.annual", locsmap=locsmap, timestamp=INP[,"timestamp"], 
+        varnames=vn, DB=indicators.db( p=p0, DS="baseline", varnames=vn ) )
+      colnames( sn  ) = p$indicators.variables[iv]
+      INP = cbind( INP,  sn )
+    }
 
     INP = INP[, which(names(INP) %in% c(p$varnames, p$variables$Y, p$variables$TIME, "dyear", "yr" ) ) ]  # a data frame
     oo = setdiff(p$varnames, names(INP))
@@ -194,8 +199,14 @@ snowcrab.habitat.db = function( ip=NULL, DS=NULL, p=NULL, voi=NULL, y=NULL, sele
 
     # now we add the other covariate fields for modelling and prediction
     # additional indicators.db variables
-    DB=indicators.db( p=p, DS="baseline", varnames=p$indicators.variables )
-    PS = c( PS, DB )
+    for (iv in names(p$indicators.variables))
+      p0 = bio.indicators::indicators.parameters( p=p, DS="default", current.year=p$current.year )
+      p0 = bio.indicators::indicators.parameters( p=p0, DS=iv  )
+      p0 = bio.spacetime::spatial_parameters( p=p0, type=p$spatial.domain ) # return to correct domain
+      DB=indicators.db( p=p0, DS="baseline", varnames=p0$indicators.variables[iv] )
+      yr_index = match( p$yrs, p0$yrs )
+      PS = c( PS, DB[,yr_index] )
+    }
 
     save (PS, file=outfile, compress=T )
     return( outfile )

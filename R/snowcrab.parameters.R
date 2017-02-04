@@ -6,7 +6,7 @@ snowcrab.parameters = function( p=NULL, DS="default", current.year=NULL, varname
   if ( DS=="default") {
 
     p$project.name = "bio.snowcrab"
-    p$project.root = file.path( project.datadirectory( "bio.indicators"), p$project.name )
+    p$project.root = file.path( project.datadirectory( p$project.name ) )
     p$project.outdir.root = project.datadirectory( p$project.name, "R" ) #required for interpolations and mapping
     
     message("raster is deprecated .. this will soon be removed as it causes too many conflicts with rgdal")
@@ -119,8 +119,12 @@ snowcrab.parameters = function( p=NULL, DS="default", current.year=NULL, varname
       TIME = "tiyr", 
       COV = c("z", "dZ", "ddZ", "log.substrate.grainsize", "t", "tmean", "tamplitude", "ca1", "ca2" ) )
     p$varnames = c( p$variables$LOCS, p$variables$COV ) 
-
-    p$indicators.variables = c("ca1", "ca2")  # additional variable to extract from indicators.db for inputs
+ 
+    # additional variable to extract from indicators.db for inputs
+    p$indicators.variables = list()
+    p$indicators.variables["speciescomposition"] = c("ca1", "ca2")
+    p$indicators.variables["speciesarea"] = c("Npred")
+    # etc ..
 
     if (!exists("lbm_variogram_method", p)) p$lbm_variogram_method = "fast"
     
