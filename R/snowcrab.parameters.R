@@ -129,7 +129,6 @@ snowcrab.parameters = function( p=NULL, DS="default", current.year=NULL, varname
     if (!exists("lbm_variogram_method", p)) p$lbm_variogram_method = "fast"
     
     p$lbm_local_modelengine ="twostep"
-    # if (!exists("lbm_local_modelengine", p)) p$lbm_local_modelengine = "krige" # "twostep" might be interesting to follow up
 
     # using covariates as a first pass essentially makes it ~ kriging with external drift
     p$lbm_global_modelengine = "gam"
@@ -137,11 +136,10 @@ snowcrab.parameters = function( p=NULL, DS="default", current.year=NULL, varname
       varname, ' ~ s(yr) + s(dyear, k=3, bs="ts") + s(yr, dyear, k=36, bs="ts") ',
       ' + s(ca1, bs="ts") + s(ca2, bs="ts") ', 
       ' + s(t, bs="ts") + s(tmean, bs="ts") + s(tamplitude, bs="ts") + s(z, bs="ts")',
-      ' + s(dZ, bs="ts") + s(ddZ, bs="ts")  + s(log.substrate.grainsize, bs="ts") ' )) 
+      ' + s(dZ, bs="ts") + s(ddZ, bs="ts")  + s(log.substrate.grainsize, bs="ts") ' ))  # no space or time
 
     p$lbm_global_family = gaussian()
     p$lbm_local_family = gaussian()
-
 
 
     if (p$lbm_local_modelengine =="twostep") {

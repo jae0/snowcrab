@@ -3,7 +3,7 @@
 
     td = NULL
     for ( yy in 1970:p$year.assessment ) {
-      KK = snowcrab.habitat.db( DS="K", p=p, v="R0.mass", y=yy )
+      KK = snowcrab_lbm( DS="K", p=p, v="R0.mass", y=yy )
       td = rbind( td, KK )
     }
     

@@ -41,14 +41,14 @@ selection=list(
   drop.groundfish.data=TRUE # from 1970 to 1999 measurement of invertebrates was sporatic .. zero-values are dropped as they are unreliable 
 )
 
-snowcrab.habitat.db(p=p, DS="baseline.redo", voi=selection$name, selection=selection )  # create fields for 
-snowcrab.habitat.db(p=p, DS="lbm_inputs", selection=selection  )  # create fields for 
+snowcrab_lbm(p=p, DS="baseline.redo", voi=selection$name, selection=selection )  # create fields for 
+snowcrab_lbm(p=p, DS="lbm_inputs", selection=selection  )  # create fields for 
 
 
 p = bio.indicators::snowcrab.parameters( p=p, DS="lbm", varname=selection$name  )
 p = make.list( list( yrs=p$yrs), Y=p )
 
-DATA='snowcrab.habitat.db( p=p, DS="lbm_inputs" )'
+DATA='snowcrab_lbm( p=p, DS="lbm_inputs" )'
 
 p = lbm( p=p, DATA=DATA, tasks=c("initiate", "globalmodel") ) # 5 min
 #   p = lbm( p=p, tasks=c( "stage0" ) ) # serial mode
@@ -56,10 +56,10 @@ p = lbm( p=p, DATA=DATA, tasks=c("initiate", "globalmodel") ) # 5 min
 p = lbm( p=p, tasks=c( "stage1" ) ) #  8 hrs 
 p = lbm( p=p, tasks=c( "stage2" ) ) #   1 hrs
 p = lbm( p=p, tasks=c( "save" ) )
-parallel.run( snowcrab.habitat.db, p=p, DS="predictions.redo" ) # warp predictions to other grids
-snowcrab.habitat.db( p=p, DS="lbm.stats.redo" ) # warp stats to other grids
-snowcrab.habitat.db ( p=p, DS="complete.redo" )
-snowcrab.habitat.db ( p=p, DS="baseline.redo" )
+parallel.run( snowcrab_lbm, p=p, DS="predictions.redo" ) # warp predictions to other grids
+snowcrab_lbm( p=p, DS="lbm.stats.redo" ) # warp stats to other grids
+snowcrab_lbm ( p=p, DS="complete.redo" )
+snowcrab_lbm ( p=p, DS="baseline.redo" )
 snowcrab.habitat.map( p=p )
 
 
