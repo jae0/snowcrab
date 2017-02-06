@@ -24,77 +24,29 @@ snowcrab_lbm = function( ip=NULL, DS=NULL, p=NULL, voi=NULL, year=NULL, selectio
 
     set = presence.absence( X=set, vname="zm", px=p$habitat.threshold.quantile )  # determine presence absence and weighting
 
-    # add commerical fishery data
-    lgbk = logbook.db( DS="fisheries.complete", p=p )
-    lgbk = lgbk[ which( is.finite( lgbk$landings)), ]
-    lgbk$totmass = NA # dummy to bring in mass as well 
-    lgbk$data.source = "logbooks"
-         
-    lgbk = presence.absence( X=lgbk, vname="landings", px=p$habitat.threshold.quantile )  # determine presence absence and weighting
+    if (selection$name == "snowcrab.large.males") {
+      # add commerical fishery data
+      lgbk = logbook.db( DS="fisheries.complete", p=p )
+      lgbk = lgbk[ which( is.finite( lgbk$landings)), ]
+      lgbk$totmass = NA # dummy to bring in mass as well 
+      lgbk$data.source = "logbooks"
+           
+      lgbk = presence.absence( X=lgbk, vname="landings", px=p$habitat.threshold.quantile )  # determine presence absence and weighting
 
-    # baddata = which( lgbk$z < log(50) | lgbk$z > log(600) )
-    # if ( length(baddata) > 0 ) lgbk = lgbk[ -baddata,]
+      # baddata = which( lgbk$z < log(50) | lgbk$z > log(600) )
+      # if ( length(baddata) > 0 ) lgbk = lgbk[ -baddata,]
 
-    # lgbk$julian = lubridate::yday( lgbk$date.landed )
+      # lgbk$julian = lubridate::yday( lgbk$date.landed )
 
-    nms = intersect( names(set) , names( lgbk) )
-    set = rbind( set[, nms], lgbk[,nms] )
+      nms = intersect( names(set) , names( lgbk) )
+      set = rbind( set[, nms], lgbk[,nms] )
 
+    
+    }
+
+    set$lon = set$lat = NULL
     names(set)[ which( names(set) =="totmass")] = selection$name 
 
-
-    # Z = bathymetry.db( DS="baseline", p=p )
-    # Z$plon = floor(Z$plon / 10)*10
-    # Z$plat = floor(Z$plat / 10)*10
-    # ii = which(duplicated(Z))
-    # if (length(ii)>0) Z = Z[-ii,] # thinned list of locations
-
-    # dd = rdist( set[,c("plon", "plat")] , Z )
-    # ee = apply( dd, 1, min, na.rm=T )
-    # ff = which( ee < p$threshold.distance ) # all within XX km of a good data point
-    # set = set[ ff, ]
-
-    # # bring in time invariant features:: depth
-    # print ("Bring in depth")
-    # set = habitat.lookup( set,  p=p, DS="depth" )
-    # set$z = log( set$z )
-
-    # # bring in time varing features:: temperature
-    # print ("Bring in temperature")
-    # set = habitat.lookup( set, p=p, DS="temperature" )
-
-    # # bring in all other habitat variables, use "z" as a proxy of data availability
-    # # and then rename a few vars to prevent name conflicts
-    # set = habitat.lookup( set,  p=p, DS="all.data" )
-
-    # return planar coords to correct resolution
-    # set = lonlat2planar( set, proj.type=p$internal.projection )
-
-    # # complete area designations
-    # set = fishing.area.designations(set, type="lonlat")
-
-
-    # remove data that are strnage in location or with covars that are out of range ..
-    require(mapdata)
-    require(rgeos)
-
-    proj4strvalue=CRS("+proj=longlat +datum=WGS84")
-    V = SpatialPoints( set[,c("lon", "lat")], proj4strvalue )
-
-    coastline = maps::map( database="worldHires", regions=c("Canada", "US"), fill=TRUE, plot=FALSE )
-    coastlineSp = maptools::map2SpatialPolygons( coastline, IDs=coastline$names, proj4string=proj4strvalue  )
-    
-
-    bboxSP = boundingbox(p$corners$lon, p$corners$lat)
-
-    keep <- gContains( bboxSP, coastlineSp, byid=TRUE ) | gOverlaps( bboxSP, coastlineSp, byid=TRUE )
-    stopifnot( ncol(keep)==1 )
-    coastlineSp = coastlineSp[drop(keep),]
-
-    land = which ( !is.na(over( V, coastlineSp ) )) 
-
-    set = set[ - not.land, ]
-    set$lon = set$lat = NULL
 
     set = set[ which(is.finite(set$t)),] 
     set = set[ which(is.finite(set$z)),] 

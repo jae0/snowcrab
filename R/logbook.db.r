@@ -416,6 +416,20 @@
       # bring in time varing features:: temperature
       logbook$t = bio.temperature::temperature.lookup( p=p, locs=logbook[, c("plon","plat")], timestamp=logbook$timestamp )
       
+
+      # remove data that are strnage in location
+      require(mapdata)
+      proj4strvalue=CRS("+proj=longlat +datum=WGS84")
+      V = SpatialPoints( logbook[,c("lon", "lat")], proj4strvalue )
+      coastline = maps::map( database="worldHires", regions=c("Canada", "US"), fill=TRUE, plot=FALSE )
+      coastlineSp = maptools::map2SpatialPolygons( coastline, IDs=coastline$names, proj4string=proj4strvalue  )
+      bboxSP = bio.spacetime::boundingbox(p$corners$lon, p$corners$lat)
+      keep <- rgeos::gContains( bboxSP, coastlineSp, byid=TRUE ) | rgeos::gOverlaps( bboxSP, coastlineSp, byid=TRUE )
+      stopifnot( ncol(keep)==1 )
+      coastlineSp = coastlineSp[drop(keep),]
+      land = which ( !is.na(over( V, coastlineSp ) )) 
+      logbook = logbook[ - not.land, ]
+
 			save( logbook, file=fn, compress=T )
 
       return  ("Complete")
