@@ -17,7 +17,7 @@
     tdb = snowcrab.timeseries.db( DS=type )
 
     if(missing(variables)){
-      variables =  c( variable.list.expand("all.to.model"), variable.list.expand("snowcrab.cw"), variable.list.expand("physical") ,'sexratio.mat')
+      variables =  c( variable.list.expand("all.to.model"), variable.list.expand("snowcrab.cw"), variable.list.expand("physical") ,'sexratio.mat','sexratio.imm','sexratio.all')
       variables = intersect( variables, unique(tdb$variable))
     }
 
@@ -48,6 +48,9 @@
       if(is.null(u))u=NULL # for variable specific units, needs a lookup table 
 
       ylim=c(0,max(c(td$ub,td$mean),na.rm=T))
+      #browser()
+      if(length(grep('ratio',v))==1)ylim=c(0,1)
+
       xlim=range(td$year)
       if(v %in% tvars){
         ylab = list( paste("Geometric mean", u) , cex=1)
@@ -72,12 +75,12 @@
         main = "Groundfish Survey Temperature"
         xlabels = seq(xlim[1], xlim[2], 2)
       }
-
+      dline = ifelse(length(grep('ratio',v))==1,0.5,NA)
       if(graphic=='png')Cairo( file=fn, type="png", bg="white",  units="in", width=wd, height=ht, dpi=350 )
       if(graphic=='pdf')pdf(file=fn, width=wd, height=ht, bg='white')
       if(graphic=='R')x11(wd,ht)
       setup.lattice.options()
-      pl = xyplot( mean~year|region, data=td, ub=td$ub, lb=td$lb,
+      pl = xyplot( mean~year|region, data=td, ub=td$ub, lb=td$lb, dline=dline,
             layout=c(1,n.regions),
             par.strip.text=list(
               plot.symbol=list(col='black', fill='darkgrey', cex=0.75, pch=21),
@@ -94,6 +97,7 @@
                 panel = function(x, y, subscripts, ub, lb, ...) {
                larrows(x, lb[subscripts], x, ub[subscripts], angle = 90, code = 3, length=0.05)
                panel.abline(h=median(y,na.rm=T), col="gray", ...)
+               panel.abline(h=dline, col="gray", lty=2,...)
                panel.xyplot(x, y, type="b", lty=1, lwd=1.5, pch=21, fill='darkgrey', col="black", ...)
           }
         )

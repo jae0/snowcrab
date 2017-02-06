@@ -35,6 +35,7 @@
         outfn = paste( v,y, sep=".")
         outloc = file.path( outdir,v)
         print(paste(p$runs[i,]))
+        if(grep('ratio',v))ratio=T
 
         set_xyz = set[ which(set$yr==y), c("plon","plat",v) ]
         names( set_xyz) = c("plon", "plat", "z")
@@ -43,18 +44,33 @@
 
         if(missing(offset))offset = empirical.ranges( db="snowcrab", v, remove.zeros=T , probs=0)  # offset fot log transformation
         er = empirical.ranges( db="snowcrab", v, remove.zeros=T , probs=probs)  # range of all years
+        if(ratio)er=c(0,1)
         ler = er
 
         if(log.variable){
           set_xyz$z = log(set_xyz$z+offset)
           ler=log(er+offset)
           #if(offset<1)if(shift) xyz$z = xyz$z + abs(log(offset))
-       }
+        }
+        
+        datarange = seq( ler[1], ler[2], length.out=50)
+#
+        #if(logit.variable){
+        #  sr=set[,v]
+        #  sr=sr[sr>0&sr<1&!is.na(sr)]
+        #  lh=range(sr)
+        #  set_xyz$z[set_xyz$z==0] = lh[1]
+        #  set_xyz$z[set_xyz$z==1] = lh[2]
+        #  set_xyz$z = logit(set_xyz$z)
+        #  #if(offset<1)if(shift) xyz$z = xyz$z + abs(log(offset))
+        #  ler=logit(quantile(sr,probs))
+        #  datarange = seq( ler[1], ler[2], length.out=50)
+        #}
         xyzi = na.omit(set_xyz)
         
         if(nrow(xyzi)<minN||is.na(er[1]))next() #skip to next variable if not enough data
         
-        datarange = seq( ler[1], ler[2], length.out=50)
+        
 
         #browser()
 
@@ -81,7 +97,9 @@
         
         cols = colorRampPalette(c("darkblue","cyan","green", "yellow", "orange","darkred", "black"), space = "Lab")
 
+        
         xyz$z[xyz$z>ler[2]] = ler[2]
+        if(ratio)xyz$z[xyz$z<ler[1]] = ler[1]
 
       if (plot.method=="levelplot") {
 
