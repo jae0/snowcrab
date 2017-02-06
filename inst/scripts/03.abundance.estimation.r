@@ -47,7 +47,7 @@ snowcrab_lbm(p=p, DS="baseline.redo", selection=selection )  # create fields for
 snowcrab_lbm(p=p, DS="lbm_inputs", selection=selection  )  # create fields for 
 
 
-p = bio.indicators::snowcrab.parameters( p=p, DS="lbm", varname=selection$name  )
+p = bio.snowcrab::snowcrab.parameters( p=p, DS="lbm", varname=selection$name  )
 p = make.list( list( yrs=p$yrs), Y=p )
 
 DATA='snowcrab_lbm( p=p, DS="lbm_inputs" )'
@@ -62,6 +62,7 @@ parallel.run( snowcrab_lbm, p=p, DS="predictions.redo" ) # warp predictions to o
 snowcrab_lbm( p=p, DS="lbm.stats.redo" ) # warp stats to other grids
 snowcrab_lbm( p=p, DS="complete.redo" )
 snowcrab_lbm( p=p, DS="baseline.redo" )
+
 snowcrab_lbm( p=p, DS="map.all" )
 
 

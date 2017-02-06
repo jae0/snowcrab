@@ -29,8 +29,7 @@ snowcrab_lbm = function( ip=NULL, DS=NULL, p=NULL, voi=NULL, year=NULL, selectio
     lgbk = lgbk[ which( is.finite( lgbk$landings)), ]
     lgbk$totmass = NA # dummy to bring in mass as well 
     lgbk$data.source = "logbooks"
-    lgbk$lon = lgbk$lat = NULL
-        
+         
     lgbk = presence.absence( X=lgbk, vname="landings", px=p$habitat.threshold.quantile )  # determine presence absence and weighting
 
     # baddata = which( lgbk$z < log(50) | lgbk$z > log(600) )
@@ -74,6 +73,31 @@ snowcrab_lbm = function( ip=NULL, DS=NULL, p=NULL, voi=NULL, year=NULL, selectio
     # # complete area designations
     # set = fishing.area.designations(set, type="lonlat")
 
+
+    # remove data that are strnage in location or with covars that are out of range ..
+    require(mapdata)
+    require(rgeos)
+
+    proj4strvalue=CRS("+proj=longlat +datum=WGS84")
+    V = SpatialPoints( set[,c("lon", "lat")], proj4strvalue )
+
+    coastline = maps::map( database="worldHires", regions=c("Canada", "US"), fill=TRUE, plot=FALSE )
+    coastlineSp = maptools::map2SpatialPolygons( coastline, IDs=coastline$names, proj4string=proj4strvalue  )
+    
+
+    bboxSP = boundingbox(p$corners$lon, p$corners$lat)
+
+    keep <- gContains( bboxSP, coastlineSp, byid=TRUE ) | gOverlaps( bboxSP, coastlineSp, byid=TRUE )
+    stopifnot( ncol(keep)==1 )
+    coastlineSp = coastlineSp[drop(keep),]
+
+    land = which ( !is.na(over( V, coastlineSp ) )) 
+
+    set = set[ - not.land, ]
+    set$lon = set$lat = NULL
+
+    set = set[ which(is.finite(set$t)),] 
+    set = set[ which(is.finite(set$z)),] 
 
 
     save ( set, file=fn, compress=TRUE )
