@@ -36,7 +36,8 @@
   # ------------------------------------------
   # Timeseries of all survey variables
   figure.timeseries.survey(outdir=file.path(p$annual.results, "timeseries", "survey"),variables="R0.mass",plotyears=2001:2016,graphic="R") # just R0 to see
-  figure.timeseries.survey(outdir=file.path(p$annual.results, "timeseries", "survey")) # all variables
+  #figure.timeseries.survey(outdir=file.path(p$annual.results, "timeseries", "survey"),variables=c("sexratio.all","sexratio.mat","sexratio.imm")) 
+  figure.timeseries.survey(outdir=file.path(p$annual.results, "timeseries", "survey"),plotyears=2001:2016) # all variables
   figure.timeseries.survey(outdir=file.path(p$annual.results, "timeseries", "observer"),type='observer') 
   figure.timeseries.survey(outdir=file.path(p$annual.results, "timeseries", "survey"),type='groundfish.t') # groundfish survey temperature
   #-----------------------------------------------
@@ -93,6 +94,8 @@
  
     nolog.variables = c("t","z","sexratio.all","sexratio.mat","sexratio.imm","julian",variables[grep("cw",variables)])
     map.set.information( p, variables=nolog.variables,outdir=outdir,log.variable=F,add.zeros=F,theta=100)   
+    # logit transform for ratios
+    map.set.information( p, variables=c("sexratio.all","sexratio.mat","sexratio.imm"),outdir=outdir,log.variable=F,add.zeros=F,theta=100) 
 
     # Geometric Means
     # all except variables that shouldn't be logged
