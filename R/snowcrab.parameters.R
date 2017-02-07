@@ -123,7 +123,7 @@ snowcrab.parameters = function( p=NULL, DS="default", current.year=NULL, varname
     # additional variable to extract from indicators.db for inputs
     p$indicators.variables = list()
     for (id in c("speciescomposition", "speciesarea", "sizespectrum", "condition", "metabolism", "biochem") ) {
-      pz = bio.indicators::indicators.parameters( DS=id )
+      pz = bio.indicators::indicators.parameters( p=p, DS=id )
       pz_vars = intersect( pz$varstomodel, p$variables$COV )
       if (length(pz_vars) > 0) p$indicators.variables[id] = pz_vars 
     }
