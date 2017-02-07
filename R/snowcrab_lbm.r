@@ -107,6 +107,19 @@ snowcrab_lbm = function( ip=NULL, DS=NULL, p=NULL, voi=NULL, year=NULL, ret=NULL
 
     PS = snowcrab_lbm( p=p, DS="prediction.surface" ) # a list object with static and annually varying variables  
     names(PS)[ names(PS)=="amplitude"] ="tamplitude" 
+    
+    # additional indicators.db variables
+    for (iv in names(p$indicators.variables)) {
+      p0 = bio.indicators::indicators.parameters( p=p, DS="default", current.year=p$current.year )
+      p0 = bio.indicators::indicators.parameters( p=p0, DS=iv  )
+      p0 = bio.spacetime::spatial_parameters( p=p0, type=p$spatial.domain ) # return to correct domain
+      vn = p0$indicators.variables[[iv]]
+      sn = indicators.db( p=p0, DS="baseline", varnames=vn )
+      yr_index = match( p$yrs, p0$yrs )
+      for ( vv in p$indicators.variables[[iv]]) {
+        PS[[vv]] = sn[[vv]][, yr_index]
+      }
+    }
 
     ps_varnames = setdiff( p$varnames, p$variables$LOCS )
 
