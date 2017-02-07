@@ -50,7 +50,7 @@ p$selection=list(
 p = bio.snowcrab::snowcrab.parameters( p=p, DS="lbm", varname=p$selection$name  )
 p = make.list( list( yrs=p$yrs), Y=p )
 
-# snowcrab_lbm(p=p, DS="lbm_inputs", selection=selection )  # create fields for 
+# snowcrab_lbm(p=p, DS="lbm_inputs", selection=p$selection )  # create fields for 
 DATA='snowcrab_lbm( p=p, DS="lbm_inputs" )'
 
 p = lbm( p=p, DATA=DATA, tasks=c("initiate", "globalmodel") ) # 5 min
@@ -68,7 +68,7 @@ snowcrab_lbm( p=p, DS="map.all" )
 
 
 
-selection=list( 
+p$selection=list( 
   name = "snowcrab.large.males_presence_absence",
   type = "presence_absence",
   sex=0, # male

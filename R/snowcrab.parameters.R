@@ -135,7 +135,7 @@ snowcrab.parameters = function( p=NULL, DS="default", current.year=NULL, varname
     # using covariates as a first pass essentially makes it ~ kriging with external drift
     if (!exists("lbm_global_modelformula", p)) p$lbm_global_modelformula = formula( paste( 
       varname, ' ~ s(yr) + s(dyear, k=3, bs="ts") + s(yr, dyear, k=36, bs="ts") ',
-      ' + s(ca1, bs="ts") + s(ca2, bs="ts") ', 
+      ' + s(ca1, bs="ts")  ', 
       ' + s(t, bs="ts") + s(tmean, bs="ts") + s(tamplitude, bs="ts") + s(z, bs="ts")',
       ' + s(dZ, bs="ts") + s(ddZ, bs="ts")  + s(log.substrate.grainsize, bs="ts") ' ))  # no space or time
 
