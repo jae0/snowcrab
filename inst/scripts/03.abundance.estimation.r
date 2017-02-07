@@ -50,7 +50,7 @@ p$selection=list(
 p = bio.snowcrab::snowcrab.parameters( p=p, DS="lbm", varname=p$selection$name  )
 p = make.list( list( yrs=p$yrs), Y=p )
 
-# snowcrab_lbm(p=p, DS="lbm_inputs", selection=p$selection )  # create fields for 
+# o = snowcrab_lbm(p=p, DS="lbm_inputs" )  # create fields for 
 DATA='snowcrab_lbm( p=p, DS="lbm_inputs" )'
 
 p = lbm( p=p, DATA=DATA, tasks=c("initiate", "globalmodel") ) # 5 min
@@ -66,8 +66,8 @@ snowcrab_lbm( p=p, DS="baseline.redo" )
 snowcrab_lbm( p=p, DS="map.all" )
 
 
-
-
+# -------------------------------------------------
+# presence-absence
 p$selection=list( 
   name = "snowcrab.large.males_presence_absence",
   type = "presence_absence",
@@ -78,11 +78,9 @@ p$selection=list(
   drop.groundfish.data=TRUE # from 1970 to 1999 measurement of invertebrates was sporatic .. zero-values are dropped as they are unreliable 
 )
 
-
 p = bio.snowcrab::snowcrab.parameters( p=p, DS="lbm", varname=selection$name  )
 p = make.list( list( yrs=p$yrs), Y=p )
-
-DATA='snowcrab_lbm( p=p, DS="lbm_inputs", selection=selection )'
+DATA='snowcrab_lbm( p=p, DS="lbm_inputs" )'
 
 p = lbm( p=p, DATA=DATA, tasks=c("initiate", "globalmodel") ) # 5 min
 #   p = lbm( p=p, tasks=c( "stage0" ) ) # serial mode
