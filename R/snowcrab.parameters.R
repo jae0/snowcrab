@@ -122,7 +122,7 @@ snowcrab.parameters = function( p=NULL, DS="default", current.year=NULL, varname
  
     # additional variable to extract from indicators.db for inputs
     p$indicators.variables = list()
-    for (id %in% c("speciescomposition", "speciesarea", "sizespectrum", "condition", "metabolism", "biochem") ) {
+    for (id in c("speciescomposition", "speciesarea", "sizespectrum", "condition", "metabolism", "biochem") ) {
       pz = bio.indicators::indicators.parameters( DS=id )
       pz_vars = intersect( pz$varstomodel, p$variables$COV )
       if (length(pz_vars) > 0) p$indicators.variables[id] = pz_vars 
@@ -159,6 +159,7 @@ snowcrab.parameters = function( p=NULL, DS="default", current.year=NULL, varname
       if (!exists("lbm_twostep_space", p))  p$lbm_twostep_space = "krige"
 
     }  else if (p$lbm_local_modelengine == "habitat") {
+
       p$lbm_global_family = binomial()
       p$lbm_local_family = binomial()
       
