@@ -40,6 +40,7 @@ snowcrab_lbm = function( ip=NULL, DS=NULL, p=NULL, voi=NULL, year=NULL, selectio
     INP$tiyr = lubridate::decimal_date( INP$timestamp ) 
     
     if ( selection$type=="abundance") {
+      set = set[ set$totmass > 0, ]  # only positive valued data
       names(set)[ which( names(set) =="totmass")] = selection$name 
       set$Y = NULL
     }
