@@ -1,17 +1,17 @@
 
-snowcrab_lbm = function( ip=NULL, DS=NULL, p=NULL, voi=NULL, year=NULL, selection=NULL, ret=NULL ) {
+snowcrab_lbm = function( ip=NULL, DS=NULL, p=NULL, voi=NULL, year=NULL, ret=NULL ) {
 
   # over-ride default dependent variable name if it exists
-  if (is.null(voi)) if (!is.null(selection)) if (exists("name", selection)) voi=selection$name
-  if (is.null(voi)) if (exists("variables",p)) if(exists("Y", p$variables)) voi=p$variables$Y
+  if (is.null(voi)) if (exists("selection",p)) if (exists("name", p$selection)) voi=p$selection$name
+  if (is.null(voi)) if (exists("variables",p)) if (exists("Y", p$variables))    voi=p$variables$Y
   if (exists( "libs", p)) RLibrary( p$libs )
    
 
   if (DS %in% c("baseline") ) {
-    set = bio.indicators::survey.db( p=p, DS="set.filter", selection=selection ) # mature male > 74 mm 
+    set = bio.indicators::survey.db( p=p, DS="set.filter" ) # mature male > 74 mm 
     set = presence.absence( X=set, vname="zm", px=p$habitat.threshold.quantile )  # determine presence absence and weighting
 
-    if ( grepl( "snowcrab.large.males", selection$name ) ) {
+    if ( grepl( "snowcrab.large.males", p$selection$name ) ) {
       # add commerical fishery data
       lgbk = logbook.db( DS="fisheries.complete", p=p )
       lgbk = lgbk[ which( is.finite( lgbk$landings)), ]
@@ -36,21 +36,21 @@ snowcrab_lbm = function( ip=NULL, DS=NULL, p=NULL, voi=NULL, year=NULL, selectio
   if (DS=="lbm_inputs") {
     # mostly based on indicators.db( DS="lbm_inputs") 
 
-    INP = snowcrab_lbm(p=p, DS="baseline", voi=selection$name, selection=selection )
+    INP = snowcrab_lbm(p=p, DS="baseline", voi=p$selection$name )
     INP$tiyr = lubridate::decimal_date( INP$timestamp ) 
     
-    if ( selection$type=="abundance") {
+    if ( p$selection$type=="abundance") {
       INP = INP[ INP$totmass > 0, ]  # only positive valued data
-      names(INP)[ which( names(INP) =="totmass")] = selection$name 
+      names(INP)[ which( names(INP) =="totmass")] = p$selection$name 
       INP$Y = NULL
     }
 
-    if ( selection$type=="presence_absence") {
-      names(INP)[ which( names(INP) =="Y")] = selection$name 
+    if ( p$selection$type=="presence_absence") {
+      names(INP)[ which( names(INP) =="Y")] = p$selection$name 
       INP$totmass = NULL
     }
 
-    INP = INP[ which(is.finite(INP[,selection$name])),]
+    INP = INP[ which(is.finite(INP[, p$selection$name])),]
 
     locsmap = match( 
       lbm::array_map( "xy->1", INP[,c("plon","plat")], gridparams=p$gridparams ), 
