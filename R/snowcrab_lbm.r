@@ -96,31 +96,31 @@ snowcrab_lbm = function( ip=NULL, DS=NULL, p=NULL, voi=NULL, year=NULL, selectio
     INP = na.omit(INP)
 
     # cap quantiles of dependent vars
-      dr = list()
-      for (voi in p$varnames) {
-        dr[[voi]] = quantile( INP[,voi], probs=p$lbm_quantile_bounds, na.rm=TRUE ) # use 95%CI
-        il = which( INP[,voi] < dr[[voi]][1] )
-        if ( length(il) > 0 ) INP[il,voi] = dr[[voi]][1]
-        iu = which( INP[,voi] > dr[[voi]][2] )
-        if ( length(iu) > 0 ) INP[iu,voi] = dr[[voi]][2]
-      }
+    dr = list()
+    for (voi in p$varnames) {
+      dr[[voi]] = quantile( INP[,voi], probs=p$lbm_quantile_bounds, na.rm=TRUE ) # use 95%CI
+      il = which( INP[,voi] < dr[[voi]][1] )
+      if ( length(il) > 0 ) INP[il,voi] = dr[[voi]][1]
+      iu = which( INP[,voi] > dr[[voi]][2] )
+      if ( length(iu) > 0 ) INP[iu,voi] = dr[[voi]][2]
+    }
 
-      PS = indicators.db( p=p, DS="prediction.surface" ) # a list object with static and annually varying variables  
-      names(PS)[ names(PS)=="amplitude"] ="tamplitude" 
+    PS = snowcrab_lbm( p=p, DS="prediction.surface" ) # a list object with static and annually varying variables  
+    names(PS)[ names(PS)=="amplitude"] ="tamplitude" 
 
-      ps_varnames = setdiff( p$varnames, p$variables$LOCS )
+    ps_varnames = setdiff( p$varnames, p$variables$LOCS )
 
-      PS = PS[ which(names(PS) %in% ps_varnames ) ] # time vars, if they are part of the model will be created within lbm
+    PS = PS[ which(names(PS) %in% ps_varnames ) ] # time vars, if they are part of the model will be created within lbm
 
-      oo = setdiff(p$varnames, ps_varnames )
-      if (length(oo) > 0 ) {
-        print(oo )
-        warning("Some variables are missing in the prediction surface, PS")
-      }
+    oo = setdiff(p$varnames, c(ps_varnames, p$variables$LOCS) )
+    if (length(oo) > 0 ) {
+      print(oo )
+      warning("Some variables are missing in the prediction surface, PS")
+    }
 
-      OUT = list( LOCS=bathymetry.db(p=p, DS="baseline"), COV=PS )    
+    OUT = list( LOCS=bathymetry.db(p=p, DS="baseline"), COV=PS )    
 
-      return (list(input=INP, output=OUT))
+    return (list(input=INP, output=OUT))
 
   }
 
