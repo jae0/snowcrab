@@ -122,13 +122,12 @@ snowcrab.parameters = function( p=NULL, DS="default", current.year=NULL, varname
  
     # additional variable to extract from indicators.db for inputs
     p$indicators.variables = list()
-    p$indicators.variables["speciescomposition"] = intersect( c("ca1", "ca2", "pca1", "pca2"), p$variables$COV )
-    # p$indicators.variables["speciesarea"] = intersect( c("Npred"), p$variables$COV )
-    # p$indicators.variables["sizespectrum"] = intersect( c("nss"), p$variables$COV )
-    # p$indicators.variables["condition"] = intersect( c("..."), p$variables$COV )
-    # p$indicators.variables["biochem"] = intersect( c("..."), p$variables$COV )
-    # p$indicators.variables["landings"] = intersect( c("..."), p$variables$COV )
-    
+    for (id %in% c("speciescomposition", "speciesarea", "sizespectrum", "condition", "metabolism", "biochem") ) {
+      pz = bio.indicators::indicators.parameters( DS=id )
+      pz_vars = intersect( pz$varstomodel, p$variables$COV )
+      if (length(pz_vars) > 0) p$indicators.variables[id] = pz_vars 
+    }
+
     if (!exists("lbm_variogram_method", p)) p$lbm_variogram_method = "fast"
     if (!exists("lbm_local_modelengine", p)) p$lbm_local_modelengine ="twostep"
     if (!exists("lbm_global_modelengine", p)) p$lbm_global_modelengine ="gam"
@@ -159,6 +158,19 @@ snowcrab.parameters = function( p=NULL, DS="default", current.year=NULL, varname
       # p$lbm_twostep_space = "tps"
       if (!exists("lbm_twostep_space", p))  p$lbm_twostep_space = "krige"
 
+    }  else if (p$lbm_local_modelengine == "habitat") {
+      p$lbm_global_family = binomial()
+      p$lbm_local_family = binomial()
+      
+      if (!exists("lbm_local_modelformula", p))  p$lbm_local_modelformula = formula( paste(
+        varname, '~ s(yr, k=5, bs="ts") + s(cos.w, k=3, bs="ts") + s(sin.w, k=3, bs="ts") ', 
+          ' + s(cos.w, sin.w, yr, bs="ts", k=36) ',
+          ' + s(plon, bs="ts") + s(plat, bs="ts") + s(plon, plat, k=25, bs="ts") ' ) )    
+
+      if (!exists("lbm_local_model_distanceweighted", p)) p$lbm_local_model_distanceweighted = TRUE
+      if (!exists("lbm_gam_optimizer", p)) p$lbm_gam_optimizer="perf"
+      # p$lbm_gam_optimizer=c("outer", "bfgs") 
+    
     }  else if (p$lbm_local_modelengine == "gam") {
 
       if (!exists("lbm_local_modelformula", p))  p$lbm_local_modelformula = formula( paste(

@@ -7,54 +7,27 @@ snowcrab_lbm = function( ip=NULL, DS=NULL, p=NULL, voi=NULL, year=NULL, selectio
   if (exists( "libs", p)) RLibrary( p$libs )
    
 
-  if (DS %in% c("baseline", "baseline.redo") ) {
-    # based upon bio.snowcrab::habitat.model.db()
-
-    outdir = file.path( project.datadirectory("bio.snowcrab"), "lbm"  )
-    dir.create(path=outdir, recursive=T, showWarnings=F)
-    fn = file.path( outdir, paste("baseline", voi, "rdata", sep=".") )
-
-    set = NULL
-    if ( DS == "baseline" ) {
-      if (file.exists(fn)) load(fn)
-      return( set)
-    }
-
+  if (DS %in% c("baseline") ) {
     set = bio.indicators::survey.db( p=p, DS="set.filter", selection=selection ) # mature male > 74 mm 
-
     set = presence.absence( X=set, vname="zm", px=p$habitat.threshold.quantile )  # determine presence absence and weighting
 
-    if (selection$name == "snowcrab.large.males") {
+    if ( grepl( "snowcrab.large.males", selection$name ) ) {
       # add commerical fishery data
       lgbk = logbook.db( DS="fisheries.complete", p=p )
       lgbk = lgbk[ which( is.finite( lgbk$landings)), ]
       lgbk$totmass = NA # dummy to bring in mass as well 
       lgbk$data.source = "logbooks"
-           
       lgbk = presence.absence( X=lgbk, vname="landings", px=p$habitat.threshold.quantile )  # determine presence absence and weighting
-
-      # baddata = which( lgbk$z < log(50) | lgbk$z > log(600) )
-      # if ( length(baddata) > 0 ) lgbk = lgbk[ -baddata,]
-
-      # lgbk$julian = lubridate::yday( lgbk$date.landed )
-
       nms = intersect( names(set) , names( lgbk) )
       set = rbind( set[, nms], lgbk[,nms] )
-
-    
     }
 
     set$lon = set$lat = NULL
-    names(set)[ which( names(set) =="totmass")] = selection$name 
-
 
     set = set[ which(is.finite(set$t)),] 
     set = set[ which(is.finite(set$z)),] 
 
-
-    save ( set, file=fn, compress=TRUE )
-
-    return (fn)
+    return (set)
 
   }
 
@@ -65,6 +38,16 @@ snowcrab_lbm = function( ip=NULL, DS=NULL, p=NULL, voi=NULL, year=NULL, selectio
 
     INP = snowcrab_lbm(p=p, DS="baseline", voi=selection$name )
     INP$tiyr = lubridate::decimal_date( INP$timestamp ) 
+    
+    if ( selection$type=="abundance") {
+      names(set)[ which( names(set) =="totmass")] = selection$name 
+      set$Y = NULL
+    }
+
+    if ( selection$type=="presence_absence") {
+      names(set)[ which( names(set) =="Y")] = selection$name 
+      set$totmass = NULL
+    }
 
     locsmap = match( 
       lbm::array_map( "xy->1", INP[,c("plon","plat")], gridparams=p$gridparams ), 

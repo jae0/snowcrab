@@ -34,7 +34,7 @@ snowcrab.db( DS ="set.complete.redo", p=p )
 snowcrab_lbm(p=p, DS="prediction.surface.redo" )  # create fields for 
 
 selection=list( 
-  name = "snowcrab.large.males",
+  name = "snowcrab.large.males_abundance",
   type = "abundance",
   sex=0, # male
   # mat=1, # maturity status in groundfish data is suspect
@@ -43,11 +43,9 @@ selection=list(
   drop.groundfish.data=TRUE # from 1970 to 1999 measurement of invertebrates was sporatic .. zero-values are dropped as they are unreliable 
 )
 
-snowcrab_lbm(p=p, DS="baseline.redo", selection=selection )  # create fields for 
-snowcrab_lbm(p=p, DS="lbm_inputs", selection=selection  )  # create fields for 
-
-
 p = bio.snowcrab::snowcrab.parameters( p=p, DS="lbm", varname=selection$name  )
+snowcrab_lbm(p=p, DS="lbm_inputs", selection=selection )  # create fields for 
+
 p = make.list( list( yrs=p$yrs), Y=p )
 
 DATA='snowcrab_lbm( p=p, DS="lbm_inputs" )'
@@ -62,8 +60,43 @@ parallel.run( snowcrab_lbm, p=p, DS="predictions.redo" ) # warp predictions to o
 snowcrab_lbm( p=p, DS="lbm.stats.redo" ) # warp stats to other grids
 snowcrab_lbm( p=p, DS="complete.redo" )
 snowcrab_lbm( p=p, DS="baseline.redo" )
-
 snowcrab_lbm( p=p, DS="map.all" )
+
+
+
+
+selection=list( 
+  name = "snowcrab.large.males_presence_absence",
+  type = "presence_absence",
+  sex=0, # male
+  # mat=1, # maturity status in groundfish data is suspect
+  spec_bio=bio.taxonomy::taxonomy.recode( from="spec", to="parsimonious", tolookup=2526 ),
+  len= c( bio.snowcrab::mb(8), 200)/10, #  mm -> cm ; indicators.db in cm
+  drop.groundfish.data=TRUE # from 1970 to 1999 measurement of invertebrates was sporatic .. zero-values are dropped as they are unreliable 
+)
+
+
+p = bio.snowcrab::snowcrab.parameters( p=p, DS="lbm", varname=selection$name  )
+snowcrab_lbm(p=p, DS="lbm_inputs", selection=selection )  # create fields for 
+
+p = make.list( list( yrs=p$yrs), Y=p )
+
+DATA='snowcrab_lbm( p=p, DS="lbm_inputs" )'
+
+p = lbm( p=p, DATA=DATA, tasks=c("initiate", "globalmodel") ) # 5 min
+#   p = lbm( p=p, tasks=c( "stage0" ) ) # serial mode
+#   p = lbm( p=p, tasks=c( "continue" ) )    
+p = lbm( p=p, tasks=c( "stage1" ) ) #  8 hrs 
+p = lbm( p=p, tasks=c( "stage2" ) ) #   1 hrs
+p = lbm( p=p, tasks=c( "save" ) )
+parallel.run( snowcrab_lbm, p=p, DS="predictions.redo" ) # warp predictions to other grids
+snowcrab_lbm( p=p, DS="lbm.stats.redo" ) # warp stats to other grids
+snowcrab_lbm( p=p, DS="complete.redo" )
+snowcrab_lbm( p=p, DS="baseline.redo" )
+snowcrab_lbm( p=p, DS="map.all" )
+
+
+
 
 
     # collect all results into a single file and return:
