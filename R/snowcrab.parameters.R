@@ -136,11 +136,11 @@ snowcrab.parameters = function( p=NULL, DS="default", current.year=NULL, varname
     if (!exists("lbm_global_modelformula", p)) p$lbm_global_modelformula = formula( paste( 
       varname, ' ~ s(yr) + s(dyear, k=3, bs="ts") + s(yr, dyear, k=36, bs="ts") ',
       ' + s(ca1, bs="ts")  ', 
-      ' + s(t, bs="ts") + s(tmean, bs="ts") + s(tamplitude, bs="ts") + s(z, bs="ts")',
-      ' + s(dZ, bs="ts") + s(ddZ, bs="ts")  + s(log.substrate.grainsize, bs="ts") ' ))  # no space or time
+      ' + s(t, bs="ts") + s(tmean, bs="ts") + s(tamplitude, bs="ts") + s( log(z), bs="ts")',
+      ' + s( log(dZ), bs="ts") + s( log(ddZ), bs="ts")  + s(log.substrate.grainsize, bs="ts") ' ))  # no space or time
 
-    if (!exists("lbm_global_family", p)) p$lbm_global_family = gaussian()
-    if (!exists("lbm_local_family", p)) p$lbm_local_family = gaussian()
+    if (!exists("lbm_global_family", p)) p$lbm_global_family = gaussian( link=log) 
+    if (!exists("lbm_local_family", p)) p$lbm_local_family = gaussian(link=log)
 
 
     if (p$lbm_local_modelengine =="twostep") {
