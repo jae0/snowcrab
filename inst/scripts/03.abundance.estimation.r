@@ -31,7 +31,7 @@ snowcrab.db( DS ="set.complete.redo", p=p )
 # -------------------------------------------------------------------------------------
 # prep data for modelling and interpolation
 
-snowcrab_lbm(p=p, DS="prediction.surface.redo" )  # create fields for 
+snowcrab_lbm(p=p, DS="prediction.surface.redo" )  # create fields for snowcrab
 
 selection=list( 
   name = "snowcrab.large.males_abundance",
