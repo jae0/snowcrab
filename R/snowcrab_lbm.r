@@ -36,19 +36,21 @@ snowcrab_lbm = function( ip=NULL, DS=NULL, p=NULL, voi=NULL, year=NULL, selectio
   if (DS=="lbm_inputs") {
     # mostly based on indicators.db( DS="lbm_inputs") 
 
-    INP = snowcrab_lbm(p=p, DS="baseline", voi=selection$name )
+    INP = snowcrab_lbm(p=p, DS="baseline", voi=selection$name, selection=selection )
     INP$tiyr = lubridate::decimal_date( INP$timestamp ) 
     
     if ( selection$type=="abundance") {
-      set = set[ set$totmass > 0, ]  # only positive valued data
-      names(set)[ which( names(set) =="totmass")] = selection$name 
-      set$Y = NULL
+      INP = INP[ INP$totmass > 0, ]  # only positive valued data
+      names(INP)[ which( names(INP) =="totmass")] = selection$name 
+      INP$Y = NULL
     }
 
     if ( selection$type=="presence_absence") {
-      names(set)[ which( names(set) =="Y")] = selection$name 
-      set$totmass = NULL
+      names(INP)[ which( names(INP) =="Y")] = selection$name 
+      INP$totmass = NULL
     }
+
+    INP = INP[ which(is.finite(INP[,selection$name])),]
 
     locsmap = match( 
       lbm::array_map( "xy->1", INP[,c("plon","plat")], gridparams=p$gridparams ), 
@@ -66,13 +68,19 @@ snowcrab_lbm = function( ip=NULL, DS=NULL, p=NULL, voi=NULL, year=NULL, selectio
     colnames( sn  ) = newvars
     INP = cbind( INP,  sn )
     INP$tamplitude = INP$amplitude
+    INP = na.omit(INP)
+
+    # update locsmap .. above step removes a few rows
+    locsmap = match( 
+      lbm::array_map( "xy->1", INP[,c("plon","plat")], gridparams=p$gridparams ), 
+      lbm::array_map( "xy->1", bathymetry.db(p=p, DS="baseline"), gridparams=p$gridparams ) )
 
     # additional indicators.db variables
     for (iv in names(p$indicators.variables)) {
       p0 = bio.indicators::indicators.parameters( p=p, DS="default", current.year=p$current.year )
       p0 = bio.indicators::indicators.parameters( p=p0, DS=iv  )
       p0 = bio.spacetime::spatial_parameters( p=p0, type=p$spatial.domain ) # return to correct domain
-      vn = p0$indicators.variables[iv]
+      vn = p0$indicators.variables[[iv]]
       sn = indicators.lookup( p=p0, DS="spatial.annual", locsmap=locsmap, timestamp=INP[,"timestamp"], 
         varnames=vn, DB=indicators.db( p=p0, DS="baseline", varnames=vn ) )
       colnames( sn  ) = p$indicators.variables[iv]

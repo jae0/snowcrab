@@ -33,7 +33,11 @@ snowcrab.db( DS ="set.complete.redo", p=p )
 
 snowcrab_lbm(p=p, DS="prediction.surface.redo" )  # create fields for snowcrab
 
-selection=list( 
+
+
+# -------------------------------------------------------------------------------------
+# abundance .. positive valued data
+p$selection=list( 
   name = "snowcrab.large.males_abundance",
   type = "abundance",
   sex=0, # male
@@ -43,11 +47,10 @@ selection=list(
   drop.groundfish.data=TRUE # from 1970 to 1999 measurement of invertebrates was sporatic .. zero-values are dropped as they are unreliable 
 )
 
-p = bio.snowcrab::snowcrab.parameters( p=p, DS="lbm", varname=selection$name  )
-snowcrab_lbm(p=p, DS="lbm_inputs", selection=selection )  # create fields for 
-
+p = bio.snowcrab::snowcrab.parameters( p=p, DS="lbm", varname=p$selection$name  )
 p = make.list( list( yrs=p$yrs), Y=p )
 
+# snowcrab_lbm(p=p, DS="lbm_inputs", selection=selection )  # create fields for 
 DATA='snowcrab_lbm( p=p, DS="lbm_inputs" )'
 
 p = lbm( p=p, DATA=DATA, tasks=c("initiate", "globalmodel") ) # 5 min
@@ -77,11 +80,9 @@ selection=list(
 
 
 p = bio.snowcrab::snowcrab.parameters( p=p, DS="lbm", varname=selection$name  )
-snowcrab_lbm(p=p, DS="lbm_inputs", selection=selection )  # create fields for 
-
 p = make.list( list( yrs=p$yrs), Y=p )
 
-DATA='snowcrab_lbm( p=p, DS="lbm_inputs" )'
+DATA='snowcrab_lbm( p=p, DS="lbm_inputs", selection=selection )'
 
 p = lbm( p=p, DATA=DATA, tasks=c("initiate", "globalmodel") ) # 5 min
 #   p = lbm( p=p, tasks=c( "stage0" ) ) # serial mode
