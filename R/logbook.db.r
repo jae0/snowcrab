@@ -101,12 +101,36 @@
       lgbk = lgbk[j,]
 
       # additional constraint ..
-      # only accept "correctly" positioned data within each subarea ... in case miscoded data have a large effect
+      # remove data that are strange in location .. land
+      require(mapdata)
+      proj4strvalue=CRS("+proj=longlat +datum=WGS84")
+      V = SpatialPoints( lgbk[,c("lon", "lat")], proj4strvalue )
+      coastline = maps::map( database="worldHires", regions=c("Canada", "US"), fill=TRUE, plot=FALSE )
+      coastlineSp = maptools::map2SpatialPolygons( coastline, IDs=coastline$names, proj4string=proj4strvalue  )
+      bboxSP = bio.spacetime::boundingbox(p$corners$lon, p$corners$lat)
+      keep <- rgeos::gContains( bboxSP, coastlineSp, byid=TRUE ) | rgeos::gOverlaps( bboxSP, coastlineSp, byid=TRUE )
+      stopifnot( ncol(keep)==1 )
+      coastlineSp = coastlineSp[drop(keep),]
+      land = which ( !is.na(over( V, coastlineSp ) )) 
+      lgbk = lgbk[ -land, ]
 
-        icfa4x = filter.region.polygon( lgbk[, c("lon", "lat")], "cfa4x")
-        icfanorth = filter.region.polygon( lgbk[, c("lon", "lat")], "cfanorth")
-        icfa23 = filter.region.polygon( lgbk[, c("lon", "lat")], "cfa23")
-        icfa24 = filter.region.polygon( lgbk[, c("lon", "lat")], "cfa24")
+      # filter by depth .. 
+      # use the match/map syntax in bathymetry and filter out shallow sets .. < 10 m? TODO
+      # keep those in the domain and deeper than depth=10 m
+      z = bathymetry.db(p=p, DS="baseline", varnames=c("plon", "plat", "z")) 
+      aoi = which( z$z > 10 ) # negative = above land
+      pidz = lbm::array_map( "xy->1", z[aoi,c("plon", "plat")], gridparams=p$gridparams ) 
+      pidl = lbm::array_map( "xy->1", lgbk[,c("plon", "plat")], gridparams=p$gridparams )
+      inaoi = which( is.finite( match( pidl, pidz ) )) 
+      good = which(is.finite( inaoi))
+      lgbk = lgbk[ good,]    
+
+
+      # only accept "correctly" positioned data within each subarea ... in case miscoded data have a large effect
+      icfa4x = filter.region.polygon( lgbk[, c("lon", "lat")], "cfa4x")
+      icfanorth = filter.region.polygon( lgbk[, c("lon", "lat")], "cfanorth")
+      icfa23 = filter.region.polygon( lgbk[, c("lon", "lat")], "cfa23")
+      icfa24 = filter.region.polygon( lgbk[, c("lon", "lat")], "cfa24")
 
       gooddata = sort( unique( c(icfa4x, icfanorth, icfa23, icfa24 ) ) )
       lgbk = lgbk[gooddata, ]
@@ -415,20 +439,6 @@
 
       # bring in time varing features:: temperature
       logbook$t = bio.temperature::temperature.lookup( p=p, locs=logbook[, c("plon","plat")], timestamp=logbook$timestamp )
-      
-
-      # remove data that are strnage in location
-      require(mapdata)
-      proj4strvalue=CRS("+proj=longlat +datum=WGS84")
-      V = SpatialPoints( logbook[,c("lon", "lat")], proj4strvalue )
-      coastline = maps::map( database="worldHires", regions=c("Canada", "US"), fill=TRUE, plot=FALSE )
-      coastlineSp = maptools::map2SpatialPolygons( coastline, IDs=coastline$names, proj4string=proj4strvalue  )
-      bboxSP = bio.spacetime::boundingbox(p$corners$lon, p$corners$lat)
-      keep <- rgeos::gContains( bboxSP, coastlineSp, byid=TRUE ) | rgeos::gOverlaps( bboxSP, coastlineSp, byid=TRUE )
-      stopifnot( ncol(keep)==1 )
-      coastlineSp = coastlineSp[drop(keep),]
-      land = which ( !is.na(over( V, coastlineSp ) )) 
-      logbook = logbook[ - not.land, ]
 
 			save( logbook, file=fn, compress=T )
 

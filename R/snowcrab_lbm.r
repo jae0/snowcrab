@@ -1,60 +1,33 @@
 
-snowcrab_lbm = function( ip=NULL, DS=NULL, p=NULL, voi=NULL, year=NULL, selection=NULL, ret=NULL ) {
+snowcrab_lbm = function( ip=NULL, DS=NULL, p=NULL, voi=NULL, year=NULL, ret=NULL ) {
 
   # over-ride default dependent variable name if it exists
-  if (is.null(voi)) if (!is.null(selection)) if (exists("name", selection)) voi=selection$name
-  if (is.null(voi)) if (exists("variables",p)) if(exists("Y", p$variables)) voi=p$variables$Y
+  if (is.null(voi)) if (exists("selection",p)) if (exists("name", p$selection)) voi=p$selection$name
+  if (is.null(voi)) if (exists("variables",p)) if (exists("Y", p$variables))    voi=p$variables$Y
   if (exists( "libs", p)) RLibrary( p$libs )
    
 
-  if (DS %in% c("baseline", "baseline.redo") ) {
-    # based upon bio.snowcrab::habitat.model.db()
-
-    outdir = file.path( project.datadirectory("bio.snowcrab"), "lbm"  )
-    dir.create(path=outdir, recursive=T, showWarnings=F)
-    fn = file.path( outdir, paste("baseline", voi, "rdata", sep=".") )
-
-    set = NULL
-    if ( DS == "baseline" ) {
-      if (file.exists(fn)) load(fn)
-      return( set)
-    }
-
-    set = bio.indicators::survey.db( p=p, DS="set.filter", selection=selection ) # mature male > 74 mm 
-
+  if (DS %in% c("baseline") ) {
+    set = bio.indicators::survey.db( p=p, DS="set.filter" ) # mature male > 74 mm 
     set = presence.absence( X=set, vname="zm", px=p$habitat.threshold.quantile )  # determine presence absence and weighting
 
-    if (selection$name == "snowcrab.large.males") {
+    if ( grepl( "snowcrab.large.males", p$selection$name ) ) {
       # add commerical fishery data
       lgbk = logbook.db( DS="fisheries.complete", p=p )
       lgbk = lgbk[ which( is.finite( lgbk$landings)), ]
       lgbk$totmass = NA # dummy to bring in mass as well 
       lgbk$data.source = "logbooks"
-           
       lgbk = presence.absence( X=lgbk, vname="landings", px=p$habitat.threshold.quantile )  # determine presence absence and weighting
-
-      # baddata = which( lgbk$z < log(50) | lgbk$z > log(600) )
-      # if ( length(baddata) > 0 ) lgbk = lgbk[ -baddata,]
-
-      # lgbk$julian = lubridate::yday( lgbk$date.landed )
-
       nms = intersect( names(set) , names( lgbk) )
       set = rbind( set[, nms], lgbk[,nms] )
-
-    
     }
 
     set$lon = set$lat = NULL
-    names(set)[ which( names(set) =="totmass")] = selection$name 
-
 
     set = set[ which(is.finite(set$t)),] 
     set = set[ which(is.finite(set$z)),] 
 
-
-    save ( set, file=fn, compress=TRUE )
-
-    return (fn)
+    return (set)
 
   }
 
@@ -63,8 +36,22 @@ snowcrab_lbm = function( ip=NULL, DS=NULL, p=NULL, voi=NULL, year=NULL, selectio
   if (DS=="lbm_inputs") {
     # mostly based on indicators.db( DS="lbm_inputs") 
 
-    INP = snowcrab_lbm(p=p, DS="baseline", voi=selection$name )
+    INP = snowcrab_lbm(p=p, DS="baseline", voi=p$selection$name )
     INP$tiyr = lubridate::decimal_date( INP$timestamp ) 
+    
+    if ( p$selection$type=="abundance") {
+      INP = INP[ INP$data.source == "snowcrab", ]
+      INP = INP[ INP$totmass > 0, ]  # only positive valued data
+      names(INP)[ which( names(INP) =="totmass")] = p$selection$name 
+      INP$Y = NULL
+    }
+
+    if ( p$selection$type=="presence_absence") {
+      names(INP)[ which( names(INP) =="Y")] = p$selection$name 
+      INP$totmass = NULL
+    }
+
+    INP = INP[ which(is.finite(INP[, p$selection$name])),]
 
     locsmap = match( 
       lbm::array_map( "xy->1", INP[,c("plon","plat")], gridparams=p$gridparams ), 
@@ -82,13 +69,19 @@ snowcrab_lbm = function( ip=NULL, DS=NULL, p=NULL, voi=NULL, year=NULL, selectio
     colnames( sn  ) = newvars
     INP = cbind( INP,  sn )
     INP$tamplitude = INP$amplitude
+    INP = na.omit(INP)
+
+    # update locsmap .. above step removes a few rows
+    locsmap = match( 
+      lbm::array_map( "xy->1", INP[,c("plon","plat")], gridparams=p$gridparams ), 
+      lbm::array_map( "xy->1", bathymetry.db(p=p, DS="baseline"), gridparams=p$gridparams ) )
 
     # additional indicators.db variables
     for (iv in names(p$indicators.variables)) {
       p0 = bio.indicators::indicators.parameters( p=p, DS="default", current.year=p$current.year )
       p0 = bio.indicators::indicators.parameters( p=p0, DS=iv  )
       p0 = bio.spacetime::spatial_parameters( p=p0, type=p$spatial.domain ) # return to correct domain
-      vn = p0$indicators.variables[iv]
+      vn = p0$indicators.variables[[iv]]
       sn = indicators.lookup( p=p0, DS="spatial.annual", locsmap=locsmap, timestamp=INP[,"timestamp"], 
         varnames=vn, DB=indicators.db( p=p0, DS="baseline", varnames=vn ) )
       colnames( sn  ) = p$indicators.variables[iv]
@@ -104,31 +97,44 @@ snowcrab_lbm = function( ip=NULL, DS=NULL, p=NULL, voi=NULL, year=NULL, selectio
     INP = na.omit(INP)
 
     # cap quantiles of dependent vars
-      dr = list()
-      for (voi in p$varnames) {
-        dr[[voi]] = quantile( INP[,voi], probs=p$lbm_quantile_bounds, na.rm=TRUE ) # use 95%CI
-        il = which( INP[,voi] < dr[[voi]][1] )
-        if ( length(il) > 0 ) INP[il,voi] = dr[[voi]][1]
-        iu = which( INP[,voi] > dr[[voi]][2] )
-        if ( length(iu) > 0 ) INP[iu,voi] = dr[[voi]][2]
+    dr = list()
+    for (voi in p$varnames) {
+      dr[[voi]] = quantile( INP[,voi], probs=p$lbm_quantile_bounds, na.rm=TRUE ) # use 95%CI
+      il = which( INP[,voi] < dr[[voi]][1] )
+      if ( length(il) > 0 ) INP[il,voi] = dr[[voi]][1]
+      iu = which( INP[,voi] > dr[[voi]][2] )
+      if ( length(iu) > 0 ) INP[iu,voi] = dr[[voi]][2]
+    }
+
+    PS = snowcrab_lbm( p=p, DS="prediction.surface" ) # a list object with static and annually varying variables  
+    names(PS)[ names(PS)=="amplitude"] ="tamplitude" 
+    
+    # additional indicators.db variables
+    for (iv in names(p$indicators.variables)) {
+      p0 = bio.indicators::indicators.parameters( p=p, DS="default", current.year=p$current.year )
+      p0 = bio.indicators::indicators.parameters( p=p0, DS=iv  )
+      p0 = bio.spacetime::spatial_parameters( p=p0, type=p$spatial.domain ) # return to correct domain
+      vn = p0$indicators.variables[[iv]]
+      sn = indicators.db( p=p0, DS="baseline", varnames=vn )
+      yr_index = match( p$yrs, p0$yrs )
+      for ( vv in p$indicators.variables[[iv]]) {
+        PS[[vv]] = sn[[vv]][, yr_index]
       }
+    }
 
-      PS = indicators.db( p=p, DS="prediction.surface" ) # a list object with static and annually varying variables  
-      names(PS)[ names(PS)=="amplitude"] ="tamplitude" 
+    ps_varnames = setdiff( p$varnames, p$variables$LOCS )
 
-      ps_varnames = setdiff( p$varnames, p$variables$LOCS )
+    PS = PS[ which(names(PS) %in% ps_varnames ) ] # time vars, if they are part of the model will be created within lbm
 
-      PS = PS[ which(names(PS) %in% ps_varnames ) ] # time vars, if they are part of the model will be created within lbm
+    oo = setdiff(p$varnames, c(ps_varnames, p$variables$LOCS) )
+    if (length(oo) > 0 ) {
+      print(oo )
+      warning("Some variables are missing in the prediction surface, PS")
+    }
 
-      oo = setdiff(p$varnames, ps_varnames )
-      if (length(oo) > 0 ) {
-        print(oo )
-        warning("Some variables are missing in the prediction surface, PS")
-      }
+    OUT = list( LOCS=bathymetry.db(p=p, DS="baseline"), COV=PS )    
 
-      OUT = list( LOCS=bathymetry.db(p=p, DS="baseline"), COV=PS )    
-
-      return (list(input=INP, output=OUT))
+    return (list(input=INP, output=OUT))
 
   }
 
