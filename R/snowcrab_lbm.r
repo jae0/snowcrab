@@ -58,9 +58,8 @@ snowcrab_lbm = function( ip=NULL, DS=NULL, p=NULL, voi=NULL, year=NULL, ret=NULL
       lbm::array_map( "xy->1", bathymetry.db(p=p, DS="baseline"), gridparams=p$gridparams ) )
 
     # spatial vars and climatologies 
-    newvars = c("dZ", "ddZ", "log.substrate.grainsize", "tmean", "tsd" )
+    newvars = c("dZ", "ddZ", "log.substrate.grainsize", "tmean.climatology", "tsd.climatology", "b.range", "t.range" )
     sn = indicators.lookup( p=p, DS="spatial", locsmap=locsmap, varnames=newvars )
-    names( sn ) = c("dZ", "ddZ", "log.substrate.grainsize", "tmean.climatology", "tsd.climatology" )
     INP = cbind( INP,  sn )
 
     # for space-time(year-averages) 

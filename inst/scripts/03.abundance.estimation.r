@@ -43,7 +43,7 @@ p$selection=list(
   sex=0, # male
   # mat=1, # maturity status in groundfish data is suspect
   spec_bio=bio.taxonomy::taxonomy.recode( from="spec", to="parsimonious", tolookup=2526 ),
-  len= c( bio.snowcrab::mb(8), 200)/10, #  mm -> cm ; indicators.db in cm
+  len= c( 95, 200 )/10, #  mm -> cm ; indicators.db in cm
   drop.groundfish.data=TRUE # from 1970 to 1999 measurement of invertebrates was sporatic .. zero-values are dropped as they are unreliable 
 )
 
@@ -120,11 +120,11 @@ p$selection=list(
   sex=0, # male
   # mat=1, # maturity status in groundfish data is suspect
   spec_bio=bio.taxonomy::taxonomy.recode( from="spec", to="parsimonious", tolookup=2526 ),
-  len= c( bio.snowcrab::mb(8), 200)/10, #  mm -> cm ; indicators.db in cm
+  len= c( 95, 200 )/10, #  mm -> cm ; indicators.db in cm
   drop.groundfish.data=TRUE # from 1970 to 1999 measurement of invertebrates was sporatic .. zero-values are dropped as they are unreliable 
 )
 
-p = bio.snowcrab::snowcrab.parameters( p=p, DS="lbm", varname=selection$name  )
+p = bio.snowcrab::snowcrab.parameters( p=p, DS="lbm", varname=p$selection$name  )
 p = make.list( list( yrs=p$yrs), Y=p )
 DATA='snowcrab_lbm( p=p, DS="lbm_inputs" )'
 
