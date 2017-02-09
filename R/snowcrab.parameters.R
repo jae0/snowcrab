@@ -117,7 +117,7 @@ snowcrab.parameters = function( p=NULL, DS="default", current.year=NULL, varname
       Y = varname, 
       LOCS = c("plon", "plat"), 
       TIME = "tiyr", 
-      COV = c("z", "dZ", "ddZ", "log.substrate.grainsize", "t", "tmean.climatology", "tsd.climatology", "ca1"  ) )
+      COV = c("z", "dZ", "ddZ", "log.substrate.grainsize", "t", "tmean.climatology", "tsd.climatology" ) )
     p$varnames = c( p$variables$LOCS, p$variables$COV ) 
  
     # additional variable to extract from indicators.db for inputs
@@ -137,8 +137,8 @@ snowcrab.parameters = function( p=NULL, DS="default", current.year=NULL, varname
 
     # using covariates as a first pass essentially makes it ~ kriging with external drift .. no time or space here
     if (!exists("lbm_global_modelformula", p)) p$lbm_global_modelformula = formula( paste( 
-      varname, ' ~ s(ca1, k=3, bs="ts")  ', 
-      ' + s(t, k=3, bs="ts") + s(tmean.climatology, k=3, bs="ts") + s(tsd.climatology, k=3, bs="ts") + s( log(z), k=3, bs="ts")',
+      varname, ' ~ s(t, k=3, bs="ts") + s(tmean.climatology, k=3, bs="ts") + s(tsd.climatology, k=3, bs="ts")  ', 
+      ' + s( log(z), k=3, bs="ts")',
       ' + s( log(dZ), k=3, bs="ts") + s( log(ddZ), k=3, bs="ts")  + s(log.substrate.grainsize, k=3, bs="ts") ' ))  # no space 
 
     if (p$lbm_local_modelengine =="twostep") {
