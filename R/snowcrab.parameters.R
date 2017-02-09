@@ -135,12 +135,15 @@ snowcrab.parameters = function( p=NULL, DS="default", current.year=NULL, varname
     if (!exists("lbm_global_family", p)) p$lbm_global_family = gaussian( link=log) 
     if (!exists("lbm_local_family", p)) p$lbm_local_family = gaussian(link=log)
 
-    # using covariates as a first pass essentially makes it ~ kriging with external drift
+    # using covariates as a first pass essentially makes it ~ kriging with external drift .. no time or space here
     if (!exists("lbm_global_modelformula", p)) p$lbm_global_modelformula = formula( paste( 
-      varname, ' ~ s(yr, bs="ts") + s(dyear, k=3, bs="ts") + s(yr, dyear, k=36, bs="ts") ',
-      ' + s(ca1, k=3, bs="ts")  ', 
+      varname, ' ~ s(ca1, k=3, bs="ts")  ', 
       ' + s(t, k=3, bs="ts") + s(tmean, k=3, bs="ts") + s(tamplitude, k=3, bs="ts") + s( log(z), k=3, bs="ts")',
       ' + s( log(dZ), k=3, bs="ts") + s( log(ddZ), k=3, bs="ts")  + s(log.substrate.grainsize, k=3, bs="ts") ' ))  # no space or time
+      # varname, ' ~ s(yr, bs="ts") + s(dyear, k=3, bs="ts") + s(yr, dyear, k=36, bs="ts") ',
+      # ' + s(ca1, k=3, bs="ts")  ', 
+      # ' + s(t, k=3, bs="ts") + s(tmean, k=3, bs="ts") + s(tamplitude, k=3, bs="ts") + s( log(z), k=3, bs="ts")',
+      # ' + s( log(dZ), k=3, bs="ts") + s( log(ddZ), k=3, bs="ts")  + s(log.substrate.grainsize, k=3, bs="ts") ' ))  # no space or time
 
     if (p$lbm_local_modelengine =="twostep") {
 
