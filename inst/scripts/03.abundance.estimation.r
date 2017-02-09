@@ -66,6 +66,7 @@ snowcrab_lbm( p=p, DS="baseline.redo" )
 snowcrab_lbm( p=p, DS="map.all" )
 
 
+
 vn = "snowcrab.large.males_abundance"
 p = bio.snowcrab::snowcrab.parameters( p=p, DS="lbm", varname=vn )
 global_model = lbm_db( p=p, DS="global_model") 
@@ -145,6 +146,7 @@ p = bio.snowcrab::snowcrab.parameters( p=p, DS="lbm", varname=vn )
 global_model = lbm_db( p=p, DS="global_model") 
 summary( global_model )
 plot(global_model)
+
 
 
 
