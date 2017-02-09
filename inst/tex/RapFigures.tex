@@ -19,11 +19,12 @@
 \newcommand{\h}{/home/hubleyb/}
 \newcommand{\e}{bio.data/}
 \newcommand{\es}{bio.data/bio.snowcrab/}
+\newcommand{\eb}{bio.data/bio.bathymetry/}
 \newcommand{\et}{bio.data/bio.temperature/}
 \newcommand{\ei}{bio.data/bio.indicators/}
 \newcommand{\Ay}{assessments/2016/}
 \newcommand{\A}{assessments/}
-\newcommand{\eb}{bio.data/bio.snowcrab/assessments/2016/figures/bugs/survey/}
+\newcommand{\ebugs}{bio.data/bio.snowcrab/assessments/2016/figures/bugs/survey/}
 
 
 \setlength{\headheight}{15pt}
@@ -91,14 +92,27 @@
 \end{figure}
 \clearpage
 %--------------scotian shelf bottom characteristics------------------------------------
+%\begin{figure}
+%    \centering
+%\includegraphics[width=0.8\textwidth]{\h \es assessments/2008/fig8.png}\
+%
+%\caption{Bottom characteristics used for modeling snow crab habitat delineation. The visualizations of temperature variations are for climatological means. Annual %temperature variation estimates were used for modeling.}
+%
+%\end{figure}
+%\clearpage
+
 \begin{figure}
-    \centering
-\includegraphics[width=0.8\textwidth]{\h \es assessments/2008/fig8.png}\
-
+\centering
+\subfloat{\includegraphics[width=0.44\textwidth,trim={0 1cm 0 1cm}]{\h \et maps/SSE/bottom\D predictions/climatology/temperatures\D bottom.png}}\ 
+\subfloat{\includegraphics[width=0.44\textwidth,trim={0 1cm 0 1cm}]{\h \eb maps/SSE/depth.png}}\\
+\subfloat{\includegraphics[width=0.44\textwidth,trim={0 1cm 0 1cm}]{\h \et maps/SSE/bottom\D predictions/climatology/temperatures\D bottom\D  sd.png}}\
+\subfloat{\includegraphics[width=0.44\textwidth,trim={0 1cm 0 1cm}]{\h \eb maps/SSE/slope.png}}\\
+\subfloat{\includegraphics[width=0.44\textwidth,trim={0 1cm 0 1cm}]{\h \et maps/SSE/bottom\D predictions/climatology/temperatures\D bottom\D  amplitude.png}}\ 
+\subfloat{\includegraphics[width=0.44\textwidth,trim={0 1cm 0 1cm}]{\h \eb maps/SSE/curvature.png}}\\ 
 \caption{Bottom characteristics used for modeling snow crab habitat delineation. The visualizations of temperature variations are for climatological means. Annual temperature variation estimates were used for modeling.}
-
 \end{figure}
 \clearpage
+
 %--------------scotian shelf community characteristics------------------------------------
 
 %\begin{figure}
@@ -234,9 +248,12 @@
 \subfloat{\includegraphics[width=0.32\textwidth,trim={0 1cm 0 1cm}]{\h \et maps/SSE/bottom\D predictions/annual/temperatures\D bottom\D  1950.png}}\ 
 \subfloat{\includegraphics[width=0.32\textwidth,trim={0 1cm 0 1cm}]{\h \et maps/SSE/bottom\D predictions/annual/temperatures\D bottom\D  1960.png}}\ 
 \subfloat{\includegraphics[width=0.32\textwidth,trim={0 1cm 0 1cm}]{\h \et maps/SSE/bottom\D predictions/annual/temperatures\D bottom\D  1970.png}}\\ 
-\subfloat{\includegraphics[width=0.32\textwidth,trim={0 1cm 0 1cm}]{\h \et maps/SSE/bottom\D predictions/annual/temperatures\D bottom\D  1982.png}}\ 
+\subfloat{\includegraphics[width=0.32\textwidth,trim={0 1cm 0 1cm}]{\h \et maps/SSE/bottom\D predictions/annual/temperatures\D bottom\D  1980.png}}\ 
 \subfloat{\includegraphics[width=0.32\textwidth,trim={0 1cm 0 1cm}]{\h \et maps/SSE/bottom\D predictions/annual/temperatures\D bottom\D  1990.png}}\ 
 \subfloat{\includegraphics[width=0.32\textwidth,trim={0 1cm 0 1cm}]{\h \et maps/SSE/bottom\D predictions/annual/temperatures\D bottom\D  2000.png}}\\ 
+\subfloat{\includegraphics[width=0.32\textwidth,trim={0 1cm 0 1cm}]{\h \et maps/SSE/bottom\D predictions/annual/temperatures\D bottom\D  2004.png}}\ 
+\subfloat{\includegraphics[width=0.32\textwidth,trim={0 1cm 0 1cm}]{\h \et maps/SSE/bottom\D predictions/annual/temperatures\D bottom\D  2008.png}}\ 
+\subfloat{\includegraphics[width=0.32\textwidth,trim={0 1cm 0 1cm}]{\h \et maps/SSE/bottom\D predictions/annual/temperatures\D bottom\D  2012.png}}\\ 
 \subfloat{\includegraphics[width=0.32\textwidth,trim={0 1cm 0 1cm}]{\h \et maps/SSE/bottom\D predictions/annual/temperatures\D bottom\D  2014.png}}\ 
 \subfloat{\includegraphics[width=0.32\textwidth,trim={0 1cm 0 1cm}]{\h \et maps/SSE/bottom\D predictions/annual/temperatures\D bottom\D  2015.png}}\ 
 \subfloat{\includegraphics[width=0.32\textwidth,trim={0 1cm 0 1cm}]{\h \et maps/SSE/bottom\D predictions/annual/temperatures\D bottom\D  2016.png}}\\ 
@@ -949,7 +966,7 @@
 %--------------priors and posteriors
 \begin{figure}
     
-    \includegraphics[width=\textwidth]{\h \eb K\D density.png}
+    \includegraphics[width=\textwidth]{\h \ebugs K\D density.png}
     \caption{Prior (red) and posterior (bars) distribution for carrying capacity parameter, K, from the biomass dynamic model of snow crab production in crab fishing areas on the Scotian Shelf. Within each panel, estimates of posterior median and 95\% credible intervals are given in the legend.}
   
 \end{figure}
@@ -957,7 +974,7 @@
 
 \begin{figure}
     
-    \includegraphics[width=\textwidth]{\h \eb r\D density.png}
+    \includegraphics[width=\textwidth]{\h \ebugs r\D density.png}
     \caption{Prior (red) and posterior (bars) distribution for populaton growth parameter, r, from the biomass dynamic model of snow crab production in crab fishing areas on the Scotian Shelf. Within each panel, estimates of posterior median and 95\% credible intervals are given in the legend.}
   
 \end{figure}
@@ -965,7 +982,7 @@
 
 \begin{figure}
     
-    \includegraphics[width=\textwidth]{\h \eb q\D density.png}
+    \includegraphics[width=\textwidth]{\h \ebugs q\D density.png}
     \caption{Prior (red) and posterior (bars) distribution for catchability parameter, q, from the biomass dynamic model of snow crab production in crab fishing areas on the Scotian Shelf. Within each panel, estimates of posterior median and 95\% credible intervals are given in the legend.}
   
 \end{figure}
@@ -975,7 +992,7 @@
 
 \begin{figure}
     
-    \includegraphics[width=\textwidth]{\h \eb bp\D sd\D density.png}
+    \includegraphics[width=\textwidth]{\h \ebugs bp\D sd\D density.png}
     \caption{Prior (red) and posterior (bars) distribution for process error from the biomass dynamic model of snow crab production in crab fishing areas on the Scotian Shelf. Within each panel, estimates of posterior median and 95\% credible intervals are given in the legend.}
   
 \end{figure}
@@ -983,7 +1000,7 @@
 
 \begin{figure}
     
-    \includegraphics[width=\textwidth]{\h \eb bo\D sd\D density.png}
+    \includegraphics[width=\textwidth]{\h \ebugs bo\D sd\D density.png}
     \caption{Prior (red) and posterior (bars) distribution for observation error from the biomass dynamic model of snow crab production in crab fishing areas on the Scotian Shelf. Within each panel, estimates of posterior median and 95\% credible intervals are given in the legend.}
   
 \end{figure}
@@ -991,7 +1008,7 @@
 
 \begin{figure}
     
-    \includegraphics[width=\textwidth]{\h \eb FMSY\D density.png}
+    \includegraphics[width=\textwidth]{\h \ebugs FMSY\D density.png}
     \caption{Posterior distribution for fishing mortality at maximum sustainable yield from the biomass dynamic model of snow crab production in crab fishing areas on the Scotian Shelf. Within each panel, estimates of posterior median and 95\% credible intervals are given in the legend.}
   
 \end{figure}
