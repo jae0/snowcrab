@@ -10,17 +10,10 @@
 # 1. Define some additional starting parameters for debugging
 #    choose various over-rides: these are initially defined in parameters.r
 
-p = bio.snowcrab::load.environment( year.assessment=2016 )
+current.year = 2016
 
-p$regions = c("cfa4x", "cfanorth","cfasouth" )
 
-p$vars.to.model = c("R0.mass")
-# p$vars.to.model = c("R0.mass",  "R1.no")
-# p$vars.to.model = c("R0.mass", "R0.no", "R1.no", "totno.female.primiparous","totno.female.multiparous", "totno.female.berried", "fecundity","totno.female.imm", "totno.male.imm" )
-# p$vars.to.model = c("R0.no", "R1.no", "totno.female.primiparous","totno.female.multiparous", "totno.female.berried", "fecundity","totno.female.imm", "totno.male.imm" )
-
- # p$years.to.model=2005:2012
-
+p = bio.snowcrab::load.environment( year.assessment=current.year )
 
 # --------------------------------------------------------------
 # using environmental data ... estimate/lookup missing environmental data .. (t,z)
@@ -36,7 +29,8 @@ snowcrab_lbm(p=p, DS="prediction.surface.redo" )  # create fields for snowcrab
 
 
 # -------------------------------------------------------------------------------------
-# abundance .. positive valued data
+# abundance .. positive valued data .. vn = "snowcrab.large.males_abundance"
+
 p$selection=list( 
   name = "snowcrab.large.males_abundance",
   type = "abundance",
@@ -47,8 +41,8 @@ p$selection=list(
   drop.groundfish.data=TRUE # from 1970 to 1999 measurement of invertebrates was sporatic .. zero-values are dropped as they are unreliable 
 )
 
+p = bio.snowcrab::load.environment( year.assessment=current.year )
 p = bio.snowcrab::snowcrab.parameters( p=p, DS="lbm", varname=p$selection$name  )
-p = make.list( list( yrs=p$yrs), Y=p )
 
 # o = snowcrab_lbm(p=p, DS="lbm_inputs" )  # create fields for 
 DATA='snowcrab_lbm( p=p, DS="lbm_inputs" )'
@@ -59,19 +53,18 @@ p = lbm( p=p, DATA=DATA, tasks=c("initiate", "globalmodel") ) # 30 min
 p = lbm( p=p, tasks=c( "stage1" ) ) #  8 hrs 
 p = lbm( p=p, tasks=c( "stage2" ) ) #   1 hrs
 p = lbm( p=p, tasks=c( "save" ) )
+
+p = make.list( list( yrs=p$yrs), Y=p )
 parallel.run( snowcrab_lbm, p=p, DS="predictions.redo" ) # warp predictions to other grids
 snowcrab_lbm( p=p, DS="lbm.stats.redo" ) # warp stats to other grids
 snowcrab_lbm( p=p, DS="complete.redo" )
 snowcrab_lbm( p=p, DS="baseline.redo" )
 snowcrab_lbm( p=p, DS="map.all" )
 
-
-
-vn = "snowcrab.large.males_abundance"
-p = bio.snowcrab::snowcrab.parameters( p=p, DS="lbm", varname=vn )
 global_model = lbm_db( p=p, DS="global_model") 
 summary( global_model )
 plot(global_model)
+
 
 
 Family: gaussian 
@@ -124,28 +117,33 @@ p$selection=list(
   drop.groundfish.data=TRUE # from 1970 to 1999 measurement of invertebrates was sporatic .. zero-values are dropped as they are unreliable 
 )
 
+p = bio.snowcrab::load.environment( year.assessment=current.year )
 p = bio.snowcrab::snowcrab.parameters( p=p, DS="lbm", varname=p$selection$name  )
-p = make.list( list( yrs=p$yrs), Y=p )
+
+# o = snowcrab_lbm(p=p, DS="lbm_inputs" )  # create fields for 
 DATA='snowcrab_lbm( p=p, DS="lbm_inputs" )'
 
-p = lbm( p=p, DATA=DATA, tasks=c("initiate", "globalmodel") ) # 5 min
+p = lbm( p=p, DATA=DATA, tasks=c("initiate", "globalmodel") ) # 30 min
 #   p = lbm( p=p, tasks=c( "stage0" ) ) # serial mode
 #   p = lbm( p=p, tasks=c( "continue" ) )    
 p = lbm( p=p, tasks=c( "stage1" ) ) #  8 hrs 
 p = lbm( p=p, tasks=c( "stage2" ) ) #   1 hrs
 p = lbm( p=p, tasks=c( "save" ) )
+
+p = make.list( list( yrs=p$yrs), Y=p )
 parallel.run( snowcrab_lbm, p=p, DS="predictions.redo" ) # warp predictions to other grids
 snowcrab_lbm( p=p, DS="lbm.stats.redo" ) # warp stats to other grids
 snowcrab_lbm( p=p, DS="complete.redo" )
 snowcrab_lbm( p=p, DS="baseline.redo" )
 snowcrab_lbm( p=p, DS="map.all" )
 
-
-vn = "snowcrab.large.males_presence_absence"
-p = bio.snowcrab::snowcrab.parameters( p=p, DS="lbm", varname=vn )
 global_model = lbm_db( p=p, DS="global_model") 
 summary( global_model )
 plot(global_model)
+
+
+
+
 
 
 
