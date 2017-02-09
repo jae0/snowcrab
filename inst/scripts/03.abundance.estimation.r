@@ -31,6 +31,7 @@ snowcrab_lbm(p=p, DS="prediction.surface.redo" )  # create fields for snowcrab
 # -------------------------------------------------------------------------------------
 # abundance .. positive valued data .. vn = "snowcrab.large.males_abundance"
 
+p = bio.snowcrab::load.environment( year.assessment=current.year )
 p$selection=list( 
   name = "snowcrab.large.males_abundance",
   type = "abundance",
@@ -40,8 +41,6 @@ p$selection=list(
   len= c( 95, 200 )/10, #  mm -> cm ; indicators.db in cm
   drop.groundfish.data=TRUE # from 1970 to 1999 measurement of invertebrates was sporatic .. zero-values are dropped as they are unreliable 
 )
-
-p = bio.snowcrab::load.environment( year.assessment=current.year )
 p = bio.snowcrab::snowcrab.parameters( p=p, DS="lbm", varname=p$selection$name  )
 
 # o = snowcrab_lbm(p=p, DS="lbm_inputs" )  # create fields for 
@@ -107,6 +106,7 @@ GCV = 9.264e+06  Scale est. = 9.1241e+06  n = 6977
 
 # -------------------------------------------------
 # presence-absence
+p = bio.snowcrab::load.environment( year.assessment=current.year )
 p$selection=list( 
   name = "snowcrab.large.males_presence_absence",
   type = "presence_absence",
@@ -116,8 +116,6 @@ p$selection=list(
   len= c( 95, 200 )/10, #  mm -> cm ; indicators.db in cm
   drop.groundfish.data=TRUE # from 1970 to 1999 measurement of invertebrates was sporatic .. zero-values are dropped as they are unreliable 
 )
-
-p = bio.snowcrab::load.environment( year.assessment=current.year )
 p = bio.snowcrab::snowcrab.parameters( p=p, DS="lbm", varname=p$selection$name  )
 
 # o = snowcrab_lbm(p=p, DS="lbm_inputs" )  # create fields for 
