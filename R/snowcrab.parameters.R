@@ -129,7 +129,7 @@ snowcrab.parameters = function( p=NULL, DS="default", current.year=NULL, varname
     }
 
     if (!exists("lbm_variogram_method", p)) p$lbm_variogram_method = "fast"
-    if (!exists("lbm_local_modelengine", p)) p$lbm_local_modelengine ="twostep"
+    if (!exists("lbm_local_modelengine", p)) p$lbm_local_modelengine ="gam"
     if (!exists("lbm_global_modelengine", p)) p$lbm_global_modelengine ="gam"
 
     if (!exists("lbm_global_family", p)) p$lbm_global_family = gaussian( link=log) 
