@@ -41,11 +41,13 @@ p$selection=list(
   len= c( 95, 200 )/10, #  mm -> cm ; indicators.db in cm
   drop.groundfish.data=TRUE # from 1970 to 1999 measurement of invertebrates was sporatic .. zero-values are dropped as they are unreliable 
 )
+p$lbm_local_modelengine = "gam"
+p$lbm_global_family = gaussian(link="log")
+p$lbm_local_family = gaussian(link="log")  # after logit transform by global model, it becomes gaussian (logit scale)
 p = bio.snowcrab::snowcrab.parameters( p=p, DS="lbm", varname=p$selection$name  )
 
 # o = snowcrab_lbm(p=p, DS="lbm_inputs" )  # create fields for 
 DATA='snowcrab_lbm( p=p, DS="lbm_inputs" )'
-
 lbm( p=p, DATA=DATA, tasks=c("initiate", "globalmodel") ) # 30 min
 #   p = lbm( p=p, tasks=c( "stage0" ) ) # serial mode
 #   p = lbm( p=p, tasks=c( "continue" ) )    
@@ -116,17 +118,21 @@ p$selection=list(
   len= c( 95, 200 )/10, #  mm -> cm ; indicators.db in cm
   drop.groundfish.data=TRUE # from 1970 to 1999 measurement of invertebrates was sporatic .. zero-values are dropped as they are unreliable 
 )
+p$lbm_local_modelengine = "gam"
+p$lbm_global_family = binomial()
+p$lbm_local_family = gaussian()  # after logit transform by global model, it becomes gaussian (logit scale)
+
 p = bio.snowcrab::snowcrab.parameters( p=p, DS="lbm", varname=p$selection$name  )
 
 # o = snowcrab_lbm(p=p, DS="lbm_inputs" )  # create fields for 
 DATA='snowcrab_lbm( p=p, DS="lbm_inputs" )'
 
-p = lbm( p=p, DATA=DATA, tasks=c("initiate", "globalmodel") ) # 30 min
-#   p = lbm( p=p, tasks=c( "stage0" ) ) # serial mode
-#   p = lbm( p=p, tasks=c( "continue" ) )    
-p = lbm( p=p, tasks=c( "stage1" ) ) #  8 hrs 
-p = lbm( p=p, tasks=c( "stage2" ) ) #   1 hrs
-p = lbm( p=p, tasks=c( "save" ) )
+lbm( p=p, DATA=DATA, tasks=c("initiate", "globalmodel") ) # 30 min
+#   lbm( p=p, tasks=c( "stage0" ) ) # serial mode
+#   lbm( p=p, tasks=c( "continue" ) )    
+lbm( p=p, tasks=c( "stage1" ) ) #  8 hrs 
+lbm( p=p, tasks=c( "stage2" ) ) #   1 hrs
+lbm( p=p, tasks=c( "save" ) )
 
 p = make.list( list( yrs=p$yrs), Y=p )
 parallel.run( snowcrab_lbm, p=p, DS="predictions.redo" ) # warp predictions to other grids
@@ -140,6 +146,37 @@ summary( global_model )
 plot(global_model)
 
 
+Family: binomial 
+Link function: logit 
+
+Formula:
+snowcrab.large.males_presence_absence ~ s(t, k = 3, bs = "ts") + 
+    s(tmean.climatology, k = 3, bs = "ts") + s(tsd.climatology, 
+    k = 3, bs = "ts") + s(log(z), k = 3, bs = "ts") + s(log(dZ), 
+    k = 3, bs = "ts") + s(log(ddZ), k = 3, bs = "ts") + s(log.substrate.grainsize, 
+    k = 3, bs = "ts")
+
+Parametric coefficients:
+            Estimate Std. Error z value Pr(>|z|)    
+(Intercept)  2.56595    0.01922   133.5   <2e-16 ***
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+Approximate significance of smooth terms:
+                             edf Ref.df  Chi.sq  p-value    
+s(t)                       1.999      2  159.57  < 2e-16 ***
+s(tmean.climatology)       1.989      2  982.79  < 2e-16 ***
+s(tsd.climatology)         2.000      2  511.78  < 2e-16 ***
+s(log(z))                  1.985      2 4761.70  < 2e-16 ***
+s(log(dZ))                 1.978      2   53.09 2.19e-12 ***
+s(log(ddZ))                2.000      2   60.52 6.78e-14 ***
+s(log.substrate.grainsize) 1.998      2   33.11 6.25e-08 ***
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+R-sq.(adj) =  0.366   Deviance explained = 35.5%
+UBRE = -0.49562  Scale est. = 1         n = 61281
+---
 
 
 
