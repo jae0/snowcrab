@@ -95,6 +95,20 @@ snowcrab_lbm = function( ip=NULL, DS=NULL, p=NULL, voi=NULL, year=NULL, ret=NULL
     }
     INP = na.omit(INP)
 
+    # the following are modelled on a log-scale ... need zero-checks
+    ## hack -- zero-values : predictions of log(0) fail 
+    INP$dZ [ which( INP$dZ < exp(-5) ] = exp(-5)
+    INP$dZ [ which( INP$dZ > exp(5) ] = exp(5)
+
+    ## hack -- zero-values : predictions of log(0) fail 
+    INP$ddZ [ which( INP$ddZ < exp(-6) ] = exp(-6)
+    INP$ddZ [ which( INP$ddZ > exp(5) ] = exp(5)
+
+    ## hack -- extreme-values .. error in exptrapolation of substrate 
+    INP$log.substrate.grainsize[ which( INP$log.substrate.grainsize < -6) ] = -6
+    INP$log.substrate.grainsize [ which( INP$log.substrate.grainsize > 5) ] = 5
+
+
     # cap quantiles of dependent vars
     dr = list()
     for (voi in p$varnames) {
@@ -107,6 +121,20 @@ snowcrab_lbm = function( ip=NULL, DS=NULL, p=NULL, voi=NULL, year=NULL, ret=NULL
 
     PS = snowcrab_lbm( p=p, DS="prediction.surface" ) # a list object with static and annually varying variables  
     names(PS)[ names(PS)=="amplitude"] ="tamplitude" 
+
+    # the following are modelled on a log-scale ... need zero-checks
+    ## hack -- zero-values : predictions of log(0) fail 
+    PS$dZ [ which( PS$dZ < exp(-5) ] = exp(-5)
+    PS$dZ [ which( PS$dZ > exp(5) ] = exp(5)
+
+    ## hack -- zero-values : predictions of log(0) fail 
+    PS$ddZ [ which( PS$ddZ < exp(-6) ] = exp(-6)
+    PS$ddZ [ which( PS$ddZ > exp(5) ] = exp(5)
+
+    ## hack -- extreme-values .. error in exptrapolation of substrate .. fisx this in bio.substrate
+    PS$log.substrate.grainsize[ which( PS$log.substrate.grainsize < -6) ] = -6
+    PS$log.substrate.grainsize [ which( PS$log.substrate.grainsize > 5) ] = 5
+
     
     # additional indicators.db variables
     for (iv in names(p$indicators.variables)) {
