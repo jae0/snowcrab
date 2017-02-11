@@ -27,14 +27,14 @@ snowcrab.parameters = function( p=NULL, DS="default", current.year=NULL, varname
     p$current.year = current.year  # this is a synonym for year.assessment ... will eventually remove one of these
     p$year.assessment = current.year
 
-    p$yearstomodel = 1998:p$current.year
+    p$yearstomodel = 1999:p$current.year
     p$seabird.yToload = 2012:p$current.year
     p$minilog.yToload = 1999:p$current.year
     p$netmind.yToload = 1999:p$current.year
     p$esonar.yToload  = 2014:p$current.year
     p$netmensuration.problems = c()
 
-    p$yrs = c(1998:p$current.year)  # same as yearstomodel ... need to clean this up:: TODO
+    p$yrs = c(1999:p$current.year)  # same as yearstomodel ... need to clean this up:: TODO
     p$ny = length(p$yrs)
     p$nt = p$ny # must specify, else assumed = 1 (1= no time)  ## nt=ny annual time steps, nt = ny*nw is seassonal
     p$nw = 10 # default value of 10 time steps for all temp and indicators
