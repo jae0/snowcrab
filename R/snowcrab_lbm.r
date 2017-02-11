@@ -206,15 +206,19 @@ snowcrab_lbm = function( ip=NULL, DS=NULL, p=NULL, voi=NULL, year=NULL, ret=NULL
     }
     PS = c( PS, u)
 
-    # now we add the other covariate fields for modelling and prediction
-    # additional indicators.db variables
-    for (iv in names(p$indicators.variables)) {
-      p0 = bio.indicators::indicators.parameters( p=p, DS="default", current.year=p$current.year )
-      p0 = bio.indicators::indicators.parameters( p=p0, DS=iv  )
-      p0 = bio.spacetime::spatial_parameters( p=p0, type=p$spatial.domain ) # return to correct domain
-      DB=indicators.db( p=p0, DS="baseline", varnames=p0$indicators.variables[iv] )
-      yr_index = match( p$yrs, p0$yrs )
-      PS = c( PS, DB[,yr_index] )
+
+    message ( "Required? ")
+    if (0) {
+      # now we add the other covariate fields for modelling and prediction
+      # additional indicators.db variables
+      for (iv in names(p$indicators.variables)) {
+        p0 = bio.indicators::indicators.parameters( p=p, DS="default", current.year=p$current.year )
+        p0 = bio.indicators::indicators.parameters( p=p0, DS=iv  )
+        p0 = bio.spacetime::spatial_parameters( p=p0, type=p$spatial.domain ) # return to correct domain
+        DB=indicators.db( p=p0, DS="baseline", varnames=p0$indicators.variables[iv] )
+        yr_index = match( p$yrs, p0$yrs )
+        PS = c( PS, DB[,yr_index] )
+      }
     }
 
     save (PS, file=outfile, compress=T )

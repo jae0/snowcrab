@@ -43,26 +43,19 @@
       out = array( NA, dims=c(p$ny, nreg, 2) )
 
       for (y in 1:p$ny) {
-
         iHabitat = which( biomass[[1]][,y] > p$habitat.threshold.quantile )
-
         for (r in 1:nreg ){
-
           aoi = filter.region.polygon(x=b[ , c("plon", "plat")], region=p$regions[r], planar=T)
           aoi = intersect( aoi, which( b$plon > 250 ) )
-
           iHabitatRegion = intersect( aoi, iHabitat )
-
           out[ y, r, 1] = sum( biomass[[1]][, iHabitatRegion] ) # abundance weighted by Pr
           out[ y, r, 2] = sqrt( sum( biomass[[2]][, iHabitatRegion] )^2)
           out[ y, r, 3] = length( iHabitatRegion ) * (p$pres*p$pres)
         }
-    }
-      
 
+      }
 
-
-
+      return( out )      
     }
 
 
