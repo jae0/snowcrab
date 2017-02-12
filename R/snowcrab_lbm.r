@@ -119,8 +119,16 @@ snowcrab_lbm = function( ip=NULL, DS=NULL, p=NULL, voi=NULL, year=NULL, ret=NULL
       if ( length(iu) > 0 ) INP[iu,voi] = dr[[voi]][2]
     }
 
-    PS = snowcrab_lbm( p=p, DS="prediction.surface" ) # a list object with static and annually varying variables  
+    PS = indicators.db( p=p, DS="prediction.surface" ) # a list object with static and annually varying variables  
     names(PS)[ names(PS)=="amplitude"] ="tamplitude" 
+
+    # make years coherent
+    p0 = bio.temperature::temperature.parameters(p=p, current.year=p$current.year )
+    yr_index = match( p$yrs, p0$tyears )
+    for ( vn in c("t", p0$bstats) ) PS[[vn]] = PS[[vn]][,yr_index]
+
+
+
 
     # the following are modelled on a log-scale ... need zero-checks
     ## hack -- zero-values : predictions of log(0) fail 
@@ -135,8 +143,8 @@ snowcrab_lbm = function( ip=NULL, DS=NULL, p=NULL, voi=NULL, year=NULL, ret=NULL
     PS$log.substrate.grainsize[ which( PS$log.substrate.grainsize < -6) ] = -6
     PS$log.substrate.grainsize [ which( PS$log.substrate.grainsize > 5) ] = 5
 
-    
-    # additional indicators.db variables
+
+    # additional indicators.db variables with correct number of years
     for (iv in names(p$indicators.variables)) {
       p0 = bio.indicators::indicators.parameters( p=p, DS="default", current.year=p$current.year )
       p0 = bio.indicators::indicators.parameters( p=p0, DS=iv  )
@@ -166,66 +174,6 @@ snowcrab_lbm = function( ip=NULL, DS=NULL, p=NULL, voi=NULL, year=NULL, ret=NULL
   }
 
   
-  # ----------------
-
-  
-  if (DS %in% c("prediction.surface", "prediction.surface.redo") ) {
-   # mostly based on indicators.db( DS="prediction.surface") 
-
-    outdir = file.path( project.datadirectory("bio.snowcrab"), "PS", p$spatial.domain )
-    dir.create(outdir, recursive=T, showWarnings=F)
-
-    dyear_index = 1
-    if (exists("dyears", p) & exists("prediction.dyear", p))  dyear_index = which.min( abs( p$prediction.dyear - p$dyears))
-
-    outfile =  file.path( outdir, paste("PS", dyear_index, "rdata", sep=".") )
-
-    if ( DS=="prediction.surface" ) {
-      PS = NULL
-      if (file.exists(outfile)) load( outfile )
-      return (PS)
-    }
-
-    # this is the same as the p`rediction surface as used for indicators.db but the domain is smaller
-    # .. more will be added to it belwo
-    PS = indicators.db(p=p, DS="spatial")
-    names(PS)[which(names(PS)=="tmean")] = "tmean.climatology"
-    names(PS)[which(names(PS)=="tsd")] = "tsd.climatology"
-    names(PS)[which(names(PS)=="tmin")] = "tmin.climatology"
-    names(PS)[which(names(PS)=="tmax")] = "tmax.climatology"
-    names(PS)[which(names(PS)=="amplitude")] = "tamplitude.climatology"
-
-    nPS = nrow( PS )
-    PS = as.list(PS)
-
-    p0 = bio.temperature::temperature.parameters(p=p, current.year=p$current.year )
-    yr_index = match( p$yrs, p0$tyears )
-    u = indicators.db(p=p, DS="spatial.annual")
-    for ( vn in names(u) ){
-      u[[vn]] = u[[vn]][,yr_index]
-    }
-    PS = c( PS, u)
-
-
-    message ( "Required? ")
-    if (0) {
-      # now we add the other covariate fields for modelling and prediction
-      # additional indicators.db variables
-      for (iv in names(p$indicators.variables)) {
-        p0 = bio.indicators::indicators.parameters( p=p, DS="default", current.year=p$current.year )
-        p0 = bio.indicators::indicators.parameters( p=p0, DS=iv  )
-        p0 = bio.spacetime::spatial_parameters( p=p0, type=p$spatial.domain ) # return to correct domain
-        DB=indicators.db( p=p0, DS="baseline", varnames=p0$indicators.variables[iv] )
-        yr_index = match( p$yrs, p0$yrs )
-        PS = c( PS, DB[,yr_index] )
-      }
-    }
-
-    save (PS, file=outfile, compress=T )
-    return( outfile )
-
-  }
-
 
   # --------------------------
 
