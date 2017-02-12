@@ -67,13 +67,7 @@ snowcrab_lbm = function( ip=NULL, DS=NULL, p=NULL, voi=NULL, year=NULL, ret=NULL
     sn = indicators.lookup( p=p, DS="spatial.annual", locsmap=locsmap, timestamp=INP[,"timestamp"], varnames=newvars )
     colnames( sn  ) = newvars
     INP = cbind( INP,  sn )
-    INP$tamplitude = INP$amplitude
-    INP = na.omit(INP)
-
-    # update locsmap .. above step removes a few rows
-    locsmap = match( 
-      lbm::array_map( "xy->1", INP[,c("plon","plat")], gridparams=p$gridparams ), 
-      lbm::array_map( "xy->1", bathymetry.db(p=p, DS="baseline"), gridparams=p$gridparams ) )
+    names(INP)[ names(INP)=="amplitude"] ="tamplitude"
 
     # additional indicators.db variables
     for (iv in names(p$indicators.variables)) {
@@ -83,7 +77,8 @@ snowcrab_lbm = function( ip=NULL, DS=NULL, p=NULL, voi=NULL, year=NULL, ret=NULL
       vn = p0$indicators.variables[[iv]]
       sn = indicators.lookup( p=p0, DS="spatial.annual", locsmap=locsmap, timestamp=INP[,"timestamp"], 
         varnames=vn, DB=indicators.db( p=p0, DS="baseline", varnames=vn ) )
-      colnames( sn  ) = p$indicators.variables[iv]
+      sn = as.data.frame(sn)
+      names( sn  ) = p$indicators.variables[[iv]]
       INP = cbind( INP,  sn )
     }
 
@@ -123,14 +118,11 @@ snowcrab_lbm = function( ip=NULL, DS=NULL, p=NULL, voi=NULL, year=NULL, ret=NULL
     names(PS)[ names(PS)=="amplitude"] ="tamplitude" 
 
     # make years coherent
-    p0 = bio.temperature::temperature.parameters(p=p, current.year=p$current.year )
-    yr_index = match( p$yrs, p0$tyears )
-    for ( vn in c("t", p0$bstats) ) PS[[vn]] = PS[[vn]][,yr_index]
+    p0 = bio.indicators::indicators.parameters(p=p, current.year=p$current.year )
+    yr_index = match( p$yrs, p0$yrs )
+    for ( vn in c("t", p0$bstats) ) PS[[vn]][] = PS[[vn]][,yr_index]
 
-
-
-
-    # the following are modelled on a log-scale ... need zero-checks
+   # the following are modelled on a log-scale ... need zero-checks
     ## hack -- zero-values : predictions of log(0) fail 
     PS$dZ [ which( PS$dZ < exp(-5)) ] = exp(-5)
     PS$dZ [ which( PS$dZ > exp(5)) ] = exp(5)
