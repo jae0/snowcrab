@@ -1,5 +1,5 @@
 
-snowcrab_lbm = function( ip=NULL, DS=NULL, p=NULL, voi=NULL, year=NULL, ret=NULL ) {
+snowcrab_lbm = function( ip=NULL, DS=NULL, p=NULL, voi=NULL, year=NULL, ret=NULL, varnames=NULL ) {
 
   # over-ride default dependent variable name if it exists
   if (is.null(voi)) if (exists("selection",p)) if (exists("name", p$selection)) voi=p$selection$name
