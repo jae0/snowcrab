@@ -125,7 +125,7 @@ snowcrab.parameters = function( p=NULL, DS="default", current.year=NULL, varname
     for (id in c("speciescomposition", "speciesarea", "sizespectrum", "condition", "metabolism", "biochem") ) {
       pz = bio.indicators::indicators.parameters( p=p, DS=id )
       pz_vars = intersect( pz$varstomodel, p$variables$COV )
-      if (length(pz_vars) > 0) p$indicators.variables[id] = pz_vars 
+      if (length(pz_vars) > 0) p$indicators.variables[[id]] = pz_vars 
     }
 
     if (!exists("lbm_variogram_method", p)) p$lbm_variogram_method = "fast"

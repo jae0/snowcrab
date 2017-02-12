@@ -21,12 +21,6 @@ logbook.db( DS ="fisheries.complete.redo", p=p )
 snowcrab.db( DS ="set.complete.redo", p=p )
 
 
-# -------------------------------------------------------------------------------------
-# prep data for modelling and interpolation
-
-snowcrab_lbm(p=p, DS="prediction.surface.redo" )  # create fields for snowcrab
-
-
 
 # -------------------------------------------------------------------------------------
 # abundance .. positive valued data .. vn = "snowcrab.large.males_abundance"
