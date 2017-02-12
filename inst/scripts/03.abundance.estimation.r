@@ -11,9 +11,10 @@
 #    choose various over-rides: these are initially defined in parameters.r
 
 current.year = 2016
-
-
 p = bio.snowcrab::load.environment( year.assessment=current.year )
+
+
+
 
 # --------------------------------------------------------------
 # using environmental data ... estimate/lookup missing environmental data .. (t,z)
