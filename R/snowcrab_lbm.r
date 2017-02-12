@@ -465,8 +465,12 @@ snowcrab_lbm = function( ip=NULL, DS=NULL, p=NULL, voi=NULL, year=NULL, ret=NULL
       uu = which( is.finite(rowSums(xyz)))
       if (length(uu) < 10) next()
       xyz = xyz[uu,]
-      datarange = indicators.lookup.mapparams( DS="datarange", voi ) # hardcoded data ranges 
-      if (is.null(datarange)) datarange=quantile(xyz[,3], probs=c(0.05,0.95), na.rm=TRUE) 
+      datarange = NULL
+      datarange = snowcrab.lookup.mapparams( DS="datarange", voi ) # hardcoded data ranges 
+      if (is.null(datarange)) {
+        datarange=quantile(xyz[,3], probs=c(0.005,0.995), na.rm=TRUE) 
+        datarange = seq( datarange[1], datarange[2], length.out=100 )
+      }
       cols = color.code( "blue.black", datarange )
       annot = gsub( ".", " ", toupper(voi), fixed=TRUE )
       outfn = paste( voi, "mean", y, sep=".")
@@ -480,9 +484,12 @@ snowcrab_lbm = function( ip=NULL, DS=NULL, p=NULL, voi=NULL, year=NULL, ret=NULL
       uu = which( is.finite(rowSums(xyz)))
       if (length(uu) < 10) next()
       xyz = xyz[uu,]
-      datarange = indicators.lookup.mapparams( DS="datarange", voi ) # hardcoded data ranges 
-      if (is.null(datarange)) datarange=quantile(xyz[,3], probs=c(0.05,0.95), na.rm=TRUE) 
-      datarange = seq( datarange[1], datarange[2], length.out=100 )
+      datarange = NULL      
+      datarange = snowcrab.lookup.mapparams( DS="datarange", voi ) # hardcoded data ranges 
+      if (is.null(datarange)) {
+        datarange=quantile(xyz[,3], probs=c(0.005,0.995), na.rm=TRUE) 
+        datarange = seq( datarange[1], datarange[2], length.out=100 )
+      }
       cols = color.code( "blue.black", datarange )
       annot = gsub( ".", " ", toupper(voi), fixed=TRUE )
       outfn = paste( voi, "sd", y, sep=".")
@@ -514,9 +521,11 @@ snowcrab_lbm = function( ip=NULL, DS=NULL, p=NULL, voi=NULL, year=NULL, ret=NULL
       if (length(uu) < 10) next()
       xyz = xyz[uu,]
       datarange= NULL
-      datarange = indicators.lookup.mapparams( DS="datarange", vn) # hardcoded data ranges 
-      if (is.null(datarange)) datarange=quantile(xyz[,3], probs=c(0.05,0.95), na.rm=TRUE) 
-      datarange = seq( datarange[1], datarange[2], length.out=100 )
+      datarange = snowcrab.lookup.mapparams( DS="datarange", vn) # hardcoded data ranges 
+      if (is.null(datarange)) {
+        datarange=quantile(xyz[,3], probs=c(0.005,0.995), na.rm=TRUE) 
+        datarange = seq( datarange[1], datarange[2], length.out=100 )
+      }
       cols = color.code( "blue.black", datarange )
       annot = gsub( ".", " ", toupper(vn), fixed=TRUE )
       bio.spacetime::map( xyz=xyz, cfa.regions=FALSE, depthcontours=TRUE, pts=NULL, 
