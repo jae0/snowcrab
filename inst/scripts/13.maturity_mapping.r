@@ -4,7 +4,7 @@ p = bio.snowcrab::load.environment( year.assessment=2016)
 
 
   p$regions = c("cfa4x", "cfanorth","cfasouth" )
-  p$years.to.model=2004:2014
+  p$yrs=2004:2014
 
   p$habitat.threshold.quantile = 0.05 # quantile at which to consider zero-valued abundance
   p$prediction.dyear = 9/12 # predict for ~ Sept 1
@@ -25,7 +25,7 @@ summary(.m4.gam)
 params=p
 
 hab = NULL
-for(y in p$years.to.model) {
+for(y in p$yrs) {
    PS = indicators.db ( DS="complete", year=y, p=params )
    PS$dyear = p$prediction.dyear
    PS$t = NA
@@ -52,7 +52,7 @@ for(y in p$years.to.model) {
        }
 
 #summarize for plot
-for(y in p$years.to.model) {
+for(y in p$yrs) {
 	load(file=file.path(di,paste(y,'complete.data.mat50.rdata')))
       	pp = group_by(PPS,grd)
       	ap = summarize(pp,ld50=findMax(cw,abs(re-0.5)*-1)[1])

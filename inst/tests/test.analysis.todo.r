@@ -141,7 +141,7 @@
        make.biomass.grids = T,
        biomass.regrid = T,
        biomass.extract =T,
-       years = p$years.to.model,
+       years = p$yrs,
        vars = p$vars.to.model,
        regions = p$regions.to.model
   ) )

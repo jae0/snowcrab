@@ -32,7 +32,7 @@
 
       # p$clusters = rep( "localhost", 1)
       # p$clusters = c( rep( "nyx.beowulf", 24), rep("tartarus.beowulf", 24), rep("kaos", 24 ) )
-      p = make.list( list(v=p$vars.to.model, yrs=p$years.to.model ), Y=p )
+      p = make.list( list(v=p$vars.to.model, yrs=p$yrs ), Y=p )
       parallel.run( habitat.model.db, DS="habitat.redo", p=p )
 
       # or

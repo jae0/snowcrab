@@ -118,7 +118,7 @@ if (0) {
       PS$dt.annual = PS$tmean - PS$tmean.climatology
       PS$sa = 1
 
-      if ( y < 1998) PS$yr = floor(median( p$years.to.model ))  # assume similar conditions as those found in 1998 for the year-effect (no extrapolation)
+      if ( y < 1998) PS$yr = floor(median( p$yrs ))  # assume similar conditions as those found in 1998 for the year-effect (no extrapolation)
 
       # predictions
       # Alternate models using only environmental information without years

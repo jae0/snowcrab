@@ -426,8 +426,6 @@ snowcrab_lbm = function( ip=NULL, DS=NULL, p=NULL, voi=NULL, year=NULL, ret=NULL
     }
 
 
-
-
   # -----------------------
 
   if ( DS=="map.all" ) {

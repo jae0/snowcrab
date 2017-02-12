@@ -186,7 +186,7 @@ UBRE = -0.51619  Scale est. = 1         n = 61091
     ### --------- prediction success:
 
     set = snowcrab.db( DS="set.complete" )
-    set = set[ set$yr %in% p$years.to.model ,]
+    set = set[ set$yr %in% p$yrs ,]
     set$total.landings.scaled = scale( set$total.landings, center=T, scale=T )
     set = presence.absence( set, "R0.mass", p$habitat.threshold.quantile )  # determine presence absence(Y) and weighting(wt)
 #      set$weekno = floor(set$julian / 365 * 52) + 1

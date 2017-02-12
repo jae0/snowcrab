@@ -80,7 +80,6 @@ snowcrab.parameters = function( p=NULL, DS="default", current.year=NULL, varname
       p$geog.proj = "+proj=longlat +ellps=WGS84"
 
       ## these are kriging related parameters:: the method is deprecated
-      p$years.to.model = c(1998:p$year.assessment)
       p$threshold.distance = 5  # in km for merging fisheries data into the trawl data for external drift kriging
       p$optimizers = c(  "bfgs", "nlm", "perf", "newton", "Nelder-Mead" )  # used by GAM
       p = gmt.parameters( p=p )
@@ -103,11 +102,11 @@ snowcrab.parameters = function( p=NULL, DS="default", current.year=NULL, varname
     if (!exists("lbm_rsquared_threshold", p)) p$lbm_rsquared_threshold = 0.1 # lower threshold
     if (!exists("lbm_distance_prediction", p)) p$lbm_distance_prediction = 7.5 # this is a half window km
     if (!exists("lbm_distance_statsgrid", p)) p$lbm_distance_statsgrid = 5 # resolution (km) of data aggregation (i.e. generation of the ** statistics ** )
-    if (!exists("lbm_distance_scale", p)) p$lbm_distance_scale = 25 # km ... approx guess of 95% AC range 
+    if (!exists("lbm_distance_scale", p)) p$lbm_distance_scale = 20 # km ... approx guess of 95% AC range 
     if (!exists("lbm_distance_min", p)) p$lbm_distance_min = p$lbm_distance_statsgrid 
-    if (!exists("lbm_distance_max", p)) p$lbm_distance_max = 75
+    if (!exists("lbm_distance_max", p)) p$lbm_distance_max = 60
   
-    if (!exists("n.min", p)) p$n.min = 50 # n.min/n.max changes with resolution must be more than the number of knots/edf
+    if (!exists("n.min", p)) p$n.min = 100 # n.min/n.max changes with resolution must be more than the number of knots/edf
     # min number of data points req before attempting to model timeseries in a localized space
     if (!exists("n.max", p)) p$n.max = 8000 # no real upper bound
     p$sampling = c( 0.25, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.1, 1.2, 1.5 )  # 
@@ -145,8 +144,8 @@ snowcrab.parameters = function( p=NULL, DS="default", current.year=NULL, varname
       # this is the time component (mostly) .. space enters as a rough constraint 
       if (!exists("lbm_local_modelformula", p))  p$lbm_local_modelformula = formula( paste(
         varname, '~ s(yr, bs="ts") + s(cos.w, k=3, bs="ts") + s(sin.w, k=3, bs="ts") ', 
-          ' + s(cos.w, sin.w, yr, bs="ts", k=10) ',
-          ' + s(plon, k=3, bs="ts") + s(plat, k=3, bs="ts") + s(plon, plat, k=10, bs="ts") ' ) )
+          ' + s(cos.w, sin.w, yr, bs="ts", k=20) ',
+          ' + s(plon, k=3, bs="ts") + s(plat, k=3, bs="ts") + s(plon, plat, k=20, bs="ts") ' ) )
       if (!exists("lbm_local_model_distanceweighted", p)) p$lbm_local_model_distanceweighted = TRUE
 
       # this is the spatial component
@@ -164,8 +163,8 @@ snowcrab.parameters = function( p=NULL, DS="default", current.year=NULL, varname
       
       if (!exists("lbm_local_modelformula", p))  p$lbm_local_modelformula = formula( paste(
         varname, '~ s(yr, bs="ts") + s(cos.w, k=3, bs="ts") + s(sin.w, k=3, bs="ts") ', 
-          ' + s(cos.w, sin.w, yr, bs="ts", k=10) ',
-          ' + s(plon, k=3, bs="ts") + s(plat, k=3, bs="ts") + s(plon, plat, k=10, bs="ts") ' ) )
+          ' + s(cos.w, sin.w, yr, bs="ts", k=20) ',
+          ' + s(plon, k=3, bs="ts") + s(plat, k=3, bs="ts") + s(plon, plat, k=20, bs="ts") ' ) )
 
       if (!exists("lbm_local_model_distanceweighted", p)) p$lbm_local_model_distanceweighted = TRUE
       # if (!exists("lbm_gam_optimizer", p)) p$lbm_gam_optimizer="perf"
@@ -175,8 +174,8 @@ snowcrab.parameters = function( p=NULL, DS="default", current.year=NULL, varname
 
       if (!exists("lbm_local_modelformula", p))  p$lbm_local_modelformula = formula( paste(
         varname, '~ s(yr, bs="ts") + s(cos.w, k=3, bs="ts") + s(sin.w, k=3, bs="ts") ', 
-          ' + s(cos.w, sin.w, yr, bs="ts", k=10) ',
-          ' + s(plon, k=3, bs="ts") + s(plat, k=3, bs="ts") + s(plon, plat, k=10, bs="ts") ' ) )
+          ' + s(cos.w, sin.w, yr, bs="ts", k=20) ',
+          ' + s(plon, k=3, bs="ts") + s(plat, k=3, bs="ts") + s(plon, plat, k=20, bs="ts") ' ) )
 
       if (!exists("lbm_local_model_distanceweighted", p)) p$lbm_local_model_distanceweighted = TRUE
       # if (!exists("lbm_gam_optimizer", p)) p$lbm_gam_optimizer="perf"

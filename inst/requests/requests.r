@@ -60,7 +60,7 @@ p = bio.snowcrab::load.environment()
   # overrides:
   p$regions.to.model = "cfa.23ab.24ab"
   p$vars.to.model = "pre.recruit.no"
-  p$years.to.model = p$years.to.model[ which(p$years.to.model>1997) ]
+  p$yrs = p$yrs[ which(p$yrs>1997) ]
   p$ofname = "kriged.results.koeller.rdata"
 
   pcoords = c("plon", "plat")
@@ -99,7 +99,7 @@ p = bio.snowcrab::load.environment()
   # overrides:
   p$regions.to.model = c( "cfanorth", "cfasouth", "cfa22outer", "cfa23a", "cfanorth.not.glace.bay" )
   p$vars.to.model = c( "totmass.male.com", "R0.no", "totno.female.mat", "totno.female.berried", "totno.all")
-  p$years.to.model = p$years.to.model[which(p$years.to.model>1997)]
+  p$yrs = p$yrs[which(p$yrs>1997)]
   p$ofname = "kriged.results.glacebay2.rdata"
   p$krige.ordinary = F
   p$krige.block = T
@@ -385,7 +385,7 @@ p = bio.snowcrab::load.environment()
   # overrides:
   p$regions.to.model = c("cfa23", "cfa24")
   p$vars.to.model = "R0.mass"
-  p$years.to.model = p$years.to.model[ which(p$years.to.model>2000) ]
+  p$yrs = p$yrs[ which(p$yrs>2000) ]
   p$ofname = "kriged.results.CFA23.24.rdata"
 
   p$krige.ordinary = F # should already be done by this point
@@ -495,7 +495,7 @@ p = bio.snowcrab::load.environment()
   # overrides:
   p$regions.to.model = c( "cfanorth", "cfasouth", "cfa22outer", "cfa23a", "cfanorth.not.glace.bay" )
   p$vars.to.model = "R0.mass"
-  p$years.to.model = p$years.to.model[ which(p$years.to.model>2000) ]
+  p$yrs = p$yrs[ which(p$yrs>2000) ]
   p$ofname = "kriged.results.GBH.rdata"
 
   p$krige.ordinary = F # should already be done by this point

@@ -69,7 +69,7 @@
 
       # biomass data: post-fishery biomass are determined by survey B)
         p$vars.to.model ="R0.mass"
-        p = make.list( list(y=p$years.to.model, v=p$vars.to.model ), Y=p )
+        p = make.list( list(y=p$yrs, v=p$vars.to.model ), Y=p )
 
         #fdir <-file.path( project.datadirectory("bio.snowcrab"), "R", "gam","habitat" )
         #fs <- dir(fdir)
@@ -123,7 +123,7 @@
       }
 
         p$vars.to.model ="R0.mass"
-        p = make.list( list(y=p$years.to.model, v=p$vars.to.model ), Y=p )
+        p = make.list( list(y=p$yrs, v=p$vars.to.model ), Y=p )
 
         #fdir <-file.path( project.datadirectory("bio.snowcrab"), "R", "gam","habitat" )
         #fs <- dir(fdir)
@@ -289,8 +289,8 @@
       }
 
         p$vars.to.model = "R1.no"
-        p = make.list( list(y=p$years.to.model, v=p$vars.to.model ), Y=p )
-                p = make.list( list(y=p$years.to.model, v=p$vars.to.model ), Y=p )
+        p = make.list( list(y=p$yrs, v=p$vars.to.model ), Y=p )
+                p = make.list( list(y=p$yrs, v=p$vars.to.model ), Y=p )
 
         fdir <-file.path( project.datadirectory("bio.snowcrab"), "R", "gam","habitat" )
         fs <- dir(fdir)
@@ -344,8 +344,8 @@
       }
 
                p$vars.to.model = "R1.no"
-        p = make.list( list(y=p$years.to.model, v=p$vars.to.model ), Y=p )
-                p = make.list( list(y=p$years.to.model, v=p$vars.to.model ), Y=p )
+        p = make.list( list(y=p$yrs, v=p$vars.to.model ), Y=p )
+                p = make.list( list(y=p$yrs, v=p$vars.to.model ), Y=p )
 
         fdir <-file.path( project.datadirectory("bio.snowcrab"), "R", "gam","habitat" )
         fs <- dir(fdir)
