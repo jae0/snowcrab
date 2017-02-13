@@ -103,6 +103,7 @@ if (obtain.database.snapshot) {
   snowcrab.db( DS="cat.georeferenced.redo" )
 
   snowcrab.db( DS="set.biologicals.redo" )
+  snowcrab.db( DS="set.complete.redo" )
 
 
   # update a database of simple transformation ranges, etc.. for plotting range, etc.
