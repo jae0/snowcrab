@@ -11,16 +11,17 @@ snowcrab_lbm = function( ip=NULL, DS=NULL, p=NULL, voi=NULL, year=NULL, ret=NULL
     set = bio.indicators::survey.db( p=p, DS="set.filter" ) # mature male > 74 mm 
     set = presence.absence( X=set, vname="zm", px=p$habitat.threshold.quantile )  # determine presence absence and weighting
 
-    if ( grepl( "snowcrab.large.males", p$selection$name ) ) {
-      # add commerical fishery data
-      lgbk = logbook.db( DS="fisheries.complete", p=p )
-      lgbk = lgbk[ which( is.finite( lgbk$landings)), ]
-      lgbk$totmass = NA # dummy to bring in mass as well 
-      lgbk$data.source = "logbooks"
-      lgbk = presence.absence( X=lgbk, vname="landings", px=p$habitat.threshold.quantile )  # determine presence absence and weighting
-      nms = intersect( names(set) , names( lgbk) )
-      set = rbind( set[, nms], lgbk[,nms] )
-    }
+    # if ( grepl( "snowcrab.large.males", p$selection$name ) ) {
+    #   # add commerical fishery data -- 
+    #   # depth data is problematic ... drop for now
+    #   lgbk = logbook.db( DS="fisheries.complete", p=p )
+    #   lgbk = lgbk[ which( is.finite( lgbk$landings)), ]
+    #   lgbk$totmass = NA # dummy to bring in mass as well 
+    #   lgbk$data.source = "logbooks"
+    #   lgbk = presence.absence( X=lgbk, vname="landings", px=p$habitat.threshold.quantile )  # determine presence absence and weighting
+    #   nms = intersect( names(set) , names( lgbk) )
+    #   set = rbind( set[, nms], lgbk[,nms] )
+    # }
 
     set$lon = set$lat = NULL
 
