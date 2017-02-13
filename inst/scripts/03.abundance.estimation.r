@@ -121,8 +121,8 @@ p$lbm_local_modelengine = "twostep"
 # p$lbm_twostep_space = "spatial.process"
 # p$lbm_twostep_space = "fft"
 # p$lbm_twostep_space = "tps"
-p$lbm_twostep_space = "krige"
-# p$lbm_twostep_space = "tps"
+# p$lbm_twostep_space = "krige"
+p$lbm_twostep_space = "tps"
 p$lbm_gam_optimizer=c("outer", "bfgs") 
 
 
