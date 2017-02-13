@@ -149,42 +149,42 @@ summary( global_model )
 plot(global_model)
 
 
+
+
 Family: binomial 
 Link function: logit 
 
 Formula:
 snowcrab.large.males_presence_absence ~ s(t, k = 3, bs = "ts") + 
     s(tmean.climatology, k = 3, bs = "ts") + s(tsd.climatology, 
-    k = 3, bs = "ts") + s(log(z), k = 3, bs = "ts") + s(log(dZ), 
-    k = 3, bs = "ts") + s(log(ddZ), k = 3, bs = "ts") + s(smr, 
-    k = 3, bs = "ts") + s(log.substrate.grainsize, k = 3, bs = "ts") + 
-    s(ca1, k = 3, bs = "ts") + s(ca2, k = 3, bs = "ts")
+    k = 3, bs = "ts") + s(log(dZ), k = 3, bs = "ts") + s(log(ddZ), 
+    k = 3, bs = "ts") + s(smr, k = 3, bs = "ts") + s(log.substrate.grainsize, 
+    k = 3, bs = "ts") + s(ca1, k = 3, bs = "ts") + s(ca2, k = 3, 
+    bs = "ts")
 
 Parametric coefficients:
             Estimate Std. Error z value Pr(>|z|)    
-(Intercept) -0.28438    0.03153  -9.019   <2e-16 ***
+(Intercept)  0.84173    0.03158   26.66   <2e-16 ***
 ---
 Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
 
 Approximate significance of smooth terms:
-                             edf Ref.df Chi.sq  p-value    
-s(t)                       2.000      2  63.90 9.77e-15 ***
-s(tmean.climatology)       1.857      2  41.12 1.93e-10 ***
-s(tsd.climatology)         1.908      2  16.22  0.00019 ***
-s(log(z))                  1.884      2 261.58  < 2e-16 ***
-s(log(dZ))                 1.604      2  10.77  0.00153 ** 
-s(log(ddZ))                1.772      2  16.65 8.07e-05 ***
-s(smr)                     1.095      2  30.63 8.31e-09 ***
-s(log.substrate.grainsize) 1.487      2 260.95  < 2e-16 ***
-s(ca1)                     1.986      2 212.15  < 2e-16 ***
-s(ca2)                     1.627      2 328.93  < 2e-16 ***
+                             edf Ref.df  Chi.sq  p-value    
+s(t)                       1.925      2 154.413  < 2e-16 ***
+s(tmean.climatology)       1.949      2  62.662 1.37e-15 ***
+s(tsd.climatology)         1.861      2   7.515   0.0175 *  
+s(log(dZ))                 1.844      2  18.364 4.50e-05 ***
+s(log(ddZ))                1.817      2  32.675 1.60e-08 ***
+s(smr)                     1.486      2  44.843 3.93e-12 ***
+s(log.substrate.grainsize) 1.370      2 209.198  < 2e-16 ***
+s(ca1)                     1.177      2  48.885 1.50e-13 ***
+s(ca2)                     1.981      2 123.896  < 2e-16 ***
 ---
 Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
 
-R-sq.(adj) =  0.379   Deviance explained = 32.6%
-UBRE = -0.062242  Scale est. = 1         n = 11320
-
-
+R-sq.(adj) =  0.257   Deviance explained = 21.8%
+UBRE = -0.0011851  Scale est. = 1         n = 6853
+---
 
 
 
