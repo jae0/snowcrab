@@ -19,11 +19,12 @@
 \newcommand{\h}{/home/hubleyb/}
 \newcommand{\e}{bio.data/}
 \newcommand{\es}{bio.data/bio.snowcrab/}
+\newcommand{\eb}{bio.data/bio.bathymetry/}
 \newcommand{\et}{bio.data/bio.temperature/}
 \newcommand{\ei}{bio.data/bio.indicators/}
 \newcommand{\Ay}{assessments/2016/}
 \newcommand{\A}{assessments/}
-\newcommand{\eb}{bio.data/bio.snowcrab/assessments/2016/figures/bugs/survey/}
+\newcommand{\ebugs}{bio.data/bio.snowcrab/assessments/2016/figures/bugs/survey/}
 
 
 \setlength{\headheight}{15pt}
@@ -91,14 +92,27 @@
 \end{figure}
 \clearpage
 %--------------scotian shelf bottom characteristics------------------------------------
+%\begin{figure}
+%    \centering
+%\includegraphics[width=0.8\textwidth]{\h \es assessments/2008/fig8.png}\
+%
+%\caption{Bottom characteristics used for modeling snow crab habitat delineation. The visualizations of temperature variations are for climatological means. Annual %temperature variation estimates were used for modeling.}
+%
+%\end{figure}
+%\clearpage
+
 \begin{figure}
-    \centering
-\includegraphics[width=0.8\textwidth]{\h \es assessments/2008/fig8.png}\
-
+\centering
+\subfloat{\includegraphics[width=0.45\textwidth,trim={0 1cm 0 1cm}]{\h \et maps/SSE/bottom\D predictions/climatology/temperatures\D bottom.png}}\ 
+\subfloat{\includegraphics[width=0.45\textwidth,trim={0 1cm 0 1cm}]{\h \eb maps/SSE/depth.png}}\\
+\subfloat{\includegraphics[width=0.45\textwidth,trim={0 1cm 0 1cm}]{\h \et maps/SSE/bottom\D predictions/climatology/temperatures\D bottom\D  sd.png}}\
+\subfloat{\includegraphics[width=0.45\textwidth,trim={0 1cm 0 1cm}]{\h \eb maps/SSE/slope.png}}\\
+\subfloat{\includegraphics[width=0.45\textwidth,trim={0 1cm 0 1cm}]{\h \et maps/SSE/bottom\D predictions/climatology/temperatures\D bottom\D  amplitude.png}}\ 
+\subfloat{\includegraphics[width=0.45\textwidth,trim={0 1cm 0 1cm}]{\h \eb maps/SSE/curvature.png}}\\ 
 \caption{Bottom characteristics used for modeling snow crab habitat delineation. The visualizations of temperature variations are for climatological means. Annual temperature variation estimates were used for modeling.}
-
 \end{figure}
 \clearpage
+
 %--------------scotian shelf community characteristics------------------------------------
 
 %\begin{figure}
@@ -229,24 +243,40 @@
 %
 %
 %%--------------bottom tempaerture maps------------------------------------
+%\begin{figure}
+%\centering
+%\subfloat{\includegraphics[width=0.49\textwidth,trim={0 1cm 0 1cm}]{\h \et maps/SSE/bottom\D predictions/annual/temperatures\D bottom\D  1950.png}}\ 
+%\subfloat{\includegraphics[width=0.49\textwidth,trim={0 1cm 0 1cm}]{\h \et maps/SSE/bottom\D predictions/annual/temperatures\D bottom\D  1960.png}}\ 
+%\subfloat{\includegraphics[width=0.49\textwidth,trim={0 1cm 0 1cm}]{\h \et maps/SSE/bottom\D predictions/annual/temperatures\D bottom\D  1970.png}}\\ 
+%\subfloat{\includegraphics[width=0.49\textwidth,trim={0 1cm 0 1cm}]{\h \et maps/SSE/bottom\D predictions/annual/temperatures\D bottom\D  1980.png}}\ 
+%\subfloat{\includegraphics[width=0.49\textwidth,trim={0 1cm 0 1cm}]{\h \et maps/SSE/bottom\D predictions/annual/temperatures\D bottom\D  1990.png}}\ 
+%\subfloat{\includegraphics[width=0.49\textwidth,trim={0 1cm 0 1cm}]{\h \et maps/SSE/bottom\D predictions/annual/temperatures\D bottom\D  2000.png}}\\ 
+%\subfloat{\includegraphics[width=0.49\textwidth,trim={0 1cm 0 1cm}]{\h \et maps/SSE/bottom\D predictions/annual/temperatures\D bottom\D  2004.png}}\ 
+%\subfloat{\includegraphics[width=0.49\textwidth,trim={0 1cm 0 1cm}]{\h \et maps/SSE/bottom\D predictions/annual/temperatures\D bottom\D  2008.png}}\ 
+%\subfloat{\includegraphics[width=0.49\textwidth,trim={0 1cm 0 1cm}]{\h \et maps/SSE/bottom\D predictions/annual/temperatures\D bottom\D  2012.png}}\\ 
+%\subfloat{\includegraphics[width=0.49\textwidth,trim={0 1cm 0 1cm}]{\h \et maps/SSE/bottom\D predictions/annual/temperatures\D bottom\D  2014.png}}\ 
+%\subfloat{\includegraphics[width=0.49\textwidth,trim={0 1cm 0 1cm}]{\h \et maps/SSE/bottom\D predictions/annual/temperatures\D bottom\D  2015.png}}\ 
+%\subfloat{\includegraphics[width=0.49\textwidth,trim={0 1cm 0 1cm}]{\h \et maps/SSE/bottom\D predictions/annual/temperatures\D bottom\D  2016.png}}\\ 
+%\caption{Interpolated mean annual bottom temperatures on the Scotian Shelf for selected years. These interpolations use all available water temperature data collected in %the area including Groundfish Surveys, Snow crab survey, and AZMP monitoring stations.}
+%\end{figure}
+%\clearpage
+%%--------------bottom tempaerture maps------------------------------------
 \begin{figure}
 \centering
-\subfloat{\includegraphics[width=0.32\textwidth,trim={0 1cm 0 1cm}]{\h \et maps/SSE/bottom\D predictions/annual/temperatures\D bottom\D  1950.png}}\ 
-\subfloat{\includegraphics[width=0.32\textwidth,trim={0 1cm 0 1cm}]{\h \et maps/SSE/bottom\D predictions/annual/temperatures\D bottom\D  1960.png}}\ 
-\subfloat{\includegraphics[width=0.32\textwidth,trim={0 1cm 0 1cm}]{\h \et maps/SSE/bottom\D predictions/annual/temperatures\D bottom\D  1970.png}}\\ 
-\subfloat{\includegraphics[width=0.32\textwidth,trim={0 1cm 0 1cm}]{\h \et maps/SSE/bottom\D predictions/annual/temperatures\D bottom\D  1982.png}}\ 
-\subfloat{\includegraphics[width=0.32\textwidth,trim={0 1cm 0 1cm}]{\h \et maps/SSE/bottom\D predictions/annual/temperatures\D bottom\D  1990.png}}\ 
-\subfloat{\includegraphics[width=0.32\textwidth,trim={0 1cm 0 1cm}]{\h \et maps/SSE/bottom\D predictions/annual/temperatures\D bottom\D  2000.png}}\\ 
-\subfloat{\includegraphics[width=0.32\textwidth,trim={0 1cm 0 1cm}]{\h \et maps/SSE/bottom\D predictions/annual/temperatures\D bottom\D  2014.png}}\ 
-\subfloat{\includegraphics[width=0.32\textwidth,trim={0 1cm 0 1cm}]{\h \et maps/SSE/bottom\D predictions/annual/temperatures\D bottom\D  2015.png}}\ 
-\subfloat{\includegraphics[width=0.32\textwidth,trim={0 1cm 0 1cm}]{\h \et maps/SSE/bottom\D predictions/annual/temperatures\D bottom\D  2016.png}}\\ 
+\subfloat{\includegraphics[width=0.49\textwidth,trim={0 1cm 0 1cm}]{\h \et maps/SSE/bottom\D predictions/annual/temperatures\D bottom\D  1960.png}}\ 
+\subfloat{\includegraphics[width=0.49\textwidth,trim={0 1cm 0 1cm}]{\h \et maps/SSE/bottom\D predictions/annual/temperatures\D bottom\D  1970.png}}\\ 
+\subfloat{\includegraphics[width=0.49\textwidth,trim={0 1cm 0 1cm}]{\h \et maps/SSE/bottom\D predictions/annual/temperatures\D bottom\D  1980.png}}\ 
+\subfloat{\includegraphics[width=0.49\textwidth,trim={0 1cm 0 1cm}]{\h \et maps/SSE/bottom\D predictions/annual/temperatures\D bottom\D  1990.png}}\\ 
+\subfloat{\includegraphics[width=0.49\textwidth,trim={0 1cm 0 1cm}]{\h \et maps/SSE/bottom\D predictions/annual/temperatures\D bottom\D  2000.png}}\ 
+\subfloat{\includegraphics[width=0.49\textwidth,trim={0 1cm 0 1cm}]{\h \et maps/SSE/bottom\D predictions/annual/temperatures\D bottom\D  2010.png}}\\ 
+\subfloat{\includegraphics[width=0.49\textwidth,trim={0 1cm 0 1cm}]{\h \et maps/SSE/bottom\D predictions/annual/temperatures\D bottom\D  2015.png}}\ 
+\subfloat{\includegraphics[width=0.49\textwidth,trim={0 1cm 0 1cm}]{\h \et maps/SSE/bottom\D predictions/annual/temperatures\D bottom\D  2016.png}}\\ 
 \caption{Interpolated mean annual bottom temperatures on the Scotian Shelf for selected years. These interpolations use all available water temperature data collected in the area including Groundfish Surveys, Snow crab survey, and AZMP monitoring stations.}
 \end{figure}
 \clearpage
 %
 %
 %%-----------------------------potential snow crab habitat------------------------
-\end{document}
 
 \begin{figure}
 \centering
@@ -265,10 +295,10 @@
 %--------------------------halibut as predators------------------------
 \begin{figure}
 \centering
-\subfloat{\includegraphics[width=0.44\textwidth]{\h \es R/maps/survey/snowcrab/annual/ms\D no\D 30/ms\D no\D 30\D 2013.png}}\ 
-\subfloat{\includegraphics[width=0.44\textwidth]{\h \es R/maps/survey/snowcrab/annual/ms\D no\D 30/ms\D no\D 30\D 2014.png}}\\ 
-\subfloat{\includegraphics[width=0.44\textwidth]{\h \es R/maps/survey/snowcrab/annual/ms\D no\D 30/ms\D no\D 30\D 2015.png}}\ 
-\subfloat{\includegraphics[width=0.44\textwidth]{\h \es R/maps/survey/snowcrab/annual/ms\D no\D 30/ms\D no\D 30\D 2016.png}}\\ 
+\subfloat{\includegraphics[width=0.49\textwidth]{\h \es R/maps/survey/snowcrab/annual/ms\D no\D 30/ms\D no\D 30\D 2013.png}}\ 
+\subfloat{\includegraphics[width=0.49\textwidth]{\h \es R/maps/survey/snowcrab/annual/ms\D no\D 30/ms\D no\D 30\D 2014.png}}\\ 
+\subfloat{\includegraphics[width=0.49\textwidth]{\h \es R/maps/survey/snowcrab/annual/ms\D no\D 30/ms\D no\D 30\D 2015.png}}\ 
+\subfloat{\includegraphics[width=0.49\textwidth]{\h \es R/maps/survey/snowcrab/annual/ms\D no\D 30/ms\D no\D 30\D 2016.png}}\\ 
 
 \caption{Locations of potential \textbf{predators} of snow crab on the Scotian Shelf: \textbf{Atlantic halibut}. Scale is $\tfrac{number}{km^2}$.}
 \end{figure}
@@ -288,10 +318,10 @@
 %--------------------------wolffish as predators------------------------
 \begin{figure}
 \centering
-\subfloat{\includegraphics[width=0.44\textwidth]{\h \es R/maps/survey/snowcrab/annual/ms\D no\D 50/ms\D no\D 50\D 2013.png}}\ 
-\subfloat{\includegraphics[width=0.44\textwidth]{\h \es R/maps/survey/snowcrab/annual/ms\D no\D 50/ms\D no\D 50\D 2014.png}}\\ 
-\subfloat{\includegraphics[width=0.44\textwidth]{\h \es R/maps/survey/snowcrab/annual/ms\D no\D 50/ms\D no\D 50\D 2015.png}}\ 
-\subfloat{\includegraphics[width=0.44\textwidth]{\h \es R/maps/survey/snowcrab/annual/ms\D no\D 50/ms\D no\D 50\D 2016.png}}\\ 
+\subfloat{\includegraphics[width=0.49\textwidth]{\h \es R/maps/survey/snowcrab/annual/ms\D no\D 50/ms\D no\D 50\D 2013.png}}\ 
+\subfloat{\includegraphics[width=0.49\textwidth]{\h \es R/maps/survey/snowcrab/annual/ms\D no\D 50/ms\D no\D 50\D 2014.png}}\\ 
+\subfloat{\includegraphics[width=0.49\textwidth]{\h \es R/maps/survey/snowcrab/annual/ms\D no\D 50/ms\D no\D 50\D 2015.png}}\ 
+\subfloat{\includegraphics[width=0.49\textwidth]{\h \es R/maps/survey/snowcrab/annual/ms\D no\D 50/ms\D no\D 50\D 2016.png}}\\ 
 
 \caption{Locations of potential \textbf{predators} of snow crab on the Scotian Shelf: \textbf{Atlantic wolffish}. Scale is $\tfrac{number}{km^2}$.}
 \end{figure}
@@ -310,10 +340,10 @@
 %--------------------------thorny skate as predators------------------------
 \begin{figure}
 \centering
-\subfloat{\includegraphics[width=0.44\textwidth]{\h \es R/maps/survey/snowcrab/annual/ms\D no\D 201/ms\D no\D 201\D 2013.png}}\ 
-\subfloat{\includegraphics[width=0.44\textwidth]{\h \es R/maps/survey/snowcrab/annual/ms\D no\D 201/ms\D no\D 201\D 2014.png}}\\ 
-\subfloat{\includegraphics[width=0.44\textwidth]{\h \es R/maps/survey/snowcrab/annual/ms\D no\D 201/ms\D no\D 201\D 2015.png}}\ 
-\subfloat{\includegraphics[width=0.44\textwidth]{\h \es R/maps/survey/snowcrab/annual/ms\D no\D 201/ms\D no\D 201\D 2016.png}}\\ 
+\subfloat{\includegraphics[width=0.49\textwidth]{\h \es R/maps/survey/snowcrab/annual/ms\D no\D 201/ms\D no\D 201\D 2013.png}}\ 
+\subfloat{\includegraphics[width=0.49\textwidth]{\h \es R/maps/survey/snowcrab/annual/ms\D no\D 201/ms\D no\D 201\D 2014.png}}\\ 
+\subfloat{\includegraphics[width=0.49\textwidth]{\h \es R/maps/survey/snowcrab/annual/ms\D no\D 201/ms\D no\D 201\D 2015.png}}\ 
+\subfloat{\includegraphics[width=0.49\textwidth]{\h \es R/maps/survey/snowcrab/annual/ms\D no\D 201/ms\D no\D 201\D 2016.png}}\\ 
 
 \caption{Locations of potential \textbf{predators} of snow crab on the Scotian Shelf: \textbf{Thorny Skate}. Scale is $\tfrac{number}{km^2}$.}
 \end{figure}
@@ -333,10 +363,10 @@
 %--------------------------smooth skate as predators------------------------
 \begin{figure}
 \centering
-\subfloat{\includegraphics[width=0.44\textwidth]{\h \es R/maps/survey/snowcrab/annual/ms\D no\D 202/ms\D no\D 202\D 2013.png}}\ 
-\subfloat{\includegraphics[width=0.44\textwidth]{\h \es R/maps/survey/snowcrab/annual/ms\D no\D 202/ms\D no\D 202\D 2014.png}}\\ 
-\subfloat{\includegraphics[width=0.44\textwidth]{\h \es R/maps/survey/snowcrab/annual/ms\D no\D 202/ms\D no\D 202\D 2015.png}}\ 
-\subfloat{\includegraphics[width=0.44\textwidth]{\h \es R/maps/survey/snowcrab/annual/ms\D no\D 202/ms\D no\D 202\D 2016.png}}\\ 
+\subfloat{\includegraphics[width=0.49\textwidth]{\h \es R/maps/survey/snowcrab/annual/ms\D no\D 202/ms\D no\D 202\D 2013.png}}\ 
+\subfloat{\includegraphics[width=0.49\textwidth]{\h \es R/maps/survey/snowcrab/annual/ms\D no\D 202/ms\D no\D 202\D 2014.png}}\\ 
+\subfloat{\includegraphics[width=0.49\textwidth]{\h \es R/maps/survey/snowcrab/annual/ms\D no\D 202/ms\D no\D 202\D 2015.png}}\ 
+\subfloat{\includegraphics[width=0.49\textwidth]{\h \es R/maps/survey/snowcrab/annual/ms\D no\D 202/ms\D no\D 202\D 2016.png}}\\ 
 
 \caption{Locations of potential \textbf{predators} of snow crab on the Scotian Shelf: \textbf{Smooth skate}. Scale is $\tfrac{number}{km^2}$.}
 \end{figure}
@@ -357,10 +387,10 @@
 %--------------------------winter skate as predators------------------------
 \begin{figure}
 \centering
-\subfloat{\includegraphics[width=0.44\textwidth]{\h \es R/maps/survey/snowcrab/annual/ms\D no\D 204/ms\D no\D 204\D 2013.png}}\ 
-\subfloat{\includegraphics[width=0.44\textwidth]{\h \es R/maps/survey/snowcrab/annual/ms\D no\D 204/ms\D no\D 204\D 2014.png}}\\ 
-\subfloat{\includegraphics[width=0.44\textwidth]{\h \es R/maps/survey/snowcrab/annual/ms\D no\D 204/ms\D no\D 204\D 2015.png}}\ 
-\subfloat{\includegraphics[width=0.44\textwidth]{\h \es R/maps/survey/snowcrab/annual/ms\D no\D 204/ms\D no\D 204\D 2016.png}}\\ 
+\subfloat{\includegraphics[width=0.49\textwidth]{\h \es R/maps/survey/snowcrab/annual/ms\D no\D 204/ms\D no\D 204\D 2013.png}}\ 
+\subfloat{\includegraphics[width=0.49\textwidth]{\h \es R/maps/survey/snowcrab/annual/ms\D no\D 204/ms\D no\D 204\D 2014.png}}\\ 
+\subfloat{\includegraphics[width=0.49\textwidth]{\h \es R/maps/survey/snowcrab/annual/ms\D no\D 204/ms\D no\D 204\D 2015.png}}\ 
+\subfloat{\includegraphics[width=0.49\textwidth]{\h \es R/maps/survey/snowcrab/annual/ms\D no\D 204/ms\D no\D 204\D 2016.png}}\\ 
 
 \caption{Locations of potential \textbf{predators} of snow crab on the Scotian Shelf: \textbf{Winter skate}. Scale is $\tfrac{number}{km^2}$.}
 \end{figure}
@@ -372,7 +402,7 @@
 \includegraphics[width=0.9\textwidth]{\h \es assessments/2016/timeseries/survey/ms\D mass\D 204.png}
 
 
-\caption{Trends in biomass $\left(\tfrac{t}{km^2}\right)$ from the annual snow crab survey for potential \textbf{predators} of snow crab on the Scotian Shelf: \textbf{Winter skate}.    }
+\caption{Trends in biomass $\left(\tfrac{kg}{km^2}\right)$ from the annual snow crab survey for potential \textbf{predators} of snow crab on the Scotian Shelf: \textbf{Winter skate}.    }
 \end{figure}
 
 
@@ -383,10 +413,10 @@
 %-----------------------------cod as predators------------------------
 \begin{figure}
 \centering
-\subfloat{\includegraphics[width=0.44\textwidth]{\h \es R/maps/survey/snowcrab/annual/ms\D no\D 10/ms\D no\D 10\D 2013.png}}\ 
-\subfloat{\includegraphics[width=0.44\textwidth]{\h \es R/maps/survey/snowcrab/annual/ms\D no\D 10/ms\D no\D 10\D 2014.png}}\\ 
-\subfloat{\includegraphics[width=0.44\textwidth]{\h \es R/maps/survey/snowcrab/annual/ms\D no\D 10/ms\D no\D 10\D 2015.png}}\ 
-\subfloat{\includegraphics[width=0.44\textwidth]{\h \es R/maps/survey/snowcrab/annual/ms\D no\D 10/ms\D no\D 10\D 2016.png}}\\ 
+\subfloat{\includegraphics[width=0.49\textwidth]{\h \es R/maps/survey/snowcrab/annual/ms\D no\D 10/ms\D no\D 10\D 2013.png}}\ 
+\subfloat{\includegraphics[width=0.49\textwidth]{\h \es R/maps/survey/snowcrab/annual/ms\D no\D 10/ms\D no\D 10\D 2014.png}}\\ 
+\subfloat{\includegraphics[width=0.49\textwidth]{\h \es R/maps/survey/snowcrab/annual/ms\D no\D 10/ms\D no\D 10\D 2015.png}}\ 
+\subfloat{\includegraphics[width=0.49\textwidth]{\h \es R/maps/survey/snowcrab/annual/ms\D no\D 10/ms\D no\D 10\D 2016.png}}\\ 
 
 \caption{Locations of potential \textbf{predators} of snow crab on the Scotian Shelf: \textbf{Atlantic cod}. Scale is $\tfrac{number}{km^2}$.}
 \end{figure}
@@ -399,7 +429,7 @@
 \includegraphics[width=0.9\textwidth]{\h \es assessments/2016/timeseries/survey/ms\D mass\D 10.png}
 
 
-\caption{Trends in biomass $\left(\tfrac{t}{km^2}\right)$ from the annual snow crab survey for potential \textbf{predators} of snow crab on the Scotian Shelf: \textbf{Atlantic cod}   }
+\caption{Trends in biomass $\left(\tfrac{kg}{km^2}\right)$ from the annual snow crab survey for potential \textbf{predators} of snow crab on the Scotian Shelf: \textbf{Atlantic cod}   }
 \end{figure}
 
 
@@ -411,10 +441,10 @@
 %-----------------------------haddock as predators------------------------
 \begin{figure}
 \centering
-\subfloat{\includegraphics[width=0.44\textwidth]{\h \es R/maps/survey/snowcrab/annual/ms\D no\D 10/ms\D no\D 10\D 2013.png}}\ 
-\subfloat{\includegraphics[width=0.44\textwidth]{\h \es R/maps/survey/snowcrab/annual/ms\D no\D 10/ms\D no\D 10\D 2014.png}}\\ 
-\subfloat{\includegraphics[width=0.44\textwidth]{\h \es R/maps/survey/snowcrab/annual/ms\D no\D 10/ms\D no\D 10\D 2015.png}}\ 
-\subfloat{\includegraphics[width=0.44\textwidth]{\h \es R/maps/survey/snowcrab/annual/ms\D no\D 10/ms\D no\D 10\D 2016.png}}\\ 
+\subfloat{\includegraphics[width=0.49\textwidth]{\h \es R/maps/survey/snowcrab/annual/ms\D no\D 11/ms\D no\D 11\D 2013.png}}\ 
+\subfloat{\includegraphics[width=0.49\textwidth]{\h \es R/maps/survey/snowcrab/annual/ms\D no\D 11/ms\D no\D 11\D 2014.png}}\\ 
+\subfloat{\includegraphics[width=0.49\textwidth]{\h \es R/maps/survey/snowcrab/annual/ms\D no\D 11/ms\D no\D 11\D 2015.png}}\ 
+\subfloat{\includegraphics[width=0.49\textwidth]{\h \es R/maps/survey/snowcrab/annual/ms\D no\D 11/ms\D no\D 11\D 2016.png}}\\ 
 
 \caption{Locations of potential \textbf{predators} of snow crab on the Scotian Shelf: \textbf{Atlantic haddock}. Scale is $\tfrac{number}{km^2}$.}
 \end{figure}
@@ -424,10 +454,10 @@
 
 \begin{figure}
 \centering
-\includegraphics[width=0.9\textwidth]{\h \es assessments/2016/timeseries/survey/ms\D mass\D 10.png}
+\includegraphics[width=0.9\textwidth]{\h \es assessments/2016/timeseries/survey/ms\D mass\D 11.png}
 
 
-\caption{Trends in biomass $\left(\tfrac{t}{km^2}\right)$ from the annual snow crab survey for potential \textbf{predators} of snow crab on the Scotian Shelf: \textbf{Haddock}  }
+\caption{Trends in biomass $\left(\tfrac{kg}{km^2}\right)$ from the annual snow crab survey for potential \textbf{predators} of snow crab on the Scotian Shelf: \textbf{Haddock}  }
 \end{figure}
 
 
@@ -438,10 +468,10 @@
 %-----------------------------plaise as predators------------------------
 \begin{figure}
 \centering
-\subfloat{\includegraphics[width=0.44\textwidth]{\h \es R/maps/survey/snowcrab/annual/ms\D no\D 40/ms\D no\D 40\D 2013.png}}\ 
-\subfloat{\includegraphics[width=0.44\textwidth]{\h \es R/maps/survey/snowcrab/annual/ms\D no\D 40/ms\D no\D 40\D 2014.png}}\\ 
-\subfloat{\includegraphics[width=0.44\textwidth]{\h \es R/maps/survey/snowcrab/annual/ms\D no\D 40/ms\D no\D 40\D 2015.png}}\ 
-\subfloat{\includegraphics[width=0.44\textwidth]{\h \es R/maps/survey/snowcrab/annual/ms\D no\D 40/ms\D no\D 40\D 2016.png}}\\ 
+\subfloat{\includegraphics[width=0.49\textwidth]{\h \es R/maps/survey/snowcrab/annual/ms\D no\D 40/ms\D no\D 40\D 2013.png}}\ 
+\subfloat{\includegraphics[width=0.49\textwidth]{\h \es R/maps/survey/snowcrab/annual/ms\D no\D 40/ms\D no\D 40\D 2014.png}}\\ 
+\subfloat{\includegraphics[width=0.49\textwidth]{\h \es R/maps/survey/snowcrab/annual/ms\D no\D 40/ms\D no\D 40\D 2015.png}}\ 
+\subfloat{\includegraphics[width=0.49\textwidth]{\h \es R/maps/survey/snowcrab/annual/ms\D no\D 40/ms\D no\D 40\D 2016.png}}\\ 
 
 \caption{Locations of potential \textbf{predators} of snow crab on the Scotian Shelf: \textbf{American Plaise}. Scale is $\tfrac{number}{km^2}$.}
 \end{figure}
@@ -454,7 +484,7 @@
 \includegraphics[width=0.9\textwidth]{\h \es assessments/2016/timeseries/survey/ms\D mass\D 40.png}
 
 
-\caption{Trends in biomass $\left(\tfrac{t}{km^2}\right)$ from the annual snow crab survey for potential \textbf{predators} of snow crab on the Scotian Shelf: \textbf{Haddock}  }
+\caption{Trends in biomass $\left(\tfrac{kg}{km^2}\right)$ from the annual snow crab survey for potential \textbf{predators} of snow crab on the Scotian Shelf: \textbf{Haddock}  }
 \end{figure}
 
 
@@ -475,10 +505,10 @@
 %-----------------------------shrimp as prey------------------------
 \begin{figure}
 \centering
-\subfloat{\includegraphics[width=0.44\textwidth]{\h \es R/maps/survey/snowcrab/annual/ms\D no\D 2211/ms\D no\D 2211\D 2013.png}}\ 
-\subfloat{\includegraphics[width=0.44\textwidth]{\h \es R/maps/survey/snowcrab/annual/ms\D no\D 2211/ms\D no\D 2211\D 2014.png}}\\ 
-\subfloat{\includegraphics[width=0.44\textwidth]{\h \es R/maps/survey/snowcrab/annual/ms\D no\D 2211/ms\D no\D 2211\D 2015.png}}\ 
-\subfloat{\includegraphics[width=0.44\textwidth]{\h \es R/maps/survey/snowcrab/annual/ms\D no\D 2211/ms\D no\D 2211\D 2016.png}}\\ 
+\subfloat{\includegraphics[width=0.49\textwidth]{\h \es R/maps/survey/snowcrab/annual/ms\D no\D 2211/ms\D no\D 2211\D 2013.png}}\ 
+\subfloat{\includegraphics[width=0.49\textwidth]{\h \es R/maps/survey/snowcrab/annual/ms\D no\D 2211/ms\D no\D 2211\D 2014.png}}\\ 
+\subfloat{\includegraphics[width=0.49\textwidth]{\h \es R/maps/survey/snowcrab/annual/ms\D no\D 2211/ms\D no\D 2211\D 2015.png}}\ 
+\subfloat{\includegraphics[width=0.49\textwidth]{\h \es R/maps/survey/snowcrab/annual/ms\D no\D 2211/ms\D no\D 2211\D 2016.png}}\\ 
 
 \caption{Locations of potential \textbf{prey} of snow crab on the Scotian Shelf: \textbf{Northern Shrimp}. Scale is $\tfrac{number}{km^2}$.}
 \end{figure}
@@ -489,7 +519,7 @@
 \includegraphics[width=0.9\textwidth]{\h \es assessments/2016/timeseries/survey/ms\D mass\D 2211.png}
 
 
-\caption{Trends in biomass $\left(\tfrac{t}{km^2}\right)$ from the annual snow crab survey for potential \textbf{prey} of snow crab on the Scotian Shelf: \textbf{Northern Shrimp}.  }
+\caption{Trends in biomass $\left(\tfrac{kg}{km^2}\right)$ from the annual snow crab survey for potential \textbf{prey} of snow crab on the Scotian Shelf: \textbf{Northern Shrimp}.  }
 \end{figure}
 
 \clearpage
@@ -497,10 +527,10 @@
 %-----------------------------toad crab as comp------------------------
 \begin{figure}
 \centering
-\subfloat{\includegraphics[width=0.44\textwidth]{\h \es R/maps/survey/snowcrab/annual/ms\D no\D 2521/ms\D no\D 2521\D 2013.png}}\ 
-\subfloat{\includegraphics[width=0.44\textwidth]{\h \es R/maps/survey/snowcrab/annual/ms\D no\D 2521/ms\D no\D 2521\D 2014.png}}\\ 
-\subfloat{\includegraphics[width=0.44\textwidth]{\h \es R/maps/survey/snowcrab/annual/ms\D no\D 2521/ms\D no\D 2521\D 2015.png}}\ 
-\subfloat{\includegraphics[width=0.44\textwidth]{\h \es R/maps/survey/snowcrab/annual/ms\D no\D 2521/ms\D no\D 2521\D 2016.png}}\\ 
+\subfloat{\includegraphics[width=0.49\textwidth]{\h \es R/maps/survey/snowcrab/annual/ms\D no\D 2521/ms\D no\D 2521\D 2013.png}}\ 
+\subfloat{\includegraphics[width=0.49\textwidth]{\h \es R/maps/survey/snowcrab/annual/ms\D no\D 2521/ms\D no\D 2521\D 2014.png}}\\ 
+\subfloat{\includegraphics[width=0.49\textwidth]{\h \es R/maps/survey/snowcrab/annual/ms\D no\D 2521/ms\D no\D 2521\D 2015.png}}\ 
+\subfloat{\includegraphics[width=0.49\textwidth]{\h \es R/maps/survey/snowcrab/annual/ms\D no\D 2521/ms\D no\D 2521\D 2016.png}}\\ 
 
 \caption{Locations of potential \textbf{competition} of snow crab on the Scotian Shelf:  \textbf{Lesser Toad Crab}. Scale is $\tfrac{number}{km^2}$.}
 \end{figure}
@@ -511,7 +541,7 @@
 \includegraphics[width=0.9\textwidth]{\h \es assessments/2016/timeseries/survey/ms\D mass\D 2521.png}
 
 
-\caption{Trends in biomass $\left(\tfrac{t}{km^2}\right)$ from the annual snow crab survey for potential \textbf{competition} of snow crab on the Scotian Shelf: \textbf{Lesser Toad Crab}.  }
+\caption{Trends in biomass $\left(\tfrac{kg}{km^2}\right)$ from the annual snow crab survey for potential \textbf{competition} of snow crab on the Scotian Shelf: \textbf{Lesser Toad Crab}.  }
 \end{figure}
 
 \clearpage
@@ -520,10 +550,10 @@
 %-----------------------------jonah crab as comp------------------------
 \begin{figure}
 \centering
-\subfloat{\includegraphics[width=0.44\textwidth]{\h \es R/maps/survey/snowcrab/annual/ms\D no\D 2511/ms\D no\D 2511\D 2013.png}}\ 
-\subfloat{\includegraphics[width=0.44\textwidth]{\h \es R/maps/survey/snowcrab/annual/ms\D no\D 2511/ms\D no\D 2511\D 2014.png}}\\ 
-\subfloat{\includegraphics[width=0.44\textwidth]{\h \es R/maps/survey/snowcrab/annual/ms\D no\D 2511/ms\D no\D 2511\D 2015.png}}\ 
-\subfloat{\includegraphics[width=0.44\textwidth]{\h \es R/maps/survey/snowcrab/annual/ms\D no\D 2511/ms\D no\D 2511\D 2016.png}}\\ 
+\subfloat{\includegraphics[width=0.49\textwidth]{\h \es R/maps/survey/snowcrab/annual/ms\D no\D 2511/ms\D no\D 2511\D 2013.png}}\ 
+\subfloat{\includegraphics[width=0.49\textwidth]{\h \es R/maps/survey/snowcrab/annual/ms\D no\D 2511/ms\D no\D 2511\D 2014.png}}\\ 
+\subfloat{\includegraphics[width=0.49\textwidth]{\h \es R/maps/survey/snowcrab/annual/ms\D no\D 2511/ms\D no\D 2511\D 2015.png}}\ 
+\subfloat{\includegraphics[width=0.49\textwidth]{\h \es R/maps/survey/snowcrab/annual/ms\D no\D 2511/ms\D no\D 2511\D 2016.png}}\\ 
 
 \caption{Locations of potential \textbf{competition} of snow crab on the Scotian Shelf: \textbf{Jonah Crab}. Scale is $\tfrac{number}{km^2}$}
 \end{figure}
@@ -534,7 +564,7 @@
 \includegraphics[width=0.9\textwidth]{\h \es assessments/2016/timeseries/survey/ms\D mass\D 2511.png}
 
 
-\caption{Trends in biomass $\left(\tfrac{t}{km^2}\right)$ from the annual snow crab survey for potential \textbf{competition} of snow crab on the Scotian Shelf: \textbf{Jonah Crab}.  }
+\caption{Trends in biomass $\left(\tfrac{kg}{km^2}\right)$ from the annual snow crab survey for potential \textbf{competition} of snow crab on the Scotian Shelf: \textbf{Jonah Crab}.  }
 \end{figure}
 
 \clearpage
@@ -576,19 +606,15 @@
 %--------------fishing effort from logbooks------------------------------------
 \begin{figure}
 \centering
-\subfloat{\includegraphics[width=0.32\textwidth]{\h \es R/maps/logbook/snowcrab/annual/effort/effort\D 2005.png}}\
-\subfloat{\includegraphics[width=0.32\textwidth]{\h \es R/maps/logbook/snowcrab/annual/effort/effort\D 2006.png}}\ 
-\subfloat{\includegraphics[width=0.32\textwidth]{\h \es R/maps/logbook/snowcrab/annual/effort/effort\D 2007.png}}\\ 
-\subfloat{\includegraphics[width=0.32\textwidth]{\h \es R/maps/logbook/snowcrab/annual/effort/effort\D 2008.png}}\ 
-\subfloat{\includegraphics[width=0.32\textwidth]{\h \es R/maps/logbook/snowcrab/annual/effort/effort\D 2009.png}}\ 
-\subfloat{\includegraphics[width=0.32\textwidth]{\h \es R/maps/logbook/snowcrab/annual/effort/effort\D 2010.png}}\\ 
-\subfloat{\includegraphics[width=0.32\textwidth]{\h \es R/maps/logbook/snowcrab/annual/effort/effort\D 2011.png}}\ 
-\subfloat{\includegraphics[width=0.32\textwidth]{\h \es R/maps/logbook/snowcrab/annual/effort/effort\D 2012.png}}\ 
-\subfloat{\includegraphics[width=0.32\textwidth]{\h \es R/maps/logbook/snowcrab/annual/effort/effort\D 2013.png}}\\ 
-\subfloat{\includegraphics[width=0.32\textwidth]{\h \es R/maps/logbook/snowcrab/annual/effort/effort\D 2014.png}}\
-\subfloat{\includegraphics[width=0.32\textwidth]{\h \es R/maps/logbook/snowcrab/annual/effort/effort\D 2015.png}}\ 
-\subfloat{\includegraphics[width=0.32\textwidth]{\h \es R/maps/logbook/snowcrab/annual/effort/effort\D 2016.png}}\\
-\caption{Fishing effort (number of trap hauls/10 $km^2$ grid) from fisheries logbook data. Note the increase in effort inshore in S-ENS and the almost complete lack of fishing activity in the Glace Bay Hole area (offshore) of N-ENS. For 4X, year refers to the starting year.}
+\subfloat{\includegraphics[width=0.49\textwidth,trim={0 1cm 0 1cm}]{\h \es R/maps/logbook/snowcrab/annual/effort/effort\D 2009.png}}\ 
+\subfloat{\includegraphics[width=0.49\textwidth,trim={0 1cm 0 1cm}]{\h \es R/maps/logbook/snowcrab/annual/effort/effort\D 2010.png}}\\ 
+\subfloat{\includegraphics[width=0.49\textwidth,trim={0 1cm 0 1cm}]{\h \es R/maps/logbook/snowcrab/annual/effort/effort\D 2011.png}}\ 
+\subfloat{\includegraphics[width=0.49\textwidth,trim={0 1cm 0 1cm}]{\h \es R/maps/logbook/snowcrab/annual/effort/effort\D 2012.png}}\\ 
+\subfloat{\includegraphics[width=0.49\textwidth,trim={0 1cm 0 1cm}]{\h \es R/maps/logbook/snowcrab/annual/effort/effort\D 2013.png}}\ 
+\subfloat{\includegraphics[width=0.49\textwidth,trim={0 1cm 0 1cm}]{\h \es R/maps/logbook/snowcrab/annual/effort/effort\D 2014.png}}\\
+\subfloat{\includegraphics[width=0.49\textwidth,trim={0 1cm 0 1cm}]{\h \es R/maps/logbook/snowcrab/annual/effort/effort\D 2015.png}}\ 
+\subfloat{\includegraphics[width=0.49\textwidth,trim={0 1cm 0 1cm}]{\h \es R/maps/logbook/snowcrab/annual/effort/effort\D 2016.png}}\\
+\caption{Fishing effort (number of trap hauls/10 km$^2$ grid) from fisheries logbook data. Note the increase in effort inshore in S-ENS and the almost complete lack of fishing activity in the Glace Bay Hole area (offshore) of N-ENS. For 4X, year refers to the starting year.}
 \end{figure}
 \clearpage
 
@@ -606,44 +632,36 @@
 %--------------fishing landings from logbooks------------------------------------
 \begin{figure}
 \centering
-\subfloat{\includegraphics[width=0.32\textwidth]{\h \es R/maps/logbook/snowcrab/annual/landings/landings\D 2005.png}}\
-\subfloat{\includegraphics[width=0.32\textwidth]{\h \es R/maps/logbook/snowcrab/annual/landings/landings\D 2006.png}}\
-\subfloat{\includegraphics[width=0.32\textwidth]{\h \es R/maps/logbook/snowcrab/annual/landings/landings\D 2007.png}}\\
-\subfloat{\includegraphics[width=0.32\textwidth]{\h \es R/maps/logbook/snowcrab/annual/landings/landings\D 2008.png}}\ 
-\subfloat{\includegraphics[width=0.32\textwidth]{\h \es R/maps/logbook/snowcrab/annual/landings/landings\D 2009.png}}\ 
-\subfloat{\includegraphics[width=0.32\textwidth]{\h \es R/maps/logbook/snowcrab/annual/landings/landings\D 2010.png}}\\ 
-\subfloat{\includegraphics[width=0.32\textwidth]{\h \es R/maps/logbook/snowcrab/annual/landings/landings\D 2011.png}}\ 
-\subfloat{\includegraphics[width=0.32\textwidth]{\h \es R/maps/logbook/snowcrab/annual/landings/landings\D 2012.png}}\ 
-\subfloat{\includegraphics[width=0.32\textwidth]{\h \es R/maps/logbook/snowcrab/annual/landings/landings\D 2013.png}}\\ 
-\subfloat{\includegraphics[width=0.32\textwidth]{\h \es R/maps/logbook/snowcrab/annual/landings/landings\D 2014.png}}\ 
-\subfloat{\includegraphics[width=0.32\textwidth]{\h \es R/maps/logbook/snowcrab/annual/landings/landings\D 2015.png}}\ 
-\subfloat{\includegraphics[width=0.32\textwidth]{\h \es R/maps/logbook/snowcrab/annual/landings/landings\D 2016.png}}\\ 
-\caption{Snow crab landings (tons/10 $km^2$ grid) from fisheries logbook data. Note the increase in landings inshore in S-ENS. For 4X, year refers to the starting year.}
+\subfloat{\includegraphics[width=0.49\textwidth,trim={0 1cm 0 1cm}]{\h \es R/maps/logbook/snowcrab/annual/landings/landings\D 2009.png}}\ 
+\subfloat{\includegraphics[width=0.49\textwidth,trim={0 1cm 0 1cm}]{\h \es R/maps/logbook/snowcrab/annual/landings/landings\D 2010.png}}\\ 
+\subfloat{\includegraphics[width=0.49\textwidth,trim={0 1cm 0 1cm}]{\h \es R/maps/logbook/snowcrab/annual/landings/landings\D 2011.png}}\ 
+\subfloat{\includegraphics[width=0.49\textwidth,trim={0 1cm 0 1cm}]{\h \es R/maps/logbook/snowcrab/annual/landings/landings\D 2012.png}}\\
+\subfloat{\includegraphics[width=0.49\textwidth,trim={0 1cm 0 1cm}]{\h \es R/maps/logbook/snowcrab/annual/landings/landings\D 2013.png}}\ 
+\subfloat{\includegraphics[width=0.49\textwidth,trim={0 1cm 0 1cm}]{\h \es R/maps/logbook/snowcrab/annual/landings/landings\D 2014.png}}\\ 
+\subfloat{\includegraphics[width=0.49\textwidth,trim={0 1cm 0 1cm}]{\h \es R/maps/logbook/snowcrab/annual/landings/landings\D 2015.png}}\ 
+\subfloat{\includegraphics[width=0.49\textwidth,trim={0 1cm 0 1cm}]{\h \es R/maps/logbook/snowcrab/annual/landings/landings\D 2016.png}}\\ 
+\caption{Snow crab landings (tons/10 km$^2$ grid) from fisheries logbook data. Note the increase in landings inshore in S-ENS. For 4X, year refers to the starting year.}
 \end{figure}
 \clearpage
 %--------------cpue from logbooks------------------------------------
 \begin{figure}
 \centering
-\subfloat{\includegraphics[width=0.32\textwidth]{\h \es R/maps/logbook/snowcrab/annual/cpue/cpue\D 2005.png}}\
-\subfloat{\includegraphics[width=0.32\textwidth]{\h \es R/maps/logbook/snowcrab/annual/cpue/cpue\D 2006.png}}\
-\subfloat{\includegraphics[width=0.32\textwidth]{\h \es R/maps/logbook/snowcrab/annual/cpue/cpue\D 2007.png}}\\
-\subfloat{\includegraphics[width=0.32\textwidth]{\h \es R/maps/logbook/snowcrab/annual/cpue/cpue\D 2008.png}}\ 
-\subfloat{\includegraphics[width=0.32\textwidth]{\h \es R/maps/logbook/snowcrab/annual/cpue/cpue\D 2009.png}}\ 
-\subfloat{\includegraphics[width=0.32\textwidth]{\h \es R/maps/logbook/snowcrab/annual/cpue/cpue\D 2010.png}}\\
-\subfloat{\includegraphics[width=0.32\textwidth]{\h \es R/maps/logbook/snowcrab/annual/cpue/cpue\D 2011.png}}\ 
-\subfloat{\includegraphics[width=0.32\textwidth]{\h \es R/maps/logbook/snowcrab/annual/cpue/cpue\D 2012.png}}\ 
-\subfloat{\includegraphics[width=0.32\textwidth]{\h \es R/maps/logbook/snowcrab/annual/cpue/cpue\D 2013.png}}\\ 
-\subfloat{\includegraphics[width=0.32\textwidth]{\h \es R/maps/logbook/snowcrab/annual/cpue/cpue\D 2014.png}}\ 
-\subfloat{\includegraphics[width=0.32\textwidth]{\h \es R/maps/logbook/snowcrab/annual/cpue/cpue\D 2015.png}}\ 
-\subfloat{\includegraphics[width=0.32\textwidth]{\h \es R/maps/logbook/snowcrab/annual/cpue/cpue\D 2016.png}}\\ 
-\caption{Catch rates $(kg/trap) $ of snow crab in each $10 km^2$ minute grid from fisheries logbook data.  For 4X, year refers to the starting year.}
+\subfloat{\includegraphics[width=0.49\textwidth,trim={0 1cm 0 1cm}]{\h \es R/maps/logbook/snowcrab/annual/cpue/cpue\D 2009.png}}\ 
+\subfloat{\includegraphics[width=0.49\textwidth,trim={0 1cm 0 1cm}]{\h \es R/maps/logbook/snowcrab/annual/cpue/cpue\D 2010.png}}\\
+\subfloat{\includegraphics[width=0.49\textwidth,trim={0 1cm 0 1cm}]{\h \es R/maps/logbook/snowcrab/annual/cpue/cpue\D 2011.png}}\ 
+\subfloat{\includegraphics[width=0.49\textwidth,trim={0 1cm 0 1cm}]{\h \es R/maps/logbook/snowcrab/annual/cpue/cpue\D 2012.png}}\\
+\subfloat{\includegraphics[width=0.49\textwidth,trim={0 1cm 0 1cm}]{\h \es R/maps/logbook/snowcrab/annual/cpue/cpue\D 2013.png}}\ 
+\subfloat{\includegraphics[width=0.49\textwidth,trim={0 1cm 0 1cm}]{\h \es R/maps/logbook/snowcrab/annual/cpue/cpue\D 2014.png}}\\ 
+\subfloat{\includegraphics[width=0.49\textwidth,trim={0 1cm 0 1cm}]{\h \es R/maps/logbook/snowcrab/annual/cpue/cpue\D 2015.png}}\ 
+\subfloat{\includegraphics[width=0.49\textwidth,trim={0 1cm 0 1cm}]{\h \es R/maps/logbook/snowcrab/annual/cpue/cpue\D 2016.png}}\\ 
+\caption{Catch rates (kg/trap) of snow crab in each 10 km$^2$ minute grid from fisheries logbook data.  For 4X, year refers to the starting year.}
 \end{figure}
 \clearpage
 %----------weekly cpue
 \begin{figure}
 \centering
 \includegraphics[width=0.9\textwidth]{\h \es assessments/2016/BZFigures/weeklycpuesmoothed.pdf}
-\caption{Smoothed catch rates $(kg / trap-1)$  by week for the past three seasons. Split season in N-ENS (spring and summer portions) create the apparent gap in N-ENS data within each year.}
+\caption{Smoothed catch rates (kg / trap haul) by week for the past three seasons. Split season in N-ENS (spring and summer portions) create the apparent gap in N-ENS data within each year.}
 \end{figure}
 \clearpage
 
@@ -698,7 +716,7 @@
 \begin{figure}
 \centering
 \includegraphics[width=\textwidth]{\h \es assessments/2016/figures/size\D freq/survey/male.pdf}\\ 
-\caption{Size-frequency histograms of carapace width of male snow crabs obtained from the snow crab survey. Note the recent uniform distribution of adolescent crab across all size classes in S-ENS as compared to other areas and previous patterns in S-ENS. Due to the expansion of the survey from core areas to the full extent of the snow crab grounds, the areal densities of crab in S-ENS and 4X are only directly comparable from 2005 to present. For N-ENS, however, the relative heights are comparable. }
+\caption{Size-frequency histograms of carapace width of male snow crabs obtained from the snow crab survey.  }
 \end{figure}
 \clearpage
 
@@ -706,7 +724,7 @@
 \begin{figure}
 \centering
 \includegraphics[width=\textwidth]{\h \es assessments/2016/figures/size\D freq/survey/female.pdf}\\ 
-\caption{ Size-frequency histograms of carapace width of female snow crabs obtained from the snow crab survey. Due to the expansion of the survey from core areas to the full extent of the snow crab grounds, the areal densities of crab in S-ENS and 4X are only comparable from 2005-present. For N-ENS, the relative heights are comparable between all years}
+\caption{ Size-frequency histograms of carapace width of female snow crabs obtained from the snow crab survey. }
 \end{figure}
 \clearpage
 
@@ -721,21 +739,14 @@
 %--------------sex rationm maps------------------------------------
 \begin{figure}
 \centering
-\subfloat{\includegraphics[width=0.32\textwidth]{\h \es R/maps/survey/snowcrab/annual/sexratio\D mat/sexratio\D mat\D 2002.png}}\
-\subfloat{\includegraphics[width=0.32\textwidth]{\h \es R/maps/survey/snowcrab/annual/sexratio\D mat/sexratio\D mat\D 2003.png}}\ 
-\subfloat{\includegraphics[width=0.32\textwidth]{\h \es R/maps/survey/snowcrab/annual/sexratio\D mat/sexratio\D mat\D 2004.png}}\\ 
-\subfloat{\includegraphics[width=0.32\textwidth]{\h \es R/maps/survey/snowcrab/annual/sexratio\D mat/sexratio\D mat\D 2005.png}}\
-\subfloat{\includegraphics[width=0.32\textwidth]{\h \es R/maps/survey/snowcrab/annual/sexratio\D mat/sexratio\D mat\D 2006.png}}\ 
-\subfloat{\includegraphics[width=0.32\textwidth]{\h \es R/maps/survey/snowcrab/annual/sexratio\D mat/sexratio\D mat\D 2007.png}}\\ 
-\subfloat{\includegraphics[width=0.32\textwidth]{\h \es R/maps/survey/snowcrab/annual/sexratio\D mat/sexratio\D mat\D 2008.png}}\
-\subfloat{\includegraphics[width=0.32\textwidth]{\h \es R/maps/survey/snowcrab/annual/sexratio\D mat/sexratio\D mat\D 2009.png}}\ 
-\subfloat{\includegraphics[width=0.32\textwidth]{\h \es R/maps/survey/snowcrab/annual/sexratio\D mat/sexratio\D mat\D 2010.png}}\\ 
-\subfloat{\includegraphics[width=0.32\textwidth]{\h \es R/maps/survey/snowcrab/annual/sexratio\D mat/sexratio\D mat\D 2011.png}}\
-\subfloat{\includegraphics[width=0.32\textwidth]{\h \es R/maps/survey/snowcrab/annual/sexratio\D mat/sexratio\D mat\D 2012.png}}\ 
-\subfloat{\includegraphics[width=0.32\textwidth]{\h \es R/maps/survey/snowcrab/annual/sexratio\D mat/sexratio\D mat\D 2013.png}}\\ 
-\subfloat{\includegraphics[width=0.32\textwidth]{\h \es R/maps/survey/snowcrab/annual/sexratio\D mat/sexratio\D mat\D 2014.png}}\
-\subfloat{\includegraphics[width=0.32\textwidth]{\h \es R/maps/survey/snowcrab/annual/sexratio\D mat/sexratio\D mat\D 2015.png}}\ 
-\subfloat{\includegraphics[width=0.32\textwidth]{\h \es R/maps/survey/snowcrab/annual/sexratio\D mat/sexratio\D mat\D 2016.png}}\\
+\subfloat{\includegraphics[width=0.49\textwidth,trim={0 1cm 0 1cm}]{\h \es R/maps/survey/snowcrab/annual/sexratio\D mat/sexratio\D mat\D 2009.png}}\ 
+\subfloat{\includegraphics[width=0.49\textwidth,trim={0 1cm 0 1cm}]{\h \es R/maps/survey/snowcrab/annual/sexratio\D mat/sexratio\D mat\D 2010.png}}\\ 
+\subfloat{\includegraphics[width=0.49\textwidth,trim={0 1cm 0 1cm}]{\h \es R/maps/survey/snowcrab/annual/sexratio\D mat/sexratio\D mat\D 2011.png}}\
+\subfloat{\includegraphics[width=0.49\textwidth,trim={0 1cm 0 1cm}]{\h \es R/maps/survey/snowcrab/annual/sexratio\D mat/sexratio\D mat\D 2012.png}}\\ 
+\subfloat{\includegraphics[width=0.49\textwidth,trim={0 1cm 0 1cm}]{\h \es R/maps/survey/snowcrab/annual/sexratio\D mat/sexratio\D mat\D 2013.png}}\ 
+\subfloat{\includegraphics[width=0.49\textwidth,trim={0 1cm 0 1cm}]{\h \es R/maps/survey/snowcrab/annual/sexratio\D mat/sexratio\D mat\D 2014.png}}\\
+\subfloat{\includegraphics[width=0.49\textwidth,trim={0 1cm 0 1cm}]{\h \es R/maps/survey/snowcrab/annual/sexratio\D mat/sexratio\D mat\D 2015.png}}\ 
+\subfloat{\includegraphics[width=0.49\textwidth,trim={0 1cm 0 1cm}]{\h \es R/maps/survey/snowcrab/annual/sexratio\D mat/sexratio\D mat\D 2016.png}}\\
 \caption{Morphometrically mature sex ratios (proportion of females in the mature fraction of the total numbers) of snow crabs on the Scotian Shelf with spatial representations generated using thin plate spline interpolations of data from the annual snow crab survey.}
 \end{figure}
 
@@ -744,8 +755,8 @@
 %-----------sex ratio immature---------------------------
 \begin{figure}
 \centering
-\includegraphics[width=0.9\textwidth]{\h \es assessments/2014/timeseries/survey/sexratio\D imm.png}\\ 
-\caption{ Annual sex ratios (proportion female) of immature snow crab on the Scotian Shelf. One standard error bar is presented.}
+\includegraphics[width=0.9\textwidth]{\h \es assessments/2016/timeseries/survey/sexratio\D imm.png}\\ 
+\caption{ Annual sex ratios (proportion female) of immature snow crab on the Scotian Shelf.}
 \end{figure}
 \clearpage
 
@@ -754,21 +765,14 @@
 
 \begin{figure}
 \centering
-\subfloat{\includegraphics[width=0.32\textwidth]{\h \es R/maps/survey/snowcrab/annual/sexratio\D imm/sexratio\D imm\D 2002.png}}\
-\subfloat{\includegraphics[width=0.32\textwidth]{\h \es R/maps/survey/snowcrab/annual/sexratio\D imm/sexratio\D imm\D 2003.png}}\ 
-\subfloat{\includegraphics[width=0.32\textwidth]{\h \es R/maps/survey/snowcrab/annual/sexratio\D imm/sexratio\D imm\D 2004.png}}\\ 
-\subfloat{\includegraphics[width=0.32\textwidth]{\h \es R/maps/survey/snowcrab/annual/sexratio\D imm/sexratio\D imm\D 2005.png}}\
-\subfloat{\includegraphics[width=0.32\textwidth]{\h \es R/maps/survey/snowcrab/annual/sexratio\D imm/sexratio\D imm\D 2006.png}}\ 
-\subfloat{\includegraphics[width=0.32\textwidth]{\h \es R/maps/survey/snowcrab/annual/sexratio\D imm/sexratio\D imm\D 2007.png}}\\ 
-\subfloat{\includegraphics[width=0.32\textwidth]{\h \es R/maps/survey/snowcrab/annual/sexratio\D imm/sexratio\D imm\D 2008.png}}\
-\subfloat{\includegraphics[width=0.32\textwidth]{\h \es R/maps/survey/snowcrab/annual/sexratio\D imm/sexratio\D imm\D 2009.png}}\ 
-\subfloat{\includegraphics[width=0.32\textwidth]{\h \es R/maps/survey/snowcrab/annual/sexratio\D imm/sexratio\D imm\D 2010.png}}\\ 
-\subfloat{\includegraphics[width=0.32\textwidth]{\h \es R/maps/survey/snowcrab/annual/sexratio\D imm/sexratio\D imm\D 2011.png}}\
-\subfloat{\includegraphics[width=0.32\textwidth]{\h \es R/maps/survey/snowcrab/annual/sexratio\D imm/sexratio\D imm\D 2012.png}}\ 
-\subfloat{\includegraphics[width=0.32\textwidth]{\h \es R/maps/survey/snowcrab/annual/sexratio\D imm/sexratio\D imm\D 2013.png}}\\ 
-\subfloat{\includegraphics[width=0.32\textwidth]{\h \es R/maps/survey/snowcrab/annual/sexratio\D imm/sexratio\D imm\D 2014.png}}\
-\subfloat{\includegraphics[width=0.32\textwidth]{\h \es R/maps/survey/snowcrab/annual/sexratio\D imm/sexratio\D imm\D 2015.png}}\ 
-\subfloat{\includegraphics[width=0.32\textwidth]{\h \es R/maps/survey/snowcrab/annual/sexratio\D imm/sexratio\D imm\D 2016.png}}\\
+\subfloat{\includegraphics[width=0.49\textwidth,trim={0 1cm 0 1cm}]{\h \es R/maps/survey/snowcrab/annual/sexratio\D imm/sexratio\D imm\D 2009.png}}\ 
+\subfloat{\includegraphics[width=0.49\textwidth,trim={0 1cm 0 1cm}]{\h \es R/maps/survey/snowcrab/annual/sexratio\D imm/sexratio\D imm\D 2010.png}}\\ 
+\subfloat{\includegraphics[width=0.49\textwidth,trim={0 1cm 0 1cm}]{\h \es R/maps/survey/snowcrab/annual/sexratio\D imm/sexratio\D imm\D 2011.png}}\
+\subfloat{\includegraphics[width=0.49\textwidth,trim={0 1cm 0 1cm}]{\h \es R/maps/survey/snowcrab/annual/sexratio\D imm/sexratio\D imm\D 2012.png}}\\ 
+\subfloat{\includegraphics[width=0.49\textwidth,trim={0 1cm 0 1cm}]{\h \es R/maps/survey/snowcrab/annual/sexratio\D imm/sexratio\D imm\D 2013.png}}\ 
+\subfloat{\includegraphics[width=0.49\textwidth,trim={0 1cm 0 1cm}]{\h \es R/maps/survey/snowcrab/annual/sexratio\D imm/sexratio\D imm\D 2014.png}}\\
+\subfloat{\includegraphics[width=0.49\textwidth,trim={0 1cm 0 1cm}]{\h \es R/maps/survey/snowcrab/annual/sexratio\D imm/sexratio\D imm\D 2015.png}}\ 
+\subfloat{\includegraphics[width=0.49\textwidth,trim={0 1cm 0 1cm}]{\h \es R/maps/survey/snowcrab/annual/sexratio\D imm/sexratio\D imm\D 2016.png}}\\
 \caption{Morphometrically immature sex ratios (proportion of females in the mature fraction of the total numbers) of snow crabs on the Scotian Shelf with spatial representations generated using thin plate spline interpolations of data from the annual snow crab survey.}
 \end{figure}
 
@@ -778,7 +782,7 @@
 %-----------females immature---------------------------
 \begin{figure}
 \centering
-\includegraphics[width=0.9\textwidth]{\h \es assessments/2014/timeseries/survey/totno\D female\D imm\D combined.png}\\ 
+\includegraphics[width=0.9\textwidth]{\h \es assessments/2016/timeseries/survey/totno\D female\D imm.png}\\ 
 \caption{ Numeric density of immature females in the SSE.}
 \end{figure}
 \clearpage
@@ -788,22 +792,15 @@
 
 \begin{figure}
 \centering
-\subfloat{\includegraphics[width=0.32\textwidth]{\h \es R/maps/survey/snowcrab/annual/totno\D female\D imm/totno\D female\D imm\D 2002.png}}\
-\subfloat{\includegraphics[width=0.32\textwidth]{\h \es R/maps/survey/snowcrab/annual/totno\D female\D imm/totno\D female\D imm\D 2003.png}}\ 
-\subfloat{\includegraphics[width=0.32\textwidth]{\h \es R/maps/survey/snowcrab/annual/totno\D female\D imm/totno\D female\D imm\D 2004.png}}\\ 
-\subfloat{\includegraphics[width=0.32\textwidth]{\h \es R/maps/survey/snowcrab/annual/totno\D female\D imm/totno\D female\D imm\D 2005.png}}\
-\subfloat{\includegraphics[width=0.32\textwidth]{\h \es R/maps/survey/snowcrab/annual/totno\D female\D imm/totno\D female\D imm\D 2006.png}}\ 
-\subfloat{\includegraphics[width=0.32\textwidth]{\h \es R/maps/survey/snowcrab/annual/totno\D female\D imm/totno\D female\D imm\D 2007.png}}\\ 
-\subfloat{\includegraphics[width=0.32\textwidth]{\h \es R/maps/survey/snowcrab/annual/totno\D female\D imm/totno\D female\D imm\D 2008.png}}\
-\subfloat{\includegraphics[width=0.32\textwidth]{\h \es R/maps/survey/snowcrab/annual/totno\D female\D imm/totno\D female\D imm\D 2009.png}}\ 
-\subfloat{\includegraphics[width=0.32\textwidth]{\h \es R/maps/survey/snowcrab/annual/totno\D female\D imm/totno\D female\D imm\D 2010.png}}\\ 
-\subfloat{\includegraphics[width=0.32\textwidth]{\h \es R/maps/survey/snowcrab/annual/totno\D female\D imm/totno\D female\D imm\D 2011.png}}\
-\subfloat{\includegraphics[width=0.32\textwidth]{\h \es R/maps/survey/snowcrab/annual/totno\D female\D imm/totno\D female\D imm\D 2012.png}}\ 
-\subfloat{\includegraphics[width=0.32\textwidth]{\h \es R/maps/survey/snowcrab/annual/totno\D female\D imm/totno\D female\D imm\D 2013.png}}\\ 
-\subfloat{\includegraphics[width=0.32\textwidth]{\h \es R/maps/survey/snowcrab/annual/totno\D female\D imm/totno\D female\D imm\D 2014.png}}\
-\subfloat{\includegraphics[width=0.32\textwidth]{\h \es R/maps/survey/snowcrab/annual/totno\D female\D imm/totno\D female\D imm\D 2015.png}}\ 
-\subfloat{\includegraphics[width=0.32\textwidth]{\h \es R/maps/survey/snowcrab/annual/totno\D female\D imm/totno\D female\D imm\D 2016.png}}\\
-\caption{Numerical densities of the immature female snow crabs on the Scotian Shelf with spatial representation generated using using thin plate spline interpolations of data from the annual snow crab survey. Scale is $log_{10} \left(\tfrac{number}{km^2}\right)$}
+\subfloat{\includegraphics[width=0.49\textwidth,trim={0 1cm 0 1cm}]{\h \es R/maps/survey/snowcrab/annual/totno\D female\D imm/totno\D female\D imm\D 2009.png}}\ 
+\subfloat{\includegraphics[width=0.49\textwidth,trim={0 1cm 0 1cm}]{\h \es R/maps/survey/snowcrab/annual/totno\D female\D imm/totno\D female\D imm\D 2010.png}}\\ 
+\subfloat{\includegraphics[width=0.49\textwidth,trim={0 1cm 0 1cm}]{\h \es R/maps/survey/snowcrab/annual/totno\D female\D imm/totno\D female\D imm\D 2011.png}}\
+\subfloat{\includegraphics[width=0.49\textwidth,trim={0 1cm 0 1cm}]{\h \es R/maps/survey/snowcrab/annual/totno\D female\D imm/totno\D female\D imm\D 2012.png}}\\ 
+\subfloat{\includegraphics[width=0.49\textwidth,trim={0 1cm 0 1cm}]{\h \es R/maps/survey/snowcrab/annual/totno\D female\D imm/totno\D female\D imm\D 2013.png}}\ 
+\subfloat{\includegraphics[width=0.49\textwidth,trim={0 1cm 0 1cm}]{\h \es R/maps/survey/snowcrab/annual/totno\D female\D imm/totno\D female\D imm\D 2014.png}}\\
+\subfloat{\includegraphics[width=0.49\textwidth,trim={0 1cm 0 1cm}]{\h \es R/maps/survey/snowcrab/annual/totno\D female\D imm/totno\D female\D imm\D 2015.png}}\ 
+\subfloat{\includegraphics[width=0.49\textwidth,trim={0 1cm 0 1cm}]{\h \es R/maps/survey/snowcrab/annual/totno\D female\D imm/totno\D female\D imm\D 2016.png}}\\
+\caption{Numerical densities $\left(\tfrac{number}{km^2}\right)$ of the immature female snow crabs on the Scotian Shelf with spatial representation generated using using thin plate spline interpolations of data from the annual snow crab survey. }
 \end{figure}
 
 \clearpage
@@ -812,8 +809,8 @@
 %-----------females mature---------------------------
 \begin{figure}
 \centering
-\includegraphics[width=0.9\textwidth]{\h \es assessments/2014/timeseries/survey/totno\D female\D mat\D combined.png}\\ 
-\caption{ Numeric density of mature females in the SSE.}
+\includegraphics[width=0.9\textwidth]{\h \es assessments/2016/timeseries/survey/totno\D female\D mat.png}\\ 
+\caption{ Numeric density of mature females from the annual snow crab survey.}
 \end{figure}
 \clearpage
 
@@ -822,22 +819,15 @@
 
 \begin{figure}
 \centering
-\subfloat{\includegraphics[width=0.32\textwidth]{\h \es R/maps/survey/snowcrab/annual/totno\D female\D mat/totno\D female\D mat\D 2002.png}}\
-\subfloat{\includegraphics[width=0.32\textwidth]{\h \es R/maps/survey/snowcrab/annual/totno\D female\D mat/totno\D female\D mat\D 2003.png}}\ 
-\subfloat{\includegraphics[width=0.32\textwidth]{\h \es R/maps/survey/snowcrab/annual/totno\D female\D mat/totno\D female\D mat\D 2004.png}}\\ 
-\subfloat{\includegraphics[width=0.32\textwidth]{\h \es R/maps/survey/snowcrab/annual/totno\D female\D mat/totno\D female\D mat\D 2005.png}}\
-\subfloat{\includegraphics[width=0.32\textwidth]{\h \es R/maps/survey/snowcrab/annual/totno\D female\D mat/totno\D female\D mat\D 2006.png}}\ 
-\subfloat{\includegraphics[width=0.32\textwidth]{\h \es R/maps/survey/snowcrab/annual/totno\D female\D mat/totno\D female\D mat\D 2007.png}}\\ 
-\subfloat{\includegraphics[width=0.32\textwidth]{\h \es R/maps/survey/snowcrab/annual/totno\D female\D mat/totno\D female\D mat\D 2008.png}}\
-\subfloat{\includegraphics[width=0.32\textwidth]{\h \es R/maps/survey/snowcrab/annual/totno\D female\D mat/totno\D female\D mat\D 2009.png}}\ 
-\subfloat{\includegraphics[width=0.32\textwidth]{\h \es R/maps/survey/snowcrab/annual/totno\D female\D mat/totno\D female\D mat\D 2010.png}}\\ 
-\subfloat{\includegraphics[width=0.32\textwidth]{\h \es R/maps/survey/snowcrab/annual/totno\D female\D mat/totno\D female\D mat\D 2011.png}}\
-\subfloat{\includegraphics[width=0.32\textwidth]{\h \es R/maps/survey/snowcrab/annual/totno\D female\D mat/totno\D female\D mat\D 2012.png}}\ 
-\subfloat{\includegraphics[width=0.32\textwidth]{\h \es R/maps/survey/snowcrab/annual/totno\D female\D mat/totno\D female\D mat\D 2013.png}}\\ 
-\subfloat{\includegraphics[width=0.32\textwidth]{\h \es R/maps/survey/snowcrab/annual/totno\D female\D mat/totno\D female\D mat\D 2014.png}}\
-\subfloat{\includegraphics[width=0.32\textwidth]{\h \es R/maps/survey/snowcrab/annual/totno\D female\D mat/totno\D female\D mat\D 2015.png}}\ 
-\subfloat{\includegraphics[width=0.32\textwidth]{\h \es R/maps/survey/snowcrab/annual/totno\D female\D mat/totno\D female\D mat\D 2016.png}}\\
-\caption{Numerical densities of the mature female snow crabs on the Scotian Shelf with spatial representation generated using thin plate spline interpolations of data from the annual snow crab survey. Scale is $log_{10} \left(\tfrac{number}{km^2}\right)$}
+\subfloat{\includegraphics[width=0.49\textwidth,trim={0 1cm 0 1cm}]{\h \es R/maps/survey/snowcrab/annual/totno\D female\D mat/totno\D female\D mat\D 2009.png}}\ 
+\subfloat{\includegraphics[width=0.49\textwidth,trim={0 1cm 0 1cm}]{\h \es R/maps/survey/snowcrab/annual/totno\D female\D mat/totno\D female\D mat\D 2010.png}}\\ 
+\subfloat{\includegraphics[width=0.49\textwidth,trim={0 1cm 0 1cm}]{\h \es R/maps/survey/snowcrab/annual/totno\D female\D mat/totno\D female\D mat\D 2011.png}}\
+\subfloat{\includegraphics[width=0.49\textwidth,trim={0 1cm 0 1cm}]{\h \es R/maps/survey/snowcrab/annual/totno\D female\D mat/totno\D female\D mat\D 2012.png}}\\ 
+\subfloat{\includegraphics[width=0.49\textwidth,trim={0 1cm 0 1cm}]{\h \es R/maps/survey/snowcrab/annual/totno\D female\D mat/totno\D female\D mat\D 2013.png}}\ 
+\subfloat{\includegraphics[width=0.49\textwidth,trim={0 1cm 0 1cm}]{\h \es R/maps/survey/snowcrab/annual/totno\D female\D mat/totno\D female\D mat\D 2014.png}}\\
+\subfloat{\includegraphics[width=0.49\textwidth,trim={0 1cm 0 1cm}]{\h \es R/maps/survey/snowcrab/annual/totno\D female\D mat/totno\D female\D mat\D 2015.png}}\ 
+\subfloat{\includegraphics[width=0.49\textwidth,trim={0 1cm 0 1cm}]{\h \es R/maps/survey/snowcrab/annual/totno\D female\D mat/totno\D female\D mat\D 2016.png}}\\
+\caption{Numerical densities $\left(\tfrac{number}{km^2}\right)$ of the mature female snow crabs on the Scotian Shelf with spatial representation generated using thin plate spline interpolations of data from the annual snow crab survey. }
 \end{figure}
 
 \clearpage
@@ -849,21 +839,14 @@
 
 \begin{figure}
 \centering
-\subfloat{\includegraphics[width=0.32\textwidth]{\h \es R/maps/survey/snowcrab/annual/totno\D female\D berried/totno\D female\D berried\D 2002.png}}\
-\subfloat{\includegraphics[width=0.32\textwidth]{\h \es R/maps/survey/snowcrab/annual/totno\D female\D berried/totno\D female\D berried\D 2003.png}}\ 
-\subfloat{\includegraphics[width=0.32\textwidth]{\h \es R/maps/survey/snowcrab/annual/totno\D female\D berried/totno\D female\D berried\D 2004.png}}\\ 
-\subfloat{\includegraphics[width=0.32\textwidth]{\h \es R/maps/survey/snowcrab/annual/totno\D female\D berried/totno\D female\D berried\D 2005.png}}\
-\subfloat{\includegraphics[width=0.32\textwidth]{\h \es R/maps/survey/snowcrab/annual/totno\D female\D berried/totno\D female\D berried\D 2006.png}}\ 
-\subfloat{\includegraphics[width=0.32\textwidth]{\h \es R/maps/survey/snowcrab/annual/totno\D female\D berried/totno\D female\D berried\D 2007.png}}\\ 
-\subfloat{\includegraphics[width=0.32\textwidth]{\h \es R/maps/survey/snowcrab/annual/totno\D female\D berried/totno\D female\D berried\D 2008.png}}\
-\subfloat{\includegraphics[width=0.32\textwidth]{\h \es R/maps/survey/snowcrab/annual/totno\D female\D berried/totno\D female\D berried\D 2009.png}}\ 
-\subfloat{\includegraphics[width=0.32\textwidth]{\h \es R/maps/survey/snowcrab/annual/totno\D female\D berried/totno\D female\D berried\D 2010.png}}\\ 
-\subfloat{\includegraphics[width=0.32\textwidth]{\h \es R/maps/survey/snowcrab/annual/totno\D female\D berried/totno\D female\D berried\D 2011.png}}\
-\subfloat{\includegraphics[width=0.32\textwidth]{\h \es R/maps/survey/snowcrab/annual/totno\D female\D berried/totno\D female\D berried\D 2012.png}}\ 
-\subfloat{\includegraphics[width=0.32\textwidth]{\h \es R/maps/survey/snowcrab/annual/totno\D female\D berried/totno\D female\D berried\D 2013.png}}\\ 
-\subfloat{\includegraphics[width=0.32\textwidth]{\h \es R/maps/survey/snowcrab/annual/totno\D female\D berried/totno\D female\D berried\D 2014.png}}\
-\subfloat{\includegraphics[width=0.32\textwidth]{\h \es R/maps/survey/snowcrab/annual/totno\D female\D berried/totno\D female\D berried\D 2015.png}}\ 
-\subfloat{\includegraphics[width=0.32\textwidth]{\h \es R/maps/survey/snowcrab/annual/totno\D female\D berried/totno\D female\D berried\D 2016.png}}\\
+\subfloat{\includegraphics[width=0.49\textwidth,trim={0 1cm 0 1cm}]{\h \es R/maps/survey/snowcrab/annual/totno\D female\D berried/totno\D female\D berried\D 2009.png}}\ 
+\subfloat{\includegraphics[width=0.49\textwidth,trim={0 1cm 0 1cm}]{\h \es R/maps/survey/snowcrab/annual/totno\D female\D berried/totno\D female\D berried\D 2010.png}}\\ 
+\subfloat{\includegraphics[width=0.49\textwidth,trim={0 1cm 0 1cm}]{\h \es R/maps/survey/snowcrab/annual/totno\D female\D berried/totno\D female\D berried\D 2011.png}}\
+\subfloat{\includegraphics[width=0.49\textwidth,trim={0 1cm 0 1cm}]{\h \es R/maps/survey/snowcrab/annual/totno\D female\D berried/totno\D female\D berried\D 2012.png}}\\ 
+\subfloat{\includegraphics[width=0.49\textwidth,trim={0 1cm 0 1cm}]{\h \es R/maps/survey/snowcrab/annual/totno\D female\D berried/totno\D female\D berried\D 2013.png}}\ 
+\subfloat{\includegraphics[width=0.49\textwidth,trim={0 1cm 0 1cm}]{\h \es R/maps/survey/snowcrab/annual/totno\D female\D berried/totno\D female\D berried\D 2014.png}}\\
+\subfloat{\includegraphics[width=0.49\textwidth,trim={0 1cm 0 1cm}]{\h \es R/maps/survey/snowcrab/annual/totno\D female\D berried/totno\D female\D berried\D 2015.png}}\ 
+\subfloat{\includegraphics[width=0.49\textwidth,trim={0 1cm 0 1cm}]{\h \es R/maps/survey/snowcrab/annual/totno\D female\D berried/totno\D female\D berried\D 2016.png}}\\
 \caption{Numerical densities $\left(\tfrac{number}{km^2}\right)$ of the berried female snow crabs on the Scotian Shelf with spatial representation generated using thin plate spline interpolations of data from the annual snow crab survey.}
 \end{figure}
 
@@ -916,31 +899,31 @@
 
 \begin{figure}
 \centering
-\subfloat{\includegraphics[width=0.32\textwidth]{\h \es R/maps/survey/snowcrab/annual/R0\D mass/R0\D mass\D 2002.png}}\
-\subfloat{\includegraphics[width=0.32\textwidth]{\h \es R/maps/survey/snowcrab/annual/R0\D mass/R0\D mass\D 2003.png}}\ 
-\subfloat{\includegraphics[width=0.32\textwidth]{\h \es R/maps/survey/snowcrab/annual/R0\D mass/R0\D mass\D 2004.png}}\\ 
-\subfloat{\includegraphics[width=0.32\textwidth]{\h \es R/maps/survey/snowcrab/annual/R0\D mass/R0\D mass\D 2005.png}}\
-\subfloat{\includegraphics[width=0.32\textwidth]{\h \es R/maps/survey/snowcrab/annual/R0\D mass/R0\D mass\D 2006.png}}\ 
-\subfloat{\includegraphics[width=0.32\textwidth]{\h \es R/maps/survey/snowcrab/annual/R0\D mass/R0\D mass\D 2007.png}}\\ 
-\subfloat{\includegraphics[width=0.32\textwidth]{\h \es R/maps/survey/snowcrab/annual/R0\D mass/R0\D mass\D 2008.png}}\
-\subfloat{\includegraphics[width=0.32\textwidth]{\h \es R/maps/survey/snowcrab/annual/R0\D mass/R0\D mass\D 2009.png}}\ 
-\subfloat{\includegraphics[width=0.32\textwidth]{\h \es R/maps/survey/snowcrab/annual/R0\D mass/R0\D mass\D 2010.png}}\\ 
-\subfloat{\includegraphics[width=0.32\textwidth]{\h \es R/maps/survey/snowcrab/annual/R0\D mass/R0\D mass\D 2011.png}}\
-\subfloat{\includegraphics[width=0.32\textwidth]{\h \es R/maps/survey/snowcrab/annual/R0\D mass/R0\D mass\D 2012.png}}\ 
-\subfloat{\includegraphics[width=0.32\textwidth]{\h \es R/maps/survey/snowcrab/annual/R0\D mass/R0\D mass\D 2013.png}}\\ 
-\subfloat{\includegraphics[width=0.32\textwidth]{\h \es R/maps/survey/snowcrab/annual/R0\D mass/R0\D mass\D 2014.png}}\
-\subfloat{\includegraphics[width=0.32\textwidth]{\h \es R/maps/survey/snowcrab/annual/R0\D mass/R0\D mass\D 2015.png}}\ 
-\subfloat{\includegraphics[width=0.32\textwidth]{\h \es R/maps/survey/snowcrab/annual/R0\D mass/R0\D mass\D 2016.png}}\\
+\subfloat{\includegraphics[width=0.49\textwidth,trim={0 1cm 0 1cm}]{\h \es R/maps/survey/snowcrab/annual/R0\D mass/R0\D mass\D 2009.png}}\ 
+\subfloat{\includegraphics[width=0.49\textwidth,trim={0 1cm 0 1cm}]{\h \es R/maps/survey/snowcrab/annual/R0\D mass/R0\D mass\D 2010.png}}\\ 
+\subfloat{\includegraphics[width=0.49\textwidth,trim={0 1cm 0 1cm}]{\h \es R/maps/survey/snowcrab/annual/R0\D mass/R0\D mass\D 2011.png}}\
+\subfloat{\includegraphics[width=0.49\textwidth,trim={0 1cm 0 1cm}]{\h \es R/maps/survey/snowcrab/annual/R0\D mass/R0\D mass\D 2012.png}}\\ 
+\subfloat{\includegraphics[width=0.49\textwidth,trim={0 1cm 0 1cm}]{\h \es R/maps/survey/snowcrab/annual/R0\D mass/R0\D mass\D 2013.png}}\ 
+\subfloat{\includegraphics[width=0.49\textwidth,trim={0 1cm 0 1cm}]{\h \es R/maps/survey/snowcrab/annual/R0\D mass/R0\D mass\D 2014.png}}\\
+\subfloat{\includegraphics[width=0.49\textwidth,trim={0 1cm 0 1cm}]{\h \es R/maps/survey/snowcrab/annual/R0\D mass/R0\D mass\D 2015.png}}\ 
+\subfloat{\includegraphics[width=0.49\textwidth,trim={0 1cm 0 1cm}]{\h \es R/maps/survey/snowcrab/annual/R0\D mass/R0\D mass\D 2016.png}}\\
 \caption{Fishable biomass densities $\left(\tfrac{t}{km^2}\right)$ on the SSE with spatial representation generated using thin plate spline interpolations of data from the annual snow crab survey. }
 \end{figure}
 
 \clearpage
 
 %-----------recruits---------------------------
+%\begin{figure}
+%\centering
+%\includegraphics[width=0.9\textwidth]{\h \es assessments/2016/timeseries/survey/R1\D no.png}\\ 
+%\caption{Trends in the geometric mean of recruiting (>95mm CW, CC 1 and 2) male abundance obtained from the annual snow crab survey. Error bars are 95\% CI about %geometric mean.}
+%\end{figure}
+%\clearpage
+
 \begin{figure}
 \centering
-\includegraphics[width=0.9\textwidth]{\h \es assessments/2016/timeseries/survey/R1\D no.png}\\ 
-\caption{Trends in the geometric mean of recruiting male abundance obtained from the annual snow crab survey. Error bars are 95\% CI about geometric mean.}
+\includegraphics[width=0.9\textwidth]{\h \es assessments/2016/timeseries/survey/R2\D no.png}\\ 
+\caption{Trends in the geometric mean abundance of male snowcrab (75-95 mm CW) obtained from the annual snow crab survey. Error bars are 95\% CI about geometric mean.}
 \end{figure}
 \clearpage
 
@@ -949,7 +932,7 @@
 %--------------priors and posteriors
 \begin{figure}
     
-    \includegraphics[width=\textwidth]{\h \eb K\D density.png}
+    \includegraphics[width=\textwidth]{\h \ebugs K\D density.png}
     \caption{Prior (red) and posterior (bars) distribution for carrying capacity parameter, K, from the biomass dynamic model of snow crab production in crab fishing areas on the Scotian Shelf. Within each panel, estimates of posterior median and 95\% credible intervals are given in the legend.}
   
 \end{figure}
@@ -957,7 +940,7 @@
 
 \begin{figure}
     
-    \includegraphics[width=\textwidth]{\h \eb r\D density.png}
+    \includegraphics[width=\textwidth]{\h \ebugs r\D density.png}
     \caption{Prior (red) and posterior (bars) distribution for populaton growth parameter, r, from the biomass dynamic model of snow crab production in crab fishing areas on the Scotian Shelf. Within each panel, estimates of posterior median and 95\% credible intervals are given in the legend.}
   
 \end{figure}
@@ -965,7 +948,7 @@
 
 \begin{figure}
     
-    \includegraphics[width=\textwidth]{\h \eb q\D density.png}
+    \includegraphics[width=\textwidth]{\h \ebugs q\D density.png}
     \caption{Prior (red) and posterior (bars) distribution for catchability parameter, q, from the biomass dynamic model of snow crab production in crab fishing areas on the Scotian Shelf. Within each panel, estimates of posterior median and 95\% credible intervals are given in the legend.}
   
 \end{figure}
@@ -975,7 +958,7 @@
 
 \begin{figure}
     
-    \includegraphics[width=\textwidth]{\h \eb bp\D sd\D density.png}
+    \includegraphics[width=\textwidth]{\h \ebugs bp\D sd\D density.png}
     \caption{Prior (red) and posterior (bars) distribution for process error from the biomass dynamic model of snow crab production in crab fishing areas on the Scotian Shelf. Within each panel, estimates of posterior median and 95\% credible intervals are given in the legend.}
   
 \end{figure}
@@ -983,7 +966,7 @@
 
 \begin{figure}
     
-    \includegraphics[width=\textwidth]{\h \eb bo\D sd\D density.png}
+    \includegraphics[width=\textwidth]{\h \ebugs bo\D sd\D density.png}
     \caption{Prior (red) and posterior (bars) distribution for observation error from the biomass dynamic model of snow crab production in crab fishing areas on the Scotian Shelf. Within each panel, estimates of posterior median and 95\% credible intervals are given in the legend.}
   
 \end{figure}
@@ -991,7 +974,7 @@
 
 \begin{figure}
     
-    \includegraphics[width=\textwidth]{\h \eb FMSY\D density.png}
+    \includegraphics[width=\textwidth]{\h \ebugs FMSY\D density.png}
     \caption{Posterior distribution for fishing mortality at maximum sustainable yield from the biomass dynamic model of snow crab production in crab fishing areas on the Scotian Shelf. Within each panel, estimates of posterior median and 95\% credible intervals are given in the legend.}
   
 \end{figure}

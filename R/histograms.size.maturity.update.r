@@ -109,7 +109,7 @@
             abline( v=41, lwd=1, lty="longdash" )
           }
           
-          if (areas[a]==areas[3] & year[y]==year[2] ) {
+          if (areas[a]==areas[3] & year[y]==year[1] ) {
             xl = c(xlim[2]*0.01, xlim[2]*0.01)
             yl = c(ylim[2]*0.8, ylim[2]*0.6 )
             points( x=xl, y=yl, pch=22, bg=c(cols[2], cols[1]), cex=2 )
@@ -177,7 +177,7 @@
 
           if (areas[a]==areas[ncols]) text( dim(toplot)[2]-4, ylim[2]*2/3, year[y], cex=1.2 )
 
-          if (areas[a]==areas[3] & year[y]==year[2] ) {
+          if (areas[a]==areas[3] & year[y]==year[1] ) {
             xl = c(xlim[2]*0.01, xlim[2]*0.01)
             yl = c(ylim[2]*0.8, ylim[2]*0.6 )
             points( x=xl, y=yl, pch=22, bg=c(cols[2], cols[1]), cex=2 )

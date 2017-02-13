@@ -1,5 +1,5 @@
 
-snowcrab.timeseries.db = function( DS="default", p=NULL, regions=c( "cfa4x", "cfanorth", "cfasouth", "cfaall" ), trim=0, vn=NULL ) {
+snowcrab.timeseries.db = function( DS="default", p=NULL, regions=c( "cfa4x", "cfanorth", "cfasouth", "cfaall" ), trim=0, vn=NULL, sdci=F ) {
 
   tsoutdir = project.datadirectory( "bio.snowcrab", "R" )
 
@@ -24,6 +24,7 @@ snowcrab.timeseries.db = function( DS="default", p=NULL, regions=c( "cfa4x", "cf
     tsdata$year = as.character( tsdata$year)
     tsdata$mean = NA
     tsdata$se = NA
+    tsdata$sd = NA
     tsdata$n = NA
     tsdata$ub = NA
     tsdata$lb = NA
@@ -39,13 +40,19 @@ snowcrab.timeseries.db = function( DS="default", p=NULL, regions=c( "cfa4x", "cf
         XXmean = tapply( XX[ri], INDEX=dat$year[ri], FUN=mean, na.rm=TRUE )
         XXn =  tapply( XX[ri], INDEX=dat$year[ri], FUN=function(x) length(which(is.finite(x))) )
         XXse = tapply( XX[ri], INDEX=dat$year[ri], FUN=sd, na.rm=TRUE ) / XXn
+        XXsd = tapply( XX[ri], INDEX=dat$year[ri], FUN=sd, na.rm=TRUE ) 
         tsi = which(tsdata$variable==v & tsdata$region==r)
 
         tsdata[ tsi,"mean"] = bio.indicators::variable.recode (XXmean[ tsdata[ tsi, "year"] ], v, direction="backward", db="snowcrab" )
         tsdata[ tsi,"n"] = XXn[ tsdata[ tsi, "year"] ]
         tsdata[ tsi,"se"] = bio.indicators::variable.recode (XXse[ tsdata[ tsi, "year"] ], v, direction="backward", db="snowcrab" )
+        tsdata[ tsi,"sd"] = bio.indicators::variable.recode (XXsd[ tsdata[ tsi, "year"] ], v, direction="backward", db="snowcrab" )
         XXlb = XXmean - XXse* 1.96
         XXub = XXmean + XXse* 1.96
+        if(sdci){
+          XXlb = XXmean - XXsd* 1.96
+          XXub = XXmean + XXsd* 1.96
+        }
         tsdata[ tsi,"lb"] = bio.indicators::variable.recode (XXlb[ tsdata[ tsi, "year"] ], v, direction="backward", db="snowcrab" )
         tsdata[ tsi,"ub"] = bio.indicators::variable.recode (XXub[ tsdata[ tsi, "year"] ], v, direction="backward", db="snowcrab" )
       }
@@ -87,6 +94,7 @@ snowcrab.timeseries.db = function( DS="default", p=NULL, regions=c( "cfa4x", "cf
     tsdata$year = as.character( tsdata$year)
     tsdata$mean = NA
     tsdata$se = NA
+    tsdata$sd = NA
     tsdata$n = NA
     tsdata$ub = NA
     tsdata$lb = NA
@@ -102,13 +110,19 @@ snowcrab.timeseries.db = function( DS="default", p=NULL, regions=c( "cfa4x", "cf
         XXmean = tapply( XX[ri], INDEX=dat$year[ri], FUN=mean, na.rm=TRUE )
         XXn =  tapply( XX[ri], INDEX=dat$year[ri], FUN=function(x) length(which(is.finite(x))) )
         XXse = tapply( XX[ri], INDEX=dat$year[ri], FUN=sd, na.rm=TRUE ) / XXn
+        XXsd = tapply( XX[ri], INDEX=dat$year[ri], FUN=sd, na.rm=TRUE ) 
         tsi = which(tsdata$variable==v & tsdata$region==r)
 
         tsdata[ tsi,"mean"] = bio.indicators::variable.recode (XXmean[ tsdata[ tsi, "year"] ], v, direction="backward", db="snowcrab" )
         tsdata[ tsi,"n"] = XXn[ tsdata[ tsi, "year"] ]
         tsdata[ tsi,"se"] = bio.indicators::variable.recode (XXse[ tsdata[ tsi, "year"] ], v, direction="backward", db="snowcrab" )
+        tsdata[ tsi,"sd"] = bio.indicators::variable.recode (XXsd[ tsdata[ tsi, "year"] ], v, direction="backward", db="snowcrab" )
         XXlb = XXmean - XXse* 1.96
         XXub = XXmean + XXse* 1.96
+        if(sdci){
+          XXlb = XXmean - XXsd* 1.96 # confidence intervals for population instead of mean
+          XXub = XXmean + XXsd* 1.96
+        }
         tsdata[ tsi,"lb"] = bio.indicators::variable.recode (XXlb[ tsdata[ tsi, "year"] ], v, direction="backward", db="snowcrab" )
         tsdata[ tsi,"ub"] = bio.indicators::variable.recode (XXub[ tsdata[ tsi, "year"] ], v, direction="backward", db="snowcrab" )
       }
