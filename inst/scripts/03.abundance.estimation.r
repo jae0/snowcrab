@@ -37,11 +37,7 @@ p$selection=list(
   drop.groundfish.data=TRUE # from 1970 to 1999 measurement of invertebrates was sporatic .. zero-values are dropped as they are unreliable 
 )
 p$lbm_local_modelengine = "twostep"
-# p$lbm_twostep_space = "spatial.process"
-# p$lbm_twostep_space = "fft"
-# p$lbm_twostep_space = "tps"
 p$lbm_twostep_space = "krige"
-# p$lbm_twostep_space = "tps"
 p$lbm_gam_optimizer=c("outer", "bfgs") 
 
 p$lbm_global_family = gaussian(link="log")
@@ -54,6 +50,8 @@ lbm( p=p, DATA=DATA, tasks=c("initiate", "globalmodel") ) # 30 min
 #   lbm( p=p, tasks=c( "stage0" ) ) # serial mode
 #   lbm( p=p, tasks=c( "continue" ) )    
 lbm( p=p, tasks=c( "stage1" ) ) #  3 hrs 
+lbm( p=p, tasks=c( "save" ) )
+
 lbm( p=p, tasks=c( "stage2" ) ) #   1 hrs
 lbm( p=p, tasks=c( "save" ) )
 
@@ -118,11 +116,7 @@ p$selection=list(
   drop.groundfish.data=TRUE # from 1970 to 1999 measurement of invertebrates was sporatic .. zero-values are dropped as they are unreliable 
 )
 p$lbm_local_modelengine = "twostep"
-# p$lbm_twostep_space = "spatial.process"
-# p$lbm_twostep_space = "fft"
-# p$lbm_twostep_space = "tps"
-# p$lbm_twostep_space = "krige"
-p$lbm_twostep_space = "tps"
+p$lbm_twostep_space = "krige"
 p$lbm_gam_optimizer=c("outer", "bfgs") 
 
 
@@ -138,6 +132,8 @@ lbm( p=p, DATA=DATA, tasks=c("initiate", "globalmodel") ) # 30 min
 #   lbm( p=p, tasks=c( "stage0" ) ) # serial mode
 #   lbm( p=p, tasks=c( "continue" ) )    
 lbm( p=p, tasks=c( "stage1" ) ) #  3 hrs 
+lbm( p=p, tasks=c( "save" ) )
+
 lbm( p=p, tasks=c( "stage2" ) ) #   1 hrs
 lbm( p=p, tasks=c( "save" ) )
 
@@ -153,7 +149,6 @@ summary( global_model )
 plot(global_model)
 
 
-
 Family: binomial 
 Link function: logit 
 
@@ -161,32 +156,33 @@ Formula:
 snowcrab.large.males_presence_absence ~ s(t, k = 3, bs = "ts") + 
     s(tmean.climatology, k = 3, bs = "ts") + s(tsd.climatology, 
     k = 3, bs = "ts") + s(log(z), k = 3, bs = "ts") + s(log(dZ), 
-    k = 3, bs = "ts") + s(log(ddZ), k = 3, bs = "ts") + s(log.substrate.grainsize, 
-    k = 3, bs = "ts") + s(ca1, k = 3, bs = "ts") + s(ca2, k = 3, 
-    bs = "ts")
+    k = 3, bs = "ts") + s(log(ddZ), k = 3, bs = "ts") + s(smr, 
+    k = 3, bs = "ts") + s(log.substrate.grainsize, k = 3, bs = "ts") + 
+    s(ca1, k = 3, bs = "ts") + s(ca2, k = 3, bs = "ts")
 
 Parametric coefficients:
             Estimate Std. Error z value Pr(>|z|)    
-(Intercept)  2.63028    0.02003   131.3   <2e-16 ***
+(Intercept) -0.28438    0.03153  -9.019   <2e-16 ***
 ---
 Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
 
 Approximate significance of smooth terms:
-                             edf Ref.df  Chi.sq  p-value    
-s(t)                       1.996      2  218.78  < 2e-16 ***
-s(tmean.climatology)       1.987      2   12.38  0.00195 ** 
-s(tsd.climatology)         1.999      2  582.77  < 2e-16 ***
-s(log(z))                  1.988      2 3703.88  < 2e-16 ***
-s(log(dZ))                 1.999      2   62.51 2.55e-14 ***
-s(log(ddZ))                1.992      2   28.01 7.82e-07 ***
-s(log.substrate.grainsize) 1.991      2  414.41  < 2e-16 ***
-s(ca1)                     1.993      2  464.80  < 2e-16 ***
-s(ca2)                     1.995      2  469.86  < 2e-16 ***
+                             edf Ref.df Chi.sq  p-value    
+s(t)                       2.000      2  63.90 9.77e-15 ***
+s(tmean.climatology)       1.857      2  41.12 1.93e-10 ***
+s(tsd.climatology)         1.908      2  16.22  0.00019 ***
+s(log(z))                  1.884      2 261.58  < 2e-16 ***
+s(log(dZ))                 1.604      2  10.77  0.00153 ** 
+s(log(ddZ))                1.772      2  16.65 8.07e-05 ***
+s(smr)                     1.095      2  30.63 8.31e-09 ***
+s(log.substrate.grainsize) 1.487      2 260.95  < 2e-16 ***
+s(ca1)                     1.986      2 212.15  < 2e-16 ***
+s(ca2)                     1.627      2 328.93  < 2e-16 ***
 ---
 Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
 
-R-sq.(adj) =  0.398   Deviance explained =   38%
-UBRE = -0.51619  Scale est. = 1         n = 61091
+R-sq.(adj) =  0.379   Deviance explained = 32.6%
+UBRE = -0.062242  Scale est. = 1         n = 11320
 
 
 
