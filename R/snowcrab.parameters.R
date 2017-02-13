@@ -101,14 +101,14 @@ snowcrab.parameters = function( p=NULL, DS="default", current.year=NULL, varname
     
     if (!exists("lbm_rsquared_threshold", p)) p$lbm_rsquared_threshold = 0.2 # lower threshold
     if (!exists("lbm_distance_statsgrid", p)) p$lbm_distance_statsgrid = 4 # resolution (km) of data aggregation (i.e. generation of the ** statistics ** )
-    if (!exists("lbm_distance_prediction", p)) p$lbm_distance_prediction = p$lbm_distance_statsgrid * 2 # this is a half window km
+    if (!exists("lbm_distance_prediction", p)) p$lbm_distance_prediction = p$lbm_distance_statsgrid * 1.75 # this is a half window km
     if (!exists("lbm_distance_scale", p)) p$lbm_distance_scale = 20 # km ... approx guess of 95% AC range 
     if (!exists("lbm_distance_min", p)) p$lbm_distance_min = p$lbm_distance_statsgrid 
     if (!exists("lbm_distance_max", p)) p$lbm_distance_max = 60
   
-    if (!exists("n.min", p)) p$n.min = 60 # n.min/n.max changes with resolution must be more than the number of knots/edf
+    if (!exists("n.min", p)) p$n.min = 50 # n.min/n.max changes with resolution must be more than the number of knots/edf
     # min number of data points req before attempting to model timeseries in a localized space
-    if (!exists("n.max", p)) p$n.max = 1000 # no real upper bound
+    if (!exists("n.max", p)) p$n.max = 8000 # no real upper bound
     p$sampling = c( 0.25, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.1, 1.2, 1.5 )  # 
 
     if (!exists("variables", p)) p$variables = list( 
