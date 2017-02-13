@@ -70,7 +70,7 @@
 
       # biomass data: post-fishery biomass are determined by survey B)
         p$vars.to.model ="R0.mass"
-        p = make.list( list(y=p$years.to.model, v=p$vars.to.model ), Y=p )
+        p = make.list( list(y=p$yrs, v=p$vars.to.model ), Y=p )
 
         K = interpolation.db( DS="interpolation.simulation", p=p )
         areas=c("cfanorth", "cfasouth", "cfa4x")
@@ -96,7 +96,7 @@
 
       # biomass data: post-fishery biomass are determined by survey B)
         p$vars.to.model ="R0.mass"
-        p = make.list( list(y=p$years.to.model, v=p$vars.to.model ), Y=p )
+        p = make.list( list(y=p$yrs, v=p$vars.to.model ), Y=p )
 
         K = interpolation.db( DS="interpolation.simulation", p=p )
         areas=c("cfanorth", "cfasouth", "cfa4x")
@@ -238,7 +238,7 @@
       }
 
         p$vars.to.model = "R1.no"
-        p = make.list( list(y=p$years.to.model, v=p$vars.to.model ), Y=p )
+        p = make.list( list(y=p$yrs, v=p$vars.to.model ), Y=p )
 
         K = interpolation.db( DS="interpolation.simulation", p=p )
         areas=c("cfanorth", "cfasouth", "cfa4x")
@@ -267,7 +267,7 @@
       }
 
         p$vars.to.model = "R1.no"
-        p = make.list( list(y=p$years.to.model, v=p$vars.to.model ), Y=p )
+        p = make.list( list(y=p$yrs, v=p$vars.to.model ), Y=p )
 
         K = interpolation.db( DS="interpolation.simulation", p=p )
         areas=c("cfanorth", "cfasouth", "cfa4x")

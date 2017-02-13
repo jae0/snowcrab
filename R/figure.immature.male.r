@@ -6,8 +6,8 @@
     classnames = paste( "Instar", c(12:8) )
 
     p$vars.to.model = classes
-    p$years.to.model = 1998:p$year.assessment
-    p = make.list( list(y=p$years.to.model, v=p$vars.to.model ), Y=p )
+    p$yrs = 1998:p$year.assessment
+    p = make.list( list(y=p$yrs, v=p$vars.to.model ), Y=p )
     K = interpolation.db( DS="interpolation.simulation", p=p )
 
     year.assessment = p$year.assessment

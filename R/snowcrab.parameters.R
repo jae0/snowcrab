@@ -27,14 +27,13 @@ snowcrab.parameters = function( p=NULL, DS="default", current.year=NULL, varname
     p$current.year = current.year  # this is a synonym for year.assessment ... will eventually remove one of these
     p$year.assessment = current.year
 
-    p$yearstomodel = 1998:p$current.year
     p$seabird.yToload = 2012:p$current.year
     p$minilog.yToload = 1999:p$current.year
     p$netmind.yToload = 1999:p$current.year
     p$esonar.yToload  = 2014:p$current.year
     p$netmensuration.problems = c()
 
-    p$yrs = c(1998:p$current.year)  # same as yearstomodel ... need to clean this up:: TODO
+    p$yrs = c(1999:p$current.year)  
     p$ny = length(p$yrs)
     p$nt = p$ny # must specify, else assumed = 1 (1= no time)  ## nt=ny annual time steps, nt = ny*nw is seassonal
     p$nw = 10 # default value of 10 time steps for all temp and indicators
@@ -81,7 +80,6 @@ snowcrab.parameters = function( p=NULL, DS="default", current.year=NULL, varname
       p$geog.proj = "+proj=longlat +ellps=WGS84"
 
       ## these are kriging related parameters:: the method is deprecated
-      p$years.to.model = c(1998:p$year.assessment)
       p$threshold.distance = 5  # in km for merging fisheries data into the trawl data for external drift kriging
       p$optimizers = c(  "bfgs", "nlm", "perf", "newton", "Nelder-Mead" )  # used by GAM
       p = gmt.parameters( p=p )
@@ -101,23 +99,23 @@ snowcrab.parameters = function( p=NULL, DS="default", current.year=NULL, varname
     if (!exists("depth.filter", p)) p$depth.filter = 0 # depth (m) stats locations with elevation > 0 m as being on land (and so ignore)
     if (!exists("lbm_quantile_bounds", p)) p$lbm_quantile_bounds = c(0.01, 0.99) # remove these extremes in interpolations
     
-    if (!exists("lbm_rsquared_threshold", p)) p$lbm_rsquared_threshold = 0.1 # lower threshold
-    if (!exists("lbm_distance_prediction", p)) p$lbm_distance_prediction = 7.5 # this is a half window km
-    if (!exists("lbm_distance_statsgrid", p)) p$lbm_distance_statsgrid = 5 # resolution (km) of data aggregation (i.e. generation of the ** statistics ** )
-    if (!exists("lbm_distance_scale", p)) p$lbm_distance_scale = 50 # km ... approx guess of 95% AC range 
+    if (!exists("lbm_rsquared_threshold", p)) p$lbm_rsquared_threshold = 0.2 # lower threshold
+    if (!exists("lbm_distance_statsgrid", p)) p$lbm_distance_statsgrid = 4 # resolution (km) of data aggregation (i.e. generation of the ** statistics ** )
+    if (!exists("lbm_distance_prediction", p)) p$lbm_distance_prediction = p$lbm_distance_statsgrid * 2 # this is a half window km
+    if (!exists("lbm_distance_scale", p)) p$lbm_distance_scale = 20 # km ... approx guess of 95% AC range 
     if (!exists("lbm_distance_min", p)) p$lbm_distance_min = p$lbm_distance_statsgrid 
-    if (!exists("lbm_distance_max", p)) p$lbm_distance_max = 75
+    if (!exists("lbm_distance_max", p)) p$lbm_distance_max = 60
   
-    if (!exists("n.min", p)) p$n.min = 100 # n.min/n.max changes with resolution must be more than the number of knots/edf
+    if (!exists("n.min", p)) p$n.min = 60 # n.min/n.max changes with resolution must be more than the number of knots/edf
     # min number of data points req before attempting to model timeseries in a localized space
-    if (!exists("n.max", p)) p$n.max = 8000 # no real upper bound
+    if (!exists("n.max", p)) p$n.max = 1000 # no real upper bound
     p$sampling = c( 0.25, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.1, 1.2, 1.5 )  # 
 
     if (!exists("variables", p)) p$variables = list( 
       Y = varname, 
       LOCS = c("plon", "plat"), 
       TIME = "tiyr", 
-      COV = c("z", "dZ", "ddZ", "log.substrate.grainsize", "t", "tmean", "tamplitude", "ca1"  ) )
+      COV = c("z", "dZ", "ddZ", "log.substrate.grainsize", "t", "tmean.climatology", "tsd.climatology", "ca1", "ca2", "smr", "zm" ) )
     p$varnames = c( p$variables$LOCS, p$variables$COV ) 
  
     # additional variable to extract from indicators.db for inputs
@@ -125,31 +123,30 @@ snowcrab.parameters = function( p=NULL, DS="default", current.year=NULL, varname
     for (id in c("speciescomposition", "speciesarea", "sizespectrum", "condition", "metabolism", "biochem") ) {
       pz = bio.indicators::indicators.parameters( p=p, DS=id )
       pz_vars = intersect( pz$varstomodel, p$variables$COV )
-      if (length(pz_vars) > 0) p$indicators.variables[id] = pz_vars 
+      if (length(pz_vars) > 0) p$indicators.variables[[id]] = pz_vars 
     }
 
     if (!exists("lbm_variogram_method", p)) p$lbm_variogram_method = "fast"
-    if (!exists("lbm_local_modelengine", p)) p$lbm_local_modelengine ="twostep"
+    if (!exists("lbm_local_modelengine", p)) p$lbm_local_modelengine ="gam"
     if (!exists("lbm_global_modelengine", p)) p$lbm_global_modelengine ="gam"
-
-    # using covariates as a first pass essentially makes it ~ kriging with external drift
-    if (!exists("lbm_global_modelformula", p)) p$lbm_global_modelformula = formula( paste( 
-      varname, ' ~ s(yr) + s(dyear, k=3, bs="ts") + s(yr, dyear, k=36, bs="ts") ',
-      ' + s(ca1, bs="ts")  ', 
-      ' + s(t, bs="ts") + s(tmean, bs="ts") + s(tamplitude, bs="ts") + s( log(z), bs="ts")',
-      ' + s( log(dZ), bs="ts") + s( log(ddZ), bs="ts")  + s(log.substrate.grainsize, bs="ts") ' ))  # no space or time
 
     if (!exists("lbm_global_family", p)) p$lbm_global_family = gaussian( link=log) 
     if (!exists("lbm_local_family", p)) p$lbm_local_family = gaussian(link=log)
 
+    # using covariates as a first pass essentially makes it ~ kriging with external drift .. no time or space here
+    if (!exists("lbm_global_modelformula", p)) p$lbm_global_modelformula = formula( paste( 
+      varname, ' ~ s(t, k=3, bs="ts") + s(tmean.climatology, k=3, bs="ts") + s(tsd.climatology, k=3, bs="ts")  ', 
+      ' + s( log(z), k=3, bs="ts") + s( log(dZ), k=3, bs="ts") + s( log(ddZ), k=3, bs="ts") ',
+      ' + s( smr, k=3, bs="ts") + s( zm, k=3, bs="ts") ',
+      ' + s(log.substrate.grainsize, k=3, bs="ts") + s(ca1, k=3, bs="ts") + s(ca2, k=3, bs="ts")   ' ))  # no space 
 
     if (p$lbm_local_modelengine =="twostep") {
 
       # this is the time component (mostly) .. space enters as a rough constraint 
       if (!exists("lbm_local_modelformula", p))  p$lbm_local_modelformula = formula( paste(
-        varname, '~ s(yr, k=5, bs="ts") + s(cos.w, k=3, bs="ts") + s(sin.w, k=3, bs="ts") ', 
-          ' + s(cos.w, sin.w, yr, bs="ts", k=36) ',
-          ' + s(plon, bs="ts") + s(plat, bs="ts") + s(plon, plat, k=25, bs="ts") ' ) )
+        varname, '~ s(yr, bs="ts") + s(cos.w, k=3, bs="ts") + s(sin.w, k=3, bs="ts") ', 
+          ' + s(cos.w, sin.w, yr, bs="ts", k=10) ',
+          ' + s(plon, k=3, bs="ts") + s(plat, k=3, bs="ts") + s(plon, plat, k=10, bs="ts") ' ) )
       if (!exists("lbm_local_model_distanceweighted", p)) p$lbm_local_model_distanceweighted = TRUE
 
       # this is the spatial component
@@ -157,41 +154,43 @@ snowcrab.parameters = function( p=NULL, DS="default", current.year=NULL, varname
       # p$lbm_twostep_space = "fft"
       # p$lbm_twostep_space = "tps"
       if (!exists("lbm_twostep_space", p))  p$lbm_twostep_space = "krige"
+      # if (!exists("lbm_twostep_space", p))  p$lbm_twostep_space = "tps"
+      if (!exists("lbm_gam_optimizer", p)) p$lbm_gam_optimizer=c("outer", "bfgs") 
 
     }  else if (p$lbm_local_modelengine == "habitat") {
 
       p$lbm_global_family = binomial()
-      p$lbm_local_family = binomial()
+      p$lbm_local_family = gaussian()  # after logit transform by global model, it becomes gaussian
       
       if (!exists("lbm_local_modelformula", p))  p$lbm_local_modelformula = formula( paste(
-        varname, '~ s(yr, k=5, bs="ts") + s(cos.w, k=3, bs="ts") + s(sin.w, k=3, bs="ts") ', 
-          ' + s(cos.w, sin.w, yr, bs="ts", k=36) ',
-          ' + s(plon, bs="ts") + s(plat, bs="ts") + s(plon, plat, k=25, bs="ts") ' ) )    
+        varname, '~ s(yr, bs="ts") + s(cos.w, k=3, bs="ts") + s(sin.w, k=3, bs="ts") ', 
+          ' + s(cos.w, sin.w, yr, bs="ts", k=10) ',
+          ' + s(plon, k=3, bs="ts") + s(plat, k=3, bs="ts") + s(plon, plat, k=10, bs="ts") ' ) )
 
       if (!exists("lbm_local_model_distanceweighted", p)) p$lbm_local_model_distanceweighted = TRUE
-      if (!exists("lbm_gam_optimizer", p)) p$lbm_gam_optimizer="perf"
-      # p$lbm_gam_optimizer=c("outer", "bfgs") 
+      # if (!exists("lbm_gam_optimizer", p)) p$lbm_gam_optimizer="perf"
+      if (!exists("lbm_gam_optimizer", p)) p$lbm_gam_optimizer=c("outer", "bfgs") 
     
     }  else if (p$lbm_local_modelengine == "gam") {
 
       if (!exists("lbm_local_modelformula", p))  p$lbm_local_modelformula = formula( paste(
-        varname, '~ s(yr, k=5, bs="ts") + s(cos.w, k=3, bs="ts") + s(sin.w, k=3, bs="ts") ', 
-          ' + s(cos.w, sin.w, yr, bs="ts", k=36) ',
-          ' + s(plon, bs="ts") + s(plat, bs="ts") + s(plon, plat, k=25, bs="ts") ' ) )    
+        varname, '~ s(yr, bs="ts") + s(cos.w, k=3, bs="ts") + s(sin.w, k=3, bs="ts") ', 
+          ' + s(cos.w, sin.w, yr, bs="ts", k=10) ',
+          ' + s(plon, k=3, bs="ts") + s(plat, k=3, bs="ts") + s(plon, plat, k=10, bs="ts") ' ) )
 
       if (!exists("lbm_local_model_distanceweighted", p)) p$lbm_local_model_distanceweighted = TRUE
-      if (!exists("lbm_gam_optimizer", p)) p$lbm_gam_optimizer="perf"
-      # p$lbm_gam_optimizer=c("outer", "bfgs") 
+      # if (!exists("lbm_gam_optimizer", p)) p$lbm_gam_optimizer="perf"
+      if (!exists("lbm_gam_optimizer", p)) p$lbm_gam_optimizer=c("outer", "bfgs") 
     
     }  else if (p$lbm_local_modelengine == "bayesx") {
  
       # bayesx families are specified as characters, this forces it to pass as is and 
       # then the next does the transformation internal to the "lbm__bayesx"
-      p$lbm_local_family_bayesx = "gaussian" 
+      p$lbm_local_family = "gaussian" 
 
       # alternative models .. testing .. problem is that SE of fit is not accessible?
       p$lbm_local_modelformula = formula( paste( 
-        varname, ' ~ sx(yr,   bs="ps") + sx(cos.w, bs="ps") + s(sin.w, bs="ps") +s(z, bs="ps") + sx(plon, bs="ps") + sx(plat,  bs="ps")', 
+        varname, ' ~ sx(yr, bs="ps") + sx(cos.w, bs="ps") + s(sin.w, bs="ps") +s(z, bs="ps") + sx(plon, bs="ps") + sx(plat,  bs="ps")', 
           ' + sx(plon, plat, cos.w, sin.w, yr, bs="te") ' )
           # te is tensor spline
       )
