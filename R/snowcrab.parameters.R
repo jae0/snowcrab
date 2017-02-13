@@ -33,7 +33,7 @@ snowcrab.parameters = function( p=NULL, DS="default", current.year=NULL, varname
     p$esonar.yToload  = 2014:p$current.year
     p$netmensuration.problems = c()
 
-    p$yrs = c(2004:p$current.year)  
+    p$yrs = c(1999:p$current.year)  
     p$ny = length(p$yrs)
     p$nt = p$ny # must specify, else assumed = 1 (1= no time)  ## nt=ny annual time steps, nt = ny*nw is seassonal
     p$nw = 10 # default value of 10 time steps for all temp and indicators
