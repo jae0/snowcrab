@@ -13,7 +13,7 @@ snowcrab_lbm = function( ip=NULL, DS=NULL, p=NULL, voi=NULL, year=NULL, ret=NULL
     # snowcrab survey data only
     set = set[ set$data.source == "snowcrab", ]
 
-    set = presence.absence( X=set, vname="zm", px=p$habitat.threshold.quantile )  # determine presence absence and weighting
+    set = presence.absence( X=set, vname="totmass", px=p$habitat.threshold.quantile )  # determine presence absence and weighting
 
     # if ( grepl( "snowcrab.large.males", p$selection$name ) ) {
     #   # add commerical fishery data -- 
