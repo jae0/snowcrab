@@ -184,7 +184,7 @@ snowcrab.parameters = function( p=NULL, DS="default", current.year=NULL, varname
           ' + s( log(dZ), k=3, bs="ts") + s( log(ddZ), k=3, bs="ts") ',
           ' + s(t, k=3, bs="ts") + s(tmean.climatology, k=3, bs="ts") + s(tsd.climatology, k=3, bs="ts")  ', 
           ' + s( smr, k=3, bs="ts") ',
-          ' + s(log.substrate.grainsize, k=3, bs="ts") + s(ca1, k=3, bs="ts") + s(ca2, k=3, bs="ts")   ' 
+          ' + s(log.substrate.grainsize, k=3, bs="ts") + s(ca1, k=3, bs="ts") + s(ca2, k=3, bs="ts")  ', 
           ' + s(plon, k=3, bs="ts") + s(plat, k=3, bs="ts") + s(plon, plat, log(z), k=10, bs="ts") ' ) )
 
       if (!exists("lbm_local_model_distanceweighted", p)) p$lbm_local_model_distanceweighted = TRUE
