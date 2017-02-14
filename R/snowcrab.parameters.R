@@ -99,13 +99,13 @@ snowcrab.parameters = function( p=NULL, DS="default", current.year=NULL, varname
     if (!exists("lbm_quantile_bounds", p)) p$lbm_quantile_bounds = c(0.01, 0.99) # remove these extremes in interpolations
     
     if (!exists("lbm_rsquared_threshold", p)) p$lbm_rsquared_threshold = 0.2 # lower threshold
-    if (!exists("lbm_distance_statsgrid", p)) p$lbm_distance_statsgrid = 5 # resolution (km) of data aggregation (i.e. generation of the ** statistics ** )
-    if (!exists("lbm_distance_prediction", p)) p$lbm_distance_prediction = 25 # this is a half window km
+    if (!exists("lbm_distance_statsgrid", p)) p$lbm_distance_statsgrid = 4 # resolution (km) of data aggregation (i.e. generation of the ** statistics ** )
+    if (!exists("lbm_distance_prediction", p)) p$lbm_distance_prediction = 12 # this is a half window km
     if (!exists("lbm_distance_scale", p)) p$lbm_distance_scale = 25 # km ... approx guess of 95% AC range 
-    if (!exists("lbm_distance_min", p)) p$lbm_distance_min = 1 
+    if (!exists("lbm_distance_min", p)) p$lbm_distance_min = 2 
     if (!exists("lbm_distance_max", p)) p$lbm_distance_max = 50
   
-    if (!exists("n.min", p)) p$n.min = 200 # n.min/n.max changes with resolution must be more than the number of knots/edf
+    if (!exists("n.min", p)) p$n.min = 100 # n.min/n.max changes with resolution must be more than the number of knots/edf
     # min number of data points req before attempting to model timeseries in a localized space
     if (!exists("n.max", p)) p$n.max = 8000 # no real upper bound
     p$sampling = c( 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.1, 1.25 )  # 
@@ -174,8 +174,8 @@ snowcrab.parameters = function( p=NULL, DS="default", current.year=NULL, varname
 
       if (!exists("lbm_local_modelformula", p))  p$lbm_local_modelformula = formula( paste(
         varname, '~ s(yr, bs="ts") + s(cos.w, k=3, bs="ts") + s(sin.w, k=3, bs="ts") ', 
-          ' + s(cos.w, sin.w, yr, bs="ts", k=10) + s( log(z), k=3, bs="ts") ',
-          ' + s(plon, k=3, bs="ts") + s(plat, k=3, bs="ts") + s(plon, plat, log(z), k=10, bs="ts") ' ) )
+          ' + s(cos.w, sin.w, yr, bs="ts", k=25) + s( log(z), k=3, bs="ts") ',
+          ' + s(plon, k=3, bs="ts") + s(plat, k=3, bs="ts") + s(plon, plat, log(z), k=25, bs="ts") ' ) )
 
       if (!exists("lbm_local_model_distanceweighted", p)) p$lbm_local_model_distanceweighted = TRUE
       # if (!exists("lbm_gam_optimizer", p)) p$lbm_gam_optimizer="perf"
