@@ -107,6 +107,8 @@ GCV = 3.0391e+06  Scale est. = 3.0308e+06  n = 6853
 
 # -------------------------------------------------
 # presence-absence
+# current.year = 2016
+
 p = bio.snowcrab::load.environment( year.assessment=current.year )
 p$selection=list( 
   name = "snowcrab.large.males_presence_absence",
