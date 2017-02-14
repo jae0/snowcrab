@@ -33,7 +33,10 @@ snowcrab_lbm = function( ip=NULL, DS=NULL, p=NULL, voi=NULL, year=NULL, ret=NULL
     
 
     if ( p$selection$type=="abundance") {
-      set = set[ set$totmass > 0, ]  # only positive valued data
+      jj = which( set$totmass > 0 )
+      lowestpossible = min( set$totmass[jj] , na.rm=TRUE)  # keep zero's to inform spatial processes but only as "lowestpossible" value
+      ii = which( set$totmass <= lowestpossible )
+      set$totmass[ii] = lowestpossible / 2  
       names(set)[ which( names(set) =="totmass")] = p$selection$name 
       set$Y = NULL
     }
