@@ -15,6 +15,7 @@
       }
 
       m = snowcrab_lbm( p=p, DS="baseline", ret="mean", varnames=varnames )
+      
       m = m[[1]] * m[[2]] # m[[2]] is serving as weight/probabilities
 
       # more range checks

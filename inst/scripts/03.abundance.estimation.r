@@ -189,7 +189,7 @@ UBRE = -0.0011851  Scale est. = 1         n = 6853
 
 
 
-    # collect all results into a single file and return:
+    # collect all predictions into a single file and return:
 
 interpolation.db( DS="biomass.redo", p=p  )
 K = interpolation.db( DS="timeseries", p=p  )
