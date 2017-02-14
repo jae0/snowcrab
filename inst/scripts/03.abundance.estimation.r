@@ -190,7 +190,12 @@ UBRE = -0.0011851  Scale est. = 1         n = 6853
 
 
     # collect all results into a single file and return:
-    K = interpolation.db( DS="interpolation.simulation", p=p  )
+
+interpolation.db( DS="biomass.redo", p=p  )
+interpolation.db( DS="timeseries.redo", p=p  )
+
+K = interpolation.db( DS="timeseries", p=p  )
+
     table.view( K )
 
     figure.timeseries.errorbars( Pmeta, outdir=outdir, fname=paste(vv, rr, sep=".") )

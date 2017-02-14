@@ -70,10 +70,9 @@
           aoi = intersect( aoi, which( b$plon > 250 ) )
           iHabitatRegion = intersect( aoi, iHabitat )
           out[ y, r, 1] = sum( biomass[[1]][iHabitatRegion,] , na.rm=TRUE ) # abundance weighted by Pr
-          out[ y, r, 2] = sqrt( sum( biomass[[2]][iHabitatRegion,], na.rm=TRUE )^2 )
+          out[ y, r, 2] = sqrt( sum( (biomass[[2]][iHabitatRegion,])^2, na.rm=TRUE ) )
           out[ y, r, 3] = length( iHabitatRegion ) * (p$pres*p$pres)
         }
-
       }
 
       return( out )      

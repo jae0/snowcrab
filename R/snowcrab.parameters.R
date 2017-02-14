@@ -55,8 +55,6 @@ snowcrab.parameters = function( p=NULL, DS="default", current.year=NULL, varname
     p$annual.results = file.path( project.datadirectory("bio.snowcrab"), "assessments", p$year.assessment ) 
     p$ofname = file.path(p$annual.results, paste("TSresults", p$year.assessment, "rdata", sep=".") )
     
-    p$annot.cex=2
-    p$do.parallel = TRUE
 
     p$fisheries.grid.resolution = 2
    
@@ -76,6 +74,8 @@ snowcrab.parameters = function( p=NULL, DS="default", current.year=NULL, varname
     if (1) {
       #  things that will be removed soon :: TODO
 
+      p$annot.cex=2
+      p$do.parallel = TRUE
       p$ext2 = extent(matrix(c(-66.4, 42.2, -57.2, 47.4), nrow=2, ncol=2)) #MG extent of mapping frame
       p$extUTM = extent(matrix(c(219287.2, 4677581, 937584, 5265946), nrow=2, ncol=2)) #MG UTM extent of mapping frame
       p$geog.proj = "+proj=longlat +ellps=WGS84"
@@ -99,11 +99,11 @@ snowcrab.parameters = function( p=NULL, DS="default", current.year=NULL, varname
     if (!exists("lbm_quantile_bounds", p)) p$lbm_quantile_bounds = c(0.01, 0.99) # remove these extremes in interpolations
     
     if (!exists("lbm_rsquared_threshold", p)) p$lbm_rsquared_threshold = 0.2 # lower threshold
-    if (!exists("lbm_distance_statsgrid", p)) p$lbm_distance_statsgrid = 10 # resolution (km) of data aggregation (i.e. generation of the ** statistics ** )
-    if (!exists("lbm_distance_prediction", p)) p$lbm_distance_prediction = p$lbm_distance_statsgrid * 1.5 # this is a half window km
-    if (!exists("lbm_distance_scale", p)) p$lbm_distance_scale = 20 # km ... approx guess of 95% AC range 
+    if (!exists("lbm_distance_statsgrid", p)) p$lbm_distance_statsgrid = 5 # resolution (km) of data aggregation (i.e. generation of the ** statistics ** )
+    if (!exists("lbm_distance_prediction", p)) p$lbm_distance_prediction = p$lbm_distance_statsgrid * 2 # this is a half window km
+    if (!exists("lbm_distance_scale", p)) p$lbm_distance_scale = 10 # km ... approx guess of 95% AC range 
     if (!exists("lbm_distance_min", p)) p$lbm_distance_min = p$lbm_distance_statsgrid 
-    if (!exists("lbm_distance_max", p)) p$lbm_distance_max = 40
+    if (!exists("lbm_distance_max", p)) p$lbm_distance_max = 45
   
     if (!exists("n.min", p)) p$n.min = 50 # n.min/n.max changes with resolution must be more than the number of knots/edf
     # min number of data points req before attempting to model timeseries in a localized space
