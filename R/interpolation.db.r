@@ -39,8 +39,8 @@
       set = snowcrab.db( DS="set.clean")
       sloc = set[ , c("plon", "plat") ]
       distances = rdist( bloc, sloc )
-      distances[ which(distances > p$threshold.distance) ] = NA
-      ips = which( !is.finite( rowSums(distances) ) )
+      distances[ which(distances < p$threshold.distance) ] = NA
+      ips = which( is.finite( rowSums(distances) ) )
       if ( length( ips) > 0) {
         m[ips,] = NA
         s[ips,] = NA
