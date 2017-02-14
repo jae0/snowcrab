@@ -31,10 +31,10 @@ p$selection=list(
   name = "snowcrab.large.males_abundance",
   type = "abundance",
   sex=0, # male
-  # mat=1, # maturity status in groundfish data is suspect
+  mat=1, # do not use maturity status in groundfish data as it is suspect .. 
   spec_bio=bio.taxonomy::taxonomy.recode( from="spec", to="parsimonious", tolookup=2526 ),
   len= c( 95, 200 )/10, #  mm -> cm ; indicators.db in cm
-  drop.groundfish.data=TRUE # from 1970 to 1999 measurement of invertebrates was sporatic .. zero-values are dropped as they are unreliable 
+  drop.groundfish.data=TRUE # esp from 1970 to 1999 measurement of invertebrates was sporatic .. zero-values are dropped as they are unreliable 
 )
 p$lbm_local_modelengine = "twostep"
 p$lbm_twostep_space = "krige"
@@ -112,10 +112,10 @@ p$selection=list(
   name = "snowcrab.large.males_presence_absence",
   type = "presence_absence",
   sex=0, # male
-  # mat=1, # maturity status in groundfish data is suspect
+  mat=1, # do not use maturity status in groundfish data as it is suspect ..   
   spec_bio=bio.taxonomy::taxonomy.recode( from="spec", to="parsimonious", tolookup=2526 ),
   len= c( 95, 200 )/10, #  mm -> cm ; indicators.db in cm
-  drop.groundfish.data=TRUE # from 1970 to 1999 measurement of invertebrates was sporatic .. zero-values are dropped as they are unreliable 
+  drop.groundfish.data=TRUE # esp from 1970 to 1999 measurement of invertebrates was sporatic .. zero-values are dropped as they are unreliable 
 )
 p$lbm_local_modelengine = "twostep"
 p$lbm_twostep_space = "krige"
