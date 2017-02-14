@@ -118,7 +118,7 @@ p$selection=list(
   drop.groundfish.data=TRUE # esp from 1970 to 1999 measurement of invertebrates was sporatic .. zero-values are dropped as they are unreliable 
 )
 p$lbm_local_modelengine = "twostep"
-p$lbm_twostep_space = "spatial.process"
+p$lbm_twostep_space = "krige"
 p$lbm_gam_optimizer=c("outer", "bfgs") 
 
 
@@ -160,32 +160,35 @@ Formula:
 snowcrab.large.males_presence_absence ~ s(t, k = 3, bs = "ts") + 
     s(tmean.climatology, k = 3, bs = "ts") + s(tsd.climatology, 
     k = 3, bs = "ts") + s(log(dZ), k = 3, bs = "ts") + s(log(ddZ), 
+    k = 3, bs = "ts") + s(log(mr), k = 3, bs = "ts") + s(Npred, 
     k = 3, bs = "ts") + s(smr, k = 3, bs = "ts") + s(log.substrate.grainsize, 
     k = 3, bs = "ts") + s(ca1, k = 3, bs = "ts") + s(ca2, k = 3, 
     bs = "ts")
 
 Parametric coefficients:
             Estimate Std. Error z value Pr(>|z|)    
-(Intercept)  0.84173    0.03158   26.66   <2e-16 ***
+(Intercept)  0.78170    0.03176   24.61   <2e-16 ***
 ---
 Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
 
 Approximate significance of smooth terms:
                              edf Ref.df  Chi.sq  p-value    
-s(t)                       1.925      2 154.413  < 2e-16 ***
-s(tmean.climatology)       1.949      2  62.662 1.37e-15 ***
-s(tsd.climatology)         1.861      2   7.515   0.0175 *  
-s(log(dZ))                 1.844      2  18.364 4.50e-05 ***
-s(log(ddZ))                1.817      2  32.675 1.60e-08 ***
-s(smr)                     1.486      2  44.843 3.93e-12 ***
-s(log.substrate.grainsize) 1.370      2 209.198  < 2e-16 ***
-s(ca1)                     1.177      2  48.885 1.50e-13 ***
-s(ca2)                     1.981      2 123.896  < 2e-16 ***
+s(t)                       1.937      2 159.881  < 2e-16 ***
+s(tmean.climatology)       1.887      2 109.616  < 2e-16 ***
+s(tsd.climatology)         1.680      2  10.115  0.00270 ** 
+s(log(dZ))                 1.255      2   9.449  0.00177 ** 
+s(log(ddZ))                1.512      2  20.517 3.52e-06 ***
+s(log(mr))                 1.342      2 158.152  < 2e-16 ***
+s(Npred)                   1.903      2  20.863 1.58e-05 ***
+s(smr)                     1.737      2   8.086  0.00968 ** 
+s(log.substrate.grainsize) 1.597      2 298.690  < 2e-16 ***
+s(ca1)                     1.727      2  20.945 6.30e-06 ***
+s(ca2)                     1.918      2 116.735  < 2e-16 ***
 ---
 Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
 
-R-sq.(adj) =  0.257   Deviance explained = 21.8%
-UBRE = -0.0011851  Scale est. = 1         n = 6853
+R-sq.(adj) =  0.271   Deviance explained =   23%
+UBRE = -0.001273  Scale est. = 1         n = 6853
 ---
 
 
