@@ -114,7 +114,7 @@ snowcrab.parameters = function( p=NULL, DS="default", current.year=NULL, varname
       Y = varname, 
       LOCS = c("plon", "plat"), 
       TIME = "tiyr", 
-      COV = c("z", "dZ", "ddZ", "log.substrate.grainsize", "t", "tmean.climatology", "tsd.climatology", "ca1", "ca2", "mr", "Npred", "len" ) )
+      COV = c("z", "dZ", "ddZ", "log.substrate.grainsize", "t", "tmean.climatology", "tsd.climatology", "ca1", "ca2", "mr", "Npred", "smr" ) )
     p$varnames = c( p$variables$LOCS, p$variables$COV ) 
  
     # additional variable to extract from indicators.db for inputs
@@ -136,7 +136,7 @@ snowcrab.parameters = function( p=NULL, DS="default", current.year=NULL, varname
     if (!exists("lbm_global_modelformula", p)) p$lbm_global_modelformula = formula( paste( 
       varname, ' ~ s(t, k=3, bs="ts") + s(tmean.climatology, k=3, bs="ts") + s(tsd.climatology, k=3, bs="ts")  ', 
       ' + s( log(dZ), k=3, bs="ts") + s( log(ddZ), k=3, bs="ts") ',
-      ' + s( log(mr), k=3, bs="ts") + s( Npred, k=3, bs="ts") + s( len, k=3, bs="ts")  ',
+      ' + s( log(mr), k=3, bs="ts") + s( Npred, k=3, bs="ts") + s( smr, k=3, bs="ts")  ',
       ' + s(log.substrate.grainsize, k=3, bs="ts") + s(ca1, k=3, bs="ts") + s(ca2, k=3, bs="ts")   ' ))  # no space 
 
     if (p$lbm_local_modelengine =="twostep") {

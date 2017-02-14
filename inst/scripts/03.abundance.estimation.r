@@ -37,7 +37,7 @@ p$selection=list(
   drop.groundfish.data=TRUE # esp from 1970 to 1999 measurement of invertebrates was sporatic .. zero-values are dropped as they are unreliable 
 )
 p$lbm_local_modelengine = "twostep"
-p$lbm_twostep_space = "gstat"
+p$lbm_twostep_space = "tps"
 p$lbm_gam_optimizer=c("outer", "bfgs") 
 
 # p$lbm_global_family = gaussian(link="log")
@@ -66,7 +66,6 @@ global_model = lbm_db( p=p, DS="global_model")
 summary( global_model )
 plot(global_model)
 
-
 Family: gaussian 
 Link function: log 
 
@@ -80,28 +79,28 @@ snowcrab.large.males_abundance ~ s(t, k = 3, bs = "ts") + s(tmean.climatology,
 
 Parametric coefficients:
             Estimate Std. Error t value Pr(>|t|)    
-(Intercept)  6.78476    0.03321   204.3   <2e-16 ***
+(Intercept)  6.57664    0.03544   185.6   <2e-16 ***
 ---
 Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
 
 Approximate significance of smooth terms:
-                                 edf Ref.df        F  p-value    
-s(t)                       1.1299795      2   50.837  < 2e-16 ***
-s(tmean.climatology)       1.1331866      2   49.742  < 2e-16 ***
-s(tsd.climatology)         1.3070632      2   32.512  < 2e-16 ***
-s(log(dZ))                 0.0001416      2    0.000 0.176516    
-s(log(ddZ))                1.7019793      2   20.121 1.19e-10 ***
-s(log(mr))                 1.9830086      2 1110.491  < 2e-16 ***
-s(Npred)                   1.9994579      2   63.040  < 2e-16 ***
-s(len)                     1.8883740      2    7.463 0.000351 ***
-s(log.substrate.grainsize) 1.9978390      2  140.494  < 2e-16 ***
-s(ca1)                     1.8864690      2    7.989 0.000152 ***
-s(ca2)                     1.1408621      2   16.204 1.55e-09 ***
+                                 edf Ref.df       F  p-value    
+s(t)                       5.804e-05      2   0.001 1.88e-08 ***
+s(tmean.climatology)       1.608e+00      2 102.040  < 2e-16 ***
+s(tsd.climatology)         1.813e+00      2  18.364 6.82e-10 ***
+s(log(dZ))                 1.973e+00      2   8.678  0.00014 ***
+s(log(ddZ))                1.899e+00      2  17.473 1.04e-08 ***
+s(log(mr))                 1.998e+00      2 879.588  < 2e-16 ***
+s(Npred)                   1.980e+00      2  27.150 1.15e-12 ***
+s(len)                     1.984e+00      2  20.981 6.72e-10 ***
+s(log.substrate.grainsize) 1.983e+00      2 110.730  < 2e-16 ***
+s(ca1)                     1.998e+00      2  30.550 2.72e-14 ***
+s(ca2)                     6.172e-01      2   0.744  0.11312    
 ---
 Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
 
-R-sq.(adj) =  0.284   Deviance explained = 28.5%
-GCV = 4.9423e+06  Scale est. = 4.9299e+06  n = 6853
+R-sq.(adj) =  0.248   Deviance explained =   25%
+GCV = 3.0495e+06  Scale est. = 3.0411e+06  n = 6853
 ---
 
 
