@@ -7,8 +7,12 @@ snowcrab_lbm = function( ip=NULL, DS=NULL, p=NULL, voi=NULL, year=NULL, ret=NULL
   if (exists( "libs", p)) RLibrary( p$libs )
    
 
-  if (DS %in% c("baseline") ) {
+  if (DS %in% c("input_data") ) {
     set = bio.indicators::survey.db( p=p, DS="set.filter" ) # mature male > 74 mm 
+
+    # snowcrab survey data only
+    set = set[ set$data.source == "snowcrab", ]
+
     set = presence.absence( X=set, vname="zm", px=p$habitat.threshold.quantile )  # determine presence absence and weighting
 
     # if ( grepl( "snowcrab.large.males", p$selection$name ) ) {
@@ -25,52 +29,37 @@ snowcrab_lbm = function( ip=NULL, DS=NULL, p=NULL, voi=NULL, year=NULL, ret=NULL
 
     set$lon = set$lat = NULL
 
-    set = set[ which(is.finite(set$t)),] 
-    set = set[ which(is.finite(set$z)),] 
-
-    return (set)
-
-  }
-
-  # -----------------------------------
-
-  if (DS=="lbm_inputs") {
-    # mostly based on indicators.db( DS="lbm_inputs") 
-
-    INP = snowcrab_lbm(p=p, DS="baseline", voi=p$selection$name )
-    INP$tiyr = lubridate::decimal_date( INP$timestamp ) 
+    set$tiyr = lubridate::decimal_date( set$timestamp ) 
     
-    # snowcrab survey data only
-    INP = INP[ INP$data.source == "snowcrab", ]
 
     if ( p$selection$type=="abundance") {
-      INP = INP[ INP$totmass > 0, ]  # only positive valued data
-      names(INP)[ which( names(INP) =="totmass")] = p$selection$name 
-      INP$Y = NULL
+      set = set[ set$totmass > 0, ]  # only positive valued data
+      names(set)[ which( names(set) =="totmass")] = p$selection$name 
+      set$Y = NULL
     }
 
     if ( p$selection$type=="presence_absence") {
-      names(INP)[ which( names(INP) =="Y")] = p$selection$name 
-      INP$totmass = NULL
+      names(set)[ which( names(set) =="Y")] = p$selection$name 
+      set$totmass = NULL
     }
 
-    INP = INP[ which(is.finite(INP[, p$selection$name])),]
+    set = set[ which(is.finite(set[, p$selection$name])),]
 
     locsmap = match( 
-      lbm::array_map( "xy->1", INP[,c("plon","plat")], gridparams=p$gridparams ), 
+      lbm::array_map( "xy->1", set[,c("plon","plat")], gridparams=p$gridparams ), 
       lbm::array_map( "xy->1", bathymetry.db(p=p, DS="baseline"), gridparams=p$gridparams ) )
 
     # spatial vars and climatologies 
     newvars = c("dZ", "ddZ", "log.substrate.grainsize", "tmean.climatology", "tsd.climatology", "b.range", "t.range" )
     sn = indicators.lookup( p=p, DS="spatial", locsmap=locsmap, varnames=newvars )
-    INP = cbind( INP,  sn )
+    set = cbind( set,  sn )
 
     # for space-time(year-averages) 
     newvars = c( "tmean", "tsd", "amplitude" )
-    sn = indicators.lookup( p=p, DS="spatial.annual", locsmap=locsmap, timestamp=INP[,"timestamp"], varnames=newvars )
+    sn = indicators.lookup( p=p, DS="spatial.annual", locsmap=locsmap, timestamp=set[,"timestamp"], varnames=newvars )
     colnames( sn  ) = newvars
-    INP = cbind( INP,  sn )
-    names(INP)[ names(INP)=="amplitude"] ="tamplitude"
+    set = cbind( set,  sn )
+    names(set)[ names(set)=="amplitude"] ="tamplitude"
 
     # additional indicators.db variables
     for (iv in names(p$indicators.variables)) {
@@ -78,45 +67,52 @@ snowcrab_lbm = function( ip=NULL, DS=NULL, p=NULL, voi=NULL, year=NULL, ret=NULL
       p0 = bio.indicators::indicators.parameters( p=p0, DS=iv  )
       p0 = bio.spacetime::spatial_parameters( p=p0, type=p$spatial.domain ) # return to correct domain
       vn = p0$indicators.variables[[iv]]
-      sn = indicators.lookup( p=p0, DS="spatial.annual", locsmap=locsmap, timestamp=INP[,"timestamp"], 
+      sn = indicators.lookup( p=p0, DS="spatial.annual", locsmap=locsmap, timestamp=set[,"timestamp"], 
         varnames=vn, DB=indicators.db( p=p0, DS="baseline", varnames=vn ) )
       sn = as.data.frame(sn)
       names( sn  ) = p$indicators.variables[[iv]]
-      INP = cbind( INP,  sn )
+      set = cbind( set,  sn )
     }
 
-    INP = INP[, which(names(INP) %in% c(p$varnames, p$variables$Y, p$variables$TIME, "dyear", "yr" ) ) ]  # a data frame
-    oo = setdiff(p$varnames, names(INP))
+    set = set[, which(names(set) %in% c(p$varnames, p$variables$Y, p$variables$TIME, "dyear", "yr" ) ) ]  # a data frame
+    oo = setdiff(p$varnames, names(set))
     if (length(oo) > 0 ) {
       print(oo )
       warning("Some variables are missing in the input data")
     }
-    INP = na.omit(INP)
+    set = na.omit(set)
 
     # the following are modelled on a log-scale ... need zero-checks
     ## hack -- zero-values : predictions of log(0) fail 
-    INP$dZ [ which( INP$dZ < exp(-5)) ] = exp(-5)
-    INP$dZ [ which( INP$dZ > exp(5)) ] = exp(5)
+    set$dZ [ which( set$dZ < exp(-5)) ] = exp(-5)
+    set$dZ [ which( set$dZ > exp(5)) ] = exp(5)
 
     ## hack -- zero-values : predictions of log(0) fail 
-    INP$ddZ [ which( INP$ddZ < exp(-6)) ] = exp(-6)
-    INP$ddZ [ which( INP$ddZ > exp(5)) ] = exp(5)
+    set$ddZ [ which( set$ddZ < exp(-6)) ] = exp(-6)
+    set$ddZ [ which( set$ddZ > exp(5)) ] = exp(5)
 
     ## hack -- extreme-values .. error in exptrapolation of substrate 
-    INP$log.substrate.grainsize[ which( INP$log.substrate.grainsize < -6) ] = -6
-    INP$log.substrate.grainsize [ which( INP$log.substrate.grainsize > 5) ] = 5
+    set$log.substrate.grainsize[ which( set$log.substrate.grainsize < -6) ] = -6
+    set$log.substrate.grainsize [ which( set$log.substrate.grainsize > 5) ] = 5
 
 
     # cap quantiles of dependent vars
     dr = list()
     for (voi in p$varnames) {
-      dr[[voi]] = quantile( INP[,voi], probs=p$lbm_quantile_bounds, na.rm=TRUE ) # use 95%CI
-      il = which( INP[,voi] < dr[[voi]][1] )
-      if ( length(il) > 0 ) INP[il,voi] = dr[[voi]][1]
-      iu = which( INP[,voi] > dr[[voi]][2] )
-      if ( length(iu) > 0 ) INP[iu,voi] = dr[[voi]][2]
+      dr[[voi]] = quantile( set[,voi], probs=p$lbm_quantile_bounds, na.rm=TRUE ) # use 95%CI
+      il = which( set[,voi] < dr[[voi]][1] )
+      if ( length(il) > 0 ) set[il,voi] = dr[[voi]][1]
+      iu = which( set[,voi] > dr[[voi]][2] )
+      if ( length(iu) > 0 ) set[iu,voi] = dr[[voi]][2]
     }
 
+    return (set)
+
+  }
+
+  # ------------------------
+
+  if (DS %in% c("output_data") ) {
     PS = indicators.db( p=p, DS="prediction.surface" ) # a list object with static and annually varying variables  
     names(PS)[ names(PS)=="amplitude"] ="tamplitude" 
 
@@ -137,7 +133,6 @@ snowcrab_lbm = function( ip=NULL, DS=NULL, p=NULL, voi=NULL, year=NULL, ret=NULL
     ## hack -- extreme-values .. error in exptrapolation of substrate .. fisx this in bio.substrate
     PS$log.substrate.grainsize[ which( PS$log.substrate.grainsize < -6) ] = -6
     PS$log.substrate.grainsize [ which( PS$log.substrate.grainsize > 5) ] = 5
-
 
     # additional indicators.db variables with correct number of years
     for (iv in names(p$indicators.variables)) {
@@ -161,14 +156,19 @@ snowcrab_lbm = function( ip=NULL, DS=NULL, p=NULL, voi=NULL, year=NULL, ret=NULL
       print(oo )
       warning("Some variables are missing in the prediction surface, PS")
     }
-
-    OUT = list( LOCS=bathymetry.db(p=p, DS="baseline"), COV=PS )    
-
-    return (list(input=INP, output=OUT))
-
+    return (PS)
   }
 
-  
+  # -----------------------------------
+
+  if (DS=="lbm_inputs") {
+    # mostly based on indicators.db( DS="lbm_inputs") 
+    INP = snowcrab_lbm(p=p, DS="input_data", voi=p$selection$name )
+    PS  = snowcrab_lbm(p=p, DS="output_data", voi=p$selection$name )
+    LOCS = bathymetry.db(p=p, DS="baseline")
+    return (list(input=INP, output=list( LOCS=LOCS, COV=PS )) )
+  }
+
 
   # --------------------------
 

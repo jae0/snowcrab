@@ -15,9 +15,37 @@
       }
 
       m = snowcrab_lbm( p=p, DS="baseline", ret="mean", varnames=varnames )
+      bloc = bathymetry.db( p=p, DS="baseline" )
+
+      set = snowcrab.db( DS="set.clean")
+      for( y in 1:length(p$yrs) ) {
+        S = set[ , c("plon", "plat") ]
+        distances =  rdist( PS[,c("plon", "plat")], S)
+        distances[ which(distances < p$threshold.distance) ] = NA
+        ips = which( !is.finite( rowSums(distances) ) )
+        iStations = filter.prediction.locations( DS="limit.to.near.survey.stations", PS=PS, y=y, p=p )  # consider 
+
+      }
+      
 
       # do some range checks
+      ips = which(
+        ( m[[2]] > 0.5 ) &
+        ( m[[2]].se < PS$habitat ) &
+        ( PS$plon > 295)
+      )
+      return (ips)
+    }
 
+    if ( DS=="limit.to.near.survey.stations" ) {
+      ## add points within X km of a survey station
+      if ( ! is.null(S) ) {
+        S = S[ , c("plon", "plat") ]
+        distances =  rdist( PS[,c("plon", "plat")], S)
+        distances[ which(distances < p$threshold.distance) ] = NA
+        ips = which( !is.finite( rowSums(distances) ) )
+      }
+    
 
       m = m[[1]] * m[[2]] # m[[2]] is serving as weight/probabilities
 

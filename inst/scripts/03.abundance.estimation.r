@@ -36,8 +36,7 @@ p$selection=list(
   len= c( 95, 200 )/10, #  mm -> cm ; indicators.db in cm
   drop.groundfish.data=TRUE # from 1970 to 1999 measurement of invertebrates was sporatic .. zero-values are dropped as they are unreliable 
 )
-p$lbm_local_modelengine = "twostep"
-p$lbm_twostep_space = "krige"
+p$lbm_local_modelengine = "gam"
 p$lbm_gam_optimizer=c("outer", "bfgs") 
 
 p$lbm_global_family = gaussian(link="log")
@@ -67,39 +66,40 @@ summary( global_model )
 plot(global_model)
 
 
+
 Family: gaussian 
 Link function: log 
 
 Formula:
 snowcrab.large.males_abundance ~ s(t, k = 3, bs = "ts") + s(tmean.climatology, 
     k = 3, bs = "ts") + s(tsd.climatology, k = 3, bs = "ts") + 
-    s(log(z), k = 3, bs = "ts") + s(log(dZ), k = 3, bs = "ts") + 
-    s(log(ddZ), k = 3, bs = "ts") + s(log.substrate.grainsize, 
-    k = 3, bs = "ts") + s(ca1, k = 3, bs = "ts") + s(ca2, k = 3, 
-    bs = "ts")
+    s(log(dZ), k = 3, bs = "ts") + s(log(ddZ), k = 3, bs = "ts") + 
+    s(smr, k = 3, bs = "ts") + s(log.substrate.grainsize, k = 3, 
+    bs = "ts") + s(ca1, k = 3, bs = "ts") + s(ca2, k = 3, bs = "ts")
 
 Parametric coefficients:
             Estimate Std. Error t value Pr(>|t|)    
-(Intercept)  7.41427    0.02779   266.8   <2e-16 ***
+(Intercept)  7.48624    0.02612   286.6   <2e-16 ***
 ---
 Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
 
 Approximate significance of smooth terms:
-                                 edf Ref.df       F  p-value    
-s(t)                       1.544e+00      2   1.423 0.152650    
-s(tmean.climatology)       1.106e+00      2  18.339 2.42e-10 ***
-s(tsd.climatology)         7.818e-08      2   0.000 0.407220    
-s(log(z))                  2.000e+00      2 215.450  < 2e-16 ***
-s(log(dZ))                 3.065e-05      2   0.000 0.782840    
-s(log(ddZ))                1.877e+00      2   6.597 0.000898 ***
-s(log.substrate.grainsize) 1.731e+00      2  26.089 2.23e-13 ***
-s(ca1)                     2.270e-04      2   0.000 0.217706    
-s(ca2)                     1.998e+00      2 154.687  < 2e-16 ***
+                                 edf Ref.df      F  p-value    
+s(t)                       0.0032656      2  0.001  0.45017    
+s(tmean.climatology)       0.0004583      2  0.000  1.00000    
+s(tsd.climatology)         0.7617319      2  1.507  0.04359 *  
+s(log(dZ))                 1.9991087      2 20.971 4.07e-10 ***
+s(log(ddZ))                1.1505713      2  3.910  0.00424 ** 
+s(smr)                     1.9999454      2 45.553  < 2e-16 ***
+s(log.substrate.grainsize) 1.9999826      2 35.140 4.96e-16 ***
+s(ca1)                     1.9798648      2 16.472 5.32e-08 ***
+s(ca2)                     1.9334739      2 21.729 1.01e-10 ***
 ---
 Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
 
-R-sq.(adj) =  0.0999   Deviance explained = 10.2%
-GCV = 7.8194e+06  Scale est. = 7.8012e+06  n = 4829
+R-sq.(adj) =  0.0703   Deviance explained = 7.26%
+GCV = 8.0781e+06  Scale est. = 8.0567e+06  n = 4829
+---
 
 
 
