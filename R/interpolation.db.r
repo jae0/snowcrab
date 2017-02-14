@@ -9,32 +9,45 @@
       fn = file.path( outdir, "biomass.rdata" )
 
       if (DS=="biomass") {
-        S = NULL
+        B = NULL
         if ( file.exists( fn) ) load(fn)
-        return (S)
+        return (B)
       }
 
       m = snowcrab_lbm( p=p, DS="baseline", ret="mean", varnames=varnames )
-
-
       m = m[[1]] * m[[2]] # m[[2]] is serving as weight/probabilities
-
-      # keep close to survey stations
-      bloc = bathymetry.db( p=p, DS="baseline" )
-      set = snowcrab.db( DS="set.clean")
-      sloc = set[ , c("plon", "plat") ]
-      distances = rdist( bloc, sloc )
-      distances[ which(distances < p$threshold.distance) ] = NA
-      ips = which( !is.finite( rowSums(distances) ) )
 
       # more range checks
       s = snowcrab_lbm( p=p, DS="baseline", ret="sd", varnames=varnames )
       # range checks
-
       s = s[[1]] * s[[2]]  # s[[2]] is serving as weight/probabilities
       
-      S = list( m=m, s=s )
-      save( S, file=fn, compress=TRUE )
+      largesd = which( (m-2*s) < 0 )
+      if (length(largesd) > 0) {
+        m[largesd] = NA
+        s[largesd] = NA 
+      }
+
+      mq = quantile(m, probs=p$lbm_quantile_bounds[2], na.rm=TRUE )
+      sq = quantile(s, probs=p$lbm_quantile_bounds[2], na.rm=TRUE ) 
+    
+      m[which(m > mq)] = mq 
+      s[which(s > sq)] = sq  # cap upper bound of sd
+
+      # keep solutions close to survey stations
+      bloc = bathymetry.db( p=p, DS="baseline" )
+      set = snowcrab.db( DS="set.clean")
+      sloc = set[ , c("plon", "plat") ]
+      distances = rdist( bloc, sloc )
+      distances[ which(distances > p$threshold.distance) ] = NA
+      ips = which( !is.finite( rowSums(distances) ) )
+      if ( length( ips) > 0) {
+        m[ips,] = NA
+        s[ips,] = NA
+      }
+
+      B = list( m=m, s=s )
+      save( B, file=fn, compress=TRUE )
 
       return(fn)
     }
@@ -48,16 +61,16 @@
       b = bathymetry.db( p=p, DS="baseline")
 
       nreg = length(p$regions)
-      out = array( NA, dims=c(p$ny, nreg, 2) )
+      out = array( NA, dim=c(p$ny, nreg, 3) )
 
       for (y in 1:p$ny) {
-        iHabitat = which( biomass[[1]][,y] > p$habitat.threshold.quantile )
+        iHabitat = which( is.finite( biomass[[1]][,y]) )
         for (r in 1:nreg ){
           aoi = filter.region.polygon(x=b[ , c("plon", "plat")], region=p$regions[r], planar=T)
           aoi = intersect( aoi, which( b$plon > 250 ) )
           iHabitatRegion = intersect( aoi, iHabitat )
-          out[ y, r, 1] = sum( biomass[[1]][, iHabitatRegion] ) # abundance weighted by Pr
-          out[ y, r, 2] = sqrt( sum( biomass[[2]][, iHabitatRegion] )^2)
+          out[ y, r, 1] = sum( biomass[[1]][iHabitatRegion,] , na.rm=TRUE ) # abundance weighted by Pr
+          out[ y, r, 2] = sqrt( sum( biomass[[2]][iHabitatRegion,], na.rm=TRUE )^2 )
           out[ y, r, 3] = length( iHabitatRegion ) * (p$pres*p$pres)
         }
 

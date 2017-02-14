@@ -70,6 +70,7 @@ snowcrab.parameters = function( p=NULL, DS="default", current.year=NULL, varname
     if (!exists("vars.to.model", p))  p$vars.to.model = variable.list.expand("all.to.model") # not sure why we have vars.to.model and vartomodel ... clean this up :: TODO
 
     p$habitat.threshold.quantile = 0.05 # quantile at which to consider zero-valued abundance
+    p$threshold.distance = 25 # predict no farther than this distance km from survey stations
    
   
     if (1) {
@@ -80,8 +81,6 @@ snowcrab.parameters = function( p=NULL, DS="default", current.year=NULL, varname
       p$geog.proj = "+proj=longlat +ellps=WGS84"
 
       ## these are kriging related parameters:: the method is deprecated
-      p$threshold.distance = 5  # in km for merging fisheries data into the trawl data for external drift kriging
-      p$optimizers = c(  "bfgs", "nlm", "perf", "newton", "Nelder-Mead" )  # used by GAM
       p = gmt.parameters( p=p )
 
      }
@@ -128,9 +127,9 @@ snowcrab.parameters = function( p=NULL, DS="default", current.year=NULL, varname
 
     if (!exists("lbm_variogram_method", p)) p$lbm_variogram_method = "fast"
     if (!exists("lbm_local_modelengine", p)) p$lbm_local_modelengine ="gam"
-#    if (!exists("lbm_global_modelengine", p)) p$lbm_global_modelengine ="gam"
+    if (!exists("lbm_global_modelengine", p)) p$lbm_global_modelengine ="gam"
 
-#    if (!exists("lbm_global_family", p)) p$lbm_global_family = gaussian( link=log) 
+    if (!exists("lbm_global_family", p)) p$lbm_global_family = gaussian( link=log) 
     if (!exists("lbm_local_family", p)) p$lbm_local_family = gaussian(link=log)
 
     # using covariates as a first pass essentially makes it ~ kriging with external drift .. no time or space here
@@ -173,18 +172,9 @@ snowcrab.parameters = function( p=NULL, DS="default", current.year=NULL, varname
     
     }  else if (p$lbm_local_modelengine == "gam") {
 
-      # if (!exists("lbm_local_modelformula", p))  p$lbm_local_modelformula = formula( paste(
-      #   varname, '~ s(yr, bs="ts") + s(cos.w, k=3, bs="ts") + s(sin.w, k=3, bs="ts") ', 
-      #     ' + s(cos.w, sin.w, yr, bs="ts", k=10) + s( log(z), k=3, bs="ts") ',
-      #     ' + s(plon, k=3, bs="ts") + s(plat, k=3, bs="ts") + s(plon, plat, log(z), k=10, bs="ts") ' ) )
-
       if (!exists("lbm_local_modelformula", p))  p$lbm_local_modelformula = formula( paste(
         varname, '~ s(yr, bs="ts") + s(cos.w, k=3, bs="ts") + s(sin.w, k=3, bs="ts") ', 
           ' + s(cos.w, sin.w, yr, bs="ts", k=10) + s( log(z), k=3, bs="ts") ',
-          ' + s( log(dZ), k=3, bs="ts") + s( log(ddZ), k=3, bs="ts") ',
-          ' + s(t, k=3, bs="ts") + s(tmean.climatology, k=3, bs="ts") + s(tsd.climatology, k=3, bs="ts")  ', 
-          ' + s( smr, k=3, bs="ts") ',
-          ' + s(log.substrate.grainsize, k=3, bs="ts") + s(ca1, k=3, bs="ts") + s(ca2, k=3, bs="ts")  ', 
           ' + s(plon, k=3, bs="ts") + s(plat, k=3, bs="ts") + s(plon, plat, log(z), k=10, bs="ts") ' ) )
 
       if (!exists("lbm_local_model_distanceweighted", p)) p$lbm_local_model_distanceweighted = TRUE
