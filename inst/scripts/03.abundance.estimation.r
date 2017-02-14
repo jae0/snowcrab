@@ -37,7 +37,7 @@ p$selection=list(
   drop.groundfish.data=TRUE # esp from 1970 to 1999 measurement of invertebrates was sporatic .. zero-values are dropped as they are unreliable 
 )
 p$lbm_local_modelengine = "twostep"
-p$lbm_twostep_space = "krige"
+p$lbm_twostep_space = "gstat"
 p$lbm_gam_optimizer=c("outer", "bfgs") 
 
 # p$lbm_global_family = gaussian(link="log")
