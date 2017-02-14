@@ -1,7 +1,19 @@
 
 snowcrab.db = function( DS, p=NULL, yrs=NULL) {
 	# long!
-	# handles all basic data tables, etc. ... can be broken into smaller pieces to make easier to maintain
+	# handles all basic data tables, etc. ... 
+  # DS
+  # "set.odbc" 
+  # "det.odbc" 
+  # "cat.odbc" 
+  # "setInitial" 
+  # "det.initial" 
+  # "cat.initial" 
+  # "set.clean" 
+  # "det.georeferenced" 
+  # "cat.georeferenced" 
+  # "set.biologicals" 
+  # "set.complete" 
 
   # sex codes
   male = 0
@@ -715,7 +727,7 @@ snowcrab.db = function( DS, p=NULL, yrs=NULL) {
     
     grid = spatial_grid(p=p, DS="planar.coords")
 
-message("probably do not need to grid any longer")
+    message("probably do not need to grid any longer")
 
     set$plon = grid.internal( set$plon, grid$plon )
     set$plat = grid.internal( set$plat, grid$plat )
@@ -783,7 +795,7 @@ message("probably do not need to grid any longer")
   # -------------
 
   if ( DS %in% c("set.biologicals", "set.biologicals.redo") ) {
-  # browser()
+    # browser()
 
     fn = file.path( project.datadirectory("bio.snowcrab"), "R", "set.biologicals.rdata")
 

@@ -1,6 +1,5 @@
 
   # Figures obtained after completion of data assimilation and processing up to the end of "01.snowcrab.r"
-  require(bio.base)
   p = bio.snowcrab::load.environment( year.assessment=2016)
   #loadfunctions('bio.snowcrab')
 
