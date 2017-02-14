@@ -99,10 +99,10 @@ snowcrab.parameters = function( p=NULL, DS="default", current.year=NULL, varname
     if (!exists("lbm_quantile_bounds", p)) p$lbm_quantile_bounds = c(0.01, 0.99) # remove these extremes in interpolations
     
     if (!exists("lbm_rsquared_threshold", p)) p$lbm_rsquared_threshold = 0.2 # lower threshold
-    if (!exists("lbm_distance_statsgrid", p)) p$lbm_distance_statsgrid = 4 # resolution (km) of data aggregation (i.e. generation of the ** statistics ** )
+    if (!exists("lbm_distance_statsgrid", p)) p$lbm_distance_statsgrid = 1 # resolution (km) of data aggregation (i.e. generation of the ** statistics ** )
     if (!exists("lbm_distance_prediction", p)) p$lbm_distance_prediction = 6 # this is a half window km
-    if (!exists("lbm_distance_scale", p)) p$lbm_distance_scale = 40 # km ... approx guess of 95% AC range 
-    if (!exists("lbm_distance_min", p)) p$lbm_distance_min = 2 
+    if (!exists("lbm_distance_scale", p)) p$lbm_distance_scale = 50 # km ... approx guess of 95% AC range 
+    if (!exists("lbm_distance_min", p)) p$lbm_distance_min = 3 
     if (!exists("lbm_distance_max", p)) p$lbm_distance_max = 75
   
     if (!exists("n.min", p)) p$n.min = 100 # n.min/n.max changes with resolution must be more than the number of knots/edf
