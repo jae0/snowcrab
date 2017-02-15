@@ -37,11 +37,15 @@ p$selection=list(
   drop.groundfish.data=TRUE # esp from 1970 to 1999 measurement of invertebrates was sporatic .. zero-values are dropped as they are unreliable 
 )
 p$lbm_local_modelengine = "twostep"
-p$lbm_twostep_space = "krige"
-p$lbm_gam_optimizer=c("outer", "bfgs") 
-
 # p$lbm_global_family = gaussian(link="log")
 p$lbm_local_family = gaussian(link="log")  # after logit transform by global model, it becomes gaussian (logit scale)
+
+p$lbm_twostep_space = "krige"
+p$lbm_gam_optimizer=c("outer", "bfgs") 
+p$lbm_distance_statsgrid = 2 # resolution (km) of data aggregation (i.e. generation of the ** statistics ** )
+p$lbm_distance_prediction = 4  # this is a half window km
+p$lbm_distance_scale = 50
+
 p = bio.snowcrab::snowcrab.parameters( p=p, DS="lbm", varname=p$selection$name  )
 
 # o = snowcrab_lbm(p=p, DS="lbm_inputs" )  # create fields for 
@@ -119,13 +123,17 @@ p$selection=list(
   len= c( 95, 200 )/10, #  mm -> cm ; indicators.db in cm
   drop.groundfish.data=TRUE # esp from 1970 to 1999 measurement of invertebrates was sporatic .. zero-values are dropped as they are unreliable 
 )
-p$lbm_local_modelengine = "twostep"
-p$lbm_twostep_space = "krige"
-p$lbm_gam_optimizer=c("outer", "bfgs") 
-
 
 p$lbm_global_family = binomial()
+
+p$lbm_local_modelengine = "twostep"
 p$lbm_local_family = gaussian()  # after logit transform by global model, it becomes gaussian (logit scale)
+p$lbm_twostep_space = "krige"
+p$lbm_gam_optimizer=c("outer", "bfgs") 
+p$lbm_distance_statsgrid = 2 # resolution (km) of data aggregation (i.e. generation of the ** statistics ** )
+p$lbm_distance_prediction = 4  # this is a half window km
+p$lbm_distance_scale = 50
+
 
 p = bio.snowcrab::snowcrab.parameters( p=p, DS="lbm", varname=p$selection$name  )
 
