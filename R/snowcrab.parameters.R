@@ -55,8 +55,6 @@ snowcrab.parameters = function( p=NULL, DS="default", current.year=NULL, varname
     p$annual.results = file.path( project.datadirectory("bio.snowcrab"), "assessments", p$year.assessment ) 
     p$ofname = file.path(p$annual.results, paste("TSresults", p$year.assessment, "rdata", sep=".") )
     
-    p$annot.cex=2
-    p$do.parallel = TRUE
 
     p$fisheries.grid.resolution = 2
    
@@ -70,18 +68,19 @@ snowcrab.parameters = function( p=NULL, DS="default", current.year=NULL, varname
     if (!exists("vars.to.model", p))  p$vars.to.model = variable.list.expand("all.to.model") # not sure why we have vars.to.model and vartomodel ... clean this up :: TODO
 
     p$habitat.threshold.quantile = 0.05 # quantile at which to consider zero-valued abundance
+    p$threshold.distance = 25 # predict no farther than this distance km from survey stations
    
   
     if (1) {
       #  things that will be removed soon :: TODO
 
+      p$annot.cex=2
+      p$do.parallel = TRUE
       p$ext2 = extent(matrix(c(-66.4, 42.2, -57.2, 47.4), nrow=2, ncol=2)) #MG extent of mapping frame
       p$extUTM = extent(matrix(c(219287.2, 4677581, 937584, 5265946), nrow=2, ncol=2)) #MG UTM extent of mapping frame
       p$geog.proj = "+proj=longlat +ellps=WGS84"
 
       ## these are kriging related parameters:: the method is deprecated
-      p$threshold.distance = 5  # in km for merging fisheries data into the trawl data for external drift kriging
-      p$optimizers = c(  "bfgs", "nlm", "perf", "newton", "Nelder-Mead" )  # used by GAM
       p = gmt.parameters( p=p )
 
      }
@@ -100,13 +99,13 @@ snowcrab.parameters = function( p=NULL, DS="default", current.year=NULL, varname
     if (!exists("lbm_quantile_bounds", p)) p$lbm_quantile_bounds = c(0.01, 0.99) # remove these extremes in interpolations
     
     if (!exists("lbm_rsquared_threshold", p)) p$lbm_rsquared_threshold = 0.2 # lower threshold
-    if (!exists("lbm_distance_statsgrid", p)) p$lbm_distance_statsgrid = 10 # resolution (km) of data aggregation (i.e. generation of the ** statistics ** )
-    if (!exists("lbm_distance_prediction", p)) p$lbm_distance_prediction = p$lbm_distance_statsgrid * 1.5 # this is a half window km
-    if (!exists("lbm_distance_scale", p)) p$lbm_distance_scale = 20 # km ... approx guess of 95% AC range 
-    if (!exists("lbm_distance_min", p)) p$lbm_distance_min = p$lbm_distance_statsgrid 
-    if (!exists("lbm_distance_max", p)) p$lbm_distance_max = 40
+    if (!exists("lbm_distance_statsgrid", p)) p$lbm_distance_statsgrid = 1 # resolution (km) of data aggregation (i.e. generation of the ** statistics ** )
+    if (!exists("lbm_distance_prediction", p)) p$lbm_distance_prediction = 5 # this is a half window km
+    if (!exists("lbm_distance_scale", p)) p$lbm_distance_scale = 40 # km ... approx guess of 95% AC range 
+    if (!exists("lbm_distance_min", p)) p$lbm_distance_min = 3 
+    if (!exists("lbm_distance_max", p)) p$lbm_distance_max = 75
   
-    if (!exists("n.min", p)) p$n.min = 50 # n.min/n.max changes with resolution must be more than the number of knots/edf
+    if (!exists("n.min", p)) p$n.min = 100 # n.min/n.max changes with resolution must be more than the number of knots/edf
     # min number of data points req before attempting to model timeseries in a localized space
     if (!exists("n.max", p)) p$n.max = 8000 # no real upper bound
     p$sampling = c( 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.1, 1.25 )  # 
@@ -115,7 +114,7 @@ snowcrab.parameters = function( p=NULL, DS="default", current.year=NULL, varname
       Y = varname, 
       LOCS = c("plon", "plat"), 
       TIME = "tiyr", 
-      COV = c("z", "dZ", "ddZ", "log.substrate.grainsize", "t", "tmean.climatology", "tsd.climatology", "ca1", "ca2", "smr" ) )
+      COV = c("z", "dZ", "ddZ", "log.substrate.grainsize", "t", "tmean.climatology", "tsd.climatology", "ca1", "ca2", "mr", "Npred", "smr" ) )
     p$varnames = c( p$variables$LOCS, p$variables$COV ) 
  
     # additional variable to extract from indicators.db for inputs
@@ -128,16 +127,16 @@ snowcrab.parameters = function( p=NULL, DS="default", current.year=NULL, varname
 
     if (!exists("lbm_variogram_method", p)) p$lbm_variogram_method = "fast"
     if (!exists("lbm_local_modelengine", p)) p$lbm_local_modelengine ="gam"
-#    if (!exists("lbm_global_modelengine", p)) p$lbm_global_modelengine ="gam"
+    if (!exists("lbm_global_modelengine", p)) p$lbm_global_modelengine ="gam"
 
-#    if (!exists("lbm_global_family", p)) p$lbm_global_family = gaussian( link=log) 
+    if (!exists("lbm_global_family", p)) p$lbm_global_family = gaussian( link=log) 
     if (!exists("lbm_local_family", p)) p$lbm_local_family = gaussian(link=log)
 
     # using covariates as a first pass essentially makes it ~ kriging with external drift .. no time or space here
     if (!exists("lbm_global_modelformula", p)) p$lbm_global_modelformula = formula( paste( 
       varname, ' ~ s(t, k=3, bs="ts") + s(tmean.climatology, k=3, bs="ts") + s(tsd.climatology, k=3, bs="ts")  ', 
       ' + s( log(dZ), k=3, bs="ts") + s( log(ddZ), k=3, bs="ts") ',
-      ' + s( smr, k=3, bs="ts") ',
+      ' + s( log(mr), k=3, bs="ts") + s( Npred, k=3, bs="ts") + s( smr, k=3, bs="ts")  ',
       ' + s(log.substrate.grainsize, k=3, bs="ts") + s(ca1, k=3, bs="ts") + s(ca2, k=3, bs="ts")   ' ))  # no space 
 
     if (p$lbm_local_modelengine =="twostep") {
@@ -173,19 +172,10 @@ snowcrab.parameters = function( p=NULL, DS="default", current.year=NULL, varname
     
     }  else if (p$lbm_local_modelengine == "gam") {
 
-      # if (!exists("lbm_local_modelformula", p))  p$lbm_local_modelformula = formula( paste(
-      #   varname, '~ s(yr, bs="ts") + s(cos.w, k=3, bs="ts") + s(sin.w, k=3, bs="ts") ', 
-      #     ' + s(cos.w, sin.w, yr, bs="ts", k=10) + s( log(z), k=3, bs="ts") ',
-      #     ' + s(plon, k=3, bs="ts") + s(plat, k=3, bs="ts") + s(plon, plat, log(z), k=10, bs="ts") ' ) )
-
       if (!exists("lbm_local_modelformula", p))  p$lbm_local_modelformula = formula( paste(
         varname, '~ s(yr, bs="ts") + s(cos.w, k=3, bs="ts") + s(sin.w, k=3, bs="ts") ', 
-          ' + s(cos.w, sin.w, yr, bs="ts", k=10) + s( log(z), k=3, bs="ts") ',
-          ' + s( log(dZ), k=3, bs="ts") + s( log(ddZ), k=3, bs="ts") ',
-          ' + s(t, k=3, bs="ts") + s(tmean.climatology, k=3, bs="ts") + s(tsd.climatology, k=3, bs="ts")  ', 
-          ' + s( smr, k=3, bs="ts") ',
-          ' + s(log.substrate.grainsize, k=3, bs="ts") + s(ca1, k=3, bs="ts") + s(ca2, k=3, bs="ts")  ', 
-          ' + s(plon, k=3, bs="ts") + s(plat, k=3, bs="ts") + s(plon, plat, log(z), k=10, bs="ts") ' ) )
+          ' + s(cos.w, sin.w, yr, bs="ts", k=25) + s( log(z), k=3, bs="ts") ',
+          ' + s(plon, k=3, bs="ts") + s(plat, k=3, bs="ts") + s(plon, plat, log(z), k=25, bs="ts") ' ) )
 
       if (!exists("lbm_local_model_distanceweighted", p)) p$lbm_local_model_distanceweighted = TRUE
       # if (!exists("lbm_gam_optimizer", p)) p$lbm_gam_optimizer="perf"

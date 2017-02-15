@@ -31,15 +31,16 @@ p$selection=list(
   name = "snowcrab.large.males_abundance",
   type = "abundance",
   sex=0, # male
-  # mat=1, # maturity status in groundfish data is suspect
+  mat=1, # do not use maturity status in groundfish data as it is suspect .. 
   spec_bio=bio.taxonomy::taxonomy.recode( from="spec", to="parsimonious", tolookup=2526 ),
   len= c( 95, 200 )/10, #  mm -> cm ; indicators.db in cm
-  drop.groundfish.data=TRUE # from 1970 to 1999 measurement of invertebrates was sporatic .. zero-values are dropped as they are unreliable 
+  drop.groundfish.data=TRUE # esp from 1970 to 1999 measurement of invertebrates was sporatic .. zero-values are dropped as they are unreliable 
 )
 p$lbm_local_modelengine = "gam"
+p$lbm_twostep_space = "tps"
 p$lbm_gam_optimizer=c("outer", "bfgs") 
 
-p$lbm_global_family = gaussian(link="log")
+# p$lbm_global_family = gaussian(link="log")
 p$lbm_local_family = gaussian(link="log")  # after logit transform by global model, it becomes gaussian (logit scale)
 p = bio.snowcrab::snowcrab.parameters( p=p, DS="lbm", varname=p$selection$name  )
 
@@ -66,7 +67,6 @@ summary( global_model )
 plot(global_model)
 
 
-
 Family: gaussian 
 Link function: log 
 
@@ -74,46 +74,50 @@ Formula:
 snowcrab.large.males_abundance ~ s(t, k = 3, bs = "ts") + s(tmean.climatology, 
     k = 3, bs = "ts") + s(tsd.climatology, k = 3, bs = "ts") + 
     s(log(dZ), k = 3, bs = "ts") + s(log(ddZ), k = 3, bs = "ts") + 
+    s(log(mr), k = 3, bs = "ts") + s(Npred, k = 3, bs = "ts") + 
     s(smr, k = 3, bs = "ts") + s(log.substrate.grainsize, k = 3, 
     bs = "ts") + s(ca1, k = 3, bs = "ts") + s(ca2, k = 3, bs = "ts")
 
 Parametric coefficients:
             Estimate Std. Error t value Pr(>|t|)    
-(Intercept)  7.48624    0.02612   286.6   <2e-16 ***
+(Intercept)  6.49931    0.04467   145.5   <2e-16 ***
 ---
 Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
 
 Approximate significance of smooth terms:
-                                 edf Ref.df      F  p-value    
-s(t)                       0.0032656      2  0.001  0.45017    
-s(tmean.climatology)       0.0004583      2  0.000  1.00000    
-s(tsd.climatology)         0.7617319      2  1.507  0.04359 *  
-s(log(dZ))                 1.9991087      2 20.971 4.07e-10 ***
-s(log(ddZ))                1.1505713      2  3.910  0.00424 ** 
-s(smr)                     1.9999454      2 45.553  < 2e-16 ***
-s(log.substrate.grainsize) 1.9999826      2 35.140 4.96e-16 ***
-s(ca1)                     1.9798648      2 16.472 5.32e-08 ***
-s(ca2)                     1.9334739      2 21.729 1.01e-10 ***
+                                 edf Ref.df       F  p-value    
+s(t)                       1.728e+00      2  13.500 2.47e-07 ***
+s(tmean.climatology)       1.474e+00      2  47.985  < 2e-16 ***
+s(tsd.climatology)         1.660e+00      2  26.647 3.04e-14 ***
+s(log(dZ))                 1.934e+00      2   5.760   0.0025 ** 
+s(log(ddZ))                1.900e+00      2  13.413 7.22e-07 ***
+s(log(mr))                 1.998e+00      2 770.508  < 2e-16 ***
+s(Npred)                   6.852e-07      2   0.000 1.62e-05 ***
+s(smr)                     1.969e+00      2  21.528 3.09e-10 ***
+s(log.substrate.grainsize) 1.999e+00      2 110.261  < 2e-16 ***
+s(ca1)                     2.000e+00      2  49.297  < 2e-16 ***
+s(ca2)                     1.053e+00      2   6.815 8.67e-05 ***
 ---
 Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
 
-R-sq.(adj) =  0.0703   Deviance explained = 7.26%
-GCV = 8.0781e+06  Scale est. = 8.0567e+06  n = 4829
+R-sq.(adj) =  0.251   Deviance explained = 25.2%
+GCV = 3.0391e+06  Scale est. = 3.0308e+06  n = 6853
 ---
-
 
 
 # -------------------------------------------------
 # presence-absence
+# current.year = 2016
+
 p = bio.snowcrab::load.environment( year.assessment=current.year )
 p$selection=list( 
   name = "snowcrab.large.males_presence_absence",
   type = "presence_absence",
   sex=0, # male
-  # mat=1, # maturity status in groundfish data is suspect
+  mat=1, # do not use maturity status in groundfish data as it is suspect ..   
   spec_bio=bio.taxonomy::taxonomy.recode( from="spec", to="parsimonious", tolookup=2526 ),
   len= c( 95, 200 )/10, #  mm -> cm ; indicators.db in cm
-  drop.groundfish.data=TRUE # from 1970 to 1999 measurement of invertebrates was sporatic .. zero-values are dropped as they are unreliable 
+  drop.groundfish.data=TRUE # esp from 1970 to 1999 measurement of invertebrates was sporatic .. zero-values are dropped as they are unreliable 
 )
 p$lbm_local_modelengine = "twostep"
 p$lbm_twostep_space = "krige"
@@ -158,38 +162,45 @@ Formula:
 snowcrab.large.males_presence_absence ~ s(t, k = 3, bs = "ts") + 
     s(tmean.climatology, k = 3, bs = "ts") + s(tsd.climatology, 
     k = 3, bs = "ts") + s(log(dZ), k = 3, bs = "ts") + s(log(ddZ), 
+    k = 3, bs = "ts") + s(log(mr), k = 3, bs = "ts") + s(Npred, 
     k = 3, bs = "ts") + s(smr, k = 3, bs = "ts") + s(log.substrate.grainsize, 
     k = 3, bs = "ts") + s(ca1, k = 3, bs = "ts") + s(ca2, k = 3, 
     bs = "ts")
 
 Parametric coefficients:
             Estimate Std. Error z value Pr(>|z|)    
-(Intercept)  0.84173    0.03158   26.66   <2e-16 ***
+(Intercept)  0.78170    0.03176   24.61   <2e-16 ***
 ---
 Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
 
 Approximate significance of smooth terms:
                              edf Ref.df  Chi.sq  p-value    
-s(t)                       1.925      2 154.413  < 2e-16 ***
-s(tmean.climatology)       1.949      2  62.662 1.37e-15 ***
-s(tsd.climatology)         1.861      2   7.515   0.0175 *  
-s(log(dZ))                 1.844      2  18.364 4.50e-05 ***
-s(log(ddZ))                1.817      2  32.675 1.60e-08 ***
-s(smr)                     1.486      2  44.843 3.93e-12 ***
-s(log.substrate.grainsize) 1.370      2 209.198  < 2e-16 ***
-s(ca1)                     1.177      2  48.885 1.50e-13 ***
-s(ca2)                     1.981      2 123.896  < 2e-16 ***
+s(t)                       1.937      2 159.881  < 2e-16 ***
+s(tmean.climatology)       1.887      2 109.616  < 2e-16 ***
+s(tsd.climatology)         1.680      2  10.115  0.00270 ** 
+s(log(dZ))                 1.255      2   9.449  0.00177 ** 
+s(log(ddZ))                1.512      2  20.517 3.52e-06 ***
+s(log(mr))                 1.342      2 158.152  < 2e-16 ***
+s(Npred)                   1.903      2  20.863 1.58e-05 ***
+s(smr)                     1.737      2   8.086  0.00968 ** 
+s(log.substrate.grainsize) 1.597      2 298.690  < 2e-16 ***
+s(ca1)                     1.727      2  20.945 6.30e-06 ***
+s(ca2)                     1.918      2 116.735  < 2e-16 ***
 ---
 Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
 
-R-sq.(adj) =  0.257   Deviance explained = 21.8%
-UBRE = -0.0011851  Scale est. = 1         n = 6853
+R-sq.(adj) =  0.271   Deviance explained =   23%
+UBRE = -0.001273  Scale est. = 1         n = 6853
 ---
 
 
 
-    # collect all results into a single file and return:
-    K = interpolation.db( DS="interpolation.simulation", p=p  )
+    # collect all predictions into a single file and return:
+
+interpolation.db( DS="biomass.redo", p=p  )
+K = interpolation.db( DS="timeseries", p=p  )
+
+
     table.view( K )
 
     figure.timeseries.errorbars( Pmeta, outdir=outdir, fname=paste(vv, rr, sep=".") )
