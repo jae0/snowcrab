@@ -54,9 +54,7 @@ lbm( p=p, DATA=DATA, tasks=c("initiate", "globalmodel") ) # 30 min
 #   lbm( p=p, tasks=c( "stage0" ) ) # serial mode
 #   lbm( p=p, tasks=c( "continue" ) )    
 lbm( p=p, tasks=c( "stage1" ) ) #  3 hrs 
-lbm( p=p, tasks=c( "save" ) )
-
-lbm( p=p, tasks=c( "stage2" ) ) #   1 hrs
+# lbm( p=p, tasks=c( "stage2" ) ) #   1 hrs
 lbm( p=p, tasks=c( "save" ) )
 
 p = make.list( list( yrs=p$yrs), Y=p )
@@ -144,9 +142,7 @@ lbm( p=p, DATA=DATA, tasks=c("initiate", "globalmodel") ) # 30 min
 #   lbm( p=p, tasks=c( "stage0" ) ) # serial mode
 #   lbm( p=p, tasks=c( "continue" ) )    
 lbm( p=p, tasks=c( "stage1" ) ) #  3 hrs 
-lbm( p=p, tasks=c( "save" ) )
-
-lbm( p=p, tasks=c( "stage2" ) ) #   1 hrs
+# lbm( p=p, tasks=c( "stage2" ) ) #   1 hrs
 lbm( p=p, tasks=c( "save" ) )
 
 p = make.list( list( yrs=p$yrs), Y=p )
