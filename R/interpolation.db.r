@@ -16,36 +16,51 @@
 
       m = snowcrab_lbm( p=p, DS="baseline", ret="mean", varnames=varnames )
       
+      set = bio.indicators::survey.db( p=p, DS="set.filter" ) # mature male > 74 mm 
+      ii = which( set$totmass > 0 )
+      qs = quantile( set$totmass[ii], probs=c(p$habitat.threshold.quantile, p$lbm_quantile_bounds[2]), na.rm=TRUE )
+      jj = which(m[[1]] < qs[1])
+      if (length(jj) > 0 ) m[[1]][jj] = 0
+      
+      kk = which(m[[1]] > qs[2])
+      if (length(kk) > 0 ) m[[1]][kk] = qs[2]
+      
+      ll = which(m[[2]] < p$habitat.threshold.quantile )
+      if (length(ll) > 0 ) m[[2]][ll] = 0
+
       m = m[[1]] * m[[2]] # m[[2]] is serving as weight/probabilities
+
+
 
       # more range checks
       s = snowcrab_lbm( p=p, DS="baseline", ret="sd", varnames=varnames )
       # range checks
       s = s[[1]] * s[[2]]  # s[[2]] is serving as weight/probabilities
       
-      largesd = which( (m-2*s) < 0 )
-      if (length(largesd) > 0) {
-        m[largesd] = NA
-        s[largesd] = NA 
-      }
-
-      mq = quantile(m, probs=p$lbm_quantile_bounds[2], na.rm=TRUE )
       sq = quantile(s, probs=p$lbm_quantile_bounds[2], na.rm=TRUE ) 
-    
-      m[which(m > mq)] = mq 
       s[which(s > sq)] = sq  # cap upper bound of sd
 
-      # keep solutions close to survey stations
-      bloc = bathymetry.db( p=p, DS="baseline" )
-      set = snowcrab.db( DS="set.clean")
-      sloc = set[ , c("plon", "plat") ]
-      distances = rdist( bloc, sloc )
-      distances[ which(distances < p$threshold.distance) ] = NA
-      ips = which( is.finite( rowSums(distances) ) )
-      if ( length( ips) > 0) {
-        m[ips,] = NA
-        s[ips,] = NA
-      }
+      # limit range of extrapolation to within a given distance from survey stations
+      S = snowcrab.db( DS="set.clean")[ , c("plon", "plat") ]
+      S = S[ !duplicated(S),]
+      ii = array_map( "xy->1", S, gridparams=p$gridparams )
+      bs = bathymetry.db(p=p, DS="baseline")
+      bb = array_map( "xy->1", bs, gridparams=p$gridparams )
+      overlap = match(  ii, bb )
+      overlap = overlap[ which( is.finite( overlap ))] 
+      o = bs[overlap,] 
+      # add corners as buffer
+      o = rbind( o, 
+                 t(t(o)+p$threshold.distance*c( 1, 1)), 
+                 t(t(o)+p$threshold.distance*c(-1,-1)),
+                 t(t(o)+p$threshold.distance*c( 1,-1)),
+                 t(t(o)+p$threshold.distance*c(-1, 1))
+      )
+      o = o[ !duplicated(o),]
+      boundary= non_convex_hull( o, alpha=p$threshold.distance*2, plot=FALSE )
+      outside.polygon = which( point.in.polygon( bs[,1], bs[,2], boundary[,1], boundary[,2] ) == 0 )
+      m[outside.polygon,] = 0
+      s[outside.polygon,] = 0
 
       B = list( m=m, s=s )
       save( B, file=fn, compress=TRUE )
@@ -53,30 +68,43 @@
       return(fn)
     }
 
-    
+  
     # ------------------
 
 
     if (DS=="timeseries") {
       biomass = interpolation.db(p=p, DS="biomass")
-      b = bathymetry.db( p=p, DS="baseline")
+      bs = bathymetry.db( p=p, DS="baseline")
+      
+      bq = min( biomass[[1]][ biomass[[1]] > 0 ], na.rm=T )
 
+      K = NULL
       nreg = length(p$regions)
-      out = array( NA, dim=c(p$ny, nreg, 3) )
-
-      for (y in 1:p$ny) {
-        iHabitat = which( is.finite( biomass[[1]][,y]) )
-        for (r in 1:nreg ){
-          aoi = filter.region.polygon(x=b[ , c("plon", "plat")], region=p$regions[r], planar=T)
-          aoi = intersect( aoi, which( b$plon > 250 ) )
+      for (r in 1:nreg ){
+        aoi = filter.region.polygon(x=bs[ , c("plon", "plat")], region=p$regions[r], planar=T)
+        aoi = intersect( aoi, which( bs$plon > 250 ) )
+        out = matrix( NA, nrow=p$ny, ncol=3) 
+        
+        for (y in 1:p$ny) {
+          iHabitat = which( biomass[[1]][,y] > bq  )
           iHabitatRegion = intersect( aoi, iHabitat )
-          out[ y, r, 1] = sum( biomass[[1]][iHabitatRegion,] , na.rm=TRUE ) # abundance weighted by Pr
-          out[ y, r, 2] = sqrt( sum( (biomass[[2]][iHabitatRegion,])^2, na.rm=TRUE ) )
-          out[ y, r, 3] = length( iHabitatRegion ) * (p$pres*p$pres)
+          out[ y, 1] = sum( biomass[[1]][iHabitatRegion,y] , na.rm=TRUE ) # abundance weighted by Pr
+          out[ y, 2] = sqrt( sum( (biomass[[2]][iHabitatRegion,y])^2, na.rm=TRUE ) )
+          out[ y, 3] = length( iHabitatRegion ) * (p$pres*p$pres)
         }
+        
+        ok = as.data.frame( out )
+        names( ok) = c("total", "total.sd", "sa.region")
+        ok$total = ok$total / 10^6  # kg to kt
+        ok$total.sd = ok$total.sd / 10^6
+        ok$region = p$regions[r]
+        ok$yr = p$yrs
+        ok$lbound = exp(log(ok$total) - log(ok$total.sd)*1.96) # normal assumption 
+        ok$ubound = exp(log(ok$total) + log(ok$total.sd)*1.96) 
+        K = rbind(K, ok)
       }
 
-      return( out )      
+      return( K )      
     }
 
 

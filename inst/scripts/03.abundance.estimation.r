@@ -203,7 +203,7 @@ K = interpolation.db( DS="timeseries", p=p  )
 
     table.view( K )
 
-    figure.timeseries.errorbars( Pmeta, outdir=outdir, fname=paste(vv, rr, sep=".") )
+    figure.timeseries.errorbars( K[], outdir=outdir, fname=paste(vv, rr, sep=".") )
 
     ### --------- prediction success:
 
