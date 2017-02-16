@@ -15,8 +15,8 @@ snowcrab.parameters = function( p=NULL, DS="default", current.year=NULL, varname
                "geosphere",  "DBI", "Cairo", "Hmisc", "vegan", "akima",   "latticeExtra",  "maptools",  
                "boot", "grid", "RColorBrewer",  "spatstat", "rgeos", "bigmemory" ,"numDeriv")
 
-    p$libs = c( p$libs, supressMessages( RLibrary( rlibs ) ) )
-    p$libs = c( p$libs, supressMessages( bioLibrary (
+    p$libs = c( p$libs, suppressMessages( RLibrary( rlibs ) ) )
+    p$libs = c( p$libs, suppressMessages( bioLibrary (
       "bio.base", "bio.utilities", "bio.taxonomy", "bio.spacetime", "bio.polygons",  "netmensuration", 
       "bio.coastline",  "bio.bathymetry", "bio.temperature", "bio.substrate", "bio.groundfish", 
       "bio.snowcrab", "bio.indicators" ) ) ) 
