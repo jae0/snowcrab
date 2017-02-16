@@ -144,8 +144,8 @@ snowcrab.parameters = function( p=NULL, DS="default", current.year=NULL, varname
       # this is the time component (mostly) .. space enters as a rough constraint 
       if (!exists("lbm_local_modelformula", p))  p$lbm_local_modelformula = formula( paste(
         varname, '~ s(yr, bs="ts") + s(cos.w, k=3, bs="ts") + s(sin.w, k=3, bs="ts") ', 
-          ' + s(cos.w, sin.w, yr, bs="ts", k=25) + s( log(z), k=3, bs="ts") ',
-          ' + s(plon, k=3, bs="ts") + s(plat, k=3, bs="ts") + s(plon, plat, log(z), k=25, bs="ts") ' ) )
+          ' + s(cos.w, sin.w, yr, bs="ts", k=20) + s( log(z), k=3, bs="ts") ',
+          ' + s(plon, k=3, bs="ts") + s(plat, k=3, bs="ts") + s(plon, plat, log(z), k=20, bs="ts") ' ) )
       if (!exists("lbm_local_model_distanceweighted", p)) p$lbm_local_model_distanceweighted = TRUE
 
       # this is the spatial component
