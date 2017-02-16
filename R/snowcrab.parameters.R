@@ -100,7 +100,7 @@ snowcrab.parameters = function( p=NULL, DS="default", current.year=NULL, varname
     
     if (!exists("lbm_rsquared_threshold", p)) p$lbm_rsquared_threshold = 0.2 # lower threshold
     if (!exists("lbm_distance_statsgrid", p)) p$lbm_distance_statsgrid = 5 # resolution (km) of data aggregation (i.e. generation of the ** statistics ** )
-    if (!exists("lbm_distance_prediction", p)) p$lbm_distance_prediction = 7.5  # this is a half window km
+    if (!exists("lbm_distance_prediction", p)) p$lbm_distance_prediction = p$lbm_distance_statsgrid*0.75  # this is a half window km
     if (!exists("lbm_distance_scale", p)) p$lbm_distance_scale = 30 # km ... approx guess of 95% AC range 
     if (!exists("lbm_distance_min", p)) p$lbm_distance_min = 2 
     if (!exists("lbm_distance_max", p)) p$lbm_distance_max = 65
