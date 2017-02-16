@@ -129,8 +129,8 @@ snowcrab.parameters = function( p=NULL, DS="default", current.year=NULL, varname
     if (!exists("lbm_local_modelengine", p)) p$lbm_local_modelengine ="gam"
     if (!exists("lbm_global_modelengine", p)) p$lbm_global_modelengine ="gam"
 
-    if (!exists("lbm_global_family", p)) p$lbm_global_family = gaussian( link=log) 
-    if (!exists("lbm_local_family", p)) p$lbm_local_family = gaussian(link=log)
+    if (!exists("lbm_global_family", p)) p$lbm_global_family = gaussian( ) 
+    if (!exists("lbm_local_family", p)) p$lbm_local_family = gaussian()
 
     # using covariates as a first pass essentially makes it ~ kriging with external drift .. no time or space here
     if (!exists("lbm_global_modelformula", p)) p$lbm_global_modelformula = formula( paste( 
