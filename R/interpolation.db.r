@@ -19,14 +19,17 @@
       set = bio.indicators::survey.db( p=p, DS="set.filter" ) # mature male > 74 mm 
       ii = which( set$totmass > 0 )
       qs = quantile( set$totmass[ii], probs=c(p$habitat.threshold.quantile, p$lbm_quantile_bounds[2]), na.rm=TRUE )
+      
+      qs = log(qs) # m[[1]] is on log-scale
+
       jj = which(m[[1]] < qs[1])
-      if (length(jj) > 0 ) m[[1]][jj] = 0
+      if (length(jj) > 0 ) m[[1]][jj] = NA
       
       kk = which(m[[1]] > qs[2])
       if (length(kk) > 0 ) m[[1]][kk] = qs[2]
       
       ll = which(m[[2]] < p$habitat.threshold.quantile )
-      if (length(ll) > 0 ) m[[2]][ll] = 0
+      if (length(ll) > 0 ) m[[2]][ll] = NA
 
       m = m[[1]] * m[[2]] # m[[2]] is serving as weight/probabilities
 
@@ -59,10 +62,10 @@
       o = o[ !duplicated(o),]
       boundary= non_convex_hull( o, alpha=p$threshold.distance*2, plot=FALSE )
       outside.polygon = which( point.in.polygon( bs[,1], bs[,2], boundary[,1], boundary[,2] ) == 0 )
-      m[outside.polygon,] = 0
-      s[outside.polygon,] = 0
+      m[outside.polygon,] = NA
+      s[outside.polygon,] = NA
 
-      B = list( m=m, s=s )
+      B = list( m=exp(m), s=s )
       save( B, file=fn, compress=TRUE )
 
       return(fn)
@@ -109,7 +112,8 @@
 
 
     if ( DS %in% c( "interpolation.simulation" ) ) {
-      # simulation-based results are not ready at present, defaulting to simple estimates based upon assymptotic assumptions
+      message(" simulation-based results are not ready at present")
+      message(" defaulting to simple estimates based upon assymptotic assumptions" )
       out = interpolation.db( p=p, DS="timeseries" )
       return(out)
     }

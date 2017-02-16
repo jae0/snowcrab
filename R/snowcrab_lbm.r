@@ -474,7 +474,7 @@ snowcrab_lbm = function( ip=NULL, DS=NULL, p=NULL, voi=NULL, year=NULL, ret=NULL
       datarange = NULL
       datarange = snowcrab.lookup.mapparams( DS="datarange", voi ) # hardcoded data ranges 
       if (is.null(datarange)) {
-        datarange=quantile(xyz[,3], probs=c(0.005,0.995), na.rm=TRUE) 
+        datarange=quantile(xyz[,3], probs=c(0.001,0.999), na.rm=TRUE) 
         datarange = seq( datarange[1], datarange[2], length.out=100 )
       }
       cols = color.code( "blue.black", datarange )
@@ -493,7 +493,7 @@ snowcrab_lbm = function( ip=NULL, DS=NULL, p=NULL, voi=NULL, year=NULL, ret=NULL
       datarange = NULL      
       datarange = snowcrab.lookup.mapparams( DS="datarange", voi ) # hardcoded data ranges 
       if (is.null(datarange)) {
-        datarange=quantile(xyz[,3], probs=c(0.005,0.995), na.rm=TRUE) 
+        datarange=quantile(xyz[,3], probs=c(0.001,0.999), na.rm=TRUE) 
         datarange = seq( datarange[1], datarange[2], length.out=100 )
       }
       cols = color.code( "blue.black", datarange )

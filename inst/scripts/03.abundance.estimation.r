@@ -69,9 +69,8 @@ global_model = lbm_db( p=p, DS="global_model")
 summary( global_model )
 plot(global_model)
 
-
 Family: gaussian 
-Link function: log 
+Link function: identity 
 
 Formula:
 snowcrab.large.males_abundance ~ s(t, k = 3, bs = "ts") + s(tmean.climatology, 
@@ -83,29 +82,29 @@ snowcrab.large.males_abundance ~ s(t, k = 3, bs = "ts") + s(tmean.climatology,
 
 Parametric coefficients:
             Estimate Std. Error t value Pr(>|t|)    
-(Intercept)  6.49931    0.04467   145.5   <2e-16 ***
+(Intercept)  5.59077    0.01942     288   <2e-16 ***
 ---
 Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
 
 Approximate significance of smooth terms:
-                                 edf Ref.df       F  p-value    
-s(t)                       1.728e+00      2  13.500 2.47e-07 ***
-s(tmean.climatology)       1.474e+00      2  47.985  < 2e-16 ***
-s(tsd.climatology)         1.660e+00      2  26.647 3.04e-14 ***
-s(log(dZ))                 1.934e+00      2   5.760   0.0025 ** 
-s(log(ddZ))                1.900e+00      2  13.413 7.22e-07 ***
-s(log(mr))                 1.998e+00      2 770.508  < 2e-16 ***
-s(Npred)                   6.852e-07      2   0.000 1.62e-05 ***
-s(smr)                     1.969e+00      2  21.528 3.09e-10 ***
-s(log.substrate.grainsize) 1.999e+00      2 110.261  < 2e-16 ***
-s(ca1)                     2.000e+00      2  49.297  < 2e-16 ***
-s(ca2)                     1.053e+00      2   6.815 8.67e-05 ***
+                                 edf Ref.df      F  p-value    
+s(t)                       1.851e+00      2 109.39  < 2e-16 ***
+s(tmean.climatology)       1.702e+00      2  45.36  < 2e-16 ***
+s(tsd.climatology)         1.745e+00      2  10.87 4.94e-06 ***
+s(log(dZ))                 1.707e+00      2  10.22 7.37e-06 ***
+s(log(ddZ))                1.518e+00      2  11.96 5.93e-07 ***
+s(log(mr))                 1.653e+00      2 190.04  < 2e-16 ***
+s(Npred)                   2.512e-08      2   0.00    0.539    
+s(smr)                     1.948e+00      2  21.06 3.70e-10 ***
+s(log.substrate.grainsize) 1.821e+00      2 292.66  < 2e-16 ***
+s(ca1)                     1.928e+00      2  29.61 2.03e-14 ***
+s(ca2)                     1.943e+00      2 119.15  < 2e-16 ***
 ---
 Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
 
-R-sq.(adj) =  0.251   Deviance explained = 25.2%
-GCV = 3.0391e+06  Scale est. = 3.0308e+06  n = 6853
----
+R-sq.(adj) =  0.319   Deviance explained = 32.1%
+GCV = 2.5903  Scale est. = 2.5832    n = 6853
+
 
 
 # -------------------------------------------------
