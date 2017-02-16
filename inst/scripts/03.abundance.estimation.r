@@ -38,8 +38,9 @@ p$selection=list(
 )
 p$lbm_local_modelengine = "twostep"
 # p$lbm_global_family = gaussian(link="log")
-p$lbm_local_family = gaussian(link="log")  # after logit transform by global model, it becomes gaussian (logit scale)
+# p$lbm_local_family = gaussian(link="log") 
 
+# 11 hrs with these settings
 p$lbm_twostep_space = "krige"
 p$lbm_gam_optimizer=c("outer", "bfgs") 
 p$lbm_distance_statsgrid = 4 # resolution (km) of data aggregation (i.e. generation of the ** statistics ** )
@@ -129,7 +130,7 @@ p$lbm_local_family = gaussian()  # after logit transform by global model, it bec
 p$lbm_twostep_space = "krige"
 p$lbm_gam_optimizer=c("outer", "bfgs") 
 p$lbm_distance_statsgrid = 2 # resolution (km) of data aggregation (i.e. generation of the ** statistics ** )
-p$lbm_distance_prediction = 3  # this is a half window km
+p$lbm_distance_prediction = 2  # this is a half window km
 p$lbm_distance_scale = 45
 
 
