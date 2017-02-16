@@ -107,6 +107,8 @@ GCV = 2.5903  Scale est. = 2.5832    n = 6853
 
 
 
+
+
 # -------------------------------------------------
 # presence-absence
 # current.year = 2016
@@ -128,8 +130,8 @@ p$lbm_local_modelengine = "twostep"
 p$lbm_local_family = gaussian()  # after logit transform by global model, it becomes gaussian (logit scale)
 p$lbm_twostep_space = "krige"
 p$lbm_gam_optimizer=c("outer", "bfgs") 
-p$lbm_distance_statsgrid = 2 # resolution (km) of data aggregation (i.e. generation of the ** statistics ** )
-p$lbm_distance_prediction = 2  # this is a half window km
+p$lbm_distance_statsgrid = 4 # resolution (km) of data aggregation (i.e. generation of the ** statistics ** )
+p$lbm_distance_prediction = p$lbm_distance_statsgrid*0.75 # this is a half window km
 p$lbm_distance_scale = 45
 
 
@@ -205,23 +207,24 @@ interpolation.db( DS="biomass.redo", p=p  )
 K = interpolation.db( DS="timeseries", p=p  )
 
 
-    table.view( K )
+table.view( K )
+figure.timeseries.errorbars( K[], outdir=outdir, fname=paste(vv, rr, sep=".") )
 
-    figure.timeseries.errorbars( K[], outdir=outdir, fname=paste(vv, rr, sep=".") )
+### --------- prediction success:
 
-    ### --------- prediction success:
-
-    set = snowcrab.db( DS="set.complete" )
-    set = set[ set$yr %in% p$yrs ,]
-    set$total.landings.scaled = scale( set$total.landings, center=T, scale=T )
-    set = presence.absence( set, "R0.mass", p$habitat.threshold.quantile )  # determine presence absence(Y) and weighting(wt)
+set = snowcrab.db( DS="set.complete" )
+set = set[ set$yr %in% p$yrs ,]
+set$total.landings.scaled = scale( set$total.landings, center=T, scale=T )
+set = presence.absence( set, "R0.mass", p$habitat.threshold.quantile )  
+# determine presence absence(Y) and weighting(wt)
 #      set$weekno = floor(set$julian / 365 * 52) + 1
 #      set$dyear = floor(set$julian / 365 ) + 1
 
 
-  # update data summaries of the above results
-    biomass.summary.db("complete.redo", p=p) #Uses the model results to create a habitat area expanded survey index
-    biomass.summary.survey.db("complete.redo", p=p)#Uses average surface area from the past 5 years if a habitat area expanded surface area is not possible
+# update data summaries of the above results
+biomass.summary.db("complete.redo", p=p) #Uses the model results to create a habitat area expanded survey index
+
+# biomass.summary.survey.db("complete.redo", p=p)#Uses average surface area from the past 5 years if a habitat area expanded surface area is not possible -- JC .. no longer used .. marked for deletion
 
 
 

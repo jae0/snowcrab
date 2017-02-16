@@ -31,9 +31,12 @@
       ll = which(m[[2]] < p$habitat.threshold.quantile )
       if (length(ll) > 0 ) m[[2]][ll] = NA
 
-      m = m[[1]] * m[[2]] # m[[2]] is serving as weight/probabilities
+      m = exp(m[[1]]) * m[[2]] # m[[2]] is serving as weight/probabilities
 
-
+      if(0) {
+        bloc=bio.bathymetry::bathymetry.db(p=p, DS="baseline")
+        levelplot( m[,16] ~ plon+plat, bloc, aspect="iso")
+      }
 
       # more range checks
       s = snowcrab_lbm( p=p, DS="baseline", ret="sd", varnames=varnames )
@@ -65,7 +68,7 @@
       m[outside.polygon,] = NA
       s[outside.polygon,] = NA
 
-      B = list( m=exp(m), s=s )
+      B = list( m=m, s=s )
       save( B, file=fn, compress=TRUE )
 
       return(fn)
@@ -98,8 +101,9 @@
         
         ok = as.data.frame( out )
         names( ok) = c("total", "total.sd", "sa.region")
-        ok$total = ok$total / 10^6  # kg to kt
-        ok$total.sd = ok$total.sd / 10^6
+        ok$total = ok$total / 10^3  # kg to t / km^2  .. required for biomass.summary.db
+        ok$total.sd = ok$total.sd / 10^3 # as above
+        ok$total.sd.ln = ok$total.sd # as above
         ok$region = p$regions[r]
         ok$yr = p$yrs
         ok$lbound = exp(log(ok$total) - log(ok$total.sd)*1.96) # normal assumption 
@@ -114,7 +118,11 @@
     if ( DS %in% c( "interpolation.simulation" ) ) {
       message(" simulation-based results are not ready at present")
       message(" defaulting to simple estimates based upon assymptotic assumptions" )
-      out = interpolation.db( p=p, DS="timeseries" )
+      message(" only R0.mass is support for now" )
+      
+      out = NULL  
+      if ( p$vars.to.model == "R0.mass" ) out = interpolation.db( p=p, DS="timeseries" )
+      
       return(out)
     }
  
