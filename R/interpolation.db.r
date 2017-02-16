@@ -31,7 +31,7 @@
       ll = which(m[[2]] < p$habitat.threshold.quantile )
       if (length(ll) > 0 ) m[[2]][ll] = NA
 
-      m = exp(m[[1]]) * m[[2]] # m[[2]] is serving as weight/probabilities
+      m = m[[1]] * m[[2]] # m[[2]] is serving as weight/probabilities
 
       if(0) {
         bloc=bio.bathymetry::bathymetry.db(p=p, DS="baseline")
