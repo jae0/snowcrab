@@ -13,10 +13,10 @@ load.environment = function( year.assessment=NULL, libs=NULL, p=NULL ) {
   Sys.setlocale("LC_COLLATE", "C")   # turn off locale-specific sorting,
 
   if (is.null(p)) p = list()
-  if (!is.null(libs)) RLibrary(libs)
+  if (!is.null(libs)) suppressMessages( RLibrary(libs) )
   if ( exists("libs", p) ) libs = c(libs, p$libs)
   
-  p = bio.snowcrab::snowcrab.parameters( p=p, DS="default", current.year=year.assessment )
+  p = suppressMessages( bio.snowcrab::snowcrab.parameters( p=p, DS="default", current.year=year.assessment ) )
 
   return(p)
 }
