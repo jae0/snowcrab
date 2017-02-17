@@ -16,17 +16,23 @@
 
       m = snowcrab_lbm( p=p, DS="baseline", ret="mean", varnames=varnames )
       
-      set = bio.indicators::survey.db( p=p, DS="set.filter" ) # mature male > 74 mm 
+      set = bio.indicators::survey.db( p=p, DS="set.filter" ) # mature male > 95 mm 
       ii = which( set$totmass > 0 )
       qs = quantile( set$totmass[ii], probs=c(p$habitat.threshold.quantile, p$lbm_quantile_bounds[2]), na.rm=TRUE )
-      
+
+#  qs
+#  50%         5%        99% 
+# 852.3634   110.4716 11374.5987 
+# > mean( set$totmass[ii])
+# [1] 1606.543
+
       qs = log(qs) # m[[1]] is on log-scale
 
-      jj = which(m[[1]] < qs[1])
-      if (length(jj) > 0 ) m[[1]][jj] = NA
+      # jj = which(m[[1]] < qs[1])
+      # if (length(jj) > 0 ) m[[1]][jj] = NA
       
-      kk = which(m[[1]] > qs[2])
-      if (length(kk) > 0 ) m[[1]][kk] = qs[2]
+      # kk = which(m[[1]] > qs[2])
+      # if (length(kk) > 0 ) m[[1]][kk] = qs[2]
       
       ll = which(m[[2]] < p$habitat.threshold.quantile )
       if (length(ll) > 0 ) m[[2]][ll] = NA
@@ -43,8 +49,8 @@
       # range checks
       s = s[[1]] * s[[2]]  # s[[2]] is serving as weight/probabilities
       
-      sq = quantile(s, probs=p$lbm_quantile_bounds[2], na.rm=TRUE ) 
-      s[which(s > sq)] = sq  # cap upper bound of sd
+      # sq = quantile(s, probs=p$lbm_quantile_bounds[2], na.rm=TRUE ) 
+      # s[which(s > sq)] = sq  # cap upper bound of sd
 
 
       ii = which(( m - 1.96*s ) < 0 )
@@ -84,6 +90,7 @@
       datarange = seq( qs[1], qs[2], length.out=150)
       cols = color.code( "seis", datarange )
       for (iy in 1:p$ny) {
+        y = p$yrs[iy]
         outfn = paste( "prediction.abundance.mean", y, sep=".")
         xyz = cbind( bs[, c("plon", "plat")], m[,iy] )
         map( xyz=xyz, cfa.regions=T, depthcontours=T, pts=NULL, annot=y,
@@ -94,6 +101,7 @@
       datarange = seq( 0, sq, length.out=150)
       cols = color.code( "seis", datarange )
       for (iy in 1:p$ny) {
+        y = p$yrs[iy]
         outfn = paste( "prediction.abundance.sd", y, sep=".")
         xyz = cbind( bs[, c("plon", "plat")], s[,iy] )
         map( xyz=xyz, cfa.regions=T, depthcontours=T, pts=NULL, annot=y,
@@ -110,6 +118,9 @@
 
     if (DS=="timeseries") {
       biomass = interpolation.db(p=p, DS="biomass")
+      biomass[[1]] = exp(biomass[[1]]) / 10^3  # kg to t / km^2  .. required for biomass.summary.db
+      biomass[[2]] = exp(biomass[[2]]) / 10^3  # kg to t / km^2  .. required for biomass.summary.db
+      
       bs = bathymetry.db( p=p, DS="baseline")
       
       bq = min( biomass[[1]][ biomass[[1]] > 0 ], na.rm=T )
@@ -131,13 +142,14 @@
         
         ok = as.data.frame( out )
         names( ok) = c("total", "total.sd", "sa.region")
-        ok$total = ok$total / 10^3  # kg to t / km^2  .. required for biomass.summary.db
-        ok$total.sd = ok$total.sd / 10^3 # as above
-        ok$total.sd.ln = ok$total.sd # as above
+        
+        ok$log.total = log(ok$total)
+        ok$total.sd.ln = log(ok$total.sd) # as above
         ok$region = p$regions[r]
         ok$yr = p$yrs
-        ok$lbound = exp(log(ok$total) - log(ok$total.sd)*1.96) # normal assumption 
-        ok$ubound = exp(log(ok$total) + log(ok$total.sd)*1.96) 
+
+        ok$lbound = ok$total - ok$total.sd*1.96 # normal assumption 
+        ok$ubound = ok$total + ok$total.sd*1.96 
         K = rbind(K, ok)
       }
 

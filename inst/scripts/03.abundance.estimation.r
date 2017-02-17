@@ -69,6 +69,7 @@ global_model = lbm_db( p=p, DS="global_model")
 summary( global_model )
 plot(global_model)
 
+
 Family: gaussian 
 Link function: identity 
 
@@ -82,29 +83,28 @@ snowcrab.large.males_abundance ~ s(t, k = 3, bs = "ts") + s(tmean.climatology,
 
 Parametric coefficients:
             Estimate Std. Error t value Pr(>|t|)    
-(Intercept)  5.59077    0.01942     288   <2e-16 ***
+(Intercept)  5.59077    0.01937   288.6   <2e-16 ***
 ---
 Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
 
 Approximate significance of smooth terms:
                                  edf Ref.df      F  p-value    
-s(t)                       1.851e+00      2 109.39  < 2e-16 ***
-s(tmean.climatology)       1.702e+00      2  45.36  < 2e-16 ***
-s(tsd.climatology)         1.745e+00      2  10.87 4.94e-06 ***
-s(log(dZ))                 1.707e+00      2  10.22 7.37e-06 ***
-s(log(ddZ))                1.518e+00      2  11.96 5.93e-07 ***
-s(log(mr))                 1.653e+00      2 190.04  < 2e-16 ***
-s(Npred)                   2.512e-08      2   0.00    0.539    
-s(smr)                     1.948e+00      2  21.06 3.70e-10 ***
-s(log.substrate.grainsize) 1.821e+00      2 292.66  < 2e-16 ***
-s(ca1)                     1.928e+00      2  29.61 2.03e-14 ***
-s(ca2)                     1.943e+00      2 119.15  < 2e-16 ***
+s(t)                       1.856e+00      2 108.13  < 2e-16 ***
+s(tmean.climatology)       1.651e+00      2  31.22 2.30e-16 ***
+s(tsd.climatology)         1.761e+00      2  14.28 1.16e-07 ***
+s(log(dZ))                 1.763e+00      2  10.81 4.87e-06 ***
+s(log(ddZ))                1.612e+00      2  11.85 9.02e-07 ***
+s(log(mr))                 1.580e+00      2 235.90  < 2e-16 ***
+s(Npred)                   1.347e-08      2   0.00    0.729    
+s(smr)                     1.491e+00      2  19.00 2.16e-10 ***
+s(log.substrate.grainsize) 1.855e+00      2 288.45  < 2e-16 ***
+s(ca1)                     1.918e+00      2  37.99  < 2e-16 ***
+s(ca2)                     1.939e+00      2 109.05  < 2e-16 ***
 ---
 Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
 
-R-sq.(adj) =  0.319   Deviance explained = 32.1%
-GCV = 2.5903  Scale est. = 2.5832    n = 6853
-
+R-sq.(adj) =  0.322   Deviance explained = 32.3%
+GCV = 2.5786  Scale est. = 2.5717    n = 6853
 
 
 
@@ -130,9 +130,9 @@ p$lbm_local_modelengine = "twostep"
 p$lbm_local_family = gaussian()  # after logit transform by global model, it becomes gaussian (logit scale)
 p$lbm_twostep_space = "krige"
 p$lbm_gam_optimizer=c("outer", "bfgs") 
-p$lbm_distance_statsgrid = 4 # resolution (km) of data aggregation (i.e. generation of the ** statistics ** )
+p$lbm_distance_statsgrid = 5 # resolution (km) of data aggregation (i.e. generation of the ** statistics ** )
 p$lbm_distance_prediction = p$lbm_distance_statsgrid*0.75 # this is a half window km
-p$lbm_distance_scale = 45
+p$lbm_distance_scale = 50
 
 
 p = bio.snowcrab::snowcrab.parameters( p=p, DS="lbm", varname=p$selection$name  )
