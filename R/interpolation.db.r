@@ -108,7 +108,7 @@
         s[outside.polygon,] = NA
 
 
-      #respect the bounds of input data  (no extrapolation)
+      #respect the bounds of input data (no extrapolation)
       qq = which( m < qr[1] )
       if (length(qq) > 0 ) {
         m[qq] = NA
@@ -199,7 +199,7 @@
     if ( DS %in% c( "interpolation.simulation" ) ) {
       message(" simulation-based results are not ready at present")
       message(" defaulting to simple estimates based upon assymptotic assumptions" )
-      message(" only R0.mass is support for now" )
+      message(" only R0.mass is supported for now" )
       
       out = NULL  
       if ( p$vars.to.model == "R0.mass" ) out = interpolation.db( p=p, DS="timeseries" )
