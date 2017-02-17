@@ -37,7 +37,9 @@
     #  Rg = Rg[ which(rownames(Rg) %in% rownames(B) ),  ]
     #  Rg.sd = Rg.sd[ which(rownames(Rg.sd) %in% rownames(B) ),  ]
 
-      out = list( L=L, B=B, R=R, B.sd=B.sd, R.sd=R.sd, Bg=Bg, Bg.sd=Bg.sd, Rg=Rg, Rg.sd=Rg.sd )
+     out = list( L=L, B=B, B.sd=B.sd,Bg=Bg, Bg.sd=Bg.sd )
+
+    #  out = list( L=L, B=B, R=R, B.sd=B.sd, R.sd=R.sd, Bg=Bg, Bg.sd=Bg.sd, Rg=Rg, Rg.sd=Rg.sd )
 
       save( out, file=fn, compress=T )
 
