@@ -13,14 +13,14 @@
       L = biomass.summary.db( DS="L.redo", p=p  )  # must go first as part of biomass estimates
       B = biomass.summary.db( DS="B.redo", p=p )  # rename to avoid confusion below as B is also used
       B.sd = biomass.summary.db( DS="B.sd.redo", p=p )  # rename to avoid confusion below as B is also used
-      R = biomass.summary.db( DS="R.redo", p=p  )  # rename to avoid confusion below as B is also used
-      R.sd = biomass.summary.db( DS="R.sd.redo", p=p  )  # rename to avoid confusion below as B is also used
+     #  R = biomass.summary.db( DS="R.redo", p=p  )  # rename to avoid confusion below as B is also used
+     #  R.sd = biomass.summary.db( DS="R.sd.redo", p=p  )  # rename to avoid confusion below as B is also used
 
       # geometric means -- sd are on log scale
       Bg = biomass.summary.db( DS="B_geomean.redo", p=p  )
       Bg.sd = biomass.summary.db( DS="B_geomean.sd.redo", p=p  )
-      Rg = biomass.summary.db( DS="R_geomean.redo", p=p  )
-      Rg.sd = biomass.summary.db( DS="R_geomean.sd.redo", p=p  )
+     # Rg = biomass.summary.db( DS="R_geomean.redo", p=p  )
+     # Rg.sd = biomass.summary.db( DS="R_geomean.sd.redo", p=p  )
 
 
       # cfa4x have had no estimates prior to 2004
@@ -30,12 +30,12 @@
 
       L = L[ which(rownames(L) %in% rownames(B) ),  ]
       B.sd = B.sd[ which(rownames(B.sd) %in% rownames(B) ),  ]
-      R = R[ which(rownames(R) %in% rownames(B) ),  ]
-      R.sd = R.sd[ which(rownames(R.sd) %in% rownames(B) ),  ]
+    #  R = R[ which(rownames(R) %in% rownames(B) ),  ]
+    #  R.sd = R.sd[ which(rownames(R.sd) %in% rownames(B) ),  ]
       Bg = Bg[ which(rownames(Bg) %in% rownames(B) ),  ]
       Bg.sd = Bg.sd[ which(rownames(Bg.sd) %in% rownames(B) ),  ]
-      Rg = Rg[ which(rownames(Rg) %in% rownames(B) ),  ]
-      Rg.sd = Rg.sd[ which(rownames(Rg.sd) %in% rownames(B) ),  ]
+    #  Rg = Rg[ which(rownames(Rg) %in% rownames(B) ),  ]
+    #  Rg.sd = Rg.sd[ which(rownames(Rg.sd) %in% rownames(B) ),  ]
 
       out = list( L=L, B=B, R=R, B.sd=B.sd, R.sd=R.sd, Bg=Bg, Bg.sd=Bg.sd, Rg=Rg, Rg.sd=Rg.sd )
 
