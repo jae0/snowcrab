@@ -55,7 +55,7 @@ lbm( p=p, DATA=DATA, tasks=c("initiate", "globalmodel") ) # 30 min
 #   lbm( p=p, tasks=c( "stage0" ) ) # serial mode
 #   lbm( p=p, tasks=c( "continue" ) )    
 lbm( p=p, tasks=c( "stage1" ) ) #  3 hrs 
-# lbm( p=p, tasks=c( "stage2" ) ) #   1 hrs
+lbm( p=p, tasks=c( "stage2" ) ) #   1 hrs
 lbm( p=p, tasks=c( "save" ) )
 
 p = make.list( list( yrs=p$yrs), Y=p )
@@ -144,7 +144,7 @@ lbm( p=p, DATA=DATA, tasks=c("initiate", "globalmodel") ) # 30 min
 #   lbm( p=p, tasks=c( "stage0" ) ) # serial mode
 #   lbm( p=p, tasks=c( "continue" ) )    
 lbm( p=p, tasks=c( "stage1" ) ) #  3 hrs 
-# lbm( p=p, tasks=c( "stage2" ) ) #   1 hrs
+lbm( p=p, tasks=c( "stage2" ) ) #   1 hrs
 lbm( p=p, tasks=c( "save" ) )
 
 p = make.list( list( yrs=p$yrs), Y=p )
@@ -201,24 +201,15 @@ UBRE = -0.001273  Scale est. = 1         n = 6853
 
 
 
-    # collect all predictions into a single file and return:
-
+# collect all predictions into a single file and return:
 interpolation.db( DS="biomass.redo", p=p  )
+interpolation.db( DS="biomass.map", p=p  )
+
 K = interpolation.db( DS="timeseries", p=p  )
+str(K)
 
-
-table.view( K )
-figure.timeseries.errorbars( K[], outdir=outdir, fname=paste(vv, rr, sep=".") )
-
-### --------- prediction success:
-
-set = snowcrab.db( DS="set.complete" )
-set = set[ set$yr %in% p$yrs ,]
-set$total.landings.scaled = scale( set$total.landings, center=T, scale=T )
-set = presence.absence( set, "R0.mass", p$habitat.threshold.quantile )  
-# determine presence absence(Y) and weighting(wt)
-#      set$weekno = floor(set$julian / 365 * 52) + 1
-#      set$dyear = floor(set$julian / 365 ) + 1
+# table.view( K )
+# figure.timeseries.errorbars( K[], outdir=outdir, fname=paste(vv, rr, sep=".") )
 
 
 # update data summaries of the above results
@@ -228,5 +219,28 @@ biomass.summary.db("complete.redo", p=p) #Uses the model results to create a hab
 
 
 
+
+### --------- prediction success:
+set = snowcrab_lbm(p=p, DS="input_data", voi=p$selection$name )
+
+S = set[ , c("plon", "plat") ]
+
+ii = array_map( "xy->1", S, gridparams=p$gridparams )
+bs = bathymetry.db(p=p, DS="baseline")
+bb = array_map( "xy->1", bs, gridparams=p$gridparams )
+im = match(  ii, bb )
+it = match( set$yr, p$yrs )
+
+bm = interpolation.db( DS="biomass", p=p  )
+spred = bm$m[cbind(im, it)]  # approximate match (ignoring seasonality)
+
+summary ( lm(spred~snowcrab.large.males_abundance, data=set, na.actio="na.omit" ) )
+plot(spred~snowcrab.large.males_abundance, data=set )
+cor(spred,set$snowcrab.large.males_abundance, use="complete.obs")
+
+
+# determine presence absence(Y) and weighting(wt)
+#      set$weekno = floor(set$julian / 365 * 52) + 1
+#      set$dyear = floor(set$julian / 365 ) + 1
 
 

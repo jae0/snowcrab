@@ -90,7 +90,11 @@ snowcrab.parameters = function( p=NULL, DS="default", current.year=NULL, varname
 
   if (DS=="lbm") {
 
-    p$libs = RLibrary( c( p$libs, "lbm" ) ) # required for parallel processing
+    if (!("lbm" %in% p$libs)) {
+      RLibrary( "lbm" )
+      p$libs = c( p$libs, "lbm" )  # required for parallel processing
+    }
+    
     if (!exists("storage.backend", p)) p$storage.backend="bigmemory.ram"
     if (!exists("clusters", p)) p$clusters = rep("localhost", detectCores() )
 

@@ -30,8 +30,7 @@ snowcrab_lbm = function( ip=NULL, DS=NULL, p=NULL, voi=NULL, year=NULL, ret=NULL
     set$lon = set$lat = NULL
 
     set$tiyr = lubridate::decimal_date( set$timestamp ) 
-    
-
+ 
     if ( p$selection$type=="abundance") {
       jj = which( set$totmass > 0 )
       lowestpossible = min( set$totmass[jj] , na.rm=TRUE)  # keep zero's to inform spatial processes but only as "lowestpossible" value
@@ -115,7 +114,9 @@ snowcrab_lbm = function( ip=NULL, DS=NULL, p=NULL, voi=NULL, year=NULL, ret=NULL
 
   }
 
+
   # ------------------------
+
 
   if (DS %in% c("output_data") ) {
     PS = indicators.db( p=p, DS="prediction.surface" ) # a list object with static and annually varying variables  
@@ -336,17 +337,17 @@ snowcrab_lbm = function( ip=NULL, DS=NULL, p=NULL, voi=NULL, year=NULL, ret=NULL
           PSsd[,iy] = lbm_db( p=p1, DS="lbm.prediction", yr=yr, ret="sd")
         }
 
-        qPS = quantile( PS, probs=p$lbm_quantile_bounds, na.rm=TRUE )
-        u = which( PS < qPS[1])
-        if (length(u)>0) PS[u] = qPS[1]
-        v = which( PS > qPS[2])
-        if (length(v)>0) PS[v] = qPS[2]
+        # qPS = quantile( PS, probs=p$lbm_quantile_bounds, na.rm=TRUE )
+        # u = which( PS < qPS[1])
+        # if (length(u)>0) PS[u] = qPS[1]
+        # v = which( PS > qPS[2])
+        # if (length(v)>0) PS[v] = qPS[2]
         
-        qPSsd = quantile( PSsd, probs=p$lbm_quantile_bounds, na.rm=TRUE )
-        u = which( PSsd < qPSsd[1])
-        if (length(u)>0) PSsd[u] = qPSsd[1]
-        v = which( PSsd > qPSsd[2])
-        if (length(v)>0) PSsd[v] = qPSsd[2]
+        # qPSsd = quantile( PSsd, probs=p$lbm_quantile_bounds, na.rm=TRUE )
+        # u = which( PSsd < qPSsd[1])
+        # if (length(u)>0) PSsd[u] = qPSsd[1]
+        # v = which( PSsd > qPSsd[2])
+        # if (length(v)>0) PSsd[v] = qPSsd[2]
       
         CL = cbind( apply( PS, 1, mean, na.rm=TRUE ), apply( PSsd, 1, mean, na.rm=TRUE ) )
         colnames(CL) = paste( voi, c("mean", "sd"), "climatology", sep=".")
@@ -402,14 +403,8 @@ snowcrab_lbm = function( ip=NULL, DS=NULL, p=NULL, voi=NULL, year=NULL, ret=NULL
           TS[,i] = lbm_db( p=p1, DS="lbm.prediction", yr=yr, ret="mean")
          }
 
-        qTS = quantile( TS, probs=p$lbm_quantile_bounds, na.rm=TRUE )
-        u = which( TS < qTS[1])
-        if (length(u)>0) TS[u] = qTS[1]
-        v = which( TS > qTS[2])
-        if (length(v)>0) TS[v] = qTS[2]
         outfile =  file.path( projectdir, paste( "snowcrab", "baseline", "mean", p1$spatial.domain, "rdata", sep= ".") )
         save( TS, file=outfile, compress=T )
-
 
         TS = matrix( NA, nrow=nL1, ncol=p$ny )
         for (i in 1:p$ny ) {
@@ -417,11 +412,6 @@ snowcrab_lbm = function( ip=NULL, DS=NULL, p=NULL, voi=NULL, year=NULL, ret=NULL
           TS[,i] = lbm_db( p=p1, DS="lbm.prediction", yr=yr, ret="sd")
          }
 
-        qTS = quantile( TS, probs=p$lbm_quantile_bounds, na.rm=TRUE )
-        u = which( TS < qTS[1])
-        if (length(u)>0) TS[u] = qTS[1]
-        v = which( TS > qTS[2])
-        if (length(v)>0) TS[v] = qTS[2]
         outfile =  file.path( projectdir, paste( "snowcrab", "baseline", "sd", p1$spatial.domain, "rdata", sep= ".") )
         save( TS, file=outfile, compress=T )
  
