@@ -1,5 +1,5 @@
 
-p = bio.snowcrab::load.environment( year.assessment=2015)
+p = bio.snowcrab::load.environment( year.assessment=2016)
 
 require(rjags)
 rjags::load.module("dic")
