@@ -10,13 +10,7 @@ snowcrab_lbm = function( ip=NULL, DS=NULL, p=NULL, voi=NULL, year=NULL, ret=NULL
   if (DS %in% c("input_data") ) {
     set = bio.indicators::survey.db( p=p, DS="set.filter" ) # mature male > 95 mm 
 
-    # snowcrab survey data only
-    set = set[ set$data.source == "snowcrab", ]
-    
-    # robustify input data: .. upper bound trim
-    qq = quantile( set$totmass, probs=0.975, na.rm=TRUE )
-    set$totmass[ set$totmass > qq] = qq
-
+    # must run here as we need the wgt from this for both PA and abundance
     set = presence.absence( X=set, vname="totmass", px=p$habitat.threshold.quantile )  # determine presence absence and weighting
 
     # if ( grepl( "snowcrab.large.males", p$selection$name ) ) {
@@ -36,6 +30,13 @@ snowcrab_lbm = function( ip=NULL, DS=NULL, p=NULL, voi=NULL, year=NULL, ret=NULL
     set$tiyr = lubridate::decimal_date( set$timestamp ) 
  
     if ( p$selection$type=="abundance") {
+      # snowcrab survey data only
+      set = set[ which(set$data.source == "snowcrab"), ]
+      
+      # robustify input data: .. upper bound trim
+      qq = quantile( set$totmass, probs=0.975, na.rm=TRUE )
+      set$totmass[ set$totmass > qq] = qq
+
       jj = which( set$totmass > 0 )
       lowestpossible = min( set$totmass[jj] , na.rm=TRUE)  # keep zero's to inform spatial processes but only as "lowestpossible" value
       ii = which( set$totmass <= lowestpossible )
@@ -43,10 +44,10 @@ snowcrab_lbm = function( ip=NULL, DS=NULL, p=NULL, voi=NULL, year=NULL, ret=NULL
       set$totmass = log( set$totmass)
       names(set)[ which( names(set) =="totmass")] = p$selection$name 
       set$Y = NULL
-
     }
 
     if ( p$selection$type=="presence_absence") {
+      set = set[ which(set$data.source %in% c("snowcrab", "groundfish") ), ]
       names(set)[ which( names(set) =="Y")] = p$selection$name 
       set$totmass = NULL
     }

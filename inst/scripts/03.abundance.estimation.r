@@ -158,8 +158,6 @@ summary( global_model )
 plot(global_model)
 
 
-
-
 Family: binomial 
 Link function: logit 
 
@@ -174,28 +172,29 @@ snowcrab.large.males_presence_absence ~ s(t, k = 3, bs = "ts") +
 
 Parametric coefficients:
             Estimate Std. Error z value Pr(>|z|)    
-(Intercept)  0.78170    0.03176   24.61   <2e-16 ***
+(Intercept)  0.57704    0.03065   18.83   <2e-16 ***
 ---
 Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
 
 Approximate significance of smooth terms:
-                             edf Ref.df  Chi.sq  p-value    
-s(t)                       1.937      2 159.881  < 2e-16 ***
-s(tmean.climatology)       1.887      2 109.616  < 2e-16 ***
-s(tsd.climatology)         1.680      2  10.115  0.00270 ** 
-s(log(dZ))                 1.255      2   9.449  0.00177 ** 
-s(log(ddZ))                1.512      2  20.517 3.52e-06 ***
-s(log(mr))                 1.342      2 158.152  < 2e-16 ***
-s(Npred)                   1.903      2  20.863 1.58e-05 ***
-s(smr)                     1.737      2   8.086  0.00968 ** 
-s(log.substrate.grainsize) 1.597      2 298.690  < 2e-16 ***
-s(ca1)                     1.727      2  20.945 6.30e-06 ***
-s(ca2)                     1.918      2 116.735  < 2e-16 ***
+                              edf Ref.df  Chi.sq  p-value    
+s(t)                       1.8872      2 159.744  < 2e-16 ***
+s(tmean.climatology)       1.8515      2  74.632  < 2e-16 ***
+s(tsd.climatology)         1.8039      2  12.744 0.000868 ***
+s(log(dZ))                 1.6951      2  12.054 0.000731 ***
+s(log(ddZ))                0.9885      2  13.519 7.71e-05 ***
+s(log(mr))                 1.9320      2 219.945  < 2e-16 ***
+s(Npred)                   1.8731      2   7.652 0.016576 *  
+s(smr)                     1.0642      2  31.466 5.01e-09 ***
+s(log.substrate.grainsize) 1.4979      2 344.454  < 2e-16 ***
+s(ca1)                     1.8604      2  23.834 2.30e-06 ***
+s(ca2)                     1.9405      2 114.521  < 2e-16 ***
 ---
 Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
 
-R-sq.(adj) =  0.271   Deviance explained =   23%
-UBRE = -0.001273  Scale est. = 1         n = 6853
+R-sq.(adj) =  0.268   Deviance explained = 22.6%
+UBRE = 0.034139  Scale est. = 1         n = 6853
+
 ---
 
 
