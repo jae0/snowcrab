@@ -34,8 +34,8 @@
       m = m[[1]] * m[[2]] # m[[2]] is serving as weight/probabilities
 
       if(0) {
-        bloc=bio.bathymetry::bathymetry.db(p=p, DS="baseline")
-        levelplot( m[,16] ~ plon+plat, bloc, aspect="iso")
+        bs = bio.bathymetry::bathymetry.db(p=p, DS="baseline")
+        levelplot( m[,16] ~ plon+plat, bs, aspect="iso")
       }
 
       # more range checks
@@ -45,6 +45,13 @@
       
       sq = quantile(s, probs=p$lbm_quantile_bounds[2], na.rm=TRUE ) 
       s[which(s > sq)] = sq  # cap upper bound of sd
+
+
+      ii = which(( m - 1.96*s ) < 0 )
+      if (length(ii)>0) {
+        m[ii] = NA
+        s[ii] = NA 
+      }
 
       # limit range of extrapolation to within a given distance from survey stations
       S = snowcrab.db( DS="set.clean")[ , c("plon", "plat") ]
@@ -70,6 +77,29 @@
 
       B = list( m=m, s=s )
       save( B, file=fn, compress=TRUE )
+      B = NULL
+
+
+      projectdir = file.path(p$project.root, "maps", "fishable.biomass", p$spatial.domain )
+      datarange = seq( qs[1], qs[2], length.out=150)
+      cols = color.code( "seis", datarange )
+      for (iy in 1:p$ny) {
+        outfn = paste( "prediction.abundance.mean", y, sep=".")
+        xyz = cbind( bs[, c("plon", "plat")], m[,iy] )
+        map( xyz=xyz, cfa.regions=T, depthcontours=T, pts=NULL, annot=y,
+          annot.cex=p$annot.cex, corners=p$planar.corners, fn=outfn, loc=projectdir, at=datarange,
+          col.regions=cols, rez=c(p$pres,p$pres) )
+      }
+
+      datarange = seq( 0, sq, length.out=150)
+      cols = color.code( "seis", datarange )
+      for (iy in 1:p$ny) {
+        outfn = paste( "prediction.abundance.sd", y, sep=".")
+        xyz = cbind( bs[, c("plon", "plat")], s[,iy] )
+        map( xyz=xyz, cfa.regions=T, depthcontours=T, pts=NULL, annot=y,
+          annot.cex=p$annot.cex, corners=p$planar.corners, fn=outfn, loc=projectdir, at=datarange,
+          col.regions=cols, rez=c(p$pres,p$pres) )
+      }
 
       return(fn)
     }
