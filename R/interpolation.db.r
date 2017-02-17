@@ -18,7 +18,7 @@
       
       set = bio.indicators::survey.db( p=p, DS="set.filter" ) # mature male > 95 mm 
 
-      # robustify input data: .. upper bound trim
+      # robustify input data: .. upper bound trim .. copied from snowcrab_lbm
       qq = quantile( set$totmass, probs=0.975, na.rm=TRUE )
       set$totmass[ set$totmass > qq] = qq
 

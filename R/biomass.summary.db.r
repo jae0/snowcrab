@@ -265,7 +265,9 @@
         if (file.exists(fn)) load(fn)
         return(R)
       }
-
+      message ("not available right now")
+      
+      return(NULL)
         p$vars.to.model = "R1.no"
         p = make.list( list(y=p$yrs, v=p$vars.to.model ), Y=p )
 
