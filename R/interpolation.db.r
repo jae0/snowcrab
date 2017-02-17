@@ -17,16 +17,21 @@
       m = snowcrab_lbm( p=p, DS="baseline", ret="mean", varnames=varnames )
       
       set = bio.indicators::survey.db( p=p, DS="set.filter" ) # mature male > 95 mm 
+
+      # robustify input data: .. upper bound trim
+      qq = quantile( set$totmass, probs=0.975, na.rm=TRUE )
+      set$totmass[ set$totmass > qq] = qq
+
       ii = which( set$totmass > 0 )
       qs = quantile( set$totmass[ii], probs=c(p$habitat.threshold.quantile, p$lbm_quantile_bounds[2]), na.rm=TRUE )
       qr = log( range( set$totmass[ii], na.rm=TRUE ) )
+      qs = log(qs) # m[[1]] is on log-scale
 #  qs
 #  50%         5%        99% 
 # 852.3634   110.4716 11374.5987 
 # > mean( set$totmass[ii])
 # [1] 1606.543
 
-      qs = log(qs) # m[[1]] is on log-scale
 
       jj = which(m[[1]] < qs[1])
       if (length(jj) > 0 ) m[[1]][jj] = NA
