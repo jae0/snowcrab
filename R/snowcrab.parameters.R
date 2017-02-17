@@ -67,7 +67,7 @@ snowcrab.parameters = function( p=NULL, DS="default", current.year=NULL, varname
     if (!exists("varstomodel", p))    p$varstomodel   = variable.list.expand("all.to.model")
     if (!exists("vars.to.model", p))  p$vars.to.model = variable.list.expand("all.to.model") # not sure why we have vars.to.model and vartomodel ... clean this up :: TODO
 
-    p$habitat.threshold.quantile = 0.05 # quantile at which to consider zero-valued abundance
+    p$habitat.threshold.quantile = 0.1 # quantile at which to consider zero-valued abundance
     p$threshold.distance = 25 # predict no farther than this distance km from survey stations
    
   
