@@ -197,6 +197,43 @@ UBRE = 0.034139  Scale est. = 1         n = 6853
 
 ---
 
+Family: binomial 
+Link function: logit 
+
+Formula:
+snowcrab.large.males_presence_absence ~ s(t, k = 3, bs = "ts") + 
+    s(tmean.climatology, k = 3, bs = "ts") + s(tsd.climatology, 
+    k = 3, bs = "ts") + s(log(dZ), k = 3, bs = "ts") + s(log(ddZ), 
+    k = 3, bs = "ts") + s(log(mr), k = 3, bs = "ts") + s(Npred, 
+    k = 3, bs = "ts") + s(smr, k = 3, bs = "ts") + s(log.substrate.grainsize, 
+    k = 3, bs = "ts") + s(ca1, k = 3, bs = "ts") + s(ca2, k = 3, 
+    bs = "ts")
+
+Parametric coefficients:
+            Estimate Std. Error z value Pr(>|z|)    
+(Intercept) -1.07467    0.03875  -27.73   <2e-16 ***
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+Approximate significance of smooth terms:
+                              edf Ref.df  Chi.sq  p-value    
+s(t)                       1.9978      2 106.199  < 2e-16 ***
+s(tmean.climatology)       1.2693      2 139.283  < 2e-16 ***
+s(tsd.climatology)         1.9749      2  31.342 1.21e-07 ***
+s(log(dZ))                 0.7421      2   4.918  0.00668 ** 
+s(log(ddZ))                1.0323      2  31.967 2.32e-10 ***
+s(log(mr))                 1.9975      2 145.069  < 2e-16 ***
+s(Npred)                   1.6244      2   1.659  0.35039    
+s(smr)                     0.9669      2   7.582  0.00349 ** 
+s(log.substrate.grainsize) 1.8948      2 278.584  < 2e-16 ***
+s(ca1)                     1.9992      2 127.686  < 2e-16 ***
+s(ca2)                     1.9778      2 123.071  < 2e-16 ***
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+R-sq.(adj) =  0.278   Deviance explained =   25%
+UBRE = -0.0039929  Scale est. = 1         n = 11320
+
 
 
 # collect all predictions into a single file and return:
