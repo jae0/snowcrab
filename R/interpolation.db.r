@@ -33,11 +33,9 @@
 # [1] 1606.543
 
 
-      jj = which(m[[1]] < qs[1])
+      jj = which(m[[1]] < qr[1])
       if (length(jj) > 0 ) m[[1]][jj] = NA
       
-      # kk = which(m[[1]] > qs[2])
-      # if (length(kk) > 0 ) m[[1]][kk] = qs[2]
       
       ll = which(m[[2]] < p$habitat.threshold.quantile )
       if (length(ll) > 0 ) m[[2]][ll] = NA
