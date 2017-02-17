@@ -19,7 +19,7 @@
       set = bio.indicators::survey.db( p=p, DS="set.filter" ) # mature male > 95 mm 
       ii = which( set$totmass > 0 )
       qs = quantile( set$totmass[ii], probs=c(p$habitat.threshold.quantile, p$lbm_quantile_bounds[2]), na.rm=TRUE )
-      qr = range( set$totmass[ii], na.rm=TRUE )
+      qr = log( range( set$totmass[ii], na.rm=TRUE ) )
 #  qs
 #  50%         5%        99% 
 # 852.3634   110.4716 11374.5987 
@@ -59,28 +59,33 @@
         s[mm] = NA 
       }
 
-      # limit range of extrapolation to within a given distance from survey stations
-      S = snowcrab.db( DS="set.clean")[ , c("plon", "plat") ]
-      S = S[ !duplicated(S),]
-      nn = array_map( "xy->1", S, gridparams=p$gridparams )
+      # limit range of extrapolation to within a given distance from survey stations .. annual basis
+      set = snowcrab.db( DS="set.clean")
       bs = bathymetry.db(p=p, DS="baseline")
       bb = array_map( "xy->1", bs, gridparams=p$gridparams )
-      overlap = match(  nn, bb )
-      overlap = overlap[ which( is.finite( overlap ))] 
-      o = bs[overlap,] 
-      # add corners as buffer
-      ot = t(o) # reshape to make addition simpler using R's cycling rules
-      o = rbind( t( ot + p$threshold.distance*c( 1, 1) ), 
-                 t( ot + p$threshold.distance*c(-1,-1) ),
-                 t( ot + p$threshold.distance*c( 1,-1) ),
-                 t( ot + p$threshold.distance*c(-1, 1) )
-      )
-      o = o[ !duplicated(o),]
-      boundary= non_convex_hull( o, alpha=p$threshold.distance*2, plot=FALSE )
-      outside.polygon = which( point.in.polygon( bs[,1], bs[,2], boundary[,1], boundary[,2] ) == 0 )
-      m[outside.polygon,] = NA
-      s[outside.polygon,] = NA
+      for (iy in 1:p$ny ) {
+        S = set[ which(set$yr==p$yrs[iy]), c("plon", "plat") ] 
+        S = S[ !duplicated(S),]
+        nn = array_map( "xy->1", S, gridparams=p$gridparams )
+        overlap = match(  nn, bb )
+        overlap = overlap[ which( is.finite( overlap ))] 
+        o = bs[overlap,] 
+        # add corners as buffer
+        ot = t(o) # reshape to make addition simpler using R's cycling rules
+        o = rbind( t( ot + p$threshold.distance*c( 1, 1) ), 
+                   t( ot + p$threshold.distance*c(-1,-1) ),
+                   t( ot + p$threshold.distance*c( 1,-1) ),
+                   t( ot + p$threshold.distance*c(-1, 1) )
+        )
+        o = o[ !duplicated(o),]
+        boundary= non_convex_hull( o, alpha=p$threshold.distance*2, plot=FALSE )
+        outside.polygon = which( point.in.polygon( bs[,1], bs[,2], boundary[,1], boundary[,2] ) == 0 )
+        m[outside.polygon,iy] = NA
+        s[outside.polygon,iy] = NA
+      }
 
+
+      #respect the bounds of input data  (no extrapolation)
       qq = which( m < qr[1] )
       if (length(qq) > 0 ) {
         m[qq] = NA

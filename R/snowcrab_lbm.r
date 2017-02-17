@@ -8,10 +8,14 @@ snowcrab_lbm = function( ip=NULL, DS=NULL, p=NULL, voi=NULL, year=NULL, ret=NULL
    
 
   if (DS %in% c("input_data") ) {
-    set = bio.indicators::survey.db( p=p, DS="set.filter" ) # mature male > 74 mm 
+    set = bio.indicators::survey.db( p=p, DS="set.filter" ) # mature male > 95 mm 
 
     # snowcrab survey data only
     set = set[ set$data.source == "snowcrab", ]
+    
+    # robustify input data: .. upper bound trim
+    qq = quantile( set$totmass, probs=0.975, na.rm=TRUE )
+    set$totmass[ set$totmass > qq] = qq
 
     set = presence.absence( X=set, vname="totmass", px=p$habitat.threshold.quantile )  # determine presence absence and weighting
 
