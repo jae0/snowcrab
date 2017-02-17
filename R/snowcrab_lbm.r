@@ -11,7 +11,7 @@ snowcrab_lbm = function( ip=NULL, DS=NULL, p=NULL, voi=NULL, year=NULL, ret=NULL
     set = bio.indicators::survey.db( p=p, DS="set.filter" ) # mature male > 95 mm 
 
     # must run here as we need the wgt from this for both PA and abundance
-    set = presence.absence( X=set, vname="totmass", px=p$habitat.threshold.quantile )  # determine presence absence and weighting
+    set = presence.absence( X=set, vname="zm", px=p$habitat.threshold.quantile )  # determine presence absence and weighting
 
     # if ( grepl( "snowcrab.large.males", p$selection$name ) ) {
     #   # add commerical fishery data -- 
