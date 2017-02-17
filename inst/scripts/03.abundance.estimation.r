@@ -83,29 +83,28 @@ snowcrab.large.males_abundance ~ s(t, k = 3, bs = "ts") + s(tmean.climatology,
 
 Parametric coefficients:
             Estimate Std. Error t value Pr(>|t|)    
-(Intercept)  5.59077    0.01937   288.6   <2e-16 ***
+(Intercept)   5.5813     0.0192   290.6   <2e-16 ***
 ---
 Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
 
 Approximate significance of smooth terms:
                                  edf Ref.df      F  p-value    
-s(t)                       1.856e+00      2 108.13  < 2e-16 ***
-s(tmean.climatology)       1.651e+00      2  31.22 2.30e-16 ***
-s(tsd.climatology)         1.761e+00      2  14.28 1.16e-07 ***
-s(log(dZ))                 1.763e+00      2  10.81 4.87e-06 ***
-s(log(ddZ))                1.612e+00      2  11.85 9.02e-07 ***
-s(log(mr))                 1.580e+00      2 235.90  < 2e-16 ***
-s(Npred)                   1.347e-08      2   0.00    0.729    
-s(smr)                     1.491e+00      2  19.00 2.16e-10 ***
-s(log.substrate.grainsize) 1.855e+00      2 288.45  < 2e-16 ***
-s(ca1)                     1.918e+00      2  37.99  < 2e-16 ***
-s(ca2)                     1.939e+00      2 109.05  < 2e-16 ***
+s(t)                       1.855e+00      2 107.71  < 2e-16 ***
+s(tmean.climatology)       1.665e+00      2  31.49  < 2e-16 ***
+s(tsd.climatology)         1.775e+00      2  14.23 1.35e-07 ***
+s(log(dZ))                 1.746e+00      2  10.52 6.34e-06 ***
+s(log(ddZ))                1.637e+00      2  11.79 1.04e-06 ***
+s(log(mr))                 1.727e+00      2 229.51  < 2e-16 ***
+s(Npred)                   1.212e-08      2   0.00    0.751    
+s(smr)                     1.499e+00      2  19.02 2.19e-10 ***
+s(log.substrate.grainsize) 1.847e+00      2 287.68  < 2e-16 ***
+s(ca1)                     1.916e+00      2  37.58  < 2e-16 ***
+s(ca2)                     1.946e+00      2 110.24  < 2e-16 ***
 ---
 Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
 
-R-sq.(adj) =  0.322   Deviance explained = 32.3%
-GCV = 2.5786  Scale est. = 2.5717    n = 6853
-
+R-sq.(adj) =  0.321   Deviance explained = 32.3%
+GCV = 2.5344  Scale est. = 2.5275    n = 6853
 
 
 
