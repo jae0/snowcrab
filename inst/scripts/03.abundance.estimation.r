@@ -43,9 +43,9 @@ p$lbm_local_modelengine = "twostep"
 # 11 hrs with these settings
 p$lbm_twostep_space = "krige"
 p$lbm_gam_optimizer=c("outer", "bfgs") 
-p$lbm_distance_statsgrid = 5 # resolution (km) of data aggregation (i.e. generation of the ** statistics ** )
+p$lbm_distance_statsgrid = 3 # resolution (km) of data aggregation (i.e. generation of the ** statistics ** )
 p$lbm_distance_prediction = p$lbm_distance_statsgrid*0.75  # this is a half window km
-p$lbm_distance_scale = 45
+p$lbm_distance_scale = 25
 
 p = bio.snowcrab::snowcrab.parameters( p=p, DS="lbm", varname=p$selection$name  )
 
@@ -130,9 +130,9 @@ p$lbm_local_modelengine = "twostep"
 p$lbm_local_family = gaussian()  # after logit transform by global model, it becomes gaussian (logit scale)
 p$lbm_twostep_space = "krige"
 p$lbm_gam_optimizer=c("outer", "bfgs") 
-p$lbm_distance_statsgrid = 5 # resolution (km) of data aggregation (i.e. generation of the ** statistics ** )
+p$lbm_distance_statsgrid = 3 # resolution (km) of data aggregation (i.e. generation of the ** statistics ** )
 p$lbm_distance_prediction = p$lbm_distance_statsgrid*0.75 # this is a half window km
-p$lbm_distance_scale = 50
+p$lbm_distance_scale = 25
 
 
 p = bio.snowcrab::snowcrab.parameters( p=p, DS="lbm", varname=p$selection$name  )

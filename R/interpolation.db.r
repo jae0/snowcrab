@@ -19,7 +19,7 @@
       set = bio.indicators::survey.db( p=p, DS="set.filter" ) # mature male > 95 mm 
       ii = which( set$totmass > 0 )
       qs = quantile( set$totmass[ii], probs=c(p$habitat.threshold.quantile, p$lbm_quantile_bounds[2]), na.rm=TRUE )
-
+      qr = range( set$totmass[ii], na.rm=TRUE )
 #  qs
 #  50%         5%        99% 
 # 852.3634   110.4716 11374.5987 
@@ -28,8 +28,8 @@
 
       qs = log(qs) # m[[1]] is on log-scale
 
-      # jj = which(m[[1]] < qs[1])
-      # if (length(jj) > 0 ) m[[1]][jj] = NA
+      jj = which(m[[1]] < qs[1])
+      if (length(jj) > 0 ) m[[1]][jj] = NA
       
       # kk = which(m[[1]] > qs[2])
       # if (length(kk) > 0 ) m[[1]][kk] = qs[2]
@@ -49,23 +49,23 @@
       # range checks
       s = s[[1]] * s[[2]]  # s[[2]] is serving as weight/probabilities
       
-      # sq = quantile(s, probs=p$lbm_quantile_bounds[2], na.rm=TRUE ) 
+      sq = quantile(s, probs=p$lbm_quantile_bounds[2], na.rm=TRUE ) 
       # s[which(s > sq)] = sq  # cap upper bound of sd
 
 
-      ii = which(( m - 1.96*s ) < 0 )
-      if (length(ii)>0) {
-        m[ii] = NA
-        s[ii] = NA 
+      mm = which(( m - 1.96*s ) < 0 )
+      if (length(mm)>0) {
+        m[mm] = NA
+        s[mm] = NA 
       }
 
       # limit range of extrapolation to within a given distance from survey stations
       S = snowcrab.db( DS="set.clean")[ , c("plon", "plat") ]
       S = S[ !duplicated(S),]
-      ii = array_map( "xy->1", S, gridparams=p$gridparams )
+      nn = array_map( "xy->1", S, gridparams=p$gridparams )
       bs = bathymetry.db(p=p, DS="baseline")
       bb = array_map( "xy->1", bs, gridparams=p$gridparams )
-      overlap = match(  ii, bb )
+      overlap = match(  nn, bb )
       overlap = overlap[ which( is.finite( overlap ))] 
       o = bs[overlap,] 
       # add corners as buffer
@@ -80,6 +80,17 @@
       outside.polygon = which( point.in.polygon( bs[,1], bs[,2], boundary[,1], boundary[,2] ) == 0 )
       m[outside.polygon,] = NA
       s[outside.polygon,] = NA
+
+      qq = which( m < qr[1] )
+      if (length(qq) > 0 ) {
+        m[qq] = NA
+        s[qq] = NA
+      }
+
+      rr = which( m > qr[2] )
+      if (length(rr) > 0 ) {
+        m[rr] = qr[2]
+      }
 
       B = list( m=m, s=s )
       save( B, file=fn, compress=TRUE )
@@ -118,8 +129,8 @@
 
     if (DS=="timeseries") {
       biomass = interpolation.db(p=p, DS="biomass")
-      biomass[[1]] = exp(biomass[[1]]) / 10^3  # kg to t / km^2  .. required for biomass.summary.db
-      biomass[[2]] = exp(biomass[[2]]) / 10^3  # kg to t / km^2  .. required for biomass.summary.db
+      biomass[[1]] = exp(biomass[[1]]) / 10^3  # kg/km^2 to t/km^2  .. required for biomass.summary.db
+      biomass[[2]] = exp(biomass[[2]]) / 10^3  # kg/km^2 to t/km^2  .. required for biomass.summary.db
       
       bs = bathymetry.db( p=p, DS="baseline")
       
