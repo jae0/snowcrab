@@ -34,7 +34,7 @@
 
 
       jj = which(m[[1]] < qr[1])
-      if (length(jj) > 0 ) m[[1]][jj] = NA
+      if (length(jj) > 0 ) m[[1]][jj] = NA  # anything this low is considered below detection limit
       
       
       ll = which(m[[2]] < p$habitat.threshold.quantile )
@@ -67,27 +67,29 @@
       bs = bathymetry.db(p=p, DS="baseline")
       bb = array_map( "xy->1", bs, gridparams=p$gridparams )
 
-      # for (iy in 1:p$ny ) {
-      #   S = set[ which(set$yr==p$yrs[iy]), c("plon", "plat") ] 
-      #   S = S[ !duplicated(S),]
-      #   nn = array_map( "xy->1", S, gridparams=p$gridparams )
-      #   overlap = match(  nn, bb )
-      #   overlap = overlap[ which( is.finite( overlap ))] 
-      #   o = bs[overlap,] 
-      #   # add corners as buffer
-      #   ot = t(o) # reshape to make addition simpler using R's cycling rules
-      #   o = rbind( t( ot + p$threshold.distance*c( 1, 1) ), 
-      #              t( ot + p$threshold.distance*c(-1,-1) ),
-      #              t( ot + p$threshold.distance*c( 1,-1) ),
-      #              t( ot + p$threshold.distance*c(-1, 1) )
-      #   )
-      #   o = o[ !duplicated(o),]
-      #   boundary= non_convex_hull( o, alpha=p$threshold.distance*2, plot=FALSE )
-      #   outside.polygon = which( point.in.polygon( bs[,1], bs[,2], boundary[,1], boundary[,2] ) == 0 )
-      #   m[outside.polygon,iy] = NA
-      #   s[outside.polygon,iy] = NA
-      # }
+      for (iy in 1:p$ny ) {
+        S = set[ which(set$yr==p$yrs[iy]), c("plon", "plat") ] 
+        S = S[ !duplicated(S),]
+        nn = array_map( "xy->1", S, gridparams=p$gridparams )
+        overlap = match(  nn, bb )
+        overlap = overlap[ which( is.finite( overlap ))] 
+        o = bs[overlap,] 
+        # add corners as buffer
+        ot = t(o) # reshape to make addition simpler using R's cycling rules
+        o = rbind( t( ot + p$threshold.distance*c( 1, 1) ), 
+                   t( ot + p$threshold.distance*c(-1,-1) ),
+                   t( ot + p$threshold.distance*c( 1,-1) ),
+                   t( ot + p$threshold.distance*c(-1, 1) )
+        )
+        o = o[ !duplicated(o),]
+        boundary= non_convex_hull( o, alpha=p$threshold.distance*2, plot=FALSE )
+        outside.polygon = which( point.in.polygon( bs[,1], bs[,2], boundary[,1], boundary[,2] ) == 0 )
+        m[outside.polygon,iy] = NA
+        s[outside.polygon,iy] = NA
+      }
 
+      if (0) {
+        # a static mask
         S = set[ , c("plon", "plat") ] 
         S = S[ !duplicated(S),]
         nn = array_map( "xy->1", S, gridparams=p$gridparams )
@@ -106,6 +108,7 @@
         outside.polygon = which( point.in.polygon( bs[,1], bs[,2], boundary[,1], boundary[,2] ) == 0 )
         m[outside.polygon,] = NA
         s[outside.polygon,] = NA
+      }
 
 
       #respect the bounds of input data (no extrapolation)
@@ -115,10 +118,10 @@
         s[qq] = NA
       }
 
-      rr = which( m > qr[2] )
-      if (length(rr) > 0 ) {
-        m[rr] = qr[2]
-      }
+      # rr = which( m > qr[2] )
+      # if (length(rr) > 0 ) {
+      #   m[rr] = qr[2]
+      # }
 
       B = list( m=m, s=s )
       save( B, file=fn, compress=TRUE )
@@ -175,7 +178,7 @@
           iHabitat = which( biomass[[1]][,y] > bq  )
           iHabitatRegion = intersect( aoi, iHabitat )
           out[ y, 1] = sum( biomass[[1]][iHabitatRegion,y] , na.rm=TRUE ) # abundance weighted by Pr
-          out[ y, 2] = sqrt( sum( (biomass[[2]][iHabitatRegion,y])^2, na.rm=TRUE ) )
+          out[ y, 2] = sqrt( sum( (biomass[[2]][iHabitatRegion,y])^2 * biomass[[1]][iHabitatRegion,y] , na.rm=TRUE ) )
           out[ y, 3] = length( iHabitatRegion ) * (p$pres*p$pres)
         }
         
