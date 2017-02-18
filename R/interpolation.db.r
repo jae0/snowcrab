@@ -34,13 +34,13 @@
 
 
       jj = which(m[[1]] < qr[1])
-      if (length(jj) > 0 ) m[[1]][jj] = NA
+      if (length(jj) > 0 ) m[[1]][jj] = NA  # anything this low is considered below detection limit
       
       
       ll = which(m[[2]] < p$habitat.threshold.quantile )
       if (length(ll) > 0 ) m[[2]][ll] = NA
 
-      m = m[[1]] * m[[2]] # m[[2]] is serving as weight/probabilities
+      m = log( exp(m[[1]]) * m[[2]]) # m[[2]] is serving as weight/probabilities
 
       if(0) {
         bs = bio.bathymetry::bathymetry.db(p=p, DS="baseline")
@@ -50,7 +50,7 @@
       # more range checks
       s = snowcrab_lbm( p=p, DS="baseline", ret="sd", varnames=varnames )
       # range checks
-      s = s[[1]] * s[[2]]  # s[[2]] is serving as weight/probabilities
+      s = log( exp(s[[1]]) * s[[2]] ) # s[[2]] is serving as weight/probabilities
       
       sq = quantile(s, probs=p$lbm_quantile_bounds[2], na.rm=TRUE ) 
       # s[which(s > sq)] = sq  # cap upper bound of sd
@@ -115,10 +115,10 @@
         s[qq] = NA
       }
 
-      rr = which( m > qr[2] )
-      if (length(rr) > 0 ) {
-        m[rr] = qr[2]
-      }
+      # rr = which( m > qr[2] )
+      # if (length(rr) > 0 ) {
+      #   m[rr] = qr[2]
+      # }
 
       B = list( m=m, s=s )
       save( B, file=fn, compress=TRUE )
@@ -175,7 +175,7 @@
           iHabitat = which( biomass[[1]][,y] > bq  )
           iHabitatRegion = intersect( aoi, iHabitat )
           out[ y, 1] = sum( biomass[[1]][iHabitatRegion,y] , na.rm=TRUE ) # abundance weighted by Pr
-          out[ y, 2] = sqrt( sum( (biomass[[2]][iHabitatRegion,y])^2, na.rm=TRUE ) )
+          out[ y, 2] = sqrt( sum( (biomass[[2]][iHabitatRegion,y])^2 * biomass[[1]][iHabitatRegion,y] , na.rm=TRUE ) )
           out[ y, 3] = length( iHabitatRegion ) * (p$pres*p$pres)
         }
         
