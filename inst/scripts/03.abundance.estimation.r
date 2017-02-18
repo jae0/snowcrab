@@ -43,9 +43,9 @@ p$lbm_local_modelengine = "twostep"
 # 11 hrs with these settings
 p$lbm_twostep_space = "krige"
 p$lbm_gam_optimizer=c("outer", "bfgs") 
-p$lbm_distance_statsgrid = 3 # resolution (km) of data aggregation (i.e. generation of the ** statistics ** )
-p$lbm_distance_prediction = p$lbm_distance_statsgrid*0.75  # this is a half window km
-p$lbm_distance_scale = 30
+p$lbm_distance_statsgrid = 4 # resolution (km) of data aggregation (i.e. generation of the ** statistics ** )
+p$lbm_distance_prediction = p$lbm_distance_statsgrid  # this is a half window km
+p$lbm_distance_scale = 45
 
 p = bio.snowcrab::snowcrab.parameters( p=p, DS="lbm", varname=p$selection$name  )
 
@@ -76,36 +76,37 @@ Link function: identity
 Formula:
 snowcrab.large.males_abundance ~ s(t, k = 3, bs = "ts") + s(tmean.climatology, 
     k = 3, bs = "ts") + s(tsd.climatology, k = 3, bs = "ts") + 
-    s(log(dZ), k = 3, bs = "ts") + s(log(ddZ), k = 3, bs = "ts") + 
-    s(log(mr), k = 3, bs = "ts") + s(Npred, k = 3, bs = "ts") + 
-    s(smr, k = 3, bs = "ts") + s(log.substrate.grainsize, k = 3, 
-    bs = "ts") + s(ca1, k = 3, bs = "ts") + s(ca2, k = 3, bs = "ts")
+    s(log(z), k = 3, bs = "ts") + s(log(dZ), k = 3, bs = "ts") + 
+    s(log(ddZ), k = 3, bs = "ts") + s(log(mr), k = 3, bs = "ts") + 
+    s(Npred, k = 3, bs = "ts") + s(smr, k = 3, bs = "ts") + s(log.substrate.grainsize, 
+    k = 3, bs = "ts") + s(ca1, k = 3, bs = "ts") + s(ca2, k = 3, 
+    bs = "ts")
 
 Parametric coefficients:
             Estimate Std. Error t value Pr(>|t|)    
-(Intercept)   5.5813     0.0192   290.6   <2e-16 ***
+(Intercept)  6.70334    0.01501   446.5   <2e-16 ***
 ---
 Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
 
 Approximate significance of smooth terms:
-                                 edf Ref.df      F  p-value    
-s(t)                       1.855e+00      2 107.71  < 2e-16 ***
-s(tmean.climatology)       1.665e+00      2  31.49  < 2e-16 ***
-s(tsd.climatology)         1.775e+00      2  14.23 1.35e-07 ***
-s(log(dZ))                 1.746e+00      2  10.52 6.34e-06 ***
-s(log(ddZ))                1.637e+00      2  11.79 1.04e-06 ***
-s(log(mr))                 1.727e+00      2 229.51  < 2e-16 ***
-s(Npred)                   1.212e-08      2   0.00    0.751    
-s(smr)                     1.499e+00      2  19.02 2.19e-10 ***
-s(log.substrate.grainsize) 1.847e+00      2 287.68  < 2e-16 ***
-s(ca1)                     1.916e+00      2  37.58  < 2e-16 ***
-s(ca2)                     1.946e+00      2 110.24  < 2e-16 ***
+                              edf Ref.df       F  p-value    
+s(t)                       1.0690      2   9.527 4.53e-06 ***
+s(tmean.climatology)       1.5693      2   4.250  0.00518 ** 
+s(tsd.climatology)         1.8496      2  10.253 1.58e-05 ***
+s(log(z))                  2.0000      2 125.700  < 2e-16 ***
+s(log(dZ))                 0.5762      2   0.911  0.05426 .  
+s(log(ddZ))                0.4980      2   0.725  0.06517 .  
+s(log(mr))                 1.9061      2 183.476  < 2e-16 ***
+s(Npred)                   0.8951      2   5.169  0.00064 ***
+s(smr)                     1.9750      2  31.648 1.24e-14 ***
+s(log.substrate.grainsize) 1.9324      2  72.260  < 2e-16 ***
+s(ca1)                     2.0000      2  26.372 1.57e-12 ***
+s(ca2)                     1.5737      2 148.871  < 2e-16 ***
 ---
 Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
 
-R-sq.(adj) =  0.321   Deviance explained = 32.3%
-GCV = 2.5344  Scale est. = 2.5275    n = 6853
-
+R-sq.(adj) =  0.216   Deviance explained = 21.8%
+GCV = 1.0687  Scale est. = 1.0644    n = 4722
 
 
 # -------------------------------------------------
