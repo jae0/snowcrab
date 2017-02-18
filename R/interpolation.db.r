@@ -40,7 +40,7 @@
       ll = which(m[[2]] < p$habitat.threshold.quantile )
       if (length(ll) > 0 ) m[[2]][ll] = NA
 
-      m = m[[1]] * m[[2]] # m[[2]] is serving as weight/probabilities
+      m = log( exp(m[[1]]) * m[[2]]) # m[[2]] is serving as weight/probabilities
 
       if(0) {
         bs = bio.bathymetry::bathymetry.db(p=p, DS="baseline")
@@ -50,7 +50,7 @@
       # more range checks
       s = snowcrab_lbm( p=p, DS="baseline", ret="sd", varnames=varnames )
       # range checks
-      s = s[[1]] * s[[2]]  # s[[2]] is serving as weight/probabilities
+      s = log( exp(s[[1]]) * s[[2]] ) # s[[2]] is serving as weight/probabilities
       
       sq = quantile(s, probs=p$lbm_quantile_bounds[2], na.rm=TRUE ) 
       # s[which(s > sq)] = sq  # cap upper bound of sd
