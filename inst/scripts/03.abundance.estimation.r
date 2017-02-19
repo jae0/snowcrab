@@ -132,7 +132,7 @@ p$lbm_twostep_space = "krige"
 p$lbm_gam_optimizer=c("outer", "bfgs") 
 p$lbm_distance_statsgrid = 2 # resolution (km) of data aggregation (i.e. generation of the ** statistics ** )
 p$lbm_distance_prediction = p$lbm_distance_statsgrid * 0.75 # this is a half window km
-p$lbm_distance_scale = 40
+p$lbm_distance_scale = 50
 
 
 p = bio.snowcrab::snowcrab.parameters( p=p, DS="lbm", varname=p$selection$name  )

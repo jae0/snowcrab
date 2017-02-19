@@ -103,9 +103,9 @@ snowcrab.parameters = function( p=NULL, DS="default", current.year=NULL, varname
     if (!exists("lbm_quantile_bounds", p)) p$lbm_quantile_bounds = c(0.01, 0.99) # remove these extremes in interpolations
     
     if (!exists("lbm_rsquared_threshold", p)) p$lbm_rsquared_threshold = 0.2 # lower threshold
-    if (!exists("lbm_distance_statsgrid", p)) p$lbm_distance_statsgrid = 5 # resolution (km) of data aggregation (i.e. generation of the ** statistics ** )
+    if (!exists("lbm_distance_statsgrid", p)) p$lbm_distance_statsgrid = 3 # resolution (km) of data aggregation (i.e. generation of the ** statistics ** )
     if (!exists("lbm_distance_prediction", p)) p$lbm_distance_prediction = p$lbm_distance_statsgrid*0.75  # this is a half window km
-    if (!exists("lbm_distance_scale", p)) p$lbm_distance_scale = 30 # km ... approx guess of 95% AC range 
+    if (!exists("lbm_distance_scale", p)) p$lbm_distance_scale = 50 # km ... approx guess of 95% AC range 
     if (!exists("lbm_distance_min", p)) p$lbm_distance_min = 2 
     if (!exists("lbm_distance_max", p)) p$lbm_distance_max = 65
   
@@ -148,7 +148,7 @@ snowcrab.parameters = function( p=NULL, DS="default", current.year=NULL, varname
       # this is the time component (mostly) .. space enters as a rough constraint 
       if (!exists("lbm_local_modelformula", p))  p$lbm_local_modelformula = formula( paste(
         varname, '~ as.factor(yr) + s(cos.w, k=3, bs="ts") + s(sin.w, k=3, bs="ts") ', 
-          ' + s(cos.w, sin.w, yr, bs="ts", k=20, by=as.factor(yr)) ',
+          ' + s(cos.w, sin.w, bs="ts", k=20, by=as.factor(yr)) ',
           ' + s(plon, k=3, bs="ts") + s(plat, k=3, bs="ts") + s(plon, plat, k=20, bs="ts") ' ) )
       if (!exists("lbm_local_model_distanceweighted", p)) p$lbm_local_model_distanceweighted = TRUE
 
