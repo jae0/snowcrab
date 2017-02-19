@@ -40,11 +40,12 @@
       ll = which(m[[2]] < p$habitat.threshold.quantile )
       if (length(ll) > 0 ) m[[2]][ll] = NA
 
-      m = m[[1]] * m[[2]] # m[[2]] is serving as weight/probabilities
+      m = log( exp(m[[1]]) * m[[2]] ) # m[[2]] is serving as weight/probabilities
 
       if(0) {
         bs = bio.bathymetry::bathymetry.db(p=p, DS="baseline")
         levelplot( m[,16] ~ plon+plat, bs, aspect="iso")
+        for (i in 1:16) print(levelplot( m[,i] ~ plon+plat, bs, aspect="iso"))
       }
 
       # more range checks
@@ -56,39 +57,41 @@
       # s[which(s > sq)] = sq  # cap upper bound of sd
 
 
-      mm = which(( m - 1.96*s ) < 0 )
-      if (length(mm)>0) {
-        m[mm] = NA
-        s[mm] = NA 
-      }
+      # mm = which(( m - 1.96*s ) < 0 )
+      # if (length(mm)>0) {
+      #   m[mm] = NA
+      #   s[mm] = NA 
+      # }
 
       # limit range of extrapolation to within a given distance from survey stations .. annual basis
       set = snowcrab.db( DS="set.clean")
       bs = bathymetry.db(p=p, DS="baseline")
       bb = array_map( "xy->1", bs, gridparams=p$gridparams )
 
-      for (iy in 1:p$ny ) {
-        S = set[ which(set$yr==p$yrs[iy]), c("plon", "plat") ] 
-        S = S[ !duplicated(S),]
-        nn = array_map( "xy->1", S, gridparams=p$gridparams )
-        overlap = match(  nn, bb )
-        overlap = overlap[ which( is.finite( overlap ))] 
-        o = bs[overlap,] 
-        # add corners as buffer
-        ot = t(o) # reshape to make addition simpler using R's cycling rules
-        o = rbind( t( ot + p$threshold.distance*c( 1, 1) ), 
-                   t( ot + p$threshold.distance*c(-1,-1) ),
-                   t( ot + p$threshold.distance*c( 1,-1) ),
-                   t( ot + p$threshold.distance*c(-1, 1) )
-        )
-        o = o[ !duplicated(o),]
-        boundary= non_convex_hull( o, alpha=p$threshold.distance*2, plot=FALSE )
-        outside.polygon = which( point.in.polygon( bs[,1], bs[,2], boundary[,1], boundary[,2] ) == 0 )
-        m[outside.polygon,iy] = NA
-        s[outside.polygon,iy] = NA
+      if (0) {
+        # annual mask 
+        for (iy in 1:p$ny ) {
+          S = set[ which(set$yr==p$yrs[iy]), c("plon", "plat") ] 
+          S = S[ !duplicated(S),]
+          nn = array_map( "xy->1", S, gridparams=p$gridparams )
+          overlap = match(  nn, bb )
+          overlap = overlap[ which( is.finite( overlap ))] 
+          o = bs[overlap,] 
+          # add corners as buffer
+          ot = t(o) # reshape to make addition simpler using R's cycling rules
+          o = rbind( t( ot + p$threshold.distance*c( 1, 1) ), 
+                     t( ot + p$threshold.distance*c(-1,-1) ),
+                     t( ot + p$threshold.distance*c( 1,-1) ),
+                     t( ot + p$threshold.distance*c(-1, 1) )
+          )
+          o = o[ !duplicated(o),]
+          boundary= non_convex_hull( o, alpha=p$threshold.distance*4, plot=FALSE )
+          outside.polygon = which( point.in.polygon( bs[,1], bs[,2], boundary[,1], boundary[,2] ) == 0 )
+          m[outside.polygon,iy] = NA
+          s[outside.polygon,iy] = NA
+        }
       }
 
-      if (0) {
         # a static mask
         S = set[ , c("plon", "plat") ] 
         S = S[ !duplicated(S),]
@@ -104,11 +107,10 @@
                    t( ot + p$threshold.distance*c(-1, 1) )
         )
         o = o[ !duplicated(o),]
-        boundary= non_convex_hull( o, alpha=p$threshold.distance*2, plot=FALSE )
+        boundary= non_convex_hull( o, alpha=25, plot=FALSE )
         outside.polygon = which( point.in.polygon( bs[,1], bs[,2], boundary[,1], boundary[,2] ) == 0 )
         m[outside.polygon,] = NA
         s[outside.polygon,] = NA
-      }
 
 
       #respect the bounds of input data (no extrapolation)
@@ -175,7 +177,7 @@
         out = matrix( NA, nrow=p$ny, ncol=3) 
         
         for (y in 1:p$ny) {
-          iHabitat = which( biomass[[1]][,y] > bq  )
+          iHabitat = which( biomass[[1]][,y] > bq  ) # any area with biomass > lowest threshold
           iHabitatRegion = intersect( aoi, iHabitat )
           out[ y, 1] = sum( biomass[[1]][iHabitatRegion,y] , na.rm=TRUE ) # abundance weighted by Pr
           out[ y, 2] = sqrt( sum( (biomass[[2]][iHabitatRegion,y])^2 * biomass[[1]][iHabitatRegion,y] , na.rm=TRUE ) )

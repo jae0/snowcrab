@@ -68,7 +68,7 @@ snowcrab.parameters = function( p=NULL, DS="default", current.year=NULL, varname
     if (!exists("vars.to.model", p))  p$vars.to.model = variable.list.expand("all.to.model") # not sure why we have vars.to.model and vartomodel ... clean this up :: TODO
 
     p$habitat.threshold.quantile = 0.05 # quantile at which to consider zero-valued abundance
-    p$threshold.distance = 25 # predict no farther than this distance km from survey stations
+    p$threshold.distance = 10 # predict no farther than this distance km from survey stations
    
   
     if (1) {
@@ -148,8 +148,8 @@ snowcrab.parameters = function( p=NULL, DS="default", current.year=NULL, varname
       # this is the time component (mostly) .. space enters as a rough constraint 
       if (!exists("lbm_local_modelformula", p))  p$lbm_local_modelformula = formula( paste(
         varname, '~ s(yr, bs="ts") + s(cos.w, k=3, bs="ts") + s(sin.w, k=3, bs="ts") ', 
-          ' + s(cos.w, sin.w, yr, bs="ts", k=16) ',
-          ' + s(plon, k=3, bs="ts") + s(plat, k=3, bs="ts") + s(plon, plat, k=16, bs="ts") ' ) )
+          ' + s(cos.w, sin.w, yr, bs="ts", k=20) ',
+          ' + s(plon, k=3, bs="ts") + s(plat, k=3, bs="ts") + s(plon, plat, k=20, bs="ts") ' ) )
       if (!exists("lbm_local_model_distanceweighted", p)) p$lbm_local_model_distanceweighted = TRUE
 
       # this is the spatial component

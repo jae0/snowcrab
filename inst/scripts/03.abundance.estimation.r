@@ -44,8 +44,8 @@ p$lbm_local_modelengine = "twostep"
 p$lbm_twostep_space = "krige"
 p$lbm_gam_optimizer=c("outer", "bfgs") 
 p$lbm_distance_statsgrid = 2 # resolution (km) of data aggregation (i.e. generation of the ** statistics ** )
-p$lbm_distance_prediction = p$lbm_distance_statsgrid *0.75 # this is a half window km
-p$lbm_distance_scale = 45
+p$lbm_distance_prediction = p$lbm_distance_statsgrid * 0.75 # this is a half window km
+p$lbm_distance_scale = 40
 
 p = bio.snowcrab::snowcrab.parameters( p=p, DS="lbm", varname=p$selection$name  )
 
@@ -131,8 +131,8 @@ p$lbm_local_family = gaussian()  # after logit transform by global model, it bec
 p$lbm_twostep_space = "krige"
 p$lbm_gam_optimizer=c("outer", "bfgs") 
 p$lbm_distance_statsgrid = 2 # resolution (km) of data aggregation (i.e. generation of the ** statistics ** )
-p$lbm_distance_prediction = p$lbm_distance_statsgrid  *0.75 # this is a half window km
-p$lbm_distance_scale = 45
+p$lbm_distance_prediction = p$lbm_distance_statsgrid * 0.75 # this is a half window km
+p$lbm_distance_scale = 40
 
 
 p = bio.snowcrab::snowcrab.parameters( p=p, DS="lbm", varname=p$selection$name  )
@@ -158,86 +158,62 @@ global_model = lbm_db( p=p, DS="global_model")
 summary( global_model )
 plot(global_model)
 
-
 Family: binomial 
 Link function: logit 
 
 Formula:
 snowcrab.large.males_presence_absence ~ s(t, k = 3, bs = "ts") + 
     s(tmean.climatology, k = 3, bs = "ts") + s(tsd.climatology, 
-    k = 3, bs = "ts") + s(log(dZ), k = 3, bs = "ts") + s(log(ddZ), 
-    k = 3, bs = "ts") + s(log(mr), k = 3, bs = "ts") + s(Npred, 
-    k = 3, bs = "ts") + s(smr, k = 3, bs = "ts") + s(log.substrate.grainsize, 
-    k = 3, bs = "ts") + s(ca1, k = 3, bs = "ts") + s(ca2, k = 3, 
-    bs = "ts")
+    k = 3, bs = "ts") + s(log(z), k = 3, bs = "ts") + s(log(dZ), 
+    k = 3, bs = "ts") + s(log(ddZ), k = 3, bs = "ts") + s(log(mr), 
+    k = 3, bs = "ts") + s(Npred, k = 3, bs = "ts") + s(smr, k = 3, 
+    bs = "ts") + s(log.substrate.grainsize, k = 3, bs = "ts") + 
+    s(ca1, k = 3, bs = "ts") + s(ca2, k = 3, bs = "ts")
 
 Parametric coefficients:
             Estimate Std. Error z value Pr(>|z|)    
-(Intercept)  0.57704    0.03065   18.83   <2e-16 ***
+(Intercept)  0.82108    0.03282   25.02   <2e-16 ***
 ---
 Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
 
 Approximate significance of smooth terms:
-                              edf Ref.df  Chi.sq  p-value    
-s(t)                       1.8872      2 159.744  < 2e-16 ***
-s(tmean.climatology)       1.8515      2  74.632  < 2e-16 ***
-s(tsd.climatology)         1.8039      2  12.744 0.000868 ***
-s(log(dZ))                 1.6951      2  12.054 0.000731 ***
-s(log(ddZ))                0.9885      2  13.519 7.71e-05 ***
-s(log(mr))                 1.9320      2 219.945  < 2e-16 ***
-s(Npred)                   1.8731      2   7.652 0.016576 *  
-s(smr)                     1.0642      2  31.466 5.01e-09 ***
-s(log.substrate.grainsize) 1.4979      2 344.454  < 2e-16 ***
-s(ca1)                     1.8604      2  23.834 2.30e-06 ***
-s(ca2)                     1.9405      2 114.521  < 2e-16 ***
+                                 edf Ref.df  Chi.sq  p-value    
+s(t)                       1.769e+00      2 105.703  < 2e-16 ***
+s(tmean.climatology)       1.838e+00      2  68.113  < 2e-16 ***
+s(tsd.climatology)         1.910e+00      2  14.130 0.000585 ***
+s(log(z))                  1.569e+00      2 170.503  < 2e-16 ***
+s(log(dZ))                 6.303e-01      2   2.517 0.035988 *  
+s(log(ddZ))                9.639e-01      2  12.371 6.30e-05 ***
+s(log(mr))                 1.855e+00      2 196.086  < 2e-16 ***
+s(Npred)                   7.202e-05      2   0.000 0.732550    
+s(smr)                     9.897e-01      2  15.089 3.94e-05 ***
+s(log.substrate.grainsize) 1.752e+00      2 213.989  < 2e-16 ***
+s(ca1)                     1.849e+00      2  22.419 4.75e-06 ***
+s(ca2)                     1.857e+00      2 246.368  < 2e-16 ***
 ---
 Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
 
-R-sq.(adj) =  0.268   Deviance explained = 22.6%
-UBRE = 0.034139  Scale est. = 1         n = 6853
+R-sq.(adj) =  0.296   Deviance explained = 25.4%
+UBRE = -0.031615  Scale est. = 1         n = 6853
 
----
 
-Family: binomial 
-Link function: logit 
 
-Formula:
-snowcrab.large.males_presence_absence ~ s(t, k = 3, bs = "ts") + 
-    s(tmean.climatology, k = 3, bs = "ts") + s(tsd.climatology, 
-    k = 3, bs = "ts") + s(log(dZ), k = 3, bs = "ts") + s(log(ddZ), 
-    k = 3, bs = "ts") + s(log(mr), k = 3, bs = "ts") + s(Npred, 
-    k = 3, bs = "ts") + s(smr, k = 3, bs = "ts") + s(log.substrate.grainsize, 
-    k = 3, bs = "ts") + s(ca1, k = 3, bs = "ts") + s(ca2, k = 3, 
-    bs = "ts")
-
-Parametric coefficients:
-            Estimate Std. Error z value Pr(>|z|)    
-(Intercept) -1.07467    0.03875  -27.73   <2e-16 ***
----
-Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
-
-Approximate significance of smooth terms:
-                              edf Ref.df  Chi.sq  p-value    
-s(t)                       1.9978      2 106.199  < 2e-16 ***
-s(tmean.climatology)       1.2693      2 139.283  < 2e-16 ***
-s(tsd.climatology)         1.9749      2  31.342 1.21e-07 ***
-s(log(dZ))                 0.7421      2   4.918  0.00668 ** 
-s(log(ddZ))                1.0323      2  31.967 2.32e-10 ***
-s(log(mr))                 1.9975      2 145.069  < 2e-16 ***
-s(Npred)                   1.6244      2   1.659  0.35039    
-s(smr)                     0.9669      2   7.582  0.00349 ** 
-s(log.substrate.grainsize) 1.8948      2 278.584  < 2e-16 ***
-s(ca1)                     1.9992      2 127.686  < 2e-16 ***
-s(ca2)                     1.9778      2 123.071  < 2e-16 ***
----
-Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
-
-R-sq.(adj) =  0.278   Deviance explained =   25%
-UBRE = -0.0039929  Scale est. = 1         n = 11320
 
 
 
 # collect all predictions into a single file and return:
+p = bio.snowcrab::load.environment( year.assessment=current.year )
+p$selection=list( 
+  name = "snowcrab.large.males_abundance",
+  type = "abundance",
+  sex=0, # male
+  mat=1, # do not use maturity status in groundfish data as it is suspect .. 
+  spec_bio=bio.taxonomy::taxonomy.recode( from="spec", to="parsimonious", tolookup=2526 ),
+  len= c( 95, 200 )/10, #  mm -> cm ; indicators.db in cm
+  drop.groundfish.data=TRUE # esp from 1970 to 1999 measurement of invertebrates was sporatic .. zero-values are dropped as they are unreliable 
+}
+p = bio.snowcrab::snowcrab.parameters( p=p, DS="lbm", varname=p$selection$name  )
+
 interpolation.db( DS="biomass.redo", p=p  )
 interpolation.db( DS="biomass.map", p=p  )
 
