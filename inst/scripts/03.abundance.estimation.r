@@ -84,30 +84,29 @@ snowcrab.large.males_abundance ~ s(t, k = 3, bs = "ts") + s(tmean.climatology,
 
 Parametric coefficients:
             Estimate Std. Error t value Pr(>|t|)    
-(Intercept)  6.70334    0.01501   446.5   <2e-16 ***
+(Intercept)  5.58131    0.01869   298.6   <2e-16 ***
 ---
 Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
 
 Approximate significance of smooth terms:
-                              edf Ref.df       F  p-value    
-s(t)                       1.0690      2   9.527 4.53e-06 ***
-s(tmean.climatology)       1.5693      2   4.250  0.00518 ** 
-s(tsd.climatology)         1.8496      2  10.253 1.58e-05 ***
-s(log(z))                  2.0000      2 125.700  < 2e-16 ***
-s(log(dZ))                 0.5762      2   0.911  0.05426 .  
-s(log(ddZ))                0.4980      2   0.725  0.06517 .  
-s(log(mr))                 1.9061      2 183.476  < 2e-16 ***
-s(Npred)                   0.8951      2   5.169  0.00064 ***
-s(smr)                     1.9750      2  31.648 1.24e-14 ***
-s(log.substrate.grainsize) 1.9324      2  72.260  < 2e-16 ***
-s(ca1)                     2.0000      2  26.372 1.57e-12 ***
-s(ca2)                     1.5737      2 148.871  < 2e-16 ***
+                                 edf Ref.df       F  p-value    
+s(t)                       1.461e+00      2  67.664  < 2e-16 ***
+s(tmean.climatology)       1.441e+00      2  19.462 6.04e-11 ***
+s(tsd.climatology)         1.951e+00      2  15.470 1.17e-07 ***
+s(log(z))                  1.548e+00      2 199.031  < 2e-16 ***
+s(log(dZ))                 8.326e-01      2   3.413  0.00213 ** 
+s(log(ddZ))                9.484e-01      2   5.210  0.00026 ***
+s(log(mr))                 1.507e+00      2 219.813  < 2e-16 ***
+s(Npred)                   1.360e-08      2   0.000  0.60121    
+s(smr)                     1.734e+00      2  17.919 1.88e-09 ***
+s(log.substrate.grainsize) 1.898e+00      2 189.463  < 2e-16 ***
+s(ca1)                     1.947e+00      2  48.772  < 2e-16 ***
+s(ca2)                     1.901e+00      2 292.569  < 2e-16 ***
 ---
 Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
 
-R-sq.(adj) =  0.216   Deviance explained = 21.8%
-GCV = 1.0687  Scale est. = 1.0644    n = 4722
-
+R-sq.(adj) =  0.357   Deviance explained = 35.9%
+GCV = 2.4006  Scale est. = 2.3943    n = 6853
 
 # -------------------------------------------------
 # presence-absence

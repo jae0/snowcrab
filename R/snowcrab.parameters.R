@@ -147,8 +147,8 @@ snowcrab.parameters = function( p=NULL, DS="default", current.year=NULL, varname
 
       # this is the time component (mostly) .. space enters as a rough constraint 
       if (!exists("lbm_local_modelformula", p))  p$lbm_local_modelformula = formula( paste(
-        varname, '~ as.factor(yr) + s(cos.w, k=3, bs="ts") + s(sin.w, k=3, bs="ts") ', 
-          ' + s(cos.w, sin.w, bs="ts", k=20, by=as.factor(yr)) ',
+        varname, '~ s(yr, k=10, bs="ts") + s(cos.w, k=3, bs="ts") + s(sin.w, k=3, bs="ts") ', 
+          ' + s(cos.w, sin.w, yr, bs="ts", k=20) ',
           ' + s(plon, k=3, bs="ts") + s(plat, k=3, bs="ts") + s(plon, plat, k=20, bs="ts") ' ) )
       if (!exists("lbm_local_model_distanceweighted", p)) p$lbm_local_model_distanceweighted = TRUE
 
@@ -166,7 +166,7 @@ snowcrab.parameters = function( p=NULL, DS="default", current.year=NULL, varname
       p$lbm_local_family = gaussian()  # after logit transform by global model, it becomes gaussian
       
       if (!exists("lbm_local_modelformula", p))  p$lbm_local_modelformula = formula( paste(
-        varname, '~ s(yr, bs="ts") + s(cos.w, k=3, bs="ts") + s(sin.w, k=3, bs="ts") ', 
+        varname, '~ s(yr, k=10, bs="ts") + s(cos.w, k=3, bs="ts") + s(sin.w, k=3, bs="ts") ', 
           ' + s(cos.w, sin.w, yr, bs="ts", k=10) + s( log(z), k=3, bs="ts") ',
           ' + s(plon, k=3, bs="ts") + s(plat, k=3, bs="ts") + s(plon, plat, log(z), k=10, bs="ts") ' ) )
 
