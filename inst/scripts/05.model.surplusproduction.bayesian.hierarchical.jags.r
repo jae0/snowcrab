@@ -28,7 +28,7 @@ sb = switch( as.character(p$year.assessment),
 dir.output = file.path(project.datadirectory('bio.snowcrab'),"assessments",p$year.assessment)
 dir.create( dir.output, recursive=T, showWarnings=F )
 fnres = file.path( project.datadirectory("bio.snowcrab"), "R", paste( "surplus.prod.mcmc", p$year.assessment,"rdata", sep=".") )
-fnres = file.path( project.datadirectory("bio.snowcrab"), "R", paste( "surplus.prod.mcmc", p$year.assessment,"survey_final.rdata", sep=".") )
+#fnres = file.path( project.datadirectory("bio.snowcrab"), "R", paste( "surplus.prod.mcmc", p$year.assessment,"survey_final.rdata", sep=".") )
 
 
 m = jags.model( file=fishery.model.jags ( DS=sb$jagsmodelname ), data=sb, n.chains=n.chains, n.adapt=n.adapt ) # recruitment + spring/summer q's + all observed CVs

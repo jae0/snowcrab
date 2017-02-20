@@ -52,7 +52,7 @@ model {
 
     for (j in 1:(U)) {
       #bo.tau[j] ~ dunif( pow( log( 1 + pow( cv.lognormal.max, 2) ), -1 ), pow( log( 1 + pow( cv.lognormal.min, 2) ), -1 ) )  # min/max inverted because it is an inverse scale
-      bp.sd[j] ~ dunif( bo.min[j], bo.max[j] )  
+      bo.sd[j] ~ dunif( bo.min[j], bo.max[j] )  
       #bo.sd[j] ~ dlnorm(bo.mup[j],pow(bo.sdp[j],-1))
       bo.tau[j]  <- pow( bo.sd[j], -2 )
     }
