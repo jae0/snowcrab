@@ -68,7 +68,7 @@ snowcrab.parameters = function( p=NULL, DS="default", current.year=NULL, varname
     if (!exists("vars.to.model", p))  p$vars.to.model = variable.list.expand("all.to.model") # not sure why we have vars.to.model and vartomodel ... clean this up :: TODO
 
     p$habitat.threshold.quantile = 0.05 # quantile at which to consider zero-valued abundance
-    p$threshold.distance = 10 # predict no farther than this distance km from survey stations
+    p$threshold.distance = 5 # predict no farther than this distance km from survey stations
    
   
     if (1) {
@@ -100,7 +100,7 @@ snowcrab.parameters = function( p=NULL, DS="default", current.year=NULL, varname
 
     if (!exists("boundary", p)) p$boundary = FALSE 
     if (!exists("depth.filter", p)) p$depth.filter = 0 # depth (m) stats locations with elevation > 0 m as being on land (and so ignore)
-    if (!exists("lbm_quantile_bounds", p)) p$lbm_quantile_bounds = c(0.01, 0.99) # remove these extremes in interpolations
+    if (!exists("lbm_quantile_bounds", p)) p$lbm_quantile_bounds = c(0.025, 0.975) # remove these extremes in interpolations
     
     if (!exists("lbm_rsquared_threshold", p)) p$lbm_rsquared_threshold = 0.2 # lower threshold
     if (!exists("lbm_distance_statsgrid", p)) p$lbm_distance_statsgrid = 3 # resolution (km) of data aggregation (i.e. generation of the ** statistics ** )

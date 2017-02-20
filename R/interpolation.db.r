@@ -14,7 +14,6 @@
         return (B)
       }
 
-      m = snowcrab_lbm( p=p, DS="baseline", ret="mean", varnames=varnames )
       
       set = bio.indicators::survey.db( p=p, DS="set.filter" ) # mature male > 95 mm 
 
@@ -23,24 +22,23 @@
       set$totmass[ set$totmass > qq] = qq
 
       ii = which( set$totmass > 0 )
-      qs = quantile( set$totmass[ii], probs=c(p$habitat.threshold.quantile, p$lbm_quantile_bounds[2]), na.rm=TRUE )
-      qr = log( range( set$totmass[ii], na.rm=TRUE ) )
-      qs = log(qs) # m[[1]] is on log-scale
-#  qs
-#  50%         5%        99% 
-# 852.3634   110.4716 11374.5987 
-# > mean( set$totmass[ii])
-# [1] 1606.543
+      qs = quantile( set$totmass[ii], probs=p$lbm_quantile_bounds, na.rm=TRUE )
+      qs = log(qs) # 
 
-
-      jj = which(m[[1]] < qr[1])
-      if (length(jj) > 0 ) m[[1]][jj] = NA  # anything this low is considered below detection limit
+      bm = snowcrab_lbm( p=p, DS="baseline", ret="mean", varnames=varnames )
+      m = bm[[1]]  # biomass
+      h = bm[[2]]  # habitat
+      bm= NULL
       
+      ll = which(h < p$habitat.threshold.quantile )
+      if (length(ll) > 0 ) h[ll] = 0
+      m = log( exp(m) * h ) # bm[[2]] is serving as weight/probabilities
+      # #respect the bounds of input data (no extrapolation)
       
-      ll = which(m[[2]] < p$habitat.threshold.quantile )
-      if (length(ll) > 0 ) m[[2]][ll] = NA
-
-      m = log( exp(m[[1]]) * m[[2]] ) # m[[2]] is serving as weight/probabilities
+      qq = which( m < qs[1] )
+      if (length(qq) > 0 ) m[qq] = NA
+      rr = which( m > qs[2] )
+      if (length(rr) > 0 ) m[rr] = qs[2]
 
       if(0) {
         bs = bio.bathymetry::bathymetry.db(p=p, DS="baseline")
@@ -51,11 +49,10 @@
       # more range checks
       s = snowcrab_lbm( p=p, DS="baseline", ret="sd", varnames=varnames )
       # range checks
-      s = s[[1]] * s[[2]]  # s[[2]] is serving as weight/probabilities
+      s = log( exp(s[[1]]) * s[[2]] ) # s[[2]] is serving as weight/probabilities
       
       sq = quantile(s, probs=p$lbm_quantile_bounds[2], na.rm=TRUE ) 
       # s[which(s > sq)] = sq  # cap upper bound of sd
-
 
       # mm = which(( m - 1.96*s ) < 0 )
       # if (length(mm)>0) {
@@ -89,50 +86,39 @@
           outside.polygon = which( point.in.polygon( bs[,1], bs[,2], boundary[,1], boundary[,2] ) == 0 )
           m[outside.polygon,iy] = NA
           s[outside.polygon,iy] = NA
+          h[outside.polygon,iy] = NA
         }
       }
 
-        # a static mask
-        S = set[ , c("plon", "plat") ] 
-        S = S[ !duplicated(S),]
-        nn = array_map( "xy->1", S, gridparams=p$gridparams )
-        overlap = match(  nn, bb )
-        overlap = overlap[ which( is.finite( overlap ))] 
-        o = bs[overlap,] 
-        # add corners as buffer
-        ot = t(o) # reshape to make addition simpler using R's cycling rules
-        o = rbind( t( ot + p$threshold.distance*c( 1, 1) ), 
-                   t( ot + p$threshold.distance*c(-1,-1) ),
-                   t( ot + p$threshold.distance*c( 1,-1) ),
-                   t( ot + p$threshold.distance*c(-1, 1) )
-        )
-        o = o[ !duplicated(o),]
-        boundary= non_convex_hull( o, alpha=25, plot=FALSE )
-        outside.polygon = which( point.in.polygon( bs[,1], bs[,2], boundary[,1], boundary[,2] ) == 0 )
-        m[outside.polygon,] = NA
-        s[outside.polygon,] = NA
+      # a static mask
+      S = set[ , c("plon", "plat") ] 
+      S = S[ !duplicated(S),]
+      nn = array_map( "xy->1", S, gridparams=p$gridparams )
+      overlap = match(  nn, bb )
+      overlap = overlap[ which( is.finite( overlap ))] 
+      o = bs[overlap,] 
+      # add corners as buffer
+      ot = t(o) # reshape to make addition simpler using R's cycling rules
+      o = rbind( t( ot + p$threshold.distance*c( 1, 1) ), 
+                 t( ot + p$threshold.distance*c(-1,-1) ),
+                 t( ot + p$threshold.distance*c( 1,-1) ),
+                 t( ot + p$threshold.distance*c(-1, 1) )
+      )
+      o = o[ !duplicated(o),]
+      boundary= non_convex_hull( o, alpha=25, plot=FALSE )
+      outside.polygon = which( point.in.polygon( bs[,1], bs[,2], boundary[,1], boundary[,2] ) == 0 )
+      m[outside.polygon,] = NA
+      s[outside.polygon,] = NA
+      h[outside.polygon,] = NA
 
-
-      #respect the bounds of input data (no extrapolation)
-      qq = which( m < qr[1] )
-      if (length(qq) > 0 ) {
-        m[qq] = NA
-        s[qq] = NA
-      }
-
-      rr = which( m > qr[2] )
-      if (length(rr) > 0 ) {
-        m[rr] = qr[2]
-      }
-
-      B = list( m=m, s=s )
+      B = list( m=m, s=s, h=h )
       save( B, file=fn, compress=TRUE )
       B = NULL
 
-
       projectdir = file.path(p$project.root, "maps", "fishable.biomass", p$spatial.domain )
-      datarange = seq( qs[1], qs[2], length.out=150)
+      datarange = seq( qs[1]-0.1, qs[2]+0.1, length.out=150)
       cols = color.code( "seis", datarange )
+      m[which(!is.finite(m))] = qs[1]
       for (iy in 1:p$ny) {
         y = p$yrs[iy]
         outfn = paste( "prediction.abundance.mean", y, sep=".")
@@ -142,8 +128,11 @@
           col.regions=cols, rez=c(p$pres,p$pres) )
       }
 
-      datarange = seq( 0, sq, length.out=150)
+      datarange = seq( 0, max(s,na.rm=TRUE), length.out=150)
       cols = color.code( "seis", datarange )
+      s[which(!is.finite(s))] = 0.1
+      s[which(s < 0.1)] = 0.1
+      
       for (iy in 1:p$ny) {
         y = p$yrs[iy]
         outfn = paste( "prediction.abundance.sd", y, sep=".")
@@ -162,12 +151,12 @@
 
     if (DS=="timeseries") {
       biomass = interpolation.db(p=p, DS="biomass")
-      biomass[[1]] = exp(biomass[[1]]) / 10^3  # kg/km^2 to t/km^2  .. required for biomass.summary.db
-      biomass[[2]] = exp(biomass[[2]]) / 10^3  # kg/km^2 to t/km^2  .. required for biomass.summary.db
+      biomass$m = exp(biomass$m) / 10^3  # kg/km^2 to t/km^2  .. required for biomass.summary.db
+      biomass$s = exp(biomass$s) / 10^3  # kg/km^2 to t/km^2  .. required for biomass.summary.db
       
       bs = bathymetry.db( p=p, DS="baseline")
       
-      bq = min( biomass[[1]][ biomass[[1]] > 0 ], na.rm=T )
+      bq = min( biomass$m[ biomass$m > 0 ], na.rm=T )
 
       K = NULL
       nreg = length(p$regions)
@@ -177,11 +166,11 @@
         out = matrix( NA, nrow=p$ny, ncol=3) 
         
         for (y in 1:p$ny) {
-          iHabitat = which( biomass[[1]][,y] > bq  ) # any area with biomass > lowest threshold
+          iHabitat = which( biomass$h[,y] > p$habitat.threshold.quantile ) # any area with biomass > lowest threshold
           iHabitatRegion = intersect( aoi, iHabitat )
-          out[ y, 1] = sum( biomass[[1]][iHabitatRegion,y] , na.rm=TRUE ) # abundance weighted by Pr
-          out[ y, 2] = sqrt( sum( (biomass[[2]][iHabitatRegion,y])^2 * biomass[[1]][iHabitatRegion,y] , na.rm=TRUE ) )
-          out[ y, 3] = length( iHabitatRegion ) * (p$pres*p$pres)
+          out[ y, 1] = sum( biomass$m[iHabitatRegion,y] , na.rm=TRUE ) # abundance weighted by Pr
+          out[ y, 2] = sqrt( sum( (biomass$s[iHabitatRegion,y])^2 , na.rm=TRUE ) )
+          out[ y, 3] = sum( biomass$h[iHabitatRegion,y] ) * (p$pres*p$pres)
         }
         
         ok = as.data.frame( out )
