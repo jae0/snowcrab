@@ -19,7 +19,7 @@ sb = switch( as.character(p$year.assessment),
   "2013" = surplusproduction.db( DS="jags.2013", sourcedata="default" ) ,
   "2014" = surplusproduction.db( DS="jags.2014", sourcedata="nosa" ) ,
   "2015" = surplusproduction.db( DS="jags.2015", sourcedata="nosa" ) ,
-  "2016" = surplusproduction.db( DS="jags.2016", sourcedata="nosa" ) 
+  "2016" = surplusproduction.db( DS="jags.2016", sourcedata="default" ) 
   )
 
 
@@ -95,11 +95,11 @@ figure.bugs( "bo.sd", y=y, sb=sb, fn=file.path(dir.output, "bo.sd.density.png" )
 figure.bugs( "bp.sd", y=y, sb=sb, fn=file.path(dir.output, "bp.sd.density.png" ) )
 
 # timeseries
-figure.bugs( type="timeseries", vname="biomass", y=y, sb=sb, fn=file.path(dir.output, "biomass.timeseries.png" ), save.plot=F )
+figure.bugs( type="timeseries", vname="biomass", y=y, sb=sb, fn=file.path(dir.output, "biomass.timeseries.png" ), save.plot=T )
 figure.bugs( type="timeseries", vname="fishingmortality", y=y, sb=sb, fn=file.path(dir.output, "fishingmortality.timeseries.png" ) )
 
 # Harvest control rules
-figure.bugs( type="hcr", vname="default", y=y, sb=sb, fn=file.path(dir.output, "hcr.default.png" ), save.plot=F  )
+figure.bugs( type="hcr", vname="default", y=y, sb=sb, fn=file.path(dir.output, "hcr.default.png" ), save.plot=T  )
 figure.bugs( type="hcr", vname="simple", y=y, sb=sb, fn=file.path(dir.output, "hcr.simple.png" ) )
 
 # diagnostics
