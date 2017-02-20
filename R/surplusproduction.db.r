@@ -226,6 +226,8 @@ surplusproduction.db = function( DS, sourcedata="default", debug.region="cfanort
       b.max = 1.1, # scaled to 1 but allow overshooting
       q.min = rep(0.001,3),
       q.max = rep(2,3),
+      q.mu = rep(1,3),
+      q.sd = rep(0.3,3),
       bo.mup=rep(-2.5579,3),
       bo.sdp=rep(0.47726,3),
       bp.mup=rep(-2.5579,3),
@@ -286,7 +288,7 @@ surplusproduction.db = function( DS, sourcedata="default", debug.region="cfanort
 
     sb$tomonitor = c( "r", "K", "q", "qs", "r.mu", "r.sd", "b","bp.sd", "bo.sd","b0", "b0.sd", "rem", "rem.sd", "rem.mu","REM", "MSY", "BMSY", "FMSY", "Fcrash", "Bdrop", "BX2MSY", "F", "TAC",  "C", "P", "B" )
 
-    sb$jagsmodelname = "biomassdynamic_nonhyper_2014.bugs"
+    sb$jagsmodelname = "biomassdynamic_nonhyper_2016.bugs"
     return(sb)
   }
 
