@@ -4,7 +4,8 @@ surplusproduction.db = function( DS, sourcedata="default", debug.region="cfanort
     if (is.data.frame(sourcedata)) {
       res= sourcedata 
     } else {
-      if (sourcedata=="default") res =  biomass.summary.survey.db(p=p)
+      if (sourcedata=="default") res =  biomass.summary.db(p=p)
+      if (sourcedata=="survey") res =  biomass.summary.survey.db(p=p)
       if (sourcedata=="nosa" )   res = biomass.summary.survey.nosa.db(p=p)
     }
 
@@ -220,7 +221,6 @@ surplusproduction.db = function( DS, sourcedata="default", debug.region="cfanort
  # ---------------------------------
 
   if (DS %in% c("jags.2016")) {
-
     sb = list(
       b.min = 0.001, # scaled to 1 but allow overshooting
       b.max = 1.1, # scaled to 1 but allow overshooting
@@ -244,8 +244,8 @@ surplusproduction.db = function( DS, sourcedata="default", debug.region="cfanort
     # for lognormal: cv = sqrt(exp(sigma^2) - 1); or sigma = sqrt(log(cv^2+ 1) ) ==> sigma = sqrt( log(0.25^2 + 1)) = 0.246 ~ cv -- i.e. cv ~ sd
       IOA = as.matrix(res$B), # observed index of abundance
       IOAcv = as.matrix(res$B.sd ), # observed index of log abundance SD estimates ~ CV
-      IREC = as.matrix(res$R), # observed index of abundance
-      IRECcv = as.matrix(res$R.sd ), # observed index of log abundance SD estimates ~CV
+      #IREC = as.matrix(res$R), # observed index of abundance
+      #IRECcv = as.matrix(res$R.sd ), # observed index of log abundance SD estimates ~CV
       CAT = as.matrix(res$L) , # catches  , assume 20% handling mortality and illegal landings
       CAT.min = apply( res$L, 2, min, na.rm=T),
       CAT.max = apply( res$L, 2, max, na.rm=T),
@@ -264,8 +264,8 @@ surplusproduction.db = function( DS, sourcedata="default", debug.region="cfanort
     cfa.north.bad.data = which( as.numeric(rownames(sb$IOA)) <= 1997 )
     sb$IOA[ cfa.north.bad.data, cfa.north ] = NA
     sb$IOAcv[ cfa.north.bad.data, cfa.north ] = mean( sb$IOAcv[,cfa.north ] ,na.rm=T )
-    sb$IRECcv[ cfa.north.bad.data, cfa.north ] = mean( sb$IRECcv[,cfa.north ] ,na.rm=T )
-    sb$IREC[ cfa.north.bad.data, cfa.north ] = mean( sb$IREC[,cfa.north ] ,na.rm=T )
+    #sb$IRECcv[ cfa.north.bad.data, cfa.north ] = mean( sb$IRECcv[,cfa.north ] ,na.rm=T )
+    #sb$IREC[ cfa.north.bad.data, cfa.north ] = mean( sb$IREC[,cfa.north ] ,na.rm=T )
 
     cfa.south =  2 # column index
     cfa.south.bad.data = which( as.numeric(rownames(sb$IOA)) <= 1998 )
@@ -277,10 +277,10 @@ surplusproduction.db = function( DS, sourcedata="default", debug.region="cfanort
     sb$IOAcv[ cfa.nodata , sb$cfa4x ] = mean( sb$IOAcv[,sb$cfa4x] ,na.rm=T )
 
     # recruitment index has no process model right now ... use min value
-    sb$IREC[ cfa.nodata , sb$cfa4x ] = min( sb$IREC[,sb$cfa4x] ,na.rm=T )
-    sb$IRECcv[ cfa.nodata , sb$cfa4x ] = mean( sb$IRECcv[,sb$cfa4x] ,na.rm=T )
+    #sb$IREC[ cfa.nodata , sb$cfa4x ] = min( sb$IREC[,sb$cfa4x] ,na.rm=T )
+    #sb$IRECcv[ cfa.nodata , sb$cfa4x ] = mean( sb$IRECcv[,sb$cfa4x] ,na.rm=T )
 
-    sb$IREC = log( sb$IREC )
+    #sb$IREC = log( sb$IREC )
 
     sb$tomonitor = c( "r", "K", "q", "qs", "r.mu", "r.sd", "b","bp.sd", "bo.sd","b0", "b0.sd", "rem", "rem.sd", "rem.mu","REM", "MSY", "BMSY", "FMSY", "Fcrash", "Bdrop", "BX2MSY", "F", "TAC",  "C", "P", "B" )
 
