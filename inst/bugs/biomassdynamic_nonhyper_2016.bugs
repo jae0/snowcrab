@@ -19,7 +19,7 @@ model {
   for (j in 1:U) {
     #q.mu[j]  ~ dunif( q.min, q.max ) 
     #q.sd[j]  ~ dunif( q.mu[j] * cv.normal.min, q.mu[j] *cv.normal.max )  # catchability coefficient (normal scale)
-    q[j] ~ dnorm( q.mu[j], pow( q.sd[j], -2 ) ) # T(q.min, q.max)
+    q[j] ~ dnorm( q.mu[j], pow( q.sd[j], -2 ) )  T(q.min, q.max)
     #q[j] ~ dunif( q.min[j] , q.max[j] )
   }
 
@@ -52,7 +52,8 @@ model {
 
     for (j in 1:(U)) {
       #bo.tau[j] ~ dunif( pow( log( 1 + pow( cv.lognormal.max, 2) ), -1 ), pow( log( 1 + pow( cv.lognormal.min, 2) ), -1 ) )  # min/max inverted because it is an inverse scale
-      bo.sd[j] ~ dlnorm(bo.mup[j],pow(bo.sdp[j],-1))
+      bp.sd[j] ~ dunif( bo.min[j], bo.max[j] )  
+      #bo.sd[j] ~ dlnorm(bo.mup[j],pow(bo.sdp[j],-1))
       bo.tau[j]  <- pow( bo.sd[j], -2 )
     }
 

@@ -224,8 +224,8 @@ surplusproduction.db = function( DS, sourcedata="default", debug.region="cfanort
     sb = list(
       b.min = 0.001, # scaled to 1 but allow overshooting
       b.max = 1.1, # scaled to 1 but allow overshooting
-      q.min = rep(0,3),
-      q.max = rep(4,3),
+      q.min = 0.001,
+      q.max = 2,
       q.mu = rep(1,3),
       q.sd = rep(0.3,3),
       bo.mup=rep(-2.5579,3),
