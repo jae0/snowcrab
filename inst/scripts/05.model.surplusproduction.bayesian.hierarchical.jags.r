@@ -1,11 +1,12 @@
 
 p = bio.snowcrab::load.environment( year.assessment=2016)
+#loadfunctions('bio.snowcrab')
 
 require(rjags)
 rjags::load.module("dic")
 rjags::load.module("glm")
 
-bioLibrary( "bio.models" )
+#bioLibrary( "bio.models" )
 
 # MCMC/Gibbs parameters
 n.adapt = 4000 # burn-in  .. 4000 is enough for the full model but in case ...
@@ -70,15 +71,15 @@ save(y, file=fnres, compress=T)
 ## 
 b1=apply( y$B[,1,,], 1,quantile , probs=c(0.025,0.5,0.975), na.rm=T  )
 f1=apply( y$F[,1,,], 1,quantile , probs=c(0.5), na.rm=T  )
-NENS=data.frame(t(b1),F=f1,row.names=1996:2018)
+NENS=data.frame(t(b1),F=f1,row.names=1999:2019)
 
 b2=apply( y$B[,2,,], 1,quantile , probs=c(0.025,0.5,0.975), na.rm=T  )
 f2=apply( y$F[,2,,], 1,quantile , probs=c(0.5), na.rm=T  )
-SENS=data.frame(t(b2),F=f2,row.names=1996:2018)
+SENS=data.frame(t(b2),F=f2,row.names=1999:2019)
 
 b3=apply( y$B[,3,,], 1,quantile , probs=c(0.025,0.5,0.975), na.rm=T  )
 f3=apply( y$F[,3,,], 1,quantile , probs=c(0.5), na.rm=T  )
-CFA4X=data.frame(t(b3),F=f3,row.names=1996:2018)
+CFA4X=data.frame(t(b3),F=f3,row.names=1999:2019)
 
 
 

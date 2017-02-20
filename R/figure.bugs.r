@@ -89,10 +89,10 @@
         qs = signif( qs, 3 )
         for (i in 1:3) {
           pdat = as.vector(y$q[i,,])
-        prr=NULL
-        prr$class='uniform'
-        prr$max=1
-        prr$min=0.001
+          prr=NULL
+          prr$class="normal"
+          prr$mean=sb$q.mu[i]
+          prr$sd=sb$q.sd[i]
           plot.freq.distribution.prior.posterior( prior=prr, posterior=pdat )
           legend( "topright", bty="n", legend=paste( labs[i], "\n", vname, " = ", qs[2,i], " {", qs[1,i], ", ",  qs[3,i], "}  ", sep="" )   
       )}}
@@ -153,6 +153,10 @@
         for (i in 1:3) {
           pdat = as.vector(y$bp.sd[i,,])
           prr=NULL
+        #prr=NULL
+        #prr$class='uniform'
+        #prr$max=1
+        #prr$min=0.001
           prr$class="lognormal"
           prr$meanlog=sb$bp.mup
           prr$sdlog=sqrt(sb$bp.sdp)
