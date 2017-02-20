@@ -228,13 +228,15 @@ surplusproduction.db = function( DS, sourcedata="default", debug.region="cfanort
       q.max = rep(2,3),
       bo.mup=rep(-2.5579,3),
       bo.sdp=rep(0.47726,3),
-      bp.min=rep(-2.5579,3),
-      bp.max=rep(0.47726,3),
+      bp.mup=rep(-2.5579,3),
+      bp.sdp=rep(0.47726,3),
+      bp.min=rep(0,3),
+      bp.max=rep(5,3),
       rec.max= c( 10^3, 10^4, 10^2 ),
       K.mu = c( 1.831139,4.170013,0.784308), #for ln
-      K.sd = c(0.2595339,0.2350642,0.1571607), #for ln
+      K.sd = c(0.04595339,0.04350642,0.02571607), #for ln
       r.mu = rep(0.96,3),
-      r.sd = rep(0.05041271,3),
+      r.sd = rep(0.01041271,3),
       b0.min = c(0.5, 0.5, 0.2),  # prior: mean value possible in  N,S,4X
       b0.max = c(0.8, 0.8, 0.6),  # prior: mean value possible in  N,S,4X
       cv.normal.min = 0.05, # upper limit of CV for normally distributed variables ~ 0.5 covers a reasonably large range, try:   curve( dnorm(x, mean=1, sd=0.5), from=0.1, to=4  )
@@ -284,7 +286,7 @@ surplusproduction.db = function( DS, sourcedata="default", debug.region="cfanort
 
     sb$tomonitor = c( "r", "K", "q", "qs", "r.mu", "r.sd", "b","bp.sd", "bo.sd","b0", "b0.sd", "rem", "rem.sd", "rem.mu","REM", "MSY", "BMSY", "FMSY", "Fcrash", "Bdrop", "BX2MSY", "F", "TAC",  "C", "P", "B" )
 
-    sb$jagsmodelname = "biomassdynamic_nonhyper_2016.bugs"
+    sb$jagsmodelname = "biomassdynamic_nonhyper_2014.bugs"
     return(sb)
   }
 
