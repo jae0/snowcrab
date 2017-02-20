@@ -150,13 +150,13 @@
 
 
     if (DS=="timeseries") {
-      biomass = interpolation.db(p=p, DS="biomass")
-      biomass$m = exp(biomass$m) / 10^3  # kg/km^2 to t/km^2  .. required for biomass.summary.db
-      biomass$s = exp(biomass$s) / 10^3  # kg/km^2 to t/km^2  .. required for biomass.summary.db
+      bm = interpolation.db(p=p, DS="biomass")
+      bm$m = exp(bm$m) / 10^3  # kg/km^2 to t/km^2  .. required for biomass.summary.db
+      bm$s = exp(bm$s) / 10^3  # kg/km^2 to t/km^2  .. required for biomass.summary.db
       
       bs = bathymetry.db( p=p, DS="baseline")
       
-      bq = min( biomass$m[ biomass$m > 0 ], na.rm=T )
+      bq = min( bm$m[ bm$m > 0 ], na.rm=T )
 
       K = NULL
       nreg = length(p$regions)
@@ -166,11 +166,11 @@
         out = matrix( NA, nrow=p$ny, ncol=3) 
         
         for (y in 1:p$ny) {
-          iHabitat = which( biomass$h[,y] > p$habitat.threshold.quantile ) # any area with biomass > lowest threshold
+          iHabitat = which( bm$h[,y] > p$habitat.threshold.quantile ) # any area with biomass > lowest threshold
           iHabitatRegion = intersect( aoi, iHabitat )
-          out[ y, 1] = sum( biomass$m[iHabitatRegion,y] , na.rm=TRUE ) # abundance weighted by Pr
-          out[ y, 2] = sqrt( sum( (biomass$s[iHabitatRegion,y])^2 , na.rm=TRUE ) )
-          out[ y, 3] = sum( biomass$h[iHabitatRegion,y] ) * (p$pres*p$pres)
+          out[ y, 1] = sum( bm$m[iHabitatRegion,y] , na.rm=TRUE ) # abundance weighted by Pr
+          out[ y, 2] = sqrt( sum( (bm$s[iHabitatRegion,y])^2 , na.rm=TRUE ) )
+          out[ y, 3] = sum( bm$h[iHabitatRegion,y] ) * (p$pres*p$pres)
         }
         
         ok = as.data.frame( out )
@@ -205,6 +205,43 @@
   #############################
 
   # ---------
+
+
+    if (DS =="habitat.temperatures") {
+
+      bm = bio.snowcrab::interpolation.db( p=p, DS="biomass" )
+      ps = bio.snowcrab::snowcrab_lbm(p=p, DS="output_data", voi=p$selection$name )
+
+      temp = ps$t * bm$h
+
+      K = NULL
+      nreg = length(p$regions)
+      for (r in 1:nreg ){
+        aoi = filter.region.polygon(x=bs[ , c("plon", "plat")], region=p$regions[r], planar=T)
+        aoi = intersect( aoi, which( bs$plon > 250 ) )
+        out = matrix( NA, nrow=p$ny, ncol=2) 
+        
+        for (y in 1:p$ny) {
+          iHabitat = which( bm$h[,y] > p$habitat.threshold.quantile ) # any area with bm > lowest threshold
+          iHabitatRegion = intersect( aoi, iHabitat )
+          out[ y, 1] = mean( temp[iHabitatRegion,y] , na.rm=TRUE ) # temperature weighted by Pr
+          out[ y, 2] = sd( temp[iHabitatRegion,y] , na.rm=TRUE ) # temperature weighted by Pr
+        }
+        
+        ok = as.data.frame( out )
+        names( ok) = c("temperature", "temperature.sd")
+        ok$region = p$regions[r]
+        ok$yr = p$yrs
+        ok$lbound = ok$temperature - ok$temperature.sd*1.96 # normal assumption 
+        ok$ubound = ok$temperature + ok$temperature.sd*1.96 
+        K = rbind(K, ok)
+      }
+
+      return( K )      
+
+    }
+
+
 
     if ( DS %in% c( "interpolation.redo.old", "interpolation.old", "interpolation.simulation.old", "interpolation.simulation.redo.old",
                     "interpolation.simulation.complete.old", "interpolation.simulation.PS.old" ) ) {

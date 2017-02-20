@@ -220,7 +220,11 @@ K = interpolation.db( DS="timeseries", p=p  )
 str(K)
 
 # table.view( K )
-# figure.timeseries.errorbars( K[], outdir=outdir, fname=paste(vv, rr, sep=".") )
+
+figure.timeseries.snowcrab.habitat(p=p) # /bio.data/bio.snowcrab/assessments/2016/timeseries/interpolated/snowcrab.habitat.sa.png
+
+figure.timeseries.snowcrab.habitat.temperatures(p=p) # /bio.data/bio.snowcrab/assessments/2016/timeseries/interpolated/mean.bottom.temp.snowcrab.habitat.png
+
 
 
 # update data summaries of the above results

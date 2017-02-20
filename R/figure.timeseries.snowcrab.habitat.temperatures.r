@@ -2,13 +2,10 @@
   figure.timeseries.snowcrab.habitat.temperatures = function(p) {
         
 
-    td = NULL
-    for ( yy in 1970:p$year.assessment ) {
-      KK = snowcrab_lbm( DS="K", p=p, v="R0.mass", y=yy )
-      td = rbind( td, KK )
-    }
-    td$t = td$temp.region
-    td$t.sd = td$temp.region.sd
+    td = bio.snowcrab::interpolation.db( p=p, DS="habitat.temperatures" )
+    
+    td$t = td$temperature
+    td$t.sd = td$temperature.sd
 
     areas = c("cfa4x", "cfasouth", "cfanorth" )
     regions = c("4X", "S-ENS", "N-ENS")
