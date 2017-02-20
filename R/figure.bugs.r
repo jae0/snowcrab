@@ -175,10 +175,9 @@
       if (vname=="biomass") { 
 
         SI =  apply( y$q, 1, median, na.rm=T  )
-        K =  apply( y$K, 1, median, na.rm=T  )
 
         for (i in 1:3) {
-          qIOA = sb$IOA[,i] / SI[i] + rem[,i] * K[i]
+          qIOA = sb$IOA[,i] / SI[i] + sb$CAT[,i] 
           IOA = sb$IOA[,i] 
           meanval = apply( y$B[,i,,], 1, mean, na.rm=T  )
 

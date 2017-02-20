@@ -88,9 +88,9 @@ model {
         
     for (j in 1:U) {
       #bp.tau[j] ~ dunif( pow( log( 1 + pow( cv.lognormal.max, 2) ), -1 ), pow( log( 1 + pow( cv.lognormal.min, 2) ), -1 ) )  
-      bp.sd[j] ~ dunif( bp.min[j], bp.max[j] )  
+      #bp.sd[j] ~ dunif( bp.min[j], bp.max[j] )  
       #bp.sd[j]  <- pow( sqrt(bp.tau[j]), -1 )
-      # bp.sd[j] ~ dlnorm(bp.mup[j],pow(bp.sdp[j],-1))
+       bp.sd[j] ~ dlnorm(bp.mup[j],pow(bp.sdp[j],-1))
       bp.tau[j]  <- pow( bp.sd[j], -2 )
     }
 
