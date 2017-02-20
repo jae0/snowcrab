@@ -19,11 +19,11 @@
     setup.lattice.options()
     pl = xyplot( total~yr|region, data=td, 
         layout=c(1,3), xlim=xlim, scales = list(y = "free"),
-            main="Potential snow crab habitat", xlab="Year", ylab=expression(paste("Surface area ( X", 10^3, km^2, ")")),
+            main="Fishable biomass", xlab="Year", ylab=expression("t/km^2") ,
             panel = function(x, y, subscripts, ...) {
             panel.abline(h=mean(y, na.rm=T), col="gray40", lwd=1.5,...)
             panel.xyplot(x, y, type="b", pch=19, lwd=1.5, lty="11", col="black", ...)
-            panel.loess(x,y, span=0.15, lwd=2.5, col="darkblue", ... )
+#            panel.loess(x,y, span=0.15, lwd=2.5, col="darkblue", ... )
        }
     )
     print(pl)
