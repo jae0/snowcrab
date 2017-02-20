@@ -49,7 +49,7 @@ snowcrab_lbm = function( ip=NULL, DS=NULL, p=NULL, voi=NULL, year=NULL, ret=NULL
     }
 
     if ( p$selection$type=="presence_absence") {
-      set = set[ which(set$data.source %in% c("snowcrab", "groundfish") ), ]
+      set = set[ which(set$data.source %in% c("snowcrab") ), ]
       names(set)[ which( names(set) =="Y")] = p$selection$name 
       set$totmass = NULL
     }
