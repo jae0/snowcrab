@@ -72,17 +72,20 @@ save(y, file=fnres, compress=T)
 b1=apply( y$B[,1,,], 1,quantile , probs=c(0.025,0.5,0.975), na.rm=T  )
 f1=apply( y$F[,1,,], 1,quantile , probs=c(0.5), na.rm=T  )
 NENS=data.frame(t(b1),F=f1,row.names=1999:2019)
-
+NENS$U=1-exp(-NENS$F)
 b2=apply( y$B[,2,,], 1,quantile , probs=c(0.025,0.5,0.975), na.rm=T  )
 f2=apply( y$F[,2,,], 1,quantile , probs=c(0.5), na.rm=T  )
 SENS=data.frame(t(b2),F=f2,row.names=1999:2019)
+SENS$U=1-exp(-SENS$F)
 
 b3=apply( y$B[,3,,], 1,quantile , probs=c(0.025,0.5,0.975), na.rm=T  )
 f3=apply( y$F[,3,,], 1,quantile , probs=c(0.5), na.rm=T  )
 CFA4X=data.frame(t(b3),F=f3,row.names=1999:2019)
+CFA4X$U=1-exp(-CFA4X$F)
 
-
-
+NENS
+SENS
+CFA4X
 # Figures
 graphics.off()
 
