@@ -1,71 +1,68 @@
 
-\newcommand{\D}{.}
-%{\includegraphics[width=\textwidth]{\es \A common/map\D scotianshelf.png}}{Map of Scotian Shelf}
-
-
-% Sample Block- text box with figure
-%%------------------------------------------------
-%\begin{frame}
-%\frametitle{Year 1- July 2013}
-
-%\begin{block}
-
-%\begin{itemize}
-%\item Acoustic tag  27 crab (tags emit signal \textgreater 3 years)
-%\begin{itemize}
-	%\item Last 1-2 Days of Inner NENS July Fishery
-	%\item Release $ \sim4 $  km on either side of proposed line
-	%\item Actively track movement through time.
-	%\begin{itemize}
-	%\item Grid search
-	%\end{itemize}
-	%\item Passive tracking 
-	%\begin{itemize}
-	%\item Cabot strait line
-	%\item Wave glider
-	%\end{itemize}
-
-%\end{itemize}
-%\end{itemize}
-%\end{block}
-%\begin{figure}
-%\vspace*{-0.5cm}
-%\centerline{\includegraphics[width=0.4\textwidth]{Listeninggrid.pdf}}
-%\end{figure}
-
-%\end{frame}
-
-
-%%---------
 
 %----------------------------------------------------------------------------------------
-%	PACKAGES AND THEMES
+%	Presentation for snow crab RAP using beamer
+% last edit: Feb 2017
+
+% to reduce the size of the PDF:
+% use ghostscript:
+% gs -q -dSAFER -dNOPAUSE -sDEVICE=pdfwrite -sPDFSETTINGS=printer -sOutputFile="resdoc2006sc.pdf" resdoc2006sc.pdf 
+
+% the key being sPDFSETTINGS: with options: default, screen, ebook, printer, preprint
+% try also:  -sCompressPages=true
+% -sDownsampleColorImages=true
+% -sColorImageResolution=300
+% -sGrayImageResolution=300
+% -sMonoImageResolution=300
+% final choice to get it under 8MB :
+
+% gs -q -dSAFER -dNOPAUSE -sDEVICE=pdfwrite -dPDFSETTINGS=/printer -dColorImageResolution=150 -dMonoImageResolution=150 -dGrayImageResolution=150  -dCompatibilityLevel=1.4 -sOutputFile="resdoc2006sc.printer.pdf" resdoc2006sc.pdf  < /dev/null
+
 %----------------------------------------------------------------------------------------
+
 
 \documentclass{beamer}
 
+\usepackage{default}
+
 \mode<presentation> {
-
-\usetheme{Hannover}
-\usetheme{Boadilla}
-
-%\usetheme{AnnArbor}
-
-%\usecolortheme{dolphin}
-\usecolortheme{seagull}
-
-%\usefonttheme{structuresmallcapsserif}
-
+	%\usetheme{Hannover}
+	%\usetheme{AnnArbor}
+	\usetheme{Boadilla}
+	%\usecolortheme{dolphin}
+	\usecolortheme{seagull}
+	%\usefonttheme{structuresmallcapsserif}
+	\beamertemplatenavigationsymbolsempty % turn off navigation
+  \hypersetup{pdfstartview={Fit}} % fits the presentation to the window when first displayed
 }
+
+
+\usepackage{fourier}
+\usepackage[english]{babel}															% English language/hyphenation
+\usepackage[protrusion=true,expansion=true]{microtype}				% Better typography
+
+\usepackage[toc,page]{appendix}
+\usepackage[utf8]{inputenc}
+\usepackage{csquotes}
+\usepackage{hyperref}
+
+% linking options
+%%% Equation and float numbering
+\usepackage{amsmath,amsfonts,amlbm}										% Math packages
+\numberwithin{equation}{section}		% Equationnumbering: section.eq#
+\numberwithin{figure}{section}		% Figurenumbering: section.fig#
+\numberwithin{table}{section}				% Tablenumbering: section.tab#
 
 \usepackage{graphicx} % Allows including images
 \usepackage{graphics}
 \usepackage{booktabs} % Allows the use of \toprule, \midrule and \bottomrule in tables
 
-\newcommand{\e}{/home/michelle/bio.data/}
-\newcommand{\es}{snowcrab/}
-\newcommand{\Ay}{assessments/2015/}
-\newcommand{\A}{assessments/}
+
+\newcommand{\D}{.}  % to replace dots .. 
+\newcommand{\bd}{\string~/{bio.data}}   %  \string~ is a representation of the home directory 
+\newcommand{\bds}{\bd/{bio.snowcrab}}
+\newcommand{\bdsa}{\bds/assessments}
+\newcommand{\bdsay}{\bdsa/2015}
 
 %----------------------------------------------------------------------------------------
 %	TITLE PAGE
@@ -113,7 +110,7 @@ Department of Fisheries and Oceans \\ % Your institution for the title page
 	\begin{centering}
 	Scotian Shelf and CFAs
 		\begin{figure}
-  		\includegraphics[width=\textwidth]{\e \es maps/Basemap.pdf}
+  		\includegraphics[width=\textwidth]{\bds/maps/Basemap.pdf}
   		\end{figure}
   		\end{centering}
  	\end{column}
@@ -149,7 +146,7 @@ Department of Fisheries and Oceans \\ % Your institution for the title page
 	
 	\begin{column}{0.7\textwidth}
 		\begin{figure}
-  		\includegraphics[width=\textwidth]{\e \es \Ay figures/Basemap_yearlydifference.pdf}
+  		\includegraphics[width=\textwidth]{\bdsay/figures/Basemap_yearlydifference.pdf}
   		\end{figure}
  	\end{column}
  	\end{columns}
@@ -186,25 +183,25 @@ Trends in biomass for potential predators/prey (log10, no\textbackslash$km^2$) o
 
 	\begin{column}{0.25\textwidth}
  	\begin{figure}
-    \includegraphics[width=\textwidth]{\e \es R/maps/species/snowcrab/jonahcrab/annual/totno/totno\D 2014.png}\\   
-    \includegraphics[width=\textwidth]{\e \es R/maps/species/snowcrab/lessertoadcrab/annual/totno/totno\D 2014.png}\\   
-    \includegraphics[width=\textwidth]{\e \es R/maps/species/snowcrab/northernshrimp/annual/totno/totno\D 2014.png}  
+    \includegraphics[width=\textwidth]{\bds/R/maps/species/snowcrab/jonahcrab/annual/totno/{totno.2014}.png}\\   
+    \includegraphics[width=\textwidth]{\bds/R/maps/species/snowcrab/lessertoadcrab/annual/totno/{totno.2014}.png}\\   
+    \includegraphics[width=\textwidth]{\bds/R/maps/species/snowcrab/northernshrimp/annual/totno/{totno.2014}.png}  
   	\end{figure}
   	\end{column}
 
   	\begin{column}{0.25\textwidth}
  	\begin{figure}
-    \includegraphics[width=\textwidth]{\e \es R/maps/species/snowcrab/jonahcrab/annual/totno/totno\D 2015.png}\\   
-    \includegraphics[width=\textwidth]{\e \es R/maps/species/snowcrab/lessertoadcrab/annual/totno/totno\D 2015.png}\\   
-    \includegraphics[width=\textwidth]{\e \es R/maps/species/snowcrab/northernshrimp/annual/totno/totno\D 2015.png}  
+    \includegraphics[width=\textwidth]{\bds/R/maps/species/snowcrab/jonahcrab/annual/totno/{totno.2015}.png}\\   
+    \includegraphics[width=\textwidth]{\bds/R/maps/species/snowcrab/lessertoadcrab/annual/totno/{totno.2015}.png}\\   
+    \includegraphics[width=\textwidth]{\bds/R/maps/species/snowcrab/northernshrimp/annual/totno/{totno.2015}.png}  
   	\end{figure}
   	\end{column}
 
 	\begin{column}{0.25\textwidth}
  	\begin{figure}
-  	\includegraphics[width=0.6\textwidth]{\e \es \Ay timeseries/survey/ms\D mass\D 2511.pdf}\\   
-    \includegraphics[width=0.6\textwidth]{\e \es \Ay timeseries/survey/ms\D mass\D 2521.pdf}\\
-    \includegraphics[width=0.6\textwidth]{\e \es \Ay timeseries/survey/ms\D mass\D 2211.pdf}
+  	\includegraphics[width=0.6\textwidth]{\bdsay/timeseries/survey/{ms.mass.2511}.pdf}\\   
+    \includegraphics[width=0.6\textwidth]{\bdsay/timeseries/survey/{ms.mass.2521}.pdf}\\
+    \includegraphics[width=0.6\textwidth]{\bdsay/timeseries/survey/{ms.mass.2211}.pdf}
 	\end{figure}
   	\end{column}
 
@@ -229,25 +226,25 @@ Trends in biomass for potential predators (log10, no\textbackslash$km^2$) of Sno
 
 	\begin{column}{0.25\textwidth}
  	\begin{figure}
-    \includegraphics[width=\textwidth]{\e \es R/maps/species/snowcrab/halibut/annual/totno/totno\D 2014.png}\\   
-    \includegraphics[width=\textwidth]{\e \es R/maps/species/snowcrab/cod/annual/totno/totno\D 2014.png}\\   
-    \includegraphics[width=\textwidth]{\e \es R/maps/species/snowcrab/thornyskate/annual/totno/totno\D 2014.png}  
+    \includegraphics[width=\textwidth]{\bds/R/maps/species/snowcrab/halibut/annual/totno/{totno.2014}.png}\\   
+    \includegraphics[width=\textwidth]{\bds/R/maps/species/snowcrab/cod/annual/totno/{totno.2014}.png}\\   
+    \includegraphics[width=\textwidth]{\bds/R/maps/species/snowcrab/thornyskate/annual/totno/{totno.2014}.png}  
   	\end{figure}
   	\end{column}
 
   	\begin{column}{0.25\textwidth}
  	\begin{figure}
-    \includegraphics[width=\textwidth]{\e \es R/maps/species/snowcrab/halibut/annual/totno/totno\D 2015.png}\\   
-    \includegraphics[width=\textwidth]{\e \es R/maps/species/snowcrab/cod/annual/totno/totno\D 2015.png}\\   
-    \includegraphics[width=\textwidth]{\e \es R/maps/species/snowcrab/thornyskate/annual/totno/totno\D 2015.png}  
+    \includegraphics[width=\textwidth]{\bds/R/maps/species/snowcrab/halibut/annual/totno/{totno.2015}.png}\\   
+    \includegraphics[width=\textwidth]{\bds/R/maps/species/snowcrab/cod/annual/totno/{totno.2015}.png}\\   
+    \includegraphics[width=\textwidth]{\bds/R/maps/species/snowcrab/thornyskate/annual/totno/{totno.2015}.png}  
   	\end{figure}
   	\end{column}
 
 	\begin{column}{0.25\textwidth}
  	\begin{figure}
-  	\includegraphics[width=0.6\textwidth]{\e \es \Ay timeseries/survey/ms\D mass\D 30.pdf}\\   
-    \includegraphics[width=0.6\textwidth]{\e \es \Ay timeseries/survey/ms\D mass\D 10.pdf}\\
-    \includegraphics[width=0.6\textwidth]{\e \es \Ay timeseries/survey/ms\D mass\D 201.pdf}
+  	\includegraphics[width=0.6\textwidth]{\bdsay/timeseries/survey/{ms.mass.30}.pdf}\\   
+    \includegraphics[width=0.6\textwidth]{\bdsay/timeseries/survey/{ms.mass.10}.pdf}\\
+    \includegraphics[width=0.6\textwidth]{\bdsay/timeseries/survey/{ms.mass.201}.pdf}
 	\end{figure}
   	\end{column}
 
@@ -272,7 +269,7 @@ Trends in biomass for potential predators (log10, no\textbackslash$km^2$) of Sno
 
 	\begin{column}{0.5\textwidth}
 	\begin{figure}
-		\includegraphics[width=\textwidth]{\e \es \Ay figures/size\D freq/survey/male.pdf}
+		\includegraphics[width=\textwidth]{\bdsay/figures/{size.freq}/survey/male.pdf}
 	\end{figure}
 	\end{column}
 	\end{columns}
@@ -300,13 +297,13 @@ Trends in biomass for potential predators (log10, no\textbackslash$km^2$) of Sno
 
 	\begin{column}{0.35\textwidth}
 	\begin{figure}
-	\includegraphics[width=\textwidth]{\e \es R/maps/survey/snowcrab/annual/sexratio\D mat/sexratio\D mat\D 2015.png}
+	\includegraphics[width=\textwidth]{\bds/R/maps/survey/snowcrab/annual/{sexratio.mat}/{sexratio.mat.2015}.png}
 	\end{figure}
 	\end{column}
 
 	\begin{column}{0.35\textwidth}
 	\begin{figure}
-	 \includegraphics[width=\textwidth]{\e \es \Ay timeseries/survey/sexratio\D mat.pdf}
+	 \includegraphics[width=\textwidth]{\bdsay/timeseries/survey/{sexratio.mat}.pdf}
 	\end{figure}
 	\end{column}
 	\end{columns}
@@ -326,7 +323,7 @@ Trends in biomass for potential predators (log10, no\textbackslash$km^2$) of Sno
 
 	\begin{column}{0.5\textwidth}
 	\begin{figure}
-		\includegraphics[width=\textwidth]{\e \es \Ay figures/size\D freq/survey/female.pdf}
+		\includegraphics[width=\textwidth]{\bdsay/figures/{size.freq}/survey/female.pdf}
 	\end{figure}
 	\end{column}
 	\end{columns}
@@ -341,7 +338,7 @@ Trends in biomass for potential predators (log10, no\textbackslash$km^2$) of Sno
 	Primiparous - first time birth
 	\end{center}
 		\begin{figure}
-		\includegraphics[width=\textwidth]{\e \es R/maps/survey/snowcrab/annual/totno\D female\D primiparous/totno\D female\D primiparous\D 2015.png}
+		\includegraphics[width=\textwidth]{\bds/R/maps/survey/snowcrab/annual/{totno.female.primiparous}/{totno.female.primiparous.2015}.png}
 	\end{figure}
 	\end{column}
 
@@ -350,7 +347,7 @@ Trends in biomass for potential predators (log10, no\textbackslash$km^2$) of Sno
 	Multiparous - given birth 2+ times
 	\end{center}
 	\begin{figure}
-		\includegraphics[width=\textwidth]{\e \es R/maps/survey/snowcrab/annual/totno\D female\D multiparous/totno\D female\D multiparous\D 2015.png}	
+		\includegraphics[width=\textwidth]{\bds/R/maps/survey/snowcrab/annual/{totno.female.multiparous}/{totno.female.multiparous.2015}.png}	
 	\end{figure}
 	\end{column}
 	\end{columns}
@@ -366,13 +363,13 @@ Trends in biomass for potential predators (log10, no\textbackslash$km^2$) of Sno
 	\begin{columns}
 	\begin{column}{0.5\textwidth}
 	\begin{figure}
-	  \includegraphics[width=0.7\textwidth]{\e \es \Ay timeseries/survey/totno\D female\D mat\D combined.pdf}
+	  \includegraphics[width=0.7\textwidth]{\bdsay/timeseries/survey/{totno.female.mat.combined}.pdf}
 	\end{figure}
 	\end{column}
 
 	\begin{column}{0.5\textwidth}
 	\begin{figure}
-	\includegraphics[width=\textwidth]{\e \es R/maps/survey/snowcrab/annual/totno\D female\D mat/totno\D female\D mat\D 2015.png}	
+	\includegraphics[width=\textwidth]{\bds/R/maps/survey/snowcrab/annual/{totno.female.mat}/{totno.female.mat.2015}.png}	
 	\end{figure}
 	\end{column}
 	\end{columns}
@@ -390,7 +387,7 @@ Trends in biomass for potential predators (log10, no\textbackslash$km^2$) of Sno
 	Fishable Biomass from Annual Snow Crab Survey. Log10 (t\textbackslash$km^2$).\\ 
 	\end{center}
 	\begin{figure}
-		\includegraphics[width=0.9\textwidth]{\e \es R/maps/survey/snowcrab/annual/R0\D mass/R0\D mass\D 2015.png}
+		\includegraphics[width=0.9\textwidth]{\bds/R/maps/survey/snowcrab/annual/{R0.mass}/{R0.mass.2015}.png}
 	\end{figure}
 \end{column}
 
@@ -400,7 +397,7 @@ Trends in biomass for potential predators (log10, no\textbackslash$km^2$) of Sno
 	\end{center}
 \begin{figure}
     \centering
-    \includegraphics[width=0.7\textwidth]{\e \es \Ay timeseries/survey/R0\D mass.pdf}
+    \includegraphics[width=0.7\textwidth]{\bdsay/timeseries/survey/{R0.mass}.pdf}
  \end{figure}
 \end{column}
 
@@ -421,7 +418,7 @@ Fishable Biomass Index}
 	\end{center}
 %\begin{figure}
  %   \centering
-  %  \includegraphics[width=0.7\textwidth]{\e \es \Ay timeseries/survey/R0\D mass.pdf}
+  %  \includegraphics[width=0.7\textwidth]{\bdsay/timeseries/survey/{R0.mass}.pdf}
  %\end{figure}
 \end{column}
 
@@ -458,7 +455,7 @@ Time series of fishable biomass from the logistic population model. A three year
 \begin{column}{0.5\textwidth}
 \begin{figure}[ht]
     \centering
-    \includegraphics[width=0.9\textwidth]{\e \es \Ay figures/bugs/survey/biomass\D timeseries.png}
+    \includegraphics[width=0.9\textwidth]{\bdsay/figures/bugs/survey/{biomass.timeseries}.png}
 \end{figure}
 \end{column}
 
@@ -504,7 +501,7 @@ Time series of fishing mortality from the logistic population model
 \end{itemize}
 
 \begin{figure}
-    \includegraphics[width=0.6\textwidth]{\e \es \Ay figures/bugs/survey/fishingmortality\D timeseries.png}
+    \includegraphics[width=0.6\textwidth]{\bdsay/figures/bugs/survey/{fishingmortality.timeseries}.png}
 \end{figure}
 \end{column}
 
