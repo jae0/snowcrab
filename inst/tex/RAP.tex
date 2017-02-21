@@ -1,5 +1,7 @@
 
 
+
+
 %----------------------------------------------------------------------------------------
 %	Presentation for snow crab RAP using beamer
 % last edit: Feb 2017
@@ -26,13 +28,13 @@
 \usepackage{default}
 
 \mode<presentation> {
-	%\usetheme{Hannover}
-	%\usetheme{AnnArbor}
-	\usetheme{Boadilla}
-	%\usecolortheme{dolphin}
-	\usecolortheme{seagull}
-	%\usefonttheme{structuresmallcapsserif}
-	\beamertemplatenavigationsymbolsempty % turn off navigation
+  %\usetheme{Hannover}
+  %\usetheme{AnnArbor}
+  \usetheme{Boadilla}
+  %\usecolortheme{dolphin}
+  \usecolortheme{seagull}
+  %\usefonttheme{structuresmallcapsserif}
+  \beamertemplatenavigationsymbolsempty % turn off navigation
   \hypersetup{pdfstartview={Fit}} % fits the presentation to the window when first displayed
 }
 
@@ -48,7 +50,7 @@
 
 % linking options
 %%% Equation and float numbering
-\usepackage{amsmath,amsfonts,amlbm}										% Math packages
+\usepackage{amsmath,amsfonts}										% Math packages
 \numberwithin{equation}{section}		% Equationnumbering: section.eq#
 \numberwithin{figure}{section}		% Figurenumbering: section.fig#
 \numberwithin{table}{section}				% Tablenumbering: section.tab#
@@ -59,98 +61,121 @@
 
 
 \newcommand{\D}{.}  % to replace dots .. 
-\newcommand{\bd}{\string~/{bio.data}}   %  \string~ is a representation of the home directory 
-\newcommand{\bds}{\bd/{bio.snowcrab}}
+\newcommand{\bd}{\string~/bio.data}   %  \string~ is a representation of the home directory 
+\newcommand{\bds}{\bd/bio.snowcrab}
 \newcommand{\bdsa}{\bds/assessments}
-\newcommand{\bdsay}{\bdsa/2015}
+\newcommand{\bdsay}{\bdsa/2016}
+
+
+% these need to be incremented each year ..
+\newcommand{\yr}{2016}
+\newcommand{\yrminusone}{2015}
+\newcommand{\yrminustwo}{2014}
+\newcommand{\yrminusthree}{2013}
+
+\newcommand{\A}{assessments/}
+\newcommand{\Ay}{assessments/\yr/}
+
+\newcommand{\spsmaps}{\bds/R/maps/survey/snowcrab/annual}
+
+
 
 %----------------------------------------------------------------------------------------
 %	TITLE PAGE
 %----------------------------------------------------------------------------------------
 
-\title{2015 4VWX Snow Crab Assessment Results} % The short title appears at the bottom of every slide, the full title is only on the title page
+\title{Snow Crab Assessment \\
+  Martimes Region \\
+  \yr } 
 
-\author{Snow Crab Unit} % Your name
+% The short title appears at the bottom of every slide, the full title is only on the title page
+
+\author{Brad Hubley, Ben Zisserson, Brent Cameron, Jae S. Choi} % Your name
 \institute[DFO] % Your institution as it will appear on the bottom of every slide, may be shorthand to save space
 {
-Department of Fisheries and Oceans \\ % Your institution for the title page
-\medskip
-\textit{} % Your email address
+  Department of Fisheries and Oceans \\ % Your institution for the title page
+  Science Branch \\
+  Population Ecology Division
+  \medskip
+  \textit{} % Your email address
 }
-\date{\the\year} % Date, can be changed to a custom date
+\date{\today} % Date, can be changed to a custom date
 
 \begin{document}
-
-\begin{frame}
-\titlepage % Print the title page as the first slide
-\end{frame}
-
-\begin{frame}
-\frametitle{Overview} % Table of contents slide, comment this block out to remove it
-\tableofcontents % Throughout your presentation, if you choose to use \section{} and \subsection{} commands, these will automatically be printed on this slide as an overview of your presentation
-\end{frame}
-
-%----------------------------------------------------------------------------------------
-%	PRESENTATION SLIDES
-%----------------------------------------------------------------------------------------
-
-
-
-\begin{frame}
-\frametitle{4VWX Snow Crab}
-	\begin{columns}[T]
-	\begin{column}{0.4\textwidth}
-	\begin{itemize}
-		\item Southern limit of Snow Crab extent
-		\item Three commercial fishing areas
-	\end{itemize}
-	\end{column}
-	
-	\begin{column}{0.6\textwidth}
-	\begin{centering}
-	Scotian Shelf and CFAs
-		\begin{figure}
-  		\includegraphics[width=\textwidth]{\bds/maps/Basemap.pdf}
-  		\end{figure}
-  		\end{centering}
- 	\end{column}
- 	\end{columns}
-\end{frame}
+  
+  
+  \begin{frame}
+    \titlepage % Print the title page as the first slide
+  \end{frame}
+  
+  \begin{frame}
+    \frametitle{Overview} % Table of contents slide, comment this block out to remove it
+    \tableofcontents % Throughout your presentation, if you choose to use \section{} and \subsection{} commands, these will automatically be printed on this slide as an overview of your presentation
+  \end{frame}
+  
+  %----------------------------------------------------------------------------------------
+  %	PRESENTATION SLIDES
+  %----------------------------------------------------------------------------------------
+  
+  
+  
+  \begin{frame}
+    \frametitle{4VWX Snow Crab}
+    \begin{columns}[T]
+      \begin{column}{0.4\textwidth}
+        \begin{itemize}
+          \item Southern limit of Snow Crab extent
+          \item Three commercial fishing areas
+        \end{itemize}
+      \end{column}
+      
+      \begin{column}{0.6\textwidth}
+        \begin{centering}
+          Scotian Shelf and CFAs
+          \begin{figure}
+            \includegraphics[width=\textwidth]{\bds/maps/Basemap.pdf}
+          \end{figure}
+        \end{centering}
+      \end{column}
+    \end{columns}
+  \end{frame}
+  
+  
 
 %--------------------------------------------------------------------------------
-
-\section{Survey}
-
-\begin{frame}
-\frametitle{Survey 2015}
-	\begin{columns}
-	\begin{column}{0.3\textwidth}
-	Survey:
-	\begin{itemize}
-	\begin{tiny}
-		\item Western component of 4x completed this year
-		\item More fishing days than normal due to poor weather conditions
-		\item Same vessel, captain and Science staff as 2014\\
-	\end{tiny}
-	\end{itemize}
-
-	Area Patterns:
-	\begin{itemize}
-	\begin{tiny}
-		\item N-ENS: Less crab pretty much everywhere in 2015, except inner Glace Bay Hole
-		\item S-ENS: Less crab inshore and on the slope edge in 2015
-		\item 4x: Slightly more in some locations, less in others. Despite suspect numbers from last year\\
-	\end{tiny}
-	\end{itemize}
-	\end{column}
-	
-	\begin{column}{0.7\textwidth}
-		\begin{figure}
-  		\includegraphics[width=\textwidth]{\bdsay/figures/Basemap_yearlydifference.pdf}
-  		\end{figure}
- 	\end{column}
- 	\end{columns}
-\end{frame}
+%
+%\section{Survey}
+%
+%\begin{frame}
+%\frametitle{Survey \yr}
+%	\begin{columns}
+%	\begin{column}{0.3\textwidth}
+%	Survey:
+%	\begin{itemize}
+%	\begin{tiny}
+%		\item Western component of 4x completed this year
+%		\item More fishing days than normal due to poor weather conditions
+%		\item Same vessel, captain and Science staff as 2014\\
+%	\end{tiny}
+%	\end{itemize}
+%
+%	Area Patterns:
+%	\begin{itemize}
+%	\begin{tiny}
+%		\item N-ENS: Less crab pretty much everywhere in 2015, except inner Glace Bay Hole
+%		\item S-ENS: Less crab inshore and on the slope edge in 2015
+%		\item 4x: Slightly more in some locations, less in others. Despite suspect numbers from last year\\
+%	\end{tiny}
+%	\end{itemize}
+%	\end{column}
+%	
+%	\begin{column}{0.7\textwidth}
+%		\begin{figure}
+%  		\includegraphics[width=\textwidth]{\bdsay/figures/Basemap_yearlydifference.pdf}
+%  		\end{figure}
+% 	\end{column}
+% 	\end{columns}
+%\end{frame}
 %--------------------------------------------------------------------------------
 
 \section{Interactions with Other Species}
@@ -164,6 +189,10 @@ Department of Fisheries and Oceans \\ % Your institution for the title page
 	\item Predators: Atlantic Halibut, Atlantic Wolfish, Skates, Longhorn Cculpin, Sea Raven, Atlantic Cod, White Hake, American Plaice, and Haddock
 \end{itemize}
 \end{frame}
+
+
+
+
 
 %------------------------------------------------------------------------------
 \subsection{Competition/ Prey}
@@ -183,17 +212,17 @@ Trends in biomass for potential predators/prey (log10, no\textbackslash$km^2$) o
 
 	\begin{column}{0.25\textwidth}
  	\begin{figure}
-    \includegraphics[width=\textwidth]{\bds/R/maps/species/snowcrab/jonahcrab/annual/totno/{totno.2014}.png}\\   
-    \includegraphics[width=\textwidth]{\bds/R/maps/species/snowcrab/lessertoadcrab/annual/totno/{totno.2014}.png}\\   
-    \includegraphics[width=\textwidth]{\bds/R/maps/species/snowcrab/northernshrimp/annual/totno/{totno.2014}.png}  
+    \includegraphics[width=\textwidth]{\spsmaps/ms.no.2511/{ms.no.2511.\yrminusone}.png}\\   
+    \includegraphics[width=\textwidth]{\spsmaps/ms.no.2521/{ms.no.2521.\yrminusone}.png}\\   
+    \includegraphics[width=\textwidth]{\spsmaps/ms.no.2211/{ms.no.2211.\yrminusone}.png}  
   	\end{figure}
   	\end{column}
 
   	\begin{column}{0.25\textwidth}
  	\begin{figure}
-    \includegraphics[width=\textwidth]{\bds/R/maps/species/snowcrab/jonahcrab/annual/totno/{totno.2015}.png}\\   
-    \includegraphics[width=\textwidth]{\bds/R/maps/species/snowcrab/lessertoadcrab/annual/totno/{totno.2015}.png}\\   
-    \includegraphics[width=\textwidth]{\bds/R/maps/species/snowcrab/northernshrimp/annual/totno/{totno.2015}.png}  
+    \includegraphics[width=\textwidth]{\spsmaps/ms.no.2511/{ms.no.2511.\yr}.png}\\   
+    \includegraphics[width=\textwidth]{\spsmaps/ms.no.2521/{ms.no.2521.\yr}.png}\\    
+    \includegraphics[width=\textwidth]{\spsmaps/ms.no.2211/{ms.no.2211.\yr}.png}  
   	\end{figure}
   	\end{column}
 
@@ -226,17 +255,17 @@ Trends in biomass for potential predators (log10, no\textbackslash$km^2$) of Sno
 
 	\begin{column}{0.25\textwidth}
  	\begin{figure}
-    \includegraphics[width=\textwidth]{\bds/R/maps/species/snowcrab/halibut/annual/totno/{totno.2014}.png}\\   
-    \includegraphics[width=\textwidth]{\bds/R/maps/species/snowcrab/cod/annual/totno/{totno.2014}.png}\\   
-    \includegraphics[width=\textwidth]{\bds/R/maps/species/snowcrab/thornyskate/annual/totno/{totno.2014}.png}  
+    \includegraphics[width=\textwidth]{\spsmaps/ms.mass.30/{ms.mass.30.\yrminusone}.png}\\   
+    \includegraphics[width=\textwidth]{\spsmaps/ms.mass.10/{ms.mass.10.\yrminusone}.png}\\   
+    \includegraphics[width=\textwidth]{\spsmaps/ms.mass.201/{ms.mass.201.\yrminusone}.png}  
   	\end{figure}
   	\end{column}
 
   	\begin{column}{0.25\textwidth}
  	\begin{figure}
-    \includegraphics[width=\textwidth]{\bds/R/maps/species/snowcrab/halibut/annual/totno/{totno.2015}.png}\\   
-    \includegraphics[width=\textwidth]{\bds/R/maps/species/snowcrab/cod/annual/totno/{totno.2015}.png}\\   
-    \includegraphics[width=\textwidth]{\bds/R/maps/species/snowcrab/thornyskate/annual/totno/{totno.2015}.png}  
+    \includegraphics[width=\textwidth]{\spsmaps/ms.mass.30/{ms.mass.30.\yr}.png}\\   
+    \includegraphics[width=\textwidth]{\spsmaps/ms.mass.10/{ms.mass.10.\yr}.png}\\   
+    \includegraphics[width=\textwidth]{\spsmaps/ms.mass.201/{ms.mass.201.\yr}.png}  
   	\end{figure}
   	\end{column}
 
@@ -262,14 +291,14 @@ Trends in biomass for potential predators (log10, no\textbackslash$km^2$) of Sno
 	Size-frequency histograms of carapace width of male Snow Crab. The vertical line represents the legal size (95 mm)
 	\begin{itemize}
 		\item S-ENS: Stable recruitment
-		\item N-ENS: A gap in recruitment, should enter the fishery in 2-3 years
-		\item 4x: Minimal internal recruitment for the forseeable future  
+		\item N-ENS: A gap in recruitment, should enter the fishery in 1-2 years
+		\item 4x: Minimal internal recruitment for the foreseeable future  
 	\end{itemize}
 	\end{column}
 
 	\begin{column}{0.5\textwidth}
 	\begin{figure}
-		\includegraphics[width=\textwidth]{\bdsay/figures/{size.freq}/survey/male.pdf}
+		\includegraphics[width=\textwidth]{\bdsay/figures/size.freq/survey/male.pdf}
 	\end{figure}
 	\end{column}
 	\end{columns}
@@ -335,7 +364,7 @@ Trends in biomass for potential predators (log10, no\textbackslash$km^2$) of Sno
 \begin{columns}
 	\begin{column}{0.5\textwidth}
 	\begin{center}
-	Primiparous - first time birth
+	Primiparous 
 	\end{center}
 		\begin{figure}
 		\includegraphics[width=\textwidth]{\bds/R/maps/survey/snowcrab/annual/{totno.female.primiparous}/{totno.female.primiparous.2015}.png}
@@ -344,10 +373,10 @@ Trends in biomass for potential predators (log10, no\textbackslash$km^2$) of Sno
 
 	\begin{column}{0.5\textwidth}
 	\begin{center}
-	Multiparous - given birth 2+ times
+	Multiparous 
 	\end{center}
 	\begin{figure}
-		\includegraphics[width=\textwidth]{\bds/R/maps/survey/snowcrab/annual/{totno.female.multiparous}/{totno.female.multiparous.2015}.png}	
+		\includegraphics[width=\textwidth]{\bds/R/maps/survey/snowcrab/annual/{totno.female.multiparous}/{totno.female.multiparous.\yr}.png}	
 	\end{figure}
 	\end{column}
 	\end{columns}
@@ -359,27 +388,26 @@ Trends in biomass for potential predators (log10, no\textbackslash$km^2$) of Sno
 	\begin{center}
 	Total number of females in the mature population. Reproductive potential peaked in 2007/8 and continues to remain low (except 4x in 2012).
 	\end{center}
-	
 	\begin{columns}
-	\begin{column}{0.5\textwidth}
-	\begin{figure}
-	  \includegraphics[width=0.7\textwidth]{\bdsay/timeseries/survey/{totno.female.mat.combined}.pdf}
-	\end{figure}
-	\end{column}
+    \begin{column}{0.5\textwidth}
+      \begin{figure}
+        \includegraphics[width=\textwidth]{\bds/R/maps/survey/snowcrab/annual/totno.female.mat/{totno.female.mat.\yr}.png}	
+      \end{figure}
+    \end{column}
 
-	\begin{column}{0.5\textwidth}
-	\begin{figure}
-	\includegraphics[width=\textwidth]{\bds/R/maps/survey/snowcrab/annual/{totno.female.mat}/{totno.female.mat.2015}.png}	
-	\end{figure}
-	\end{column}
-	\end{columns}
+  	\begin{column}{0.5\textwidth}
+      \begin{figure}
+        \includegraphics[width=0.7\textwidth]{\bdsay/timeseries/survey/{totno.female.mat}.pdf}
+      \end{figure}
+    \end{column}
+  \end{columns}
 \end{frame}
 
 %------------------------------------------------
-\subsection{Fishable Biomasss}
+\subsection{Fishable Biomasss geometric means}
 
 \begin{frame}
-\frametitle{Fishable Biomass Index}
+\frametitle{Fishable Biomass Index -- Geometric Mean}
 \begin{columns}
 
 \begin{column}{0.5\textwidth}
@@ -387,13 +415,14 @@ Trends in biomass for potential predators (log10, no\textbackslash$km^2$) of Sno
 	Fishable Biomass from Annual Snow Crab Survey. Log10 (t\textbackslash$km^2$).\\ 
 	\end{center}
 	\begin{figure}
-		\includegraphics[width=0.9\textwidth]{\bds/R/maps/survey/snowcrab/annual/{R0.mass}/{R0.mass.2015}.png}
+		\includegraphics[width=0.9\textwidth]{\bds/R/maps/survey/snowcrab/annual/R0.mass/{R0.mass.\yr}.png}
 	\end{figure}
 \end{column}
 
+
 \begin{column}{0.5\textwidth}
 	\begin{center}
-	Time series of the Fishable Biomass from Annual Snow Crab Survey
+	Time series of the Fishable Biomass from Annual Snow Crab Survey (Geometric Mean)
 	\end{center}
 \begin{figure}
     \centering
@@ -404,62 +433,92 @@ Trends in biomass for potential predators (log10, no\textbackslash$km^2$) of Sno
 \end{columns}
 \end{frame}
 
+%
+%%------------------------------------------------
+
+\begin{frame}
+\frametitle{Fishable Biomass Index -- LBM}
+\begin{columns}
+
+\begin{column}{0.5\textwidth}
+  \begin{center}
+    Viable habitat probability for \yr
+  \end{center}
+  \begin{figure}
+    \includegraphics[width=0.9\textwidth]{\bds/maps/snowcrab.large.males_presence_absence/snowcrab/annual/{snowcrab.large.males_presence_absence.mean.\yr}.png}
+    \end{figure}
+\end{column}
+
+\begin{column}{0.5\textwidth}
+  \begin{center}
+    Estimated fishable abundance ln(t per km sq) 
+  \end{center}
+  \begin{figure}
+    \includegraphics[width=0.9\textwidth]{\bds/maps/fishable.biomass/snowcrab/{prediction.abundance.mean.\yr}.png}
+  \end{figure}
+\end{column}
+
+
+\end{columns}
+\end{frame}
 
 %------------------------------------------------
 
 \begin{frame}
-\frametitle{Area Expanded\
-Fishable Biomass Index}
-\begin{columns}
-
-\begin{column}{0.5\textwidth}
-	\begin{center}
-	Time series of the Area Expanded Fishable Biomass Density from Annual Snow Crab Survey. Area estimates obtained from the GAM habitat model.
-	\end{center}
-%\begin{figure}
- %   \centering
-  %  \includegraphics[width=0.7\textwidth]{\bdsay/timeseries/survey/{R0.mass}.pdf}
- %\end{figure}
-\end{column}
-
-\begin{column}{0.5\textwidth}
-	\begin{center}
-	Potential Habitat Map
-	\end{center}
-%	\begin{figure}
-
-%	\end{figure}
-	\end{column}
-\end{columns}
+  \frametitle{Fishable Biomass Index -- LBM}
+    
+   \begin{columns} 
+    \begin{column}{0.5\textwidth}
+      \begin{center}
+        Estimated fishable abundance ln(t per km sq) 
+      \end{center}
+      \begin{figure}
+        \includegraphics[width=0.9\textwidth]{\bds/maps/fishable.biomass/snowcrab/{prediction.abundance.mean.\yr}.png}
+      \end{figure}
+    \end{column}
+    
+    \begin{column}{0.5\textwidth}
+      \begin{center}
+        Time series of the Area Expanded Fishable Biomass Density
+      \end{center}
+      \begin{figure}
+        \centering
+        \includegraphics[width=0.7\textwidth]{\bdsay/timeseries/interpolated/{snowcrab.biomass.index}.png}
+      \end{figure}
+    \end{column}
+    \end{columns}
 \end{frame}
 
 
 %------------------------------------------------
 \section{Fisheries Model}
-\subsection{Fishable Biomass}
+
+\subsection{Fishable Biomass -- Biomass dynamics}
 
 \begin{frame}
-\frametitle{Fishable Biomass}
-Time series of fishable biomass from the logistic population model. A three year projection assuming a constant exploitation strategy of 20\% is also provided.
-\begin{columns}
+\frametitle{Fishable Biomass -- Biomass dynamics}
+
+\begin{columns} 
 \begin{column}{0.5\textwidth}
-\begin{itemize}
-\begin{footnotesize}
-	\item Red Dashed Lines: The fishable biomass index
-	\item Blue Dashed Lines: The posterior mean fishable biomass estimated from the logistic model
-	\item Grey Area: The density distribution of posterior fishable biomass estimates darkest area being medians and the 95\% Credible Intervals (CI). 
-\end{footnotesize}
-\end{itemize}
+ \begin{itemize}
+  \begin{tiny}
+ 
+     \item Red: The fishable biomass index
+     \item Blue: The posterior mean fishable biomass estimated from the logistic model
+     \item Grey: The density distribution of posterior fishable biomass estimates darkest area being medians and the 95\% Credible Intervals (CI). 
+     \end{tiny}
+       
+    \end{itemize}
 \end{column}
 
 \begin{column}{0.5\textwidth}
-\begin{figure}[ht]
+  \begin{figure}[ht]
     \centering
-    \includegraphics[width=0.9\textwidth]{\bdsay/figures/bugs/survey/{biomass.timeseries}.png}
-\end{figure}
+    \includegraphics[width=0.9\textwidth]{\bdsay/{biomass.timeseries}.png}
+  \end{figure}
 \end{column}
+\end{columns} 
 
-\end{columns}
 \end{frame}
 
 %------------------------------------------------
@@ -489,7 +548,7 @@ Area trends:
 
 \begin{column}{0.6\textwidth}
 \begin{footnotesize}
-Time series of fishing mortality from the logistic population model 
+Fishing mortality
 \end{footnotesize}
 
 \begin{itemize}
@@ -501,57 +560,57 @@ Time series of fishing mortality from the logistic population model
 \end{itemize}
 
 \begin{figure}
-    \includegraphics[width=0.6\textwidth]{\bdsay/figures/bugs/survey/{fishingmortality.timeseries}.png}
+    \includegraphics[width=0.6\textwidth]{\bdsay/{fishingmortality.timeseries}.png}
 \end{figure}
 \end{column}
 
 \end{columns}
 \end{frame}
 
-
-%------------------------------------------------
-\section{Business}
-\subsection{Meetings / Document Schedule}
-
-\begin{frame}
-
-\frametitle{Meetings Schedule}
-
- \vspace*{-0.5cm}
-\begin{block}
-
-\begin{itemize}
-\item Past- Pre-Rap, RAP, Advisory Committee (AC) Meetings annually
-\item New DFO standard- Framework, RAP every five years, AC Annually
-\item Snow Crab Plan- Pre-Rap, Informal RAP, AC annually, Framework/Formal RAP every ~5 years
-
-\end{itemize}
-\end{block}
-\end{frame}
+%
+%%------------------------------------------------
+%\section{Business}
+%\subsection{Meetings / Document Schedule}
+%
+%\begin{frame}
+%
+%\frametitle{Meetings Schedule}
+%
+% \vspace*{-0.5cm}
+%\begin{block}
+%
+%\begin{itemize}
+%\item Past- Pre-Rap, RAP, Advisory Committee (AC) Meetings annually
+%\item New DFO standard- Framework, RAP every five years, AC Annually
+%\item Snow Crab Plan- Pre-Rap, Informal RAP, AC annually, Framework/Formal RAP every ~5 years
+%
+%\end{itemize}
+%\end{block}
+%\end{frame}
 
 %----------------------------------------------------------------------------------------
-
-
-\begin{frame}
-
-\frametitle{Document Schedule}
-
- \vspace*{-0.5cm}
-\begin{block}
-
-\begin{itemize}
-\item Past- Res Doc (100+ pages) and SAR (10-15 pages) annually
-\item New DFO standard- Update document (2-3 pages) annually, Res Doc every 5 years
-\item Snow Crab Plan- Update document (10-15 pages) annually, based on SAR, Res Doc every 5 years
-\item Full assessment run annually, an items of note included in update document
-
-\end{itemize}
-
-\end{block}
-
-\end{frame}
-%------------------------------------------------
-
+%
+%
+%\begin{frame}
+%
+%\frametitle{Document Schedule}
+%
+% \vspace*{-0.5cm}
+%\begin{block}
+%
+%\begin{itemize}
+%\item Past- Res Doc (100+ pages) and SAR (10-15 pages) annually
+%\item New DFO standard- Update document (2-3 pages) annually, Res Doc every 5 years
+%\item Snow Crab Plan- Update document (10-15 pages) annually, based on SAR, Res Doc every 5 years
+%\item Full assessment run annually, an items of note included in update document
+%
+%\end{itemize}
+%
+%\end{block}
+%
+%\end{frame}
+%%------------------------------------------------
+%
 
 
 \end{document}
