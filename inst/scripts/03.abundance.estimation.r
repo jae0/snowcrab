@@ -202,6 +202,7 @@ UBRE = -0.031615  Scale est. = 1         n = 6853
 
 # collect all predictions into a single file and return:
 p = bio.snowcrab::load.environment( year.assessment=current.year )
+
 p$selection=list( 
   name = "snowcrab.large.males_abundance",
   type = "abundance",
@@ -210,7 +211,8 @@ p$selection=list(
   spec_bio=bio.taxonomy::taxonomy.recode( from="spec", to="parsimonious", tolookup=2526 ),
   len= c( 95, 200 )/10, #  mm -> cm ; indicators.db in cm
   drop.groundfish.data=TRUE # esp from 1970 to 1999 measurement of invertebrates was sporatic .. zero-values are dropped as they are unreliable 
-}
+)
+
 p = bio.snowcrab::snowcrab.parameters( p=p, DS="lbm", varname=p$selection$name  )
 
 interpolation.db( DS="biomass.redo", p=p  )
