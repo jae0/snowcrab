@@ -90,7 +90,7 @@ graphics.off()
 # frequency density of key parameters
 figure.bugs( "K", y=y, sb=sb, fn=file.path(dir.output, "K.density.png" ) )
 figure.bugs( "r", y=y, sb=sb, fn=file.path(dir.output, "r.density.png" ) )
-figure.bugs( "q", y=y, sb=sb, fn=file.path(dir.output, "q.density.png" ) )
+figure.bugs( "q", y=y, sb=sb, fn=file.path(dir.output, "q.density.png" ) ,xrange=c(0,2))
 figure.bugs( "FMSY", y=y, sb=sb, fn=file.path(dir.output, "FMSY.density.png" ) )
 figure.bugs( "bo.sd", y=y, sb=sb, fn=file.path(dir.output, "bo.sd.density.png" ) )
 figure.bugs( "bp.sd", y=y, sb=sb, fn=file.path(dir.output, "bp.sd.density.png" ) )
