@@ -225,12 +225,13 @@
 
     if (type=="hcr") {
       if (vname=="default") {
-          B =  apply( y$B, c(1,2), mean, na.rm=T  )
-          F =  apply( y$F, c(1,2), mean, na.rm=T  )
-          K =  apply( y$K, c(1), mean, na.rm=T  )
-          FMSY = apply( y$FMSY, c(1), mean, na.rm=T  )
-          BMSY = apply( y$BMSY, c(1), mean, na.rm=T  )
 
+        B =  apply( y$B, c(1,2), mean, na.rm=T  )
+        F =  apply( y$F, c(1,2), mean, na.rm=T  )
+        K =  apply( y$K, c(1), mean, na.rm=T  )
+        FMSY = apply( y$FMSY, c(1), mean, na.rm=T  )
+        BMSY = apply( y$BMSY, c(1), mean, na.rm=T  )
+        
         for (i in 1:3 ) {
           ylims = c(0, min( 1, max( FMSY[i] * 1.25, F[hdat,i] ) ) )
           plot( B[hdat,i], F[hdat,i],  type="b", xlim=c(0, K[i] * 1.1 ),  
@@ -255,12 +256,12 @@
           Bhistorical = mean( B[hdat,i], na.rm=T ) 
           yl = 0.05
          
-            polygon(x=c(Bmsy,Bmsy*2,Bmsy*2, Bmsy),y=c(-0.1,-0.1,FMSY[i],FMSY[i]),col='lightgreen',border=NA)
+          polygon(x=c(Bmsy,Bmsy*2,Bmsy*2, Bmsy),y=c(-0.1,-0.1,FMSY[i],FMSY[i]),col='lightgreen',border=NA)
           polygon(x=c(Bmsy/2,Bmsy,Bmsy, Bmsy/2),y=c(-0.1,-0.1,FMSY[i],FMSY[i]),col='lightgoldenrod',border=NA)
           polygon(x=c(0,Bmsy/2,Bmsy/2, 0),y=c(-0.1,-0.1,FMSY[i],FMSY[i]),col='darksalmon',border=NA)
 
-        lines( B[hdat,i], F[hdat,i],  type="b", xlim=c(0, K[i] * 1.1 ),  
-            ylim=ylims, col="darkblue", cex=0.8, lwd=2, xlab="", ylab="", pch=20 )
+          lines( B[hdat,i], F[hdat,i],  type="b", xlim=c(0, K[i] * 1.1 ),  
+            ylim=ylims, col='blue', cex=0.8, lwd=2, xlab="", ylab="", pch=20 )
         
 
 
@@ -292,7 +293,9 @@
           text( BK25-0.01*K[i], yl, "K/4" , srt=90, pos=3)
           text( 0.05*K[i], Fref, "20% HR", pos=1 )
           text( 0.05*K[i], FMSY[i], "FMSY", pos=3, lwd=2, col="red" )
-          text( B[hdat,i], F[hdat,i],  labels=yrs0, pos=3, cex= 0.8 )
+          text( B[1:(ndata-1),i], F[1:(ndata-1),i],  labels=yrs0[-ndata], pos=3, cex= 0.8 )
+          points( B[ndata,i], F[ndata,i],  pch=21, bg='darkorange', cex= 1.2 )
+          text( B[ndata,i], F[ndata,i],  labels=yrs0[ndata], pos=3, cex= 1.2, font=2 )
   
           text( 0, ylims[2]*0.9,  labels=labs[i], pos=3, cex= 0.85 )
 
