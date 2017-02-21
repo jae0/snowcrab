@@ -1,5 +1,5 @@
 
-  figure.bugs = function( vname="", type="density", sb=NULL, y=NULL, fn=NULL, labs=c("N-ENS","S-ENS","4X") ,save.plot=T) {
+  figure.bugs = function( vname="", type="density", sb=NULL, y=NULL, fn=NULL, labs=c("N-ENS","S-ENS","4X") ,save.plot=T, ...) {
  
     ntacs = sb$nProj
     yrs0 = as.numeric( as.character( rownames(sb$IOA) ) )
@@ -64,7 +64,7 @@
 
            prr$meanlog= sb$K.mu[i]
            prr$sdlog = sqrt(sb$K.sd[i])
-          plot.freq.distribution.prior.posterior( prior=prr, posterior=pdat )
+          plot.freq.distribution.prior.posterior( prior=prr, posterior=pdat, ... )
           
           legend( "topright", bty="n", legend=paste( labs[i], "\n", vname, " = ", qs[2,i], " {", qs[1,i], ", ",  qs[3,i], "}  ", sep="" ))
       }}
@@ -78,7 +78,7 @@
           prr$mean=sb$r.mu[i]
           prr$sd=sqrt(sb$r.sd[i])
           pdat = as.vector(y$r[i,,])
-          plot.freq.distribution.prior.posterior( prior=prr, posterior=pdat )
+          plot.freq.distribution.prior.posterior( prior=prr, posterior=pdat, ...  )
           legend( "topright", bty="n", legend=paste( labs[i], "\n", vname, " = ", qs[2,i], " {", qs[1,i], ", ",  qs[3,i], "}  ", sep="" ) )   
       }}
 
@@ -89,11 +89,11 @@
         qs = signif( qs, 3 )
         for (i in 1:3) {
           pdat = as.vector(y$q[i,,])
-        prr=NULL
-        prr$class='uniform'
-        prr$max=1
-        prr$min=0.001
-          plot.freq.distribution.prior.posterior( prior=prr, posterior=pdat )
+          prr=NULL
+          prr$class="normal"
+          prr$mean=sb$q.mu[i]
+          prr$sd=sb$q.sd[i]
+          plot.freq.distribution.prior.posterior( prior=prr, posterior=pdat, ...  )
           legend( "topright", bty="n", legend=paste( labs[i], "\n", vname, " = ", qs[2,i], " {", qs[1,i], ", ",  qs[3,i], "}  ", sep="" )   
       )}}
 
@@ -106,7 +106,7 @@
           # prr$class="normal"
           # prr$mean=sb$q0x[i]
           # prr$sd=sb$q0x[i]*sb$cv
-          plot.freq.distribution.prior.posterior( prior=prr, posterior=pdat )
+          plot.freq.distribution.prior.posterior( prior=prr, posterior=pdat, ...  )
           legend( "topright", bty="n", legend=paste( labs[i], "\n", vname, " = ", QQ[2,i], " {", QQ[1,i], ", ",  QQ[3,i], "}  ", sep="" )   
       )}}
 
@@ -118,7 +118,7 @@
           pdat = as.vector(y$BMSY[i,,])
           prr=NULL
           prr$class="none"
-          plot.freq.distribution.prior.posterior( prior=prr, posterior=pdat )
+          plot.freq.distribution.prior.posterior( prior=prr, posterior=pdat, ...  )
           legend( "topright", bty="n",
             legend=paste( labs[i], " ", vname, " = ", qs[2,i], " {", qs[1,i], ", ",  qs[3,i], "}", sep="" )   
       )}}
@@ -130,7 +130,7 @@
           pdat = as.vector(y$FMSY[i,,])
           prr=NULL
           prr$class="none"
-          plot.freq.distribution.prior.posterior( prior=prr, posterior=pdat )
+          plot.freq.distribution.prior.posterior( prior=prr, posterior=pdat, ...  )
           legend( "topright", bty="n",
             legend=paste( labs[i], " ", vname, " = ", qs[2,i], " {", qs[1,i], ", ",  qs[3,i], "}", sep="" )   
       )}}
@@ -143,7 +143,7 @@
           prr$class="lognormal"
           prr$meanlog=sb$bo.mup
           prr$sdlog=sqrt(sb$bo.sdp)
-          plot.freq.distribution.prior.posterior( prior=prr, posterior=pdat )
+          plot.freq.distribution.prior.posterior( prior=prr, posterior=pdat, ...  )
           legend( "topright", bty="n",
             legend=paste( labs[i], " ", vname, " = ", qs[2,i], " {", qs[1,i], ", ",  qs[3,i], "}", sep="" )   
       )}}
@@ -153,10 +153,13 @@
         for (i in 1:3) {
           pdat = as.vector(y$bp.sd[i,,])
           prr=NULL
-          prr$class="lognormal"
-          prr$meanlog=sb$bp.mup
-          prr$sdlog=sqrt(sb$bp.sdp)
-          plot.freq.distribution.prior.posterior( prior=prr, posterior=pdat )
+          prr$class='uniform'
+          prr$max=3
+          prr$min=0
+          #prr$class="lognormal"
+          #prr$meanlog=sb$bp.mup
+          #prr$sdlog=sqrt(sb$bp.sdp)
+          plot.freq.distribution.prior.posterior( prior=prr, posterior=pdat, ...  )
           legend( "topright", bty="n",
             legend=paste( labs[i], " ", vname, " = ", qs[2,i], " {", qs[1,i], ", ",  qs[3,i], "}", sep="" )   
       )}}
@@ -170,10 +173,10 @@
       
       if (vname=="biomass") { 
 
-        SI =  apply( y$q, 1, mean, na.rm=T  )
+        SI =  apply( y$q, 1, median, na.rm=T  )
 
         for (i in 1:3) {
-          qIOA = sb$IOA[,i] / SI[i]
+          qIOA = sb$IOA[,i] / SI[i] + sb$CAT[,i] 
           IOA = sb$IOA[,i] 
           meanval = apply( y$B[,i,,], 1, mean, na.rm=T  )
 

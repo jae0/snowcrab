@@ -47,7 +47,7 @@
     print( tapply(td$t, td$region, sd, na.rm=T) ) 
     print( "latest year:" )
     print( td$t[ td$yr==p$year.assessment ])
-    table.view( td )
+    #table.view( td )
     return(fn)  
   }
 
