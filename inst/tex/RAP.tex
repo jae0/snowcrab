@@ -34,7 +34,7 @@
 }
 
 \usepackage{default}
-\usepackage{fourier}
+%\usepackage{fourier}
 \usepackage[english]{babel}															% English language/hyphenation
 \usepackage[protrusion=true,expansion=true]{microtype}				% Better typography
 \usepackage[toc,page]{appendix}
@@ -57,6 +57,8 @@
 \newcommand{\yrminusone}{2015}
 \newcommand{\yrminustwo}{2014}
 \newcommand{\yrminusthree}{2013}
+\newcommand{\yrminusfour}{2012}
+\newcommand{\yrminusfive}{2011}
 % these need to be incremented each year .. <<<<<<<<<<<<<<<<<<<<<
 
 
@@ -173,7 +175,7 @@
 \subsection{Competition/ Prey}
 \begin{frame}
 \frametitle{Competition/Prey}
-Trends in biomass for potential predators/prey (log10, no\textbackslash$km^2$) of Snow Crab on the Scotian Shelf, in the Snow Crab Survey
+Trends in biomass for potential predators/prey (no\textbackslash$km^2$) of Snow Crab on the Scotian Shelf, in the Snow Crab Survey
 	\begin{columns}
 	\begin{column}{0.25\textwidth}
 	\begin{itemize}
@@ -216,7 +218,7 @@ Trends in biomass for potential predators/prey (log10, no\textbackslash$km^2$) o
 \subsection{Predation}
 \begin{frame}
 \frametitle{Potential Predation}
-Trends in biomass for potential predators (log10, no\textbackslash$km^2$) of snow crab on the Scotian Shelf, in the Snow crab survey
+Trends in biomass for potential predators (no\textbackslash$km^2$) of snow crab on the Scotian Shelf, in the Snow crab survey
 	\begin{columns}
 	\begin{column}{0.25\textwidth}
 	\begin{itemize}
@@ -258,10 +260,6 @@ Trends in biomass for potential predators (log10, no\textbackslash$km^2$) of sno
 
 
 % ----------------------------------
-\section{Population Assessment}
-\begin{frame}
-  \tableofcontents[currentsection]
-\end{frame}
 
 
 % ----------------------------------
@@ -307,7 +305,7 @@ Trends in biomass for potential predators (log10, no\textbackslash$km^2$) of sno
 
 	\begin{column}{0.35\textwidth}
 	\begin{figure}
-	\includegraphics[width=\textwidth]{\bds/R/maps/survey/snowcrab/annual/{sexratio.mat}/{sexratio.mat.2015}.png}
+	\includegraphics[width=\textwidth]{\bds/R/maps/survey/snowcrab/annual/{sexratio.mat}/{sexratio.mat.\yr}.png}
 	\end{figure}
 	\end{column}
 
@@ -350,7 +348,7 @@ Trends in biomass for potential predators (log10, no\textbackslash$km^2$) of sno
 	Primiparous 
 	\end{center}
 		\begin{figure}
-		\includegraphics[width=\textwidth]{\bds/R/maps/survey/snowcrab/annual/{totno.female.primiparous}/{totno.female.primiparous.2015}.png}
+		\includegraphics[width=\textwidth]{\bds/R/maps/survey/snowcrab/annual/{totno.female.primiparous}/{totno.female.primiparous.\yr}.png}
 	\end{figure}
 	\end{column}
 
@@ -389,13 +387,13 @@ Trends in biomass for potential predators (log10, no\textbackslash$km^2$) of sno
 
 
 % ----------------------------------
-\subsection{Fishable Biomass geometric means}
+\subsection{Fishable Biomasss Geometric Mean}
 \begin{frame}
 \frametitle{Fishable Biomass Index -- Geometric Mean}
 \begin{columns}
 \begin{column}{0.5\textwidth}
 	\begin{center}
-	Fishable Biomass from Annual Snow Crab Survey. Log10 (t\textbackslash$km^2$).\\ 
+	Fishable Biomass from Annual Snow Crab Survey. (t\textbackslash$km^2$).\\ 
 	\end{center}
 	\begin{figure}
 		\includegraphics[width=0.9\textwidth]{\bds/R/maps/survey/snowcrab/annual/R0.mass/{R0.mass.\yr}.png}
@@ -415,13 +413,155 @@ Trends in biomass for potential predators (log10, no\textbackslash$km^2$) of sno
 
 
 % ----------------------------------
+\section{Lattice Based Models (LBM)}
+\begin{frame}
+\frametitle{Space Time Modelling -- Lattice Based Models}
+
+\begin{itemize}
+	\item Latest interation of space time modelling for determining snowcrab abundance using a 3 stage process
+	\item 1st Stage: Global influence of environmental and ecological factors using a GAM
+	\item 2nd Stage: Local timeseries analysis with seasonal and annual harmonic components for each location
+	\item 3rd Stage: Kriging to account for local spatial variability at each location and time
+	\item Results combine to form prediction surfaces for snowcrab habitat and abundance (non-zero data) 
+	\item Habitat is then used as weights for non-zero biomass to get final estimate of fishable biomass 
+\end{itemize}
+\end{frame}
+
+%------------------------------------------------------------------------------
+\subsection{Ecosystem inputs}
+\begin{frame}
+\frametitle{Ecosystem inputs}
+Environmental factors: Temperature, Depth and Substrate
+	\begin{columns}
+	\begin{column}{0.25\textwidth}
+	\begin{itemize}
+	  \setlength\itemsep{2em}
+		\item[] Bottom Temperature 
+		\item[] Bottom Temperature SD
+		\item[] Substrate ln(grain size)
+	\end{itemize}
+	\end{column}
+
+	\begin{column}{0.25\textwidth}
+ 	\begin{figure}
+    \includegraphics[width=\textwidth]{\bd/bio.temperature/maps/SSE/bottom.predictions/climatology/{temperatures.bottom}.png}\\   
+    \includegraphics[width=\textwidth]{\bd/bio.temperature/maps/SSE/bottom.predictions/climatology/{temperatures.bottom.sd}.png}\\   
+    \includegraphics[width=\textwidth]{\bd/bio.substrate/R/{substrate.grainsize.edit}.png}  
+  	\end{figure}
+  	\end{column}
+
+  	\begin{column}{0.25\textwidth}
+ 	\begin{figure}
+    \includegraphics[width=\textwidth]{\bd/bio.bathymetry/maps/SSE/depth.png}\\   
+    \includegraphics[width=\textwidth]{\bd/bio.bathymetry/maps/SSE/slope.png}\\   
+    \includegraphics[width=\textwidth]{\bd/bio.bathymetry/maps/SSE/curvature.png}  
+  	\end{figure}
+  	\end{column}
+
+	\begin{column}{0.25\textwidth}
+	\begin{itemize}
+	  \setlength\itemsep{2em}
+		\item[] Depth
+		\item[] Slope
+		\item[] Curvature
+	\end{itemize}
+  	\end{column}
+
+  	\end{columns}
+\end{frame}
+
+\subsection{Ecosystem inputs}
+\begin{frame}
+\frametitle{Ecosystem inputs}
+Environmental factors: Annual Estimates of Bottom Temperature
+	\begin{columns}
+	\begin{column}{0.25\textwidth}
+	\begin{itemize}
+	  \setlength\itemsep{4em}
+		\item[]  \yrminusfive
+		\item[]  \yrminusthree
+		\item[]  \yrminusone
+	\end{itemize}
+	\end{column}
+
+	\begin{column}{0.25\textwidth}
+ 	\begin{figure}
+    \includegraphics[width=\textwidth]{\bd/bio.temperature/maps/SSE/bottom.predictions/annual/{temperatures.bottom.\yrminusfive}.png}\\   
+    \includegraphics[width=\textwidth]{\bd/bio.temperature/maps/SSE/bottom.predictions/annual/{temperatures.bottom.\yrminusthree}.png}\\   
+    \includegraphics[width=\textwidth]{\bd/bio.temperature/maps/SSE/bottom.predictions/annual/{temperatures.bottom.\yrminusone}.png}\\   
+  	\end{figure}
+  	\end{column}
+
+  	\begin{column}{0.25\textwidth}
+ 	\begin{figure}
+    \includegraphics[width=\textwidth]{\bd/bio.temperature/maps/SSE/bottom.predictions/annual/{temperatures.bottom.\yrminusfour}.png}\\   
+    \includegraphics[width=\textwidth]{\bd/bio.temperature/maps/SSE/bottom.predictions/annual/{temperatures.bottom.\yrminustwo}.png}\\   
+    \includegraphics[width=\textwidth]{\bd/bio.temperature/maps/SSE/bottom.predictions/annual/{temperatures.bottom.\yr}.png}\\   
+  	\end{figure}
+  	\end{column}
+
+	\begin{column}{0.25\textwidth}
+	\begin{itemize}
+	  \setlength\itemsep{4em}
+		\item[]  \yrminusfour
+		\item[]  \yrminustwo
+		\item[]  \yr
+	\end{itemize}
+  	\end{column}
+
+  	\end{columns}
+\end{frame}
+
+\begin{frame}
+\frametitle{Ecosystem inputs}
+Ecological factors: Species Composition, Species Diversity and Metabolic Rate
+	\begin{columns}
+	\begin{column}{0.25\textwidth}
+	\begin{itemize}
+	  \setlength\itemsep{2em}
+		\item[] Species Composition CA1 
+		\item[] Predicted number of species
+		\item[] Total Metabolic rate
+	\end{itemize}
+	\end{column}
+
+	\begin{column}{0.25\textwidth}
+ 	\begin{figure}
+    \includegraphics[width=\textwidth]{\bd/bio.indicators/speciescomposition/maps/ca1/snowcrab/annual/{ca1.mean.\yr}.png}\\   
+    \includegraphics[width=\textwidth]{\bd/bio.indicators/speciesarea/maps/Npred/snowcrab/annual/{Npred.mean.\yr}.png}\\   
+    \includegraphics[width=\textwidth]{\bd/bio.indicators/metabolism/maps/mr/snowcrab/annual/{mr.mean.\yr}.png}  
+  	\end{figure}
+  	\end{column}
+
+  	\begin{column}{0.25\textwidth}
+ 	\begin{figure}
+    \includegraphics[width=\textwidth]{\bd/bio.indicators/speciescomposition/maps/ca2/snowcrab/annual/{ca2.mean.\yr}.png}\\   
+    \includegraphics[width=\textwidth]{\bd/bio.indicators/speciesarea/maps/Z/snowcrab/annual/{Z.mean.\yr}.png}\\    
+    \includegraphics[width=\textwidth]{\bd/bio.indicators/metabolism/maps/smr/snowcrab/annual/{smr.mean.\yr}.png}  
+  	\end{figure}
+  	\end{column}
+
+	\begin{column}{0.25\textwidth}
+	\begin{itemize}
+	  \setlength\itemsep{2em}
+		\item[] Species Composition CA2 
+		\item[] slope of species area relationship (diversity)
+		\item[] Specific Metabolic rate
+	\end{itemize}
+  	\end{column}
+
+  	\end{columns}
+\end{frame}
+
+
+\subsection{Fishable Biomass LBM}
 \begin{frame}
 \frametitle{Fishable Biomass Index -- LBM}
 \begin{columns}
 
 \begin{column}{0.5\textwidth}
   \begin{center}
-    Viable habitat probability for \yr
+    Viable habitat probability for \yr, probility of snowcrab presence
   \end{center}
   \begin{figure}
     \includegraphics[width=0.9\textwidth]{\bds/maps/snowcrab.large.males_presence_absence/snowcrab/annual/{snowcrab.large.males_presence_absence.mean.\yr}.png}
@@ -430,10 +570,10 @@ Trends in biomass for potential predators (log10, no\textbackslash$km^2$) of sno
 
 \begin{column}{0.5\textwidth}
   \begin{center}
-    Estimated fishable abundance ln(t per km sq) 
+    Interpolated fishable biomass with non-zero data ln(t per km sq) 
   \end{center}
   \begin{figure}
-    \includegraphics[width=0.9\textwidth]{\bds/maps/fishable.biomass/snowcrab/{prediction.abundance.mean.\yr}.png}
+    \includegraphics[width=0.9\textwidth]{\bds/maps/snowcrab.large.males_abundance/snowcrab/annual/{snowcrab.large.males_abundance.mean.\yr}.png}
   \end{figure}
 \end{column}
 
@@ -448,7 +588,8 @@ Trends in biomass for potential predators (log10, no\textbackslash$km^2$) of sno
    \begin{columns} 
     \begin{column}{0.5\textwidth}
       \begin{center}
-        Estimated fishable abundance ln(t per km sq) 
+        Estimated fishable abundance\\ 
+        ln(t per km sq) 
       \end{center}
       \begin{figure}
         \includegraphics[width=0.9\textwidth]{\bds/maps/fishable.biomass/snowcrab/{prediction.abundance.mean.\yr}.png}
@@ -544,10 +685,10 @@ Fishing mortality
 
 \end{columns}
 \end{frame}
-\subsection{Fishable Biomass -- Biomass dynamics}
 
 
 % ----------------------------------
+\subsection{Posteriors}
 \begin{frame}
   \frametitle{Posteriors}
   \begin{figure}
@@ -596,16 +737,7 @@ Fishing mortality
   \end{figure}
 \end{frame}
 
-
-% ----------------------------------
-\begin{frame}
-  \frametitle{Posteriors}
-  \begin{figure}
-    \centering
-    \includegraphics[width=0.6\textwidth]{\bdsay/{FMSY.density}.png} 
-  \end{figure}
-\end{frame}
-
+\subsection{Harvest Advice}
 
 % ----------------------------------
 \begin{frame}
@@ -626,6 +758,30 @@ Fishing mortality
 \end{figure}
 \end{frame}
 
+\begin{frame}
+\frametitle{Harvest Advice}
+
+\begin{itemize}
+	\item N-ENS
+	\begin{itemize}
+		\item Stock fell rapidly from 2013 to 2014 into the "cautious zone" prompting significant deceases in TAC
+		\item New more robust methodology indicates the stock has responded to management action and is now in the "heathly zone"
+		\item Recommend an increase in TAC
+	\end{itemize}
+	\item S-ENS
+	\begin{itemize}
+		\item New more robust methodology indicates declining biomass and increasing F since 2013
+		\item Stock is in the "heathly zone" but close to "cautious zone"
+		\item Recommend a decrease in TAC
+	\end{itemize}
+	\item 4X
+	\begin{itemize}
+		\item Erratic temperature fields constrict habitat in this marginal area
+		\item Stock is in the "cautious zone"
+		\item Recommend status quo or a modest increase in TAC
+	\end{itemize}
+\end{itemize}
+\end{frame}
 
 % ----------------------------------
 % ----------------------------------
