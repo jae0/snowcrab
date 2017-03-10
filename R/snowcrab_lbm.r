@@ -109,7 +109,9 @@ snowcrab_lbm = function( ip=NULL, DS=NULL, p=NULL, voi=NULL, year=NULL, ret=NULL
 
     # cap quantiles of dependent vars
     dr = list()
-    for (voi in p$varnames) {
+    ps_varnames = setdiff( p$varnames, p$variables$LOCS )
+    
+    for (voi in ps_varnames) {
       dr[[voi]] = quantile( set[,voi], probs=p$lbm_quantile_bounds, na.rm=TRUE ) # use 95%CI
       il = which( set[,voi] < dr[[voi]][1] )
       if ( length(il) > 0 ) set[il,voi] = dr[[voi]][1]
