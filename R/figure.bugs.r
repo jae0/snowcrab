@@ -176,7 +176,7 @@
         SI =  apply( y$q, 1, median, na.rm=T  )
 
         for (i in 1:3) {
-          qIOA = sb$IOA[,i] / SI[i] + sb$CAT[,i] 
+          qIOA = sb$IOA[,i] / SI[i] 
           IOA = sb$IOA[,i] 
           meanval = apply( y$B[,i,,], 1, mean, na.rm=T  )
 

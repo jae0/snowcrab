@@ -238,7 +238,7 @@ surplusproduction.db = function( DS, sourcedata="default", debug.region="cfanort
       bp.max=rep(5,3),
       rec.max= c( 10^3, 10^4, 10^2 ),
       K.mu = c( 1.831139,4.170013,0.784308), #for ln
-      K.sd = c(0.04595339,0.04350642,0.02571607), #for ln
+      K.sd = c(0.06,0.06,0.04), #for ln
       r.mu = rep(0.96,3),
       r.sd = rep(0.01041271,3),
       b0.min = c(0.5, 0.5, 0.2),  # prior: mean value possible in  N,S,4X

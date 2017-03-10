@@ -153,7 +153,7 @@ model {
   
     for(j in 1:U) {
       for(i in 1:(N+M)) {
-        B[i,j] <- bm[i,j]*K[j]
+        B[i,j] <- (bm[i,j] - rem[i,j]) * K[j]
         P[i,j] <- pd[i,j]*K[j]
         C[i,j] <- rem[i,j]*K[j]
       }
