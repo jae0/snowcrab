@@ -42,7 +42,7 @@ snowcrab_lbm = function( ip=NULL, DS=NULL, p=NULL, voi=NULL, year=NULL, ret=NULL
       # set = set[jj,]
       lowestpossible = min( set$totmass[jj] , na.rm=TRUE)  
       ii = which( set$totmass < lowestpossible )
-      set$totmass[ii] = lowestpossible / 2  
+      set$totmass[ii] = lowestpossible / 4
       set$totmass = log( set$totmass)
       names(set)[ which( names(set) =="totmass")] = p$selection$name 
       set$Y = NULL
@@ -85,7 +85,7 @@ snowcrab_lbm = function( ip=NULL, DS=NULL, p=NULL, voi=NULL, year=NULL, ret=NULL
       set = cbind( set,  sn )
     }
 
-    set = set[, which(names(set) %in% c(p$varnames, p$variables$Y, p$variables$TIME, "dyear", "yr" ) ) ]  # a data frame
+    set = set[, which(names(set) %in% c(p$varnames, p$variables$Y, p$variables$TIME, "dyear", "yr",  "wt") ) ]  # a data frame
     oo = setdiff(p$varnames, names(set))
     if (length(oo) > 0 ) {
       print(oo )

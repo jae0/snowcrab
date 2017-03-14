@@ -167,8 +167,8 @@ snowcrab.parameters = function( p=NULL, DS="default", current.year=NULL, varname
       
       if (!exists("lbm_local_modelformula", p))  p$lbm_local_modelformula = formula( paste(
         varname, '~ s(yr, k=10, bs="ts") + s(cos.w, k=3, bs="ts") + s(sin.w, k=3, bs="ts") ', 
-          ' + s(cos.w, sin.w, yr, bs="ts", k=10) + s( log(z), k=3, bs="ts") ',
-          ' + s(plon, k=3, bs="ts") + s(plat, k=3, bs="ts") + s(plon, plat, log(z), k=10, bs="ts") ' ) )
+          ' + s(cos.w, sin.w, yr, bs="ts", k=10)  ',
+          ' + s(plon, k=3, bs="ts") + s(plat, k=3, bs="ts") + s(plon, plat, k=10, bs="ts") ' ) )
 
       if (!exists("lbm_local_model_distanceweighted", p)) p$lbm_local_model_distanceweighted = TRUE
       # if (!exists("lbm_gam_optimizer", p)) p$lbm_gam_optimizer="perf"
@@ -178,8 +178,8 @@ snowcrab.parameters = function( p=NULL, DS="default", current.year=NULL, varname
 
       if (!exists("lbm_local_modelformula", p))  p$lbm_local_modelformula = formula( paste(
         varname, '~ s(yr, bs="ts") + s(cos.w, k=3, bs="ts") + s(sin.w, k=3, bs="ts") ', 
-          ' + s(cos.w, sin.w, yr, bs="ts", k=25) + s( log(z), k=3, bs="ts") ',
-          ' + s(plon, k=3, bs="ts") + s(plat, k=3, bs="ts") + s(plon, plat, log(z), k=25, bs="ts") ' ) )
+          ' + s(cos.w, sin.w, yr, bs="ts", k=25)  ',
+          ' + s(plon, k=3, bs="ts") + s(plat, k=3, bs="ts") + s(plon, plat, k=25, bs="ts") ' ) )
 
       if (!exists("lbm_local_model_distanceweighted", p)) p$lbm_local_model_distanceweighted = TRUE
       # if (!exists("lbm_gam_optimizer", p)) p$lbm_gam_optimizer="perf"
