@@ -54,6 +54,9 @@ snowcrab_lbm = function( ip=NULL, DS=NULL, p=NULL, voi=NULL, year=NULL, ret=NULL
 
     set = set[ which(is.finite(set[, p$selection$name])),]
 
+    set = set[ which(set$yr %in% p$yrs ), ]
+
+
     coast = coastline.db( p=p, DS="mapdata.coastPolygon" )
     coast = spTransform( coast, CRS("+proj=longlat +datum=WGS84") )
     setcoord = SpatialPoints( as.matrix( set[, c("lon", "lat")]),  proj4string=CRS("+proj=longlat +datum=WGS84") )
@@ -66,6 +69,11 @@ snowcrab_lbm = function( ip=NULL, DS=NULL, p=NULL, voi=NULL, year=NULL, ret=NULL
     set$tiyr = lubridate::decimal_date( set$timestamp ) 
 
     bathy = bathymetry.db(p=p, DS="baseline")
+
+    psse = p
+    psse$spatial.domain = "SSE"
+    psse = spatial_parameters( p=psse )  # data are from this domain .. so far
+    bathysse = bathymetry.db(p=psse, DS="baseline")
 
     # redo as set has changed
     locsmap = match( 
@@ -80,14 +88,10 @@ snowcrab_lbm = function( ip=NULL, DS=NULL, p=NULL, voi=NULL, year=NULL, ret=NULL
     oo = which( !is.finite(locsmap) )
     if (length(oo) > 0) {
       # catch stragglers from a larger domain 
-      po = p
-      po$spatial.domain = "SSE"
-      po = spatial_parameters( p=po )  # data are from this domain .. so far
-      bathy = bathymetry.db(p=po, DS="baseline")
-      locsmapo = match( 
-        lbm::array_map( "xy->1", set[oo, c("plon","plat")], gridparams=po$gridparams ), 
-        lbm::array_map( "xy->1", bathy[,c("plon","plat")], gridparams=po$gridparams ) )
-      sn = indicators.lookup( p=po, DS="spatial", locsmap=locsmapo, varnames=newvars )
+      locsmapsse = match( 
+        lbm::array_map( "xy->1", set[oo, c("plon","plat")], gridparams=psse$gridparams ), 
+        lbm::array_map( "xy->1", bathysse[,c("plon","plat")], gridparams=psse$gridparams ) )
+      sn = indicators.lookup( p=psse, DS="spatial", locsmap=locsmapsse, varnames=newvars )
       set[oo,newvars] = sn
     }
 
@@ -100,14 +104,10 @@ snowcrab_lbm = function( ip=NULL, DS=NULL, p=NULL, voi=NULL, year=NULL, ret=NULL
     nn = which( !is.finite(set$tmean) )
     if (length(nn) > 0) {
       # catch stragglers from a larger domain 
-      pn = p
-      pn$spatial.domain = "SSE"
-      pn = spatial_parameters( p=pn )  # data are from this domain .. so far
-      bathy = bathymetry.db(p=pn, DS="baseline")
-      locsmapn = match( 
-        lbm::array_map( "xy->1", set[nn, c("plon","plat")], gridparams=pn$gridparams ), 
-        lbm::array_map( "xy->1", bathy[,c("plon","plat")], gridparams=pn$gridparams ) )
-      sn = indicators.lookup( p=pn, DS="spatial.annual", locsmap=locsmapn, timestamp=set[nn,"timestamp"], varnames=newvars )
+      locsmapsse = match( 
+        lbm::array_map( "xy->1", set[nn, c("plon","plat")], gridparams=psse$gridparams ), 
+        lbm::array_map( "xy->1", bathysse[,c("plon","plat")], gridparams=psse$gridparams ) )
+      sn = indicators.lookup( p=psse, DS="spatial.annual", locsmap=locsmapsse, timestamp=set[nn,"timestamp"], varnames=newvars )
       set[nn,newvars] = sn
     }
 
@@ -125,21 +125,17 @@ snowcrab_lbm = function( ip=NULL, DS=NULL, p=NULL, voi=NULL, year=NULL, ret=NULL
       names( sn  ) = p$indicators.variables[[iv]]
       set = cbind( set,  sn )
 
-      mm = which( !is.finite(set[,vn]) )
+      mm = which( !is.finite(set[,vn[1]]) )
       if (length(mm) > 0) {
-        # catch stragglers from a larger domain 
-        pm = p0
-        pm$spatial.domain = "SSE"
-        pm = spatial_parameters( p=pm )  # data are from this domain .. so far
-        bathy = bathymetry.db(p=pm, DS="baseline")
-        locsmapm = match( 
-          lbm::array_map( "xy->1", set[mm, c("plon","plat")], gridparams=pm$gridparams ), 
-          lbm::array_map( "xy->1", bathy[,c("plon","plat")], gridparams=pm$gridparams ) )
-         sn = indicators.lookup( p=pm, DS="spatial.annual", locsmap=locsmapm, timestamp=set[mm,"timestamp"], 
-          varnames=vn, DB=indicators.db( p=pm, DS="baseline", varnames=vn ) )
-        set[mm,newvars] = sn
+        # catch stragglers from a larger domain
+        p0 = bio.spacetime::spatial_parameters( p=p0, type="SSE" ) 
+        locsmapsse = match( 
+          lbm::array_map( "xy->1", set[mm, c("plon","plat")], gridparams=p0$gridparams ), 
+          lbm::array_map( "xy->1", bathysse[,c("plon","plat")], gridparams=p0$gridparams ) )
+        sn = indicators.lookup( p=p0, DS="spatial.annual", locsmap=locsmapsse, timestamp=set[mm,"timestamp"], 
+          varnames=vn, DB=indicators.db( p=p0, DS="baseline", varnames=vn ) )
+        set[mm,vn] = sn
       }
-
     }
 
     set = set[, which(names(set) %in% c(p$varnames, p$variables$Y, p$variables$TIME, "dyear", "yr",  "wt") ) ]  # a data frame
