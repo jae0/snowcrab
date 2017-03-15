@@ -13,18 +13,26 @@ snowcrab_lbm = function( ip=NULL, DS=NULL, p=NULL, voi=NULL, year=NULL, ret=NULL
     # must run here as we need the wgt from this for both PA and abundance
     set = presence.absence( X=set, vname="zm", px=p$habitat.threshold.quantile )  # determine presence absence and weighting
 
-    # if ( grepl( "snowcrab.large.males", p$selection$name ) ) {
-    #   # add commerical fishery data -- 
-    #   # depth data is problematic ... drop for now
-    #   lgbk = logbook.db( DS="fisheries.complete", p=p )
-    #   lgbk = lgbk[ which( is.finite( lgbk$landings)), ]
-    #   lgbk$totmass = NA # dummy to bring in mass as well 
-    #   lgbk$data.source = "logbooks"
-    #   lgbk = presence.absence( X=lgbk, vname="landings", px=p$habitat.threshold.quantile )  # determine presence absence and weighting
-    #   nms = intersect( names(set) , names( lgbk) )
-    #   set = rbind( set[, nms], lgbk[,nms] )
-    # }
+    if ( grepl( "snowcrab.large.males", p$selection$name ) ) {
+      # add commerical fishery data -- 
+      # depth data is problematic ... drop for now
+      lgbk = logbook.db( DS="fisheries.complete", p=p )
+      lgbk = lgbk[ which( is.finite( lgbk$landings)), ]
+      lgbk$totmass = NA # dummy to bring in mass as well 
+      lgbk$data.source = "logbooks"
+      lgbk = presence.absence( X=lgbk, vname="landings", px=p$habitat.threshold.quantile )  # determine presence absence and weighting
+      lgbk$z = exp( lgbk$z )
+      nms = intersect( names(set) , names( lgbk) )
+      set = rbind( set[, nms], lgbk[,nms] )
+    }
 
+    coast = coastline.db( p=p, DS="mapdata.coastPolygon" )
+    coast = spTransform( coast, CRS("+proj=longlat +datum=WGS84") )
+    setcoord = SpatialPoints( as.matrix( set[, c("lon", "lat")]),  proj4string=CRS("+proj=longlat +datum=WGS84") )
+    inside = sp::over( setcoord, coast )
+    onland = which (is.finite(inside))
+    set = set[-onland, ]
+    
     set$lon = set$lat = NULL
 
     set$tiyr = lubridate::decimal_date( set$timestamp ) 
@@ -49,16 +57,21 @@ snowcrab_lbm = function( ip=NULL, DS=NULL, p=NULL, voi=NULL, year=NULL, ret=NULL
     }
 
     if ( p$selection$type=="presence_absence") {
-      set = set[ which(set$data.source %in% c("snowcrab") ), ]
+      set = set[ which(set$data.source %in% c("snowcrab", "groundfish", "logbooks") ), ]
       names(set)[ which( names(set) =="Y")] = p$selection$name 
       set$totmass = NULL
     }
 
     set = set[ which(is.finite(set[, p$selection$name])),]
 
+
+    bathy = bathymetry.db(p=p, DS="baseline")
+
+
+    # redo as set has changed
     locsmap = match( 
       lbm::array_map( "xy->1", set[,c("plon","plat")], gridparams=p$gridparams ), 
-      lbm::array_map( "xy->1", bathymetry.db(p=p, DS="baseline"), gridparams=p$gridparams ) )
+      lbm::array_map( "xy->1", bathy[,c("plon","plat")], gridparams=p$gridparams ) )
 
     # spatial vars and climatologies 
     newvars = c("dZ", "ddZ", "log.substrate.grainsize", "tmean.climatology", "tsd.climatology", "b.range", "t.range" )
