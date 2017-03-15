@@ -50,12 +50,12 @@ snowcrab_lbm = function( ip=NULL, DS=NULL, p=NULL, voi=NULL, year=NULL, ret=NULL
       set = set[ which(set$data.source %in% c("snowcrab", "groundfish", "logbooks") ), ]
       names(set)[ which( names(set) =="Y")] = p$selection$name 
       set$totmass = NULL
+      set = set[ which(is.finite(set$plon + set$plat)),]
     }
 
     set = set[ which(is.finite(set[, p$selection$name])),]
 
     set = set[ which(set$yr %in% p$yrs ), ]
-
 
     coast = coastline.db( p=p, DS="mapdata.coastPolygon" )
     coast = spTransform( coast, CRS("+proj=longlat +datum=WGS84") )
@@ -92,7 +92,7 @@ snowcrab_lbm = function( ip=NULL, DS=NULL, p=NULL, voi=NULL, year=NULL, ret=NULL
         lbm::array_map( "xy->1", set[oo, c("plon","plat")], gridparams=psse$gridparams ), 
         lbm::array_map( "xy->1", bathysse[,c("plon","plat")], gridparams=psse$gridparams ) )
       sn = indicators.lookup( p=psse, DS="spatial", locsmap=locsmapsse, varnames=newvars )
-      set[oo,newvars] = sn
+      for (nv in newvars) set[oo,nv] = sn[,nv]
     }
 
     # for space-time(year-averages) 
@@ -108,7 +108,7 @@ snowcrab_lbm = function( ip=NULL, DS=NULL, p=NULL, voi=NULL, year=NULL, ret=NULL
         lbm::array_map( "xy->1", set[nn, c("plon","plat")], gridparams=psse$gridparams ), 
         lbm::array_map( "xy->1", bathysse[,c("plon","plat")], gridparams=psse$gridparams ) )
       sn = indicators.lookup( p=psse, DS="spatial.annual", locsmap=locsmapsse, timestamp=set[nn,"timestamp"], varnames=newvars )
-      set[nn,newvars] = sn
+      for (nv in newvars) set[nn,nv] = sn[,nv]
     }
 
     names(set)[ names(set)=="amplitude"] ="tamplitude"
@@ -134,7 +134,7 @@ snowcrab_lbm = function( ip=NULL, DS=NULL, p=NULL, voi=NULL, year=NULL, ret=NULL
           lbm::array_map( "xy->1", bathysse[,c("plon","plat")], gridparams=p0$gridparams ) )
         sn = indicators.lookup( p=p0, DS="spatial.annual", locsmap=locsmapsse, timestamp=set[mm,"timestamp"], 
           varnames=vn, DB=indicators.db( p=p0, DS="baseline", varnames=vn ) )
-        set[mm,vn] = sn
+        for (nv in vn) set[mm,nv] = sn[,nv]
       }
     }
 
