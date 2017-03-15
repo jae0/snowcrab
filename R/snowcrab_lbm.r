@@ -9,33 +9,6 @@ snowcrab_lbm = function( ip=NULL, DS=NULL, p=NULL, voi=NULL, year=NULL, ret=NULL
 
   if (DS %in% c("input_data") ) {
     set = bio.indicators::survey.db( p=p, DS="set.filter" ) # mature male > 95 mm 
-
-    # must run here as we need the wgt from this for both PA and abundance
-    set = presence.absence( X=set, vname="zm", px=p$habitat.threshold.quantile )  # determine presence absence and weighting
-
-    if ( grepl( "snowcrab.large.males", p$selection$name ) ) {
-      # add commerical fishery data -- 
-      # depth data is problematic ... drop for now
-      lgbk = logbook.db( DS="fisheries.complete", p=p )
-      lgbk = lgbk[ which( is.finite( lgbk$landings)), ]
-      lgbk$totmass = NA # dummy to bring in mass as well 
-      lgbk$data.source = "logbooks"
-      lgbk = presence.absence( X=lgbk, vname="landings", px=p$habitat.threshold.quantile )  # determine presence absence and weighting
-      lgbk$z = exp( lgbk$z )
-      nms = intersect( names(set) , names( lgbk) )
-      set = rbind( set[, nms], lgbk[,nms] )
-    }
-
-    coast = coastline.db( p=p, DS="mapdata.coastPolygon" )
-    coast = spTransform( coast, CRS("+proj=longlat +datum=WGS84") )
-    setcoord = SpatialPoints( as.matrix( set[, c("lon", "lat")]),  proj4string=CRS("+proj=longlat +datum=WGS84") )
-    inside = sp::over( setcoord, coast )
-    onland = which (is.finite(inside))
-    set = set[-onland, ]
-    
-    set$lon = set$lat = NULL
-
-    set$tiyr = lubridate::decimal_date( set$timestamp ) 
  
     if ( p$selection$type=="abundance") {
       # snowcrab survey data only
@@ -54,9 +27,26 @@ snowcrab_lbm = function( ip=NULL, DS=NULL, p=NULL, voi=NULL, year=NULL, ret=NULL
       set$totmass = log( set$totmass)
       names(set)[ which( names(set) =="totmass")] = p$selection$name 
       set$Y = NULL
+      set$wt = set$sa 
     }
 
     if ( p$selection$type=="presence_absence") {
+      # must run here as we need the wgt from this for both PA and abundance
+      set = presence.absence( X=set, vname="zm", px=p$habitat.threshold.quantile )  # determine presence absence and weighting
+
+      if ( grepl( "snowcrab.large.males", p$selection$name ) ) {
+        # add commerical fishery data -- 
+        # depth data is problematic ... drop for now
+        lgbk = logbook.db( DS="fisheries.complete", p=p )
+        lgbk = lgbk[ which( is.finite( lgbk$landings)), ]
+        lgbk$totmass = NA # dummy to bring in mass as well 
+        lgbk$data.source = "logbooks"
+        lgbk = presence.absence( X=lgbk, vname="landings", px=p$habitat.threshold.quantile )  # determine presence absence and weighting
+        lgbk$z = exp( lgbk$z )
+        nms = intersect( names(set) , names( lgbk) )
+        set = rbind( set[, nms], lgbk[,nms] )
+      }
+
       set = set[ which(set$data.source %in% c("snowcrab", "groundfish", "logbooks") ), ]
       names(set)[ which( names(set) =="Y")] = p$selection$name 
       set$totmass = NULL
@@ -64,9 +54,18 @@ snowcrab_lbm = function( ip=NULL, DS=NULL, p=NULL, voi=NULL, year=NULL, ret=NULL
 
     set = set[ which(is.finite(set[, p$selection$name])),]
 
+    coast = coastline.db( p=p, DS="mapdata.coastPolygon" )
+    coast = spTransform( coast, CRS("+proj=longlat +datum=WGS84") )
+    setcoord = SpatialPoints( as.matrix( set[, c("lon", "lat")]),  proj4string=CRS("+proj=longlat +datum=WGS84") )
+    inside = sp::over( setcoord, coast )
+    onland = which (is.finite(inside))
+    if (length(onland)>0) set = set[-onland, ]
+    
+    set$lon = set$lat = NULL
+
+    set$tiyr = lubridate::decimal_date( set$timestamp ) 
 
     bathy = bathymetry.db(p=p, DS="baseline")
-
 
     # redo as set has changed
     locsmap = match( 
@@ -78,11 +77,40 @@ snowcrab_lbm = function( ip=NULL, DS=NULL, p=NULL, voi=NULL, year=NULL, ret=NULL
     sn = indicators.lookup( p=p, DS="spatial", locsmap=locsmap, varnames=newvars )
     set = cbind( set,  sn )
 
+    oo = which( !is.finite(locsmap) )
+    if (length(oo) > 0) {
+      # catch stragglers from a larger domain 
+      po = p
+      po$spatial.domain = "SSE"
+      po = spatial_parameters( p=po )  # data are from this domain .. so far
+      bathy = bathymetry.db(p=po, DS="baseline")
+      locsmapo = match( 
+        lbm::array_map( "xy->1", set[oo, c("plon","plat")], gridparams=po$gridparams ), 
+        lbm::array_map( "xy->1", bathy[,c("plon","plat")], gridparams=po$gridparams ) )
+      sn = indicators.lookup( p=po, DS="spatial", locsmap=locsmapo, varnames=newvars )
+      set[oo,newvars] = sn
+    }
+
     # for space-time(year-averages) 
     newvars = c( "tmean", "tsd", "amplitude" )
     sn = indicators.lookup( p=p, DS="spatial.annual", locsmap=locsmap, timestamp=set[,"timestamp"], varnames=newvars )
     colnames( sn  ) = newvars
     set = cbind( set,  sn )
+    
+    nn = which( !is.finite(set$tmean) )
+    if (length(nn) > 0) {
+      # catch stragglers from a larger domain 
+      pn = p
+      pn$spatial.domain = "SSE"
+      pn = spatial_parameters( p=pn )  # data are from this domain .. so far
+      bathy = bathymetry.db(p=pn, DS="baseline")
+      locsmapn = match( 
+        lbm::array_map( "xy->1", set[nn, c("plon","plat")], gridparams=pn$gridparams ), 
+        lbm::array_map( "xy->1", bathy[,c("plon","plat")], gridparams=pn$gridparams ) )
+      sn = indicators.lookup( p=pn, DS="spatial.annual", locsmap=locsmapn, timestamp=set[nn,"timestamp"], varnames=newvars )
+      set[nn,newvars] = sn
+    }
+
     names(set)[ names(set)=="amplitude"] ="tamplitude"
 
     # additional indicators.db variables
@@ -96,6 +124,22 @@ snowcrab_lbm = function( ip=NULL, DS=NULL, p=NULL, voi=NULL, year=NULL, ret=NULL
       sn = as.data.frame(sn)
       names( sn  ) = p$indicators.variables[[iv]]
       set = cbind( set,  sn )
+
+      mm = which( !is.finite(set[,vn]) )
+      if (length(mm) > 0) {
+        # catch stragglers from a larger domain 
+        pm = p0
+        pm$spatial.domain = "SSE"
+        pm = spatial_parameters( p=pm )  # data are from this domain .. so far
+        bathy = bathymetry.db(p=pm, DS="baseline")
+        locsmapm = match( 
+          lbm::array_map( "xy->1", set[mm, c("plon","plat")], gridparams=pm$gridparams ), 
+          lbm::array_map( "xy->1", bathy[,c("plon","plat")], gridparams=pm$gridparams ) )
+         sn = indicators.lookup( p=pm, DS="spatial.annual", locsmap=locsmapm, timestamp=set[mm,"timestamp"], 
+          varnames=vn, DB=indicators.db( p=pm, DS="baseline", varnames=vn ) )
+        set[mm,newvars] = sn
+      }
+
     }
 
     set = set[, which(names(set) %in% c(p$varnames, p$variables$Y, p$variables$TIME, "dyear", "yr",  "wt") ) ]  # a data frame
