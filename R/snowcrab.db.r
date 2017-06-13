@@ -315,6 +315,7 @@ snowcrab.db = function( DS, p=NULL, yrs=NULL) {
 
     X = snowcrab.db( DS="set.clean" )
     det = snowcrab.db( DS="det.odbc"  )
+det=det[is.finite(det$crabno),]
 
     names( det ) = rename.bio.snowcrab.variables(names(det) )
     detvars = c( "trip", "set", "crabno", "sex", "cw", "mass", "abdomen", "chela", "mat",
@@ -355,7 +356,6 @@ snowcrab.db = function( DS, p=NULL, yrs=NULL) {
 
     #Sex.e: Unknown Sex
     sex.e <- det[which(det$sex==sex.unknown),]
-    sex.e.2015 <- sex.e[grep("2015", sex.e$trip),]
     sex.e$error <- 'sex.e'
     #Cw.e: Carapace Width below 5 or greater than 185
     cw.e <- det[ which(det$cw<5 | det$cw>185 ),]
@@ -408,8 +408,9 @@ snowcrab.db = function( DS, p=NULL, yrs=NULL) {
     det = predictmaturity (det, method="logistic.regression")
 
     #Mat.e: Unknown Maturity
-    mat.e <- det[which(det$mat ==0),]
+    mat.e <- det[which(det$mat ==0 & !is.finite(det$chela+det$abdomen)),]
     mat.e$error <- 'mat.e'
+
 
     primiparous = filter.class( det, "primiparous")
     multiparous = filter.class( det, "multiparous")
@@ -438,6 +439,9 @@ snowcrab.db = function( DS, p=NULL, yrs=NULL) {
     }
 
     errors.yearly <- errors[grep(yr.e, errors$trip),]
+    
+    errors <<- errors
+    message("check dataframe 'errors' fot the errors")
     print(errors.yearly)
 
     write.csv(errors.yearly, file=outfile.e)
