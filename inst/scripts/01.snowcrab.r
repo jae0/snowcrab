@@ -6,6 +6,7 @@ p = bio.snowcrab::load.environment( year.assessment=2016 )
 #loadfunctions('bio.snowcrab')
 
 # get data tables from Oracle server and store local copies
+#BZ 2017- Can now be run on a Linux machine. ODBC connection changed to ROracle
 # !!!!!! --------- these should be run on a windows machine: !!!!!!!!! <--------- READ THIS
 if (obtain.database.snapshot) {
   snowcrab.db( DS="set.odbc.redo", yrs=1996:p$year.assessment ) # Copy over datadirectory ("bio.snowcrab"), "data", "trawl", "SNCRABSETS"
@@ -45,11 +46,11 @@ if (obtain.database.snapshot) {
 
     # was in above. Split off as a separate function it is not essential
     # and can break without the right ESRI drivers. JC
-    export.to.shapefile(
-      inp=snowcrab.db( DS="setInitial", p=p ),
-      out=file.path(project.datadirectory("bio.snowcrab"), "maps", "shapefiles", "survey"),
-      fn="SurveyDataUpdate"
-    )
+              #export.to.shapefile(
+                #inp=snowcrab.db( DS="setInitial", p=p ),
+                #out=file.path(project.datadirectory("bio.snowcrab"), "maps", "shapefiles", "survey"),
+               # fn="SurveyDataUpdate"
+              #)
 
   # check/choose the years
   # if just updating a single year, run the following, else all years will be run by default
@@ -62,10 +63,10 @@ if (obtain.database.snapshot) {
   #_________________________________________________________________#
   #                                                                 #
   #  BH: These functions need documentation
-  #_________________________________________________________________#
+  #__Only run below lines if you wish to redo all years for seabird, minilog, etc, you likely don't____#
   #                                                                 #
 
-  seabird.db( DS="load", Y=p$seabird.yToload ) # this begins 2012;
+  seabird.db( DS="load", Y=p$seabird.yToload ) # this begins 2012;duplicates are often due to seabird files not being retsrated each morning
   minilog.db( DS="load", Y=p$minilog.yToload ) # minilog data series "begins" in 1999 -- 60 min?
   netmind.db( DS='esonar2netmind.conversion',Y=p$esonar.yToload )
   netmind.db( DS="load", Y=p$netmind.yToload) # netmind data series "begins" in 1998 -- 60 min?
@@ -74,17 +75,18 @@ if (obtain.database.snapshot) {
 
   #MG I'm not sure why these stats are not being written automatically, neet to set it in the code above to run these after data is loaded -- JC: mostly as "stats" can fail and need to be re-run. No need to re-run "load" steps.
   p$netmensuration.problems = c( "add trouble id's here") # add troublesome id's here .. eventually move into their respective functions
-
   seabird.db (DS="stats.redo", Y=p$seabird.yToload )
   minilog.db (DS="stats.redo", Y=p$minilog.yToload )  # note no depth in minilog any more (since 2014 ..  useful for temperature only)
   netmind.db (DS="stats.redo", Y=p$netmind.yToload )
 
 
   # merge in netmind, minilog, seabird, esonar data and do some sanity checks
+  #Can add any datachecks that might improve overall data quality
+  #BZ for 2017- If errors repeat and are not actually a problem, create an override
   snowcrab.db( DS="set.clean.redo", p=p )  # sanity checks
     problems = data.quality.check( type="minilog.mismatches", p=p )
     problems = data.quality.check( type="minilog.load", p=p)
-    problems = data.quality.check( type="minilog.dateproblems", p=p)
+    problems = data.quality.check( type="minilog.dateproblems", p=p) #track down why ~all sets are giving mismatches
     problems = data.quality.check( type="minilog", p=p)   # Check for duplicate timestamps
     problems = data.quality.check( type="netmind.load", p=p)
     problems = data.quality.check( type="netmind.mismatches", p=p )
@@ -97,6 +99,8 @@ if (obtain.database.snapshot) {
 
   #MG det.initial.redo updates and processes morphology. This code now identifies morphology errors, which must be
   #checked with written logs, then sent to database and put in debugging here and re-run
+  #BZ- need to update so that missing cw or chela or abdomen doesn't create problem
+    
   snowcrab.db( DS="det.initial.redo", p=p )
   snowcrab.db( DS="det.georeferenced.redo", p=p )
   snowcrab.db( DS="cat.initial.redo", p=p )
@@ -108,7 +112,7 @@ if (obtain.database.snapshot) {
 
   # update a database of simple transformation ranges, etc.. for plotting range, etc.
   REPOS = bio.indicators::recode.variable.initiate.db ( db="snowcrab" )
-
+ 
   # create simple timeseries
   snowcrab.timeseries.db( DS="observer.redo" )
   snowcrab.timeseries.db( DS="biologicals.redo" )  # approx 30 min in 2015, JC
@@ -123,3 +127,5 @@ if (obtain.database.snapshot) {
   # while you wait for it to complete .. ;)
   biomass.summary.survey.nosa.db("complete.redo", p=p) #Uses the geometric mean biomass from the survey
 
+
+  

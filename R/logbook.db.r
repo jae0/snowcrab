@@ -18,9 +18,11 @@
 				return (out)
 			}
 
-			require(RODBC)
-      con=odbcConnect(oracle.snowcrab.server , uid=oracle.snowcrab.user, pwd=oracle.snowcrab.password, believeNRows=F)
-
+			#require(RODBC)
+      #con=odbcConnect(oracle.snowcrab.server , uid=oracle.snowcrab.user, pwd=oracle.snowcrab.password, believeNRows=F)
+      require (ROracle)
+      con=dbConnect(DBI::dbDriver("Oracle"),dbname=oracle.snowcrab.server , username=oracle.snowcrab.user, password=oracle.snowcrab.password, believeNRows=F)
+      
 			for ( YR in yrs ) {
 				fny = file.path( fn.root, paste( YR,"rdata", sep="."))
 				query = paste(
@@ -28,13 +30,15 @@
 					"where target_spc=705",
 					"AND EXTRACT(YEAR from DATE_LANDED) = ", YR )
 				logbook = NULL
-				logbook = sqlQuery(con, query )
+				#in following line replaced sqlQuery (RODBC) with  dbGetQuery (ROracle)
+				logbook = dbGetQuery(con, query )
 				save( logbook, file=fny, compress=T)
 				gc()  # garbage collection
 				print(YR)
 			}
-			odbcClose(con)
-			return (yrs)
+      #odbcClose(con)
+      dbDisconnect(con)
+      return (yrs)
 
 		}
 
@@ -48,12 +52,15 @@
         return (lic)
       }
 
-      require(RODBC)
-      con=odbcConnect(oracle.snowcrab.server , uid=oracle.snowcrab.user, pwd=oracle.snowcrab.password, believeNRows=F)
-
-      lic = sqlQuery(con, "select * from marfissci.licence_areas")
+      #require(RODBC)
+      #con=odbcConnect(oracle.snowcrab.server , uid=oracle.snowcrab.user, pwd=oracle.snowcrab.password, believeNRows=F)
+      require (ROracle)
+      con=dbConnect(DBI::dbDriver("Oracle"),dbname=oracle.snowcrab.server , username=oracle.snowcrab.user, password=oracle.snowcrab.password, believeNRows=F)
+      #in following line replaced sqlQuery (RODBC) with  dbGetQuery (ROracle)
+      lic = dbGetQuery(con, "select * from marfissci.licence_areas")
       save(lic, file=filename.licence, compress=T)
-
+      #odbcClose(con)
+      dbDisconnect(con)
 		}
 
 
@@ -66,11 +73,15 @@
         return (areas)
       }
 
-      require(RODBC)
-      con=odbcConnect(oracle.snowcrab.server , uid=oracle.snowcrab.user, pwd=oracle.snowcrab.password, believeNRows=F)
-      areas = sqlQuery(con, "select * from marfissci.areas")
+      #require(RODBC)
+      #con=odbcConnect(oracle.snowcrab.server , uid=oracle.snowcrab.user, pwd=oracle.snowcrab.password, believeNRows=F)
+      require (ROracle)
+      con=dbConnect(DBI::dbDriver("Oracle"),dbname=oracle.snowcrab.server , username=oracle.snowcrab.user, password=oracle.snowcrab.password, believeNRows=F)
+      #in following line replaced sqlQuery (RODBC) with  dbGetQuery (ROracle)
+      areas = dbGetQuery(con, "select * from marfissci.areas")
       save(areas, file=filename.areas, compress=T)
-
+      #odbcClose(con)
+      dbDisconnect(con)
       return ("Complete")
 
     }

@@ -38,10 +38,12 @@
       # gs.tables = tbls[ which(tbls[,2] == "GROUNDFISH"),]
       # print(gs.tables)
 
-      print ("Run on windows sessions as the linux odbc session is not happy")
-      require(RODBC)
-      con=odbcConnect(oracle.snowcrab.server , uid=oracle.snowcrab.user, pwd=oracle.snowcrab.password, believeNRows=F)
-
+      print ("Should be opkay to run on Linux, assuming that ROracle is happy")
+      #require(RODBC)
+      #con=odbcConnect(oracle.snowcrab.server , uid=oracle.snowcrab.user, pwd=oracle.snowcrab.password, believeNRows=F)
+      require (ROracle)
+      con=dbConnect(DBI::dbDriver("Oracle"),dbname=oracle.snowcrab.server , username=oracle.snowcrab.user, password=oracle.snowcrab.password, believeNRows=F)
+      
 			for ( YR in yrs ) {
 				fny = file.path( fn.root, paste( YR,"rdata", sep="."))
 				odbq = paste(
@@ -54,13 +56,15 @@
          "AND d.FISH_NO Is Not Null" ,
 				 "AND EXTRACT(YEAR from d.BOARD_DATE) = ", YR )
 				odb = NULL
-				odb = sqlQuery(con, odbq )
+				#in following line replaced sqlQuery (RODBC) with  dbGetQuery (ROracle)
+				odb = dbGetQuery(con, odbq )
 				save( odb, file=fny, compress=T)
 				gc()  # garbage collection
 				print(YR)
 			}
-			odbcClose(con)
-			return (yrs)
+      #odbcClose(con)
+      dbDisconnect(con)
+      return (yrs)
 
     }
 
