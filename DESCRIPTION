@@ -33,6 +33,7 @@ Imports:
   rasterVis, 
   rgdal, 
   rgeos, 
+  ROracle,
   sp, 
   vegan, 
   bio.base,

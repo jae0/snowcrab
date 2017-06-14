@@ -327,12 +327,12 @@ snowcrab.db = function( DS, p=NULL, yrs=NULL) {
 
     X = snowcrab.db( DS="set.clean" )
     det = snowcrab.db( DS="det.odbc"  )
-det=det[is.finite(det$crabno),]
+
 
     names( det ) = rename.bio.snowcrab.variables(names(det) )
     detvars = c( "trip", "set", "crabno", "sex", "cw", "mass", "abdomen", "chela", "mat",
                  "shell", "gonad", "eggcol", "eggPr", "durometer", "legs")
-
+    det=det[is.finite(det$crabno),]
     # merge in the sa which is used as a weighting factor of most analyses
     det = merge(x=det[,detvars], y=X[,c("trip","set","sa")], by=c("trip", "set"), all.x=T, all.y=F)
 
