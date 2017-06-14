@@ -1008,7 +1008,6 @@ snowcrab.db = function( DS, p=NULL, yrs=NULL) {
     # bring in time invariant features:: depth
     ii = which(!is.finite(set$z))
     if (length(ii)>0){
-      print(p$spatial.domain)
       set$z[ii] = bio.bathymetry::bathymetry.lookup( p=p, locs=set[ii,c("plon", "plat")], vnames="z" )
     }
     set$z = log( set$z )

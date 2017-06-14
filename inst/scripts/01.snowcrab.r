@@ -98,12 +98,12 @@ if (obtain.database.snapshot) {
   #MG det.initial.redo updates and processes morphology. This code now identifies morphology errors, which must be
   #checked with written logs, then sent to database and put in debugging here and re-run
   snowcrab.db( DS="det.initial.redo", p=p )
-  snowcrab.db( DS="det.georeferenced.redo" )
+  snowcrab.db( DS="det.georeferenced.redo", p=p )
   snowcrab.db( DS="cat.initial.redo", p=p )
-  snowcrab.db( DS="cat.georeferenced.redo" )
+  snowcrab.db( DS="cat.georeferenced.redo", p=p )
 
-  snowcrab.db( DS="set.biologicals.redo" )
-  snowcrab.db( DS="set.complete.redo" )
+  snowcrab.db( DS="set.biologicals.redo", p=p )
+  snowcrab.db( DS="set.complete.redo", p=p )
 
 
   # update a database of simple transformation ranges, etc.. for plotting range, etc.
