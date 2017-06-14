@@ -40,20 +40,24 @@ snowcrab.db = function( DS, p=NULL, yrs=NULL) {
 			return (out)
 		}
 
-		require(RODBC)
-		con = odbcConnect(oracle.snowcrab.server , uid=oracle.snowcrab.user, pwd=oracle.snowcrab.password, believeNRows=F)
-		# believeNRows=F required for oracle db's
+		#require(RODBC)
+		#con = odbcConnect(oracle.snowcrab.server , uid=oracle.snowcrab.user, pwd=oracle.snowcrab.password, believeNRows=F)
+		require (ROracle)
+		con=dbConnect(DBI::dbDriver("Oracle"),dbname=oracle.snowcrab.server , username=oracle.snowcrab.user, password=oracle.snowcrab.password, believeNRows=F)
+					# believeNRows=F required for oracle db's
 
 		for ( YR in yrs ) {
 			fny = file.path( fn.root, paste( YR,"rdata", sep="."))
 			SNCRABSETS = NULL
-			SNCRABSETS = sqlQuery(con,
+			#in following line replaced sqlQuery (RODBC) with  dbGetQuery (ROracle)
+			SNCRABSETS = dbGetQuery(con,
 								paste("select * from SNCRABSETS where EXTRACT(YEAR from BOARD_DATE) = ", YR) )
 			save( SNCRABSETS, file=fny, compress=T)
 			gc()  # garbage collection
 			print(YR)
 		}
-		odbcClose(con)
+		#odbcClose(con)
+		dbDisconnect(con)
 		return (yrs)
 	}
 
@@ -75,21 +79,25 @@ snowcrab.db = function( DS, p=NULL, yrs=NULL) {
 			return (out)
 		}
 
-		require(RODBC)
-		con = odbcConnect(oracle.snowcrab.server , uid=oracle.snowcrab.user, pwd=oracle.snowcrab.password, believeNRows=F)
+		#require(RODBC)
+		#con = odbcConnect(oracle.snowcrab.server , uid=oracle.snowcrab.user, pwd=oracle.snowcrab.password, believeNRows=F)
+		require (ROracle)
+		con=dbConnect(DBI::dbDriver("Oracle"),dbname=oracle.snowcrab.server , username=oracle.snowcrab.user, password=oracle.snowcrab.password, believeNRows=F)
+		
 		# believeNRows=F required for oracle db's
 
 		for ( YR in yrs ) {
 			fny = file.path( fn.root, paste( YR,"rdata", sep="."))
 			SNCRABDETAILS = NULL
-			SNCRABDETAILS = sqlQuery(con,
+			#in following line replaced sqlQuery (RODBC) with  dbGetQuery (ROracle)
+			SNCRABDETAILS = dbGetQuery(con,
                 paste("select * from SNCRABDETAILS where EXTRACT(YEAR from BOARD_DATE) = ", YR) )
 			save( SNCRABDETAILS, file=fny, compress=T)
 			gc()  # garbage collection
 			print(YR)
 		}
-		odbcClose(con)
-
+		#odbcClose(con)
+		dbDisconnect(con)
     return (yrs)
 
 	}
@@ -111,21 +119,25 @@ snowcrab.db = function( DS, p=NULL, yrs=NULL) {
 			return (out)
 		}
 
-		require(RODBC)
-		con = odbcConnect(oracle.snowcrab.server , uid=oracle.snowcrab.user, pwd=oracle.snowcrab.password, believeNRows=F)
+		#require(RODBC)
+		#con = odbcConnect(oracle.snowcrab.server , uid=oracle.snowcrab.user, pwd=oracle.snowcrab.password, believeNRows=F)
+		require (ROracle)
+		con=dbConnect(DBI::dbDriver("Oracle"),dbname=oracle.snowcrab.server , username=oracle.snowcrab.user, password=oracle.snowcrab.password, believeNRows=F)
+		
 		# believeNRows=F required for oracle db's
 
 		for ( YR in yrs ) {
 			fny = file.path( fn.root, paste( YR,"rdata", sep="."))
 			SNTRAWLBYCATCH = NULL
-			SNTRAWLBYCATCH = sqlQuery(con,
+			#in following line replaced sqlQuery (RODBC) with  dbGetQuery (ROracle)
+			SNTRAWLBYCATCH = dbGetQuery(con,
                 paste("select * from SNTRAWLBYCATCH where EXTRACT(YEAR from BOARD_DATE) = ", YR) )
 			save( SNTRAWLBYCATCH, file=fny, compress=T)
 			gc()  # garbage collection
 			print(YR)
 		}
-		odbcClose(con)
-
+		#odbcClose(con)
+		dbDisconnect(con)
     return (yrs)
 	}
 

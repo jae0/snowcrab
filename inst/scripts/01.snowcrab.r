@@ -6,6 +6,7 @@ p = bio.snowcrab::load.environment( year.assessment=2016 )
 #loadfunctions('bio.snowcrab')
 
 # get data tables from Oracle server and store local copies
+#BZ 2017- Can now be run on a Linux machine. ODBC connection changed to ROracle
 # !!!!!! --------- these should be run on a windows machine: !!!!!!!!! <--------- READ THIS
 if (obtain.database.snapshot) {
   snowcrab.db( DS="set.odbc.redo", yrs=1996:p$year.assessment ) # Copy over datadirectory ("bio.snowcrab"), "data", "trawl", "SNCRABSETS"
