@@ -83,8 +83,8 @@ if (obtain.database.snapshot) {
   # merge in netmind, minilog, seabird, esonar data and do some sanity checks
   #Can add any datachecks that might improve overall data quality
   #BZ for 2017- If errors repeat and are not actually a problem, create an override
-  snowcrab.db( DS="set.clean.redo", p=p )  # sanity checks
-    problems = data.quality.check( type="minilog.mismatches", p=p )
+  
+ problems = data.quality.check( type="minilog.mismatches", p=p )
     problems = data.quality.check( type="minilog.load", p=p)
     problems = data.quality.check( type="minilog.dateproblems", p=p) #track down why ~all sets are giving mismatches
     problems = data.quality.check( type="minilog", p=p)   # Check for duplicate timestamps
