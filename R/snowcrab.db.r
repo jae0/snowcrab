@@ -420,7 +420,8 @@ snowcrab.db = function( DS, p=NULL, yrs=NULL) {
     det = predictmaturity (det, method="logistic.regression")
 
     #Mat.e: Unknown Maturity
-    mat.e <- det[which(det$mat ==2 & (!is.finite(det$chela) | !is.finite(det$abdomen))),]
+   ### Next line needs to be fixed!!!
+    mat.e <- det[which(det$mat ==2 & (is.finite(det$chela) | is.finite(det$abdomen))),]
     mat.e$error <- 'mat.e'
 
 
