@@ -99,7 +99,6 @@ if (obtain.database.snapshot) {
 
   #MG det.initial.redo updates and processes morphology. This code now identifies morphology errors, which must be
   #checked with written logs, then sent to database and put in debugging here and re-run
-  #BZ- need to update so that missing cw or chela or abdomen doesn't create problem
     
   snowcrab.db( DS="det.initial.redo", p=p )
   snowcrab.db( DS="det.georeferenced.redo", p=p )

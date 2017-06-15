@@ -365,7 +365,8 @@ snowcrab.db = function( DS, p=NULL, yrs=NULL) {
     fn.e = file.path(project.datadirectory("bio.snowcrab"), "data", "trawl", "morphology.errors")
     dir.create(fn.e, recursive=T, showWarnings=F)
     outfile.e =  file.path( fn.e, paste("morphologyerrors", yr.e, ".csv", sep=""))
-
+    outfile.e2 =  file.path( fn.e, paste("morphologyerrors.allyears", yr.e, ".csv", sep=""))
+    
     #Sex.e: Unknown Sex
     sex.e <- det[which(det$sex==sex.unknown),]
     sex.e$error <- 'sex.e'
@@ -420,7 +421,6 @@ snowcrab.db = function( DS, p=NULL, yrs=NULL) {
     det = predictmaturity (det, method="logistic.regression")
 
     #Mat.e: Unknown Maturity
-   ### Next line needs to be fixed!!!
     mat.e <- det[which(det$mat ==2 & (is.finite(det$chela) | is.finite(det$abdomen))),]
     mat.e$error <- 'mat.e'
 
@@ -454,12 +454,17 @@ snowcrab.db = function( DS, p=NULL, yrs=NULL) {
     errors.yearly <- errors[grep(yr.e, errors$trip),]
     
     errors <<- errors
-    message("check dataframe 'errors' fot the errors")
+    message("check dataframe 'errors' for the errors")
     print(errors.yearly)
 
     write.csv(errors.yearly, file=outfile.e)
-    print("Morphology Errors saved to file")
+    print("Current Year Morphology Errors saved to file")
     print(outfile.e)
+    
+    write.csv(errors.yearly, file=outfile.e2)
+    print("All Years Morphology Errors saved to file")
+    print(outfile.e2)
+    
     cat("ERROR CODES\
     Mat.e: Unknown Maturity\
     Sex.e: Unknown Sex\
