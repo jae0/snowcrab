@@ -1,27 +1,39 @@
-
+current.year = 2016
+p = bio.snowcrab::load.environment( year.assessment=current.year )
 
 # --------------------------------------------------------------
 #  Ensure the following scripts complete without error:
-#  these external dependencies permit lookup of data, for snowcrab.db("complete.redo") :
-#  system.file(package="bio.indicators", "scripts", "01.indicators.r")  
-#  system.file(package="bio.indicators", "scripts", "02.*.r")  
+#  these external dependencies permit lookup of data, for this script 
+#Require the following:
+#snowcrab.db("complete.redo") 
 
+#Run bio.groundfish::(inst/01.groundfish.r), need to update year within or run next line
+  #system.file(package="bio.groundfish", "scripts", "01.groundfish.r")
+
+#Run bio.groundfish::(inst/scripts/temperature.r), need to update year within
+  #system.file(package="bio.temperature", "scripts", "temperature.r") or run next line
+
+#Substrate and bathymetry can be run (as per above) if suspect significant changes in one or both of these datasets
+
+#BZ 2017 these lines below can directly run the indicators without goint to run individual scripts
+#  system.file(package="bio.indicators", "scripts", "01.indicators.r")  
+#  system.file(package="bio.indicators", "scripts", "02.biochem.r") 
+#  system.file(package="bio.indicators", "scripts", "02.condition.r") 
+#  system.file(package="bio.indicators", "scripts", "02.landings.r") 
+#  system.file(package="bio.indicators", "scripts", "02.metabolism.r") 
+#  system.file(package="bio.indicators", "scripts", "02.sizespectrum.r") 
+#  system.file(package="bio.indicators", "scripts", "02.speciesarea.r")
+#  system.file(package="bio.indicators", "scripts", "02.*.speciescomposition") 
 
 # 1. Define some additional starting parameters for debugging
 #    choose various over-rides: these are initially defined in parameters.r
 
-current.year = 2016
-p = bio.snowcrab::load.environment( year.assessment=current.year )
-
-
-
 
 # --------------------------------------------------------------
 # using environmental data ... estimate/lookup missing environmental data .. (t,z)
-logbook.db( DS ="fisheries.complete.redo", p=p )
-snowcrab.db( DS ="set.complete.redo", p=p )
-
-
+#BZ 2017 below lines shouldn't be required. datasets created in 01.snowcrab
+#logbook.db( DS ="fisheries.complete.redo", p=p )
+#snowcrab.db( DS ="set.complete.redo", p=p )
 
 # -------------------------------------------------------------------------------------
 # abundance .. positive valued data .. vn = "snowcrab.large.males_abundance"
@@ -69,7 +81,7 @@ global_model = lbm_db( p=p, DS="global_model")
 summary( global_model )
 plot(global_model)
 
-
+#Below lines are just model outputs for comparison sake
 Family: gaussian 
 Link function: identity 
 

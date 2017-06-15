@@ -1,4 +1,5 @@
-  map.set.information = function(p, outdir, variables,mapyears, plot.method="levelplot",interpolate.method='tps', theta=p$pres*25, idp=2,log.variable=T,add.zeros=T,minN=10  , probs=c(0.025, 0.975), offset) {
+#TODO BC add functionality for pdf&kml outputs 
+map.set.information = function(p, outdir, variables,mapyears, plot.method="levelplot",interpolate.method='tps', theta=p$pres*25, idp=2,log.variable=T,add.zeros=T,minN=10  , probs=c(0.025, 0.975), offset) {
 
     set = snowcrab.db( DS="set.biologicals")
     if(missing(variables)){
@@ -28,14 +29,14 @@
       id = 1: p$nruns
 
       predlocs = bio.bathymetry::bathymetry.db(p=p, DS="baseline")
-
       for (i in id ) {
         v = p$runs[i,1]
         y = p$runs[i,2]
+        ratio=F
         outfn = paste( v,y, sep=".")
         outloc = file.path( outdir,v)
         print(paste(p$runs[i,]))
-        if(grep('ratio',v))ratio=T
+        if(grepl('ratio',v))ratio=T
 
         set_xyz = set[ which(set$yr==y), c("plon","plat",v) ]
         names( set_xyz) = c("plon", "plat", "z")

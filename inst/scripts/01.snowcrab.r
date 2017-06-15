@@ -107,7 +107,7 @@ if (obtain.database.snapshot) {
 
   snowcrab.db( DS="set.biologicals.redo", p=p )
   snowcrab.db( DS="set.complete.redo", p=p )
-
+ 
 
   # update a database of simple transformation ranges, etc.. for plotting range, etc.
   REPOS = bio.indicators::recode.variable.initiate.db ( db="snowcrab" )

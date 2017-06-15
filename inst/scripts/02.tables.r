@@ -14,7 +14,10 @@ p = bio.snowcrab::load.environment( year.assessment=2016)
   #------------------------------------------------
   #Fisheries statistics per region
   tabledir = file.path(project.datadirectory("bio.snowcrab"), "data", "fisheries")
-  outtabledir= file.path(project.datadirectory("bio.snowcrab"), "assessments", "2015", "tables", "logbook")
+  outtabledir= file.path(project.datadirectory("bio.snowcrab"), "assessments", p$year.assessment, "tables", "logbook")
+  if(!dir.exists(tabledir)) dir.create(tabledir, recursive =T)
+  if(!dir.exists(outtabledir)) dir.create(outtabledir, recursive =T)
+  
   setwd(tabledir)
 
   NFS <- xtable(read.csv("NENS_FisherySummary.csv"))
@@ -218,21 +221,6 @@ p = bio.snowcrab::load.environment( year.assessment=2016)
 
     for (i in cnames[-1]) res[,i] = as.numeric(as.character((res[,i])))
     (res)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
   # ------------------
   # counts of stations in each area

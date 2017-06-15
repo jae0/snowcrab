@@ -1,5 +1,7 @@
+  #BZ 2017 Not used in assessment
+#Deprecated
 
-  p = bio.snowcrab::load.environment( year.assessment=2016)
+p = bio.snowcrab::load.environment( year.assessment=2016)
 
   # mapping of fisher stats
 
