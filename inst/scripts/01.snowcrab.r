@@ -54,19 +54,16 @@ if (obtain.database.snapshot) {
                # fn="SurveyDataUpdate"
               #)
 
-  # check/choose the years
-  # if just updating a single year, run the following, else all years will be run by default
-  (p$year.assessment)
-  p$seabird.yToload = p$year.assessment
-  p$minilog.yToload = p$year.assessment
-  p$netmind.yToload = p$year.assessment
-  p$esonar.yToload  = p$year.assessment
-
-  #_________________________________________________________________#
-  #                                                                 #
-  #  BH: These functions need documentation
-  #__Only run below lines if you wish to redo all years for seabird, minilog, etc, you likely don't____#
-  #                                                                 #
+  
+# -------------------------------------------------------------------------------------
+# process the net configuration and the temperatures from seabird, netmind, etc ..
+# if just updating a single year, run the following, else all years will be run by default
+  if (updating.current.year) {
+    p$seabird.yToload = p$year.assessment
+    p$minilog.yToload = p$year.assessment
+    p$netmind.yToload = p$year.assessment
+    p$esonar.yToload  = p$year.assessment
+  }
 
   seabird.db( DS="load", Y=p$seabird.yToload ) # this begins 2012;duplicates are often due to seabird files not being retsrated each morning
   minilog.db( DS="load", Y=p$minilog.yToload ) # minilog data series "begins" in 1999 -- 60 min?
@@ -75,18 +72,21 @@ if (obtain.database.snapshot) {
 
   #JC note: 1998:2002 have about 60 files with no data, just a short header
 
-  #MG I'm not sure why these stats are not being written automatically, neet to set it in the code above to run these after data is loaded -- JC: mostly as "stats" can fail and need to be re-run. No need to re-run "load" steps.
+  #MG I'm not sure why these stats are not being written automatically, neet to set it in the code above to run these after data is loaded 
+  ##-- JC: mostly as "stats" can fail and need to be re-run. No need to re-run "load" steps.
+
   p$netmensuration.problems = c( "add trouble id's here") # add troublesome id's here .. eventually move into their respective functions
   seabird.db (DS="stats.redo", Y=p$seabird.yToload )
   minilog.db (DS="stats.redo", Y=p$minilog.yToload )  # note no depth in minilog any more (since 2014 ..  useful for temperature only)
   netmind.db (DS="stats.redo", Y=p$netmind.yToload )
 
 
-  # merge in netmind, minilog, seabird, esonar data and do some sanity checks
-  #Can add any datachecks that might improve overall data quality
-  #BZ for 2017- If errors repeat and are not actually a problem, create an override
+# -------------------------------------------------------------------------------------
+# merge in netmind, minilog, seabird, esonar data and do some sanity checks
+# Can add any datachecks that might improve overall data quality
+# BZ for 2017- If errors repeat and are not actually a problem, create an override
   
- problems = data.quality.check( type="minilog.mismatches", p=p )
+    problems = data.quality.check( type="minilog.mismatches", p=p )
     problems = data.quality.check( type="minilog.load", p=p)
     problems = data.quality.check( type="minilog.dateproblems", p=p) #track down why ~all sets are giving mismatches
     problems = data.quality.check( type="minilog", p=p)   # Check for duplicate timestamps
@@ -99,8 +99,10 @@ if (obtain.database.snapshot) {
     problems = data.quality.check( type="netmind.timestamp" , p=p)
 
 
-  #MG det.initial.redo updates and processes morphology. This code now identifies morphology errors, which must be
-  #checked with written logs, then sent to database and put in debugging here and re-run
+# -------------------------------------------------------------------------------------
+# Finalize the data sets 
+# MG det.initial.redo updates and processes morphology. This code now identifies morphology errors, which must be
+# checked with written logs, then sent to database and put in debugging here and re-run
     
   snowcrab.db( DS="det.initial.redo", p=p )
   snowcrab.db( DS="det.georeferenced.redo", p=p )
@@ -111,10 +113,12 @@ if (obtain.database.snapshot) {
   snowcrab.db( DS="set.complete.redo", p=p )
  
 
-  # update a database of simple transformation ranges, etc.. for plotting range, etc.
+# -------------------------------------------------------------------------------------
+# update a database of simple transformation ranges, etc.. for plotting range, etc.
   REPOS = bio.indicators::recode.variable.initiate.db ( db="snowcrab" )
  
-  # create simple timeseries
+# -------------------------------------------------------------------------------------
+# create some simple/crude timeseries
   snowcrab.timeseries.db( DS="observer.redo" )
   snowcrab.timeseries.db( DS="biologicals.redo" )  # approx 30 min in 2015, JC
   snowcrab.timeseries.db( DS="biologicals.2014.redo" )  # reduced subset that matches 2014 station id's ..
@@ -123,9 +127,10 @@ if (obtain.database.snapshot) {
   snowcrab.timeseries.db( DS="biologicals.direct", regions='cfa4x', vn=c('R0.mass'), trim=0 )  # returns the data
 
 
-  # update data summaries for use with biomass estimation using simple indices:
-  # this can be used should the habitat based approach fail or to get a sense of the patterns
-  # while you wait for it to complete .. ;)
+# -------------------------------------------------------------------------------------
+# update data summaries for use with biomass estimation using simple indices:
+# this can be used should the habitat based approach fail or to get a sense of the patterns
+# while you wait for it to complete .. ;)
   biomass.summary.survey.nosa.db("complete.redo", p=p) #Uses the geometric mean biomass from the survey
 
 
