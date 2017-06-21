@@ -1,6 +1,6 @@
 
   
-  if (!exists("current.year")) current.year=year(Sys.Date())
+  if (!exists("current.year")) current.year=lubridate::year(Sys.Date())
   p = bio.snowcrab::load.environment( year.assessment=current.year)
 
 # ------------------------------------------

@@ -1,7 +1,7 @@
 
   # Figures obtained after completion of data assimilation and processing up to the end of "01.snowcrab.r"
   
-  if (!exists("current.year")) current.year=year(Sys.Date())
+  if (!exists("current.year")) current.year=lubridate::year(Sys.Date())
   p = bio.snowcrab::load.environment( year.assessment=current.year)
 
   #loadfunctions('bio.snowcrab')

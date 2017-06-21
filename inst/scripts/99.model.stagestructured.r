@@ -4,7 +4,7 @@
 
   # ++++++++++ must check timing of 4X to make sure that the season is not an issue ++++++++++
   
-  if (!exists("current.year")) current.year=year(Sys.Date())
+  if (!exists("current.year")) current.year=lubridate::year(Sys.Date())
   p = bio.snowcrab::load.environment( year.assessment=current.year)
 
 
