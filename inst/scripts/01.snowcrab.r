@@ -2,7 +2,9 @@
 require(bio.base)
 require(raster)  ## TODO :: remove raster-based routines
 
-p = bio.snowcrab::load.environment( year.assessment=2016 )
+if (!exists("current.year")) current.year=year(Sys.Date())
+
+p = bio.snowcrab::load.environment( year.assessment=current.year )
 #loadfunctions('bio.snowcrab')
 
 # get data tables from Oracle server and store local copies

@@ -1,6 +1,9 @@
 
   # Figures obtained after completion of data assimilation and processing up to the end of "01.snowcrab.r"
-  p = bio.snowcrab::load.environment( year.assessment=2016)
+  
+  if (!exists("current.year")) current.year=year(Sys.Date())
+  p = bio.snowcrab::load.environment( year.assessment=current.year)
+
   #loadfunctions('bio.snowcrab')
 
 #below lines set parallel mapping / figures

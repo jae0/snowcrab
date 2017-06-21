@@ -1,13 +1,17 @@
 #logbook 4X
-require(bio.base)
-require(bio.snowcrab)
-require(bio.utilities)
-require(bio.spacetime)
-require(bio.polygons)
 
+if (0) {
+	# to delete 
+	require(bio.base)
+	require(bio.snowcrab)
+	require(bio.utilities)
+	require(bio.spacetime)
+	require(bio.polygons)
+}
 
-year.assessment=2016
-p = bio.snowcrab::load.environment( year.assessment=2016)
+  
+if (!exists("current.year")) current.year=year(Sys.Date())
+p = bio.snowcrab::load.environment( year.assessment=current.year)
 
 outdir = file.path(project.datadirectory('bio.snowcrab'),'assessments',  p$year.assessment, "presentations", '4X')
 dir.create(outdir,showWarnings=F)

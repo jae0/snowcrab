@@ -1,5 +1,6 @@
-
-p = bio.snowcrab::load.environment( year.assessment=2016)
+  
+  if (!exists("current.year")) current.year=year(Sys.Date())
+  p = bio.snowcrab::load.environment( year.assessment=current.year)
 
 sb = surplusproduction.db( DS="LaplacesDemon", sourcedata="nosa" ) 
 # sb = surplusproduction.db( DS="jags.2015", sourcedata="default" ) 

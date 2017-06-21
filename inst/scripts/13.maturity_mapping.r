@@ -1,10 +1,12 @@
-#maturity mapping
+# maturity mapping -- deprecated
 
-p = bio.snowcrab::load.environment( year.assessment=2016)
+  
+  if (!exists("current.year")) current.year=year(Sys.Date())
+  p = bio.snowcrab::load.environment( year.assessment=current.year)
 
 
   p$regions = c("cfa4x", "cfanorth","cfasouth" )
-  p$yrs=2004:2014
+  p$yrs=2004:current.year
 
   p$habitat.threshold.quantile = 0.05 # quantile at which to consider zero-valued abundance
   p$prediction.dyear = 9/12 # predict for ~ Sept 1

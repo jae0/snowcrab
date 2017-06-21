@@ -2,7 +2,9 @@
 #Welcome to BCFC. Ben’s Clunky Fucking Code! It’s ugly but it works.
   
   require(bio.base)
-  p = bio.snowcrab::load.environment( year.assessment=2016)
+  
+  if (!exists("current.year")) current.year=year(Sys.Date())
+  p = bio.snowcrab::load.environment( year.assessment=current.year)
 
   fp = file.path( p$annual.results, "BZfigures")
 

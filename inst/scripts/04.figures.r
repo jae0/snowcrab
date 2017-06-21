@@ -1,5 +1,7 @@
 
-  p = bio.snowcrab::load.environment( year.assessment=2013)
+  
+  if (!exists("current.year")) current.year=year(Sys.Date())
+  p = bio.snowcrab::load.environment( year.assessment=current.year)
 
 # ------------------------------------------
 # Time-series: all interpolated data estimated from interpolated analysis

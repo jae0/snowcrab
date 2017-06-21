@@ -3,7 +3,9 @@
   # forward projection
 
   # ++++++++++ must check timing of 4X to make sure that the season is not an issue ++++++++++
-p = bio.snowcrab::load.environment( year.assessment=2016)
+  
+  if (!exists("current.year")) current.year=year(Sys.Date())
+  p = bio.snowcrab::load.environment( year.assessment=current.year)
 
 
   p$clusters = "localhost"

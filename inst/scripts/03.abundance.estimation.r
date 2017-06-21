@@ -1,5 +1,6 @@
-current.year = 2016
-p = bio.snowcrab::load.environment( year.assessment=current.year )
+  
+  if (!exists("current.year")) current.year=year(Sys.Date())
+  p = bio.snowcrab::load.environment( year.assessment=current.year)
 
 # --------------------------------------------------------------
 #  Ensure the following scripts complete without error:

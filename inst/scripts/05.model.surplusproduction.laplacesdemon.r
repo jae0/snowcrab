@@ -2,7 +2,9 @@
 
 require(LaplacesDemonCpp)
 
-p = bio.snowcrab::load.environment( year.assessment=2016)
+  
+if (!exists("current.year")) current.year=year(Sys.Date())
+p = bio.snowcrab::load.environment( year.assessment=current.year)
 
 debug.region="cfa4x"
 debug.region="cfasouth"
