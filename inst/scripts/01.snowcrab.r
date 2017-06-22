@@ -3,21 +3,22 @@ require(bio.base)
 # require(raster)  ## TODO :: remove raster-based routines
 
 if (!exists("current.year")) current.year=lubridate::year(Sys.Date())
+# current.year=lubridate::year(Sys.Date()) -1   # or year previous to current
 
 p = bio.snowcrab::load.environment( year.assessment=current.year )
 #loadfunctions('bio.snowcrab')
 
 # get data tables from Oracle server and store local copies
-#BZ 2017- Can now be run on a Linux machine. ODBC connection changed to ROracle
+#BZ 2017- Can now be run on a Linux machine. rawdata connection changed to ROracle
 # !!!!!! --------- these should be run on a windows machine: !!!!!!!!! <--------- READ THIS
 if (obtain.database.snapshot) {
-  snowcrab.db( DS="set.odbc.redo", yrs=1996:p$year.assessment ) # Copy over datadirectory ("bio.snowcrab"), "data", "trawl", "SNCRABSETS"
-  snowcrab.db( DS="det.odbc.redo", yrs=1996:p$year.assessment ) # Copy over datadirectory ("bio.snowcrab"), "data", "trawl", "SNCRABDETAILS"
-  snowcrab.db( DS="cat.odbc.redo", yrs=1996:p$year.assessment ) # Copy over datadirectory ("bio.snowcrab"), "data", "trawl", "SNTRAWLBYCATCH"
-  logbook.db(  DS="odbc.logbook.redo", yrs=1996:p$year.assessment ) #Copy over datadirectory ("bio.snowcrab"), "data", "logbook", "datadump"
-  logbook.db(  DS="odbc.licence.redo" ) #Copy over datadirectory ("bio.snowcrab"), "data", "logbook", "lic.datadump.rdata"
-  logbook.db(  DS="odbc.areas.redo" ) #Copy over datadirectory ("bio.snowcrab"), "data", "observer", "datadump"
-  observer.db( DS="odbc.redo", yrs=1996:p$year.assessment )
+  snowcrab.db( DS="set.rawdata.redo", yrs=1996:p$year.assessment ) # Copy over datadirectory ("bio.snowcrab"), "data", "trawl", "SNCRABSETS"
+  snowcrab.db( DS="det.rawdata.redo", yrs=1996:p$year.assessment ) # Copy over datadirectory ("bio.snowcrab"), "data", "trawl", "SNCRABDETAILS"
+  snowcrab.db( DS="cat.rawdata.redo", yrs=1996:p$year.assessment ) # Copy over datadirectory ("bio.snowcrab"), "data", "trawl", "SNTRAWLBYCATCH"
+  logbook.db(  DS="rawdata.logbook.redo", yrs=1996:p$year.assessment ) #Copy over datadirectory ("bio.snowcrab"), "data", "logbook", "datadump"
+  logbook.db(  DS="rawdata.licence.redo" ) #Copy over datadirectory ("bio.snowcrab"), "data", "logbook", "lic.datadump.rdata"
+  logbook.db(  DS="rawdata.areas.redo" ) #Copy over datadirectory ("bio.snowcrab"), "data", "observer", "datadump"
+  observer.db( DS="rawdata.redo", yrs=1996:p$year.assessment )
 }
 
 # -------------------------------------------------------------------------------------

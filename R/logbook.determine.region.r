@@ -1,10 +1,10 @@
 
   logbook.determine.region = function( logs ) {
       
-      lic = logbook.db( DS="odbc.licence" )
+      lic = logbook.db( DS="rawdata.licence" )
       names(lic) = tolower( names(lic) )
      
-      areas = logbook.db( DS="odbc.areas" )
+      areas = logbook.db( DS="rawdata.areas" )
       names(areas) = tolower( names(areas) )
       areas = areas[ , c("area_id", "area", "area_type_id", "desc_eng" ) ]  # reduce size
       areas$desc_eng = as.character(areas$desc_eng ) 

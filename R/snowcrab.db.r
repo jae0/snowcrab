@@ -3,9 +3,9 @@ snowcrab.db = function( DS, p=NULL, yrs=NULL) {
 	# long!
 	# handles all basic data tables, etc. ... 
   # DS
-  # "set.odbc" 
-  # "det.odbc" 
-  # "cat.odbc" 
+  # "set.rawdata" 
+  # "det.rawdata" 
+  # "cat.rawdata" 
   # "setInitial" 
   # "det.initial" 
   # "cat.initial" 
@@ -25,12 +25,12 @@ snowcrab.db = function( DS, p=NULL, yrs=NULL) {
   mature = 1
   mat.unknown = 2
 
-	if (DS %in% c("set.odbc.redo", "set.odbc") ) {
+	if (DS %in% c("set.rawdata.redo", "set.rawdata") ) {
 
     fn.root =  file.path( project.datadirectory("bio.snowcrab"), "data", "trawl", "SNCRABSETS" )
 		dir.create( fn.root, recursive = TRUE, showWarnings = FALSE )
 
-    if (DS=="set.odbc") {
+    if (DS=="set.rawdata") {
 			out = NULL
 			fl = list.files( path=fn.root, pattern="*.rdata", full.names=T )
       for ( fny in fl ) {
@@ -40,24 +40,20 @@ snowcrab.db = function( DS, p=NULL, yrs=NULL) {
 			return (out)
 		}
 
-		#require(RODBC)
-		#con = odbcConnect(oracle.snowcrab.server , uid=oracle.snowcrab.user, pwd=oracle.snowcrab.password, believeNRows=F)
-		require (ROracle)
-		con=dbConnect(DBI::dbDriver("Oracle"),dbname=oracle.snowcrab.server , username=oracle.snowcrab.user, password=oracle.snowcrab.password, believeNRows=F)
+		con=ROracle::dbConnect(DBI::dbDriver("Oracle"),dbname=oracle.snowcrab.server , username=oracle.snowcrab.user, password=oracle.snowcrab.password, believeNRows=F)
 					# believeNRows=F required for oracle db's
 
 		for ( YR in yrs ) {
 			fny = file.path( fn.root, paste( YR,"rdata", sep="."))
 			SNCRABSETS = NULL
-			#in following line replaced sqlQuery (RODBC) with  dbGetQuery (ROracle)
-			SNCRABSETS = dbGetQuery(con,
+			SNCRABSETS = ROracle::dbGetQuery(con,
 								paste("select * from SNCRABSETS where EXTRACT(YEAR from BOARD_DATE) = ", YR) )
 			save( SNCRABSETS, file=fny, compress=T)
 			gc()  # garbage collection
 			print(YR)
 		}
-		#odbcClose(con)
-		dbDisconnect(con)
+
+		ROracle::dbDisconnect(con)
 		return (yrs)
 	}
 
@@ -65,11 +61,11 @@ snowcrab.db = function( DS, p=NULL, yrs=NULL) {
   # -------------------------------
 
 
-	if (DS %in% c("det.odbc.redo", "det.odbc") ) {
+	if (DS %in% c("det.rawdata.redo", "det.rawdata") ) {
     fn.root =  file.path( project.datadirectory("bio.snowcrab"), "data", "trawl", "SNCRABDETAILS" )
 		dir.create( fn.root, recursive = TRUE, showWarnings = FALSE  )
 
-    if (DS=="det.odbc") {
+    if (DS=="det.rawdata") {
 			out = NULL
       fl = list.files( path=fn.root, pattern="*.rdata", full.names=T )
 			for ( fny in fl ) {
@@ -79,37 +75,32 @@ snowcrab.db = function( DS, p=NULL, yrs=NULL) {
 			return (out)
 		}
 
-		#require(RODBC)
-		#con = odbcConnect(oracle.snowcrab.server , uid=oracle.snowcrab.user, pwd=oracle.snowcrab.password, believeNRows=F)
-		require (ROracle)
-		con=dbConnect(DBI::dbDriver("Oracle"),dbname=oracle.snowcrab.server , username=oracle.snowcrab.user, password=oracle.snowcrab.password, believeNRows=F)
-		
-		# believeNRows=F required for oracle db's
+		con=ROracle::dbConnect(DBI::dbDriver("Oracle"),dbname=oracle.snowcrab.server , username=oracle.snowcrab.user, password=oracle.snowcrab.password, believeNRows=F)
 
 		for ( YR in yrs ) {
 			fny = file.path( fn.root, paste( YR,"rdata", sep="."))
 			SNCRABDETAILS = NULL
-			#in following line replaced sqlQuery (RODBC) with  dbGetQuery (ROracle)
-			SNCRABDETAILS = dbGetQuery(con,
+			#in following line replaced sqlQuery (Rrawdata) with  ROracle::dbGetQuery (ROracle)
+			SNCRABDETAILS = ROracle::dbGetQuery(con,
                 paste("select * from SNCRABDETAILS where EXTRACT(YEAR from BOARD_DATE) = ", YR) )
 			save( SNCRABDETAILS, file=fny, compress=T)
 			gc()  # garbage collection
 			print(YR)
 		}
-		#odbcClose(con)
-		dbDisconnect(con)
+
+		ROracle::dbDisconnect(con)
     return (yrs)
 
 	}
 
   # -------------------------------
 
-	if (DS %in% c("cat.odbc.redo", "cat.odbc") ) {
+	if (DS %in% c("cat.rawdata.redo", "cat.rawdata") ) {
 
     fn.root =  file.path( project.datadirectory("bio.snowcrab"), "data", "trawl", "SNTRAWLBYCATCH" )
 		dir.create( fn.root, recursive = TRUE, showWarnings = FALSE  )
 
-    if (DS=="cat.odbc") {
+    if (DS=="cat.rawdata") {
 			out = NULL
       fl = list.files( path=fn.root, pattern="*.rdata", full.names=T )
 			for ( fny in fl ) {
@@ -119,25 +110,20 @@ snowcrab.db = function( DS, p=NULL, yrs=NULL) {
 			return (out)
 		}
 
-		#require(RODBC)
-		#con = odbcConnect(oracle.snowcrab.server , uid=oracle.snowcrab.user, pwd=oracle.snowcrab.password, believeNRows=F)
-		require (ROracle)
-		con=dbConnect(DBI::dbDriver("Oracle"),dbname=oracle.snowcrab.server , username=oracle.snowcrab.user, password=oracle.snowcrab.password, believeNRows=F)
+		con=ROracle::dbConnect(DBI::dbDriver("Oracle"),dbname=oracle.snowcrab.server , username=oracle.snowcrab.user, password=oracle.snowcrab.password, believeNRows=F)
 		
-		# believeNRows=F required for oracle db's
-
 		for ( YR in yrs ) {
 			fny = file.path( fn.root, paste( YR,"rdata", sep="."))
 			SNTRAWLBYCATCH = NULL
-			#in following line replaced sqlQuery (RODBC) with  dbGetQuery (ROracle)
-			SNTRAWLBYCATCH = dbGetQuery(con,
+			#in following line replaced sqlQuery (Rrawdata) with  ROracle::dbGetQuery (ROracle)
+			SNTRAWLBYCATCH = ROracle::dbGetQuery(con,
                 paste("select * from SNTRAWLBYCATCH where EXTRACT(YEAR from BOARD_DATE) = ", YR) )
 			save( SNTRAWLBYCATCH, file=fny, compress=T)
 			gc()  # garbage collection
 			print(YR)
 		}
-		#odbcClose(con)
-		dbDisconnect(con)
+
+		ROracle::dbDisconnect(con)
     return (yrs)
 	}
 
@@ -161,7 +147,7 @@ snowcrab.db = function( DS, p=NULL, yrs=NULL) {
 
     # data dump from the observer system
     # August 2015 added in setcd_id from observer system to address the MPA survey sets (type=11) and regular fix station sets (type=4) .. renamed to set_type
-    set = snowcrab.db( DS="set.odbc")
+    set = snowcrab.db( DS="set.rawdata")
     names( set ) = rename.bio.snowcrab.variables(names( set))
     setvars = c("trip", "set", "set_type", "station", "stime", "observer", "cfa", "lon", "lat", "lon1", "lat1", "towquality", "Zx", "Tx", "gear", "sa", "dist", "dist0" )
     print('need to addin the mpa station index')
@@ -326,7 +312,7 @@ snowcrab.db = function( DS, p=NULL, yrs=NULL) {
     }
 
     X = snowcrab.db( DS="set.clean" )
-    det = snowcrab.db( DS="det.odbc"  )
+    det = snowcrab.db( DS="det.rawdata"  )
 
 
     names( det ) = rename.bio.snowcrab.variables(names(det) )
@@ -493,7 +479,7 @@ snowcrab.db = function( DS, p=NULL, yrs=NULL) {
 
     det = snowcrab.db( DS="det.initial" )
 
-    cat = snowcrab.db( DS="cat.odbc" )
+    cat = snowcrab.db( DS="cat.rawdata" )
     names( cat ) = rename.bio.snowcrab.variables(names( cat ) )
 
     # two different time periods (pre and post Moncton)

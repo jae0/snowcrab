@@ -11,7 +11,7 @@
     mat.unknown = 2
 
 
-    if (DS %in% c("odbc.redo", "odbc") ) {
+    if (DS %in% c("rawdata.redo", "rawdata") ) {
 
 			if (  Sys.info()["sysname"] == "Windows" ) {
 				.Library.site <- "D://R//library-local"
@@ -21,7 +21,7 @@
 			fn.root =  file.path( project.datadirectory("bio.snowcrab"), "data", "observer", "datadump" )
 			dir.create( fn.root, recursive = TRUE, showWarnings = FALSE )
 
-			if (DS=="odbc") {
+			if (DS=="rawdata") {
 				out = NULL
 				for ( YR in yrs ) {
 					fny = file.path( fn.root, paste( YR, "rdata", sep="."))
@@ -37,12 +37,7 @@
       # tbls = sqlTables(connect)
       # gs.tables = tbls[ which(tbls[,2] == "GROUNDFISH"),]
       # print(gs.tables)
-
-      print ("Should be opkay to run on Linux, assuming that ROracle is happy")
-      #require(RODBC)
-      #con=odbcConnect(oracle.snowcrab.server , uid=oracle.snowcrab.user, pwd=oracle.snowcrab.password, believeNRows=F)
-      require (ROracle)
-      con=dbConnect(DBI::dbDriver("Oracle"),dbname=oracle.snowcrab.server , username=oracle.snowcrab.user, password=oracle.snowcrab.password, believeNRows=F)
+      con = ROracle::dbConnect(DBI::dbDriver("Oracle"),dbname=oracle.snowcrab.server , username=oracle.snowcrab.user, password=oracle.snowcrab.password, believeNRows=F)
       
 			for ( YR in yrs ) {
 				fny = file.path( fn.root, paste( YR,"rdata", sep="."))
@@ -56,14 +51,12 @@
          "AND d.FISH_NO Is Not Null" ,
 				 "AND EXTRACT(YEAR from d.BOARD_DATE) = ", YR )
 				odb = NULL
-				#in following line replaced sqlQuery (RODBC) with  dbGetQuery (ROracle)
-				odb = dbGetQuery(con, odbq )
+				odb = ROracle::dbGetQuery(con, odbq )
 				save( odb, file=fny, compress=T)
 				gc()  # garbage collection
 				print(YR)
 			}
-      #odbcClose(con)
-      dbDisconnect(con)
+      ROracle::dbDisconnect(con)
       return (yrs)
 
     }
@@ -81,7 +74,7 @@
       mod2 = allometry.snowcrab ( "chela.mass", "male")
       mod3 = allometry.snowcrab ( "cw.chela.mat", "male")
 
-      odb = observer.db( DS="odbc", yrs=1996:p$year.assessment )
+      odb = observer.db( DS="rawdata", yrs=1996:p$year.assessment )
       names(odb) = rename.bio.snowcrab.variables( names(odb) )
 
       i.m = which( odb$sex==1)

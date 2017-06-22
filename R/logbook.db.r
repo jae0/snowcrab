@@ -2,11 +2,11 @@
 
   logbook.db = function( DS, prorate=T, p=NULL, yrs=NULL ) {
 
-		if (DS %in% c("odbc.logbook", "odbc.logbook.redo")) {
+		if (DS %in% c("rawdata.logbook", "rawdata.logbook.redo")) {
 			fn.root =  file.path( project.datadirectory("bio.snowcrab"), "data", "logbook", "datadump" )
 			dir.create( fn.root, recursive = TRUE, showWarnings = FALSE )
 
-			if (DS=="odbc.logbook") {
+			if (DS=="rawdata.logbook") {
 				out = NULL
 				for ( YR in yrs ) {
 					fny = file.path( fn.root, paste( YR, "rdata", sep="."))
@@ -18,10 +18,7 @@
 				return (out)
 			}
 
-			#require(RODBC)
-      #con=odbcConnect(oracle.snowcrab.server , uid=oracle.snowcrab.user, pwd=oracle.snowcrab.password, believeNRows=F)
-      require (ROracle)
-      con=dbConnect(DBI::dbDriver("Oracle"),dbname=oracle.snowcrab.server , username=oracle.snowcrab.user, password=oracle.snowcrab.password, believeNRows=F)
+			con=ROracle::dbConnect(DBI::dbDriver("Oracle"),dbname=oracle.snowcrab.server , username=oracle.snowcrab.user, password=oracle.snowcrab.password, believeNRows=F)
       
 			for ( YR in yrs ) {
 				fny = file.path( fn.root, paste( YR,"rdata", sep="."))
@@ -30,58 +27,47 @@
 					"where target_spc=705",
 					"AND EXTRACT(YEAR from DATE_LANDED) = ", YR )
 				logbook = NULL
-				#in following line replaced sqlQuery (RODBC) with  dbGetQuery (ROracle)
-				logbook = dbGetQuery(con, query )
+				#in following line replaced sqlQuery (Rrawdata) with  dbGetQuery (ROracle)
+				logbook ROracle::= dbGetQuery(con, query )
 				save( logbook, file=fny, compress=T)
 				gc()  # garbage collection
 				print(YR)
 			}
-      #odbcClose(con)
-      dbDisconnect(con)
+      ROracle::dbDisconnect(con)
       return (yrs)
 
 		}
 
 
-    if (DS %in% c("odbc.licence.redo", "odbc.licence" ) ) {
+    if (DS %in% c("rawdata.licence.redo", "rawdata.licence" ) ) {
 
       filename.licence = file.path( project.datadirectory("bio.snowcrab"), "data", "logbook", "lic.datadump.rdata" )
 
-      if (DS=="odbc.licence") {
+      if (DS=="rawdata.licence") {
         load(filename.licence)
         return (lic)
       }
 
-      #require(RODBC)
-      #con=odbcConnect(oracle.snowcrab.server , uid=oracle.snowcrab.user, pwd=oracle.snowcrab.password, believeNRows=F)
-      require (ROracle)
-      con=dbConnect(DBI::dbDriver("Oracle"),dbname=oracle.snowcrab.server , username=oracle.snowcrab.user, password=oracle.snowcrab.password, believeNRows=F)
-      #in following line replaced sqlQuery (RODBC) with  dbGetQuery (ROracle)
-      lic = dbGetQuery(con, "select * from marfissci.licence_areas")
+      con=ROracle::dbConnect(DBI::dbDriver("Oracle"),dbname=oracle.snowcrab.server , username=oracle.snowcrab.user, password=oracle.snowcrab.password, believeNRows=F)
+      lic = ROracle::dbGetQuery(con, "select * from marfissci.licence_areas")
       save(lic, file=filename.licence, compress=T)
-      #odbcClose(con)
-      dbDisconnect(con)
+      ROracle::dbDisconnect(con)
 		}
 
 
-    if (DS %in% c("odbc.areas.redo", "odbc.areas" ) ) {
+    if (DS %in% c("rawdata.areas.redo", "rawdata.areas" ) ) {
 
       filename.areas = file.path( project.datadirectory("bio.snowcrab"), "data", "logbook", "areas.datadump.rdata" )
 
-      if (DS=="odbc.areas") {
+      if (DS=="rawdata.areas") {
         load(filename.areas)
         return (areas)
       }
 
-      #require(RODBC)
-      #con=odbcConnect(oracle.snowcrab.server , uid=oracle.snowcrab.user, pwd=oracle.snowcrab.password, believeNRows=F)
-      require (ROracle)
-      con=dbConnect(DBI::dbDriver("Oracle"),dbname=oracle.snowcrab.server , username=oracle.snowcrab.user, password=oracle.snowcrab.password, believeNRows=F)
-      #in following line replaced sqlQuery (RODBC) with  dbGetQuery (ROracle)
-      areas = dbGetQuery(con, "select * from marfissci.areas")
+      con=ROracle::dbConnect(DBI::dbDriver("Oracle"),dbname=oracle.snowcrab.server , username=oracle.snowcrab.user, password=oracle.snowcrab.password, believeNRows=F)
+      areas = ROracle::dbGetQuery(con, "select * from marfissci.areas")
       save(areas, file=filename.areas, compress=T)
-      #odbcClose(con)
-      dbDisconnect(con)
+      ROracle::dbDisconnect(con)
       return ("Complete")
 
     }
@@ -176,7 +162,7 @@
       lb.historical$date.landed = as.POSIXct( lb.historical$date.landed  )
 
       # logbooks from marfissci tables
-      x = logbook.db( DS="odbc.logbook", yrs=1996:p$year.assessment )
+      x = logbook.db( DS="rawdata.logbook", yrs=1996:p$year.assessment )
 
       names( x ) = tolower( names( x ) )
       names( x ) = rename.bio.snowcrab.variables(names( x ))
