@@ -381,7 +381,7 @@ savePlot(file.path(outdir,paste('active.vessels.by.month','png',sep=".")),type='
 # Import Observer Data for histograms
 #------------------------------------------------------------
 
-l = observer.db('odbc',yrs=2014:2015)
+l = observer.db('rawdata',yrs=2014:2015)
 
 #need to remove potential non-4x sets, interim, fix by using longitude.
 	l=l[l$LONGITUDE>63,]
