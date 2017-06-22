@@ -81,7 +81,7 @@ if(map.logs.cpue) {
 
 
 
-   logs = logbook.db('odbc.logbook',yrs=2003:2016)
+   logs = logbook.db('rawdata.logbook',yrs=2003:2016)
 		names(logs) = tolower(names(logs))
     	logs = logs[which(logs$cfa=='24W'),]
  		logs$lat =   round( as.numeric(substring(logs$latitude, 1,2)) + as.numeric(substring(logs$latitude, 3,6))/6000 ,6)

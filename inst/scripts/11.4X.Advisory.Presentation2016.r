@@ -122,7 +122,7 @@ dir.create(outdir,showWarnings=F)
 # Clean for Catch Rate Data
 
 
-   logs = logbook.db('odbc.logbook',yrs=2003:2016)
+   logs = logbook.db('rawdata.logbook',yrs=2003:2016)
 		names(logs) = tolower(names(logs))
     	logs = logs[which(logs$cfa=='24W'),]
  		logs$lat =   round( as.numeric(substring(logs$latitude, 1,2)) + as.numeric(substring(logs$latitude, 3,6))/6000 ,6)
@@ -221,7 +221,7 @@ x11()
 # Import Observer Data for histograms
 #------------------------------------------------------------
 
-l = observer.db('odbc',yrs=2014:2016)
+l = observer.db('rawdata',yrs=2014:2016)
 
 #need to remove potential non-4x sets, interim, fix by using longitude.
 l=l[l$LONGITUDE>63,]
