@@ -28,7 +28,7 @@
 					"AND EXTRACT(YEAR from DATE_LANDED) = ", YR )
 				logbook = NULL
 				#in following line replaced sqlQuery (Rrawdata) with  dbGetQuery (ROracle)
-				logbook ROracle::= dbGetQuery(con, query )
+				logbook = ROracle::dbGetQuery(con, query )
 				save( logbook, file=fny, compress=T)
 				gc()  # garbage collection
 				print(YR)
