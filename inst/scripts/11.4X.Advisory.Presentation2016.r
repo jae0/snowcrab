@@ -85,12 +85,13 @@ dir.create(outdir,showWarnings=T)
 
 #Plot annual landings
 
-	landings = with(logs,tapply(landings,yr,sum,na.rm=T))/1000
+	landings = aggregate(landings~yr,data=logs,FUN=sum)
+	landings$landings=landings$landings/1000
 	x11()
-	plot(landings, type="n", ylim=c(0,500), ylab="Landings (mt)", main="4X Landings by Year", xaxt="n", xlab="Year" )
-	axis(1, at=1:length(landings), labels=names(landings))
-	points(landings, col="red", pch=20)
-	lines(landings, col="red")
+	plot(landings$landings, type="n", ylim=c(0,500), ylab="Landings (mt)", main="4X Landings by Year", xaxt="n", xlab="Year" )
+	axis(1, at=1:length(landings$landings), labels=landings$yr)
+	points(landings$landings, col="red", pch=20)
+	lines(landings$landings, col="red")
 	savePlot(file.path(outdir,'annual.landings.png'),type='png')
 
 	#determine monthly landings by year
@@ -193,14 +194,15 @@ dir.create(outdir,showWarnings=T)
 # Import Observer Data for histograms
 #------------------------------------------------------------
 #Need to do new data pull if first time being run since assessment (~15 minutes)
-observer.db( DS="rawdata.redo", yrs=1996:p$year.assessment )
+observer.db( DS="rawdata.redo", yrs=2003:p$year.assessment )
 
 yu = p$year.assessment
 yrs=(yu-4):yu
 
 l = observer.db('rawdata',yrs=yrs)
+l$tripset=paste(l$TRIP, l$SET_NO, sep=":")
 #need to remove potential non-4x sets, interim, fix by using longitude.
-l=l[l$LONGITUDE>63,]
+#l=l[l$LONGITUDE>63,]
 # Remove CW's outside norms and remove production (pre-sorted) samples
 
 a = l[l$FISH_LENGTH>50 & l$FISH_LENGTH<170,]
@@ -258,13 +260,12 @@ savePlot(file.path(outdir,paste('cc.histogram',y,'png',sep=".")),type='png')
 }
 #Compile some observer stats for presentation
   
-  # --------------------------------------
-  # divide into north, south, cfa 23, cfa 24, and 4X as required
-  
+
   out=NULL
   
   for (y in yrs){
-      j=a[a$yr=="y"]
+      j=a[a$yr==y,]
+      j=j[!duplicated(j$tripset),]
       # determine total mt observed by area
       observedmt= (sum(j$EST_KEPT_WT, na.rm=T)/1000)
       #observedmt
@@ -273,6 +274,13 @@ savePlot(file.path(outdir,paste('cc.histogram',y,'png',sep=".")),type='png')
       sampledtraps= length(j$SET_NO)
       #sampledtraps
       
+      
+      # --------------------------------------
+      # determine # of traps observed (bycatch, landings, etc)
+      
+      observedtraps= sum(j$NUM_HOOK_HAUL, na.rm=T)
+      observedtraps
+      
       # --------------------------------------
       # determine # of traps observed (bycatch, landings, etc)
       
@@ -280,71 +288,36 @@ savePlot(file.path(outdir,paste('cc.histogram',y,'png',sep=".")),type='png')
       observedtraps
       
       #print(paste(y,c,"Observed mt=", observedmt, "Traps Sampled=", sampledtraps, "Observed Traps=", observedtraps, sep=" "))
-      out=rbind(out,c(y,cc, observedmt, sampledtraps, observedtraps))
+      out=rbind(out,c(y, observedmt, sampledtraps, observedtraps))
     }
-  } 
+  
   out=as.data.frame(out)
   b=out
   out=b
   
-  names(out)=c("Year", "Area", "Observed", "Traps Sampled", "Traps Observed")
-  out$Area=as.character(out$Area)
-  out$Area[which(out$Area=="North")]="N-ENS"
-  out$Area[which(out$Area=="South")]="S-ENS"
-  out=out[order(out$Area),]
-  
-  out=out[out$Area!="S-ENS",]
+  names(out)=c("Year", "Observed", "Traps Sampled", "Traps Observed")
   
   ys=yrs
   
   out$Landings=NA
   cfa=unique(out$Area)
   for (y in ys){
-    for (c in cfa){
-      
-      out$Landings[out$Area==c & out$Year==y]=round(year.land$mt[year.land$year==y & year.land$cfa==c],0)
-    }
-  } 
+      out$Landings[out$Year==y]=round(landings$landings[landings$yr==y],0)
+  }
+
   
   
   
   out$Observed=round(as.numeric(as.character(out$Observed)))
   out$Percent=round(out$Observed/out$Landings*100,1)
-  names(out)=c("Year", "Area", "Observed (mt)", "Traps Sampled", "Traps Observed", "Landings (mt)", "Percent")
-  out$Area=factor(out$Area, levels= c("N-ENS", "CFA 23", "CFA 24", "4X" ))
-  out=out[order(out$Area),]
+  names(out)=c("Year", "Observed (mt)", "Traps Sampled", "Traps Observed", "Landings (mt)", "% Observed")
   
-  out$Landings=NA
-  cfa=unique(out$Area)
-  for (y in ys){
-    for (c in cfa){
-      
-      out$Landings[out$Area==c & out$Year==y]=round(year.land$mt[year.land$year==y & year.land$cfa==c],0)
-    }
-  } 
-  
-  
-  
-  out$Observed=round(as.numeric(as.character(out$Observed)))
-  out$Percent=round(out$Observed/out$Landings*100,1)
-  names(out)=c("Year", "Area", "Observed (mt)", "Traps Sampled", "Traps Observed", "Landings (mt)", "Percent")
-  out$Area=factor(out$Area, levels= c("N-ENS", "CFA 23", "CFA 24", "4X" ))
-  out=out[order(out$Area),]
-  #out=out[out$Area != "4X",]
-  
-  
-  output=out[out$Year==iy,]
-  output$Percent=paste(output$Percent ,"(", out$Percent[out$Year==iy-1], ")", sep="")
-  colnames(output)[colnames(output)=="Percent"] = "Percent Observed"
-  
-  #Save a pdf version of this table
-  require(gridExtra)
-  source("~/ben/bio/bio.snowcrab/R/tab.4.tex.r")#not working???
-  pdf(file = "observersummary.pdf", width=8, height=2)
-  put=output[,c(-1)]
-  tab.4.tex(put)
-  dev.off()
-  
+ output=out[,c(-2, -5)]
+ 
+  x11()
+  gridExtra::grid.table(out, theme=ttheme_default(), rows=NULL)
+  savePlot(file.path(outdir,paste('observersummary.png',sep=".")),type='png')
+#BZ TODO- Add number of observed trips?
   
 #---------------------------------------------------------------------------------------------
 # Mapping
