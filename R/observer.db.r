@@ -1,3 +1,4 @@
+
   observer.db = function( DS, p=NULL, yrs=NULL ) {
 
     # sex codes
@@ -39,23 +40,23 @@
       # print(gs.tables)
       con = ROracle::dbConnect(DBI::dbDriver("Oracle"),dbname=oracle.snowcrab.server , username=oracle.snowcrab.user, password=oracle.snowcrab.password, believeNRows=F)
       
-			for ( YR in yrs ) {
-				fny = file.path( fn.root, paste( YR,"rdata", sep="."))
-				odbq = paste(
-        "SELECT s.LATITUDE, s.LONGITUDE, s.LANDING_DATE, s.SET_NO, s.PRODCD_ID, s.EST_CATCH," ,
-               "s.NUM_HOOK_HAUL, d.BOARD_DATE, d.FISH_NO, d.SEXCD_ID, d.FISH_LENGTH, " ,
-               "d.FEMALE_ABDOMEN, d.CHELA_HEIGHT, d.SHELLCOND_CD, d.DUROMETRE, d.TRIP_ID, d.TRIP  " ,
-         "FROM SNOWCRAB.SNCRABDETAILS_OBS d, SNOWCRAB.SNCRABSETS_OBS s " ,
-         "WHERE d.TRIP_ID = s.TRIP_ID  " ,
-         "AND d.SET_NO = s.SET_NO  " ,
-         "AND d.FISH_NO Is Not Null" ,
-				 "AND EXTRACT(YEAR from d.BOARD_DATE) = ", YR )
-				odb = NULL
-				odb = ROracle::dbGetQuery(con, odbq )
-				save( odb, file=fny, compress=T)
-				gc()  # garbage collection
-				print(YR)
-			}
+      for ( YR in yrs ) {
+        fny = file.path( fn.root, paste( YR,"rdata", sep="."))
+        odbq = paste(
+          "SELECT s.LATITUDE, s.LONGITUDE, s.LANDING_DATE, s.SET_NO, s.PRODCD_ID, s.EST_CATCH, s.EST_KEPT_WT," ,
+          "s.NUM_HOOK_HAUL, d.BOARD_DATE, d.FISH_NO, d.SEXCD_ID, d.FISH_LENGTH, " ,
+          "d.FEMALE_ABDOMEN, d.CHELA_HEIGHT, d.SHELLCOND_CD, d.DUROMETRE, d.TRIP_ID, d.TRIP  " ,
+          "FROM SNOWCRAB.SNCRABDETAILS_OBS d, SNOWCRAB.SNCRABSETS_OBS s " ,
+          "WHERE d.TRIP_ID = s.TRIP_ID  " ,
+          "AND d.SET_NO = s.SET_NO  " ,
+          "AND d.FISH_NO Is Not Null" ,
+          "AND EXTRACT(YEAR from d.BOARD_DATE) = ", YR )
+        odb = NULL
+        odb = ROracle::dbGetQuery(con, odbq )
+        save( odb, file=fny, compress=T)
+        gc()  # garbage collection
+        print(YR)
+      }
       ROracle::dbDisconnect(con)
       return (yrs)
 
