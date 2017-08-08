@@ -12,7 +12,7 @@ model {
 
 
   for (j in 1:U) {
-    r[j] ~ dnorm( r.mu[j], pow( r.sd[j], -1 ) ) 
+    r[j] ~ dnorm( r.mu[j], pow( r.sd[j], -2 ) ) 
   }
 
 
@@ -25,7 +25,7 @@ model {
 
 
   for (j in 1:U) {
-    K[j] ~ dlnorm( K.mu[j], pow( K.sd[j], -1 )) # T(K.min[j], K.max[j] )
+    K[j] ~ dlnorm( K.mu[j], pow( K.sd[j], -2 )) # T(K.min[j], K.max[j] )
   }
 
 
