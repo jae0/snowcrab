@@ -2,6 +2,9 @@
   biomass.summary.survey.nosa.db = function( DS="complete", p=NULL ) {
     #browser()
 
+    stop("Deprecated")
+    
+
     if (DS %in% c("complete", "complete.redo") ) {
       fn = file.path( project.datadirectory("bio.snowcrab"), "R", "bugssurvey.rdata" )
       if ( DS == "complete") {

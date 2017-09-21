@@ -128,11 +128,4 @@ if (obtain.database.snapshot) {
   snowcrab.timeseries.db( DS="biologicals.direct", regions='cfa4x', vn=c('R0.mass'), trim=0 )  # returns the data
 
 
-# -------------------------------------------------------------------------------------
-# update data summaries for use with biomass estimation using simple indices:
-# this can be used should the habitat based approach fail or to get a sense of the patterns
-# while you wait for it to complete .. ;)
-  biomass.summary.survey.nosa.db("complete.redo", p=p) #Uses the geometric mean biomass from the survey
-
-
   
