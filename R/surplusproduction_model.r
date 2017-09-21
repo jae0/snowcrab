@@ -1,19 +1,26 @@
 
-surplusproduction_model = function(  p, data, DS="stan" ) {
+surplusproduction_model = function(  p, DS="stan", plotresults=TRUE ) {
 
+  if (0) {
+    
+    current.year=2016
+    p = bio.snowcrab::load.environment( year.assessment=current.year)
+    p$surplusproduction_model = list(
+      outdir = file.path(project.datadirectory('bio.snowcrab'), "assessments", p$year.assessment )
+    )
+
+  }
+
+  message( "Output to: ", p$surplusproduction_model$outdir )
+
+  outdir = p$surplusproduction_model$outdir
+  dir.create( outdir, recursive=T, showWarnings=F )
+ 
 
   if (DS=="stan" ) {
 
-    if (0)  {
-      library(rstan)
-      current.year=2016
-      p = bio.snowcrab::load.environment( year.assessment=current.year)
-    }
-
-    dir.create( p$surplusproduction_model$dir.output, recursive=T, showWarnings=F )
-    fnres = file.path( project.datadirectory("bio.snowcrab"), "R", paste( "surplus.prod.mcmc", p$year.assessment,"rdata", sep=".") )
-    #fnres = file.path( project.datadirectory("bio.snowcrab"), "R", paste( "surplus.prod.mcmc", p$year.assessment,"survey_final.rdata", sep=".") )
-
+    library(rstan)
+    
     sb = biomass.summary.db(p=p, DS="surplusproduction" )
 
     # ----------------------------------
@@ -273,6 +280,9 @@ surplusproduction_model = function(  p, data, DS="stan" ) {
           # chains = 5,             # number of Markov chains
           # cores = 5              # number of cores (using 2 just for the vignette)
 
+    res = list( stan=f, sb=sb, p=p)
+    save(res, file=p$surplusproduction_model$fnres, compress=T)
+    return(res)
 
     plot(f)
     print(f)
@@ -289,169 +299,300 @@ surplusproduction_model = function(  p, data, DS="stan" ) {
   
     prob=apply(pred,2,function(x) I(length(x[x>0.10])/length(x) > 0.8)*1)
 
+ 
   }
 
 
+
+  # --------------------------
+  
+
+
   if (DS=="jags") {
+    warning( "Jags method is deprecated")
 
     require(rjags)
     rjags::load.module("dic")
     rjags::load.module("glm")
 
 
-
-    dir.create( p$surplusproduction_model$dir.output, recursive=T, showWarnings=F )
-    fnres = file.path( project.datadirectory("bio.snowcrab"), "R", paste( "surplus.prod.mcmc", p$year.assessment,"rdata", sep=".") )
-    #fnres = file.path( project.datadirectory("bio.snowcrab"), "R", paste( "surplus.prod.mcmc", p$year.assessment,"survey_final.rdata", sep=".") )
+    p$surplusproduction_model = list(
+      # MCMC/Gibbs parameters
+      n.adapt = 4000,   # burn-in  .. 4000 is enough for the full model but in case ...
+      n.iter = 30000,
+      n.chains = 3 ,
+      n.thin = 100  # use of uniform distributions causes high autocorrelations ?
+    )
+    n.iter.total = p$surplusproduction_model$n.iter * p$surplusproduction_model$n.thin
 
     sb = biomass.summary.db(p=p, DS="surplusproduction" )
 
     sb$tomonitor = c( "r", "K", "q", "qs", "r.mu", "r.sd", "b","bp.sd", "bo.sd","b0", "b0.sd", "rem", "rem.sd", "rem.mu","REM", "MSY", "BMSY", "FMSY", "Fcrash", "Bdrop", "BX2MSY", "F", "TAC",  "C", "P", "B" )
 
     sb$jagsmodelname = "biomassdynamic_nonhyper_2016.bugs"
+    sb$jagsmodel = 
+    "
+model {
+
+  # -------------------  
+  # define some marginally informative variance priors using CV's (coefficients of variation) as a simple approach
+  # uniform distribution seems most stable .. too uninformative?
+  # NOTE: eps = a small number non-zero number (essentially equivalent to zero but used to prevent infinity values)
+  # uninformative CV's associated with process (bp.) and observation (bo.) errors 
+ 
+  # NOTE for lognormals: CV = sqrt(exp( SD ^2) - 1)  and CV ~ SD where SD ~ < 0.5
+  # of SD = sqrt(log(1+CV^2)) and therefore, in terms of precision:
+  # TAU = 1/SD^2 = 1/log(1+CV^2)
 
 
-    m = jags.model( file=fishery.model.jags ( DS=sb$jagsmodelname ), data=sb, n.chains=n.chains, n.adapt=n.adapt ) # recruitment + spring/summer q's + all observed CVs
-    tomonitor = intersect( variable.names (m), sb$tomonitor )
-    y = jags.samples(m, variable.names=tomonitor, n.iter=n.iter.final, thin=n.thin) # sample from posterior
-    dic.samples(m, n.iter=n.iter ) # pDIC
-
-    graphics.off() ; x11(); layout( matrix(c(1,2,3), 3, 1 )); par(mar = c(5, 4, 0, 2))
-    for( i in 1:3) hist(y$cv.r[i,,], "fd")
-
-    # convergence testing -- by 1000 to 1500 convergence observed by Gelman shrink factor diagnostic
-    y = jags.samples(m, variable.names=tomonitor, n.iter=6000, thin=1 )
-
-    gelman.plot(y[["r"]])
-    gelman.plot(y[["K"]])
-    gelman.plot(y[["q"]])  # about 6-8000 runs required to converge
-    gelman.plot(y[["r.sd"]])
-    gelman.plot(y[["K.sd"]])
-    gelman.plot(y[["bo.sd"]])
-    gelman.plot(y[["bp.p"]])
-    geweke.plot(y[["r"]])
-
-    # update if not yet converged
-    #  update(m, n.iter=n.iter ) # above seems enough for convergence but a few more to be sure
-
-    # determine autocorrelation thinning
-    y = coda.samples(m, variable.names=c("K", "r", "q"), n.iter=20000, thin=10) # sample from posterior
-    autocorr.plot(y)   # about 10 to 20 required
-    # plot(y, ask=T)
-    # autocorr(y, lags = c(0, 1, 5, 10, 50), relative=TRUE)
-
-    # final sampling from the posteriors
-    #  y = jags.samples(m, variable.names=tomonitor, n.iter=10000, thin=20) # sample from posterior
-    y = jags.samples(m, variable.names=tomonitor, n.iter=n.iter.final, thin=n.thin) # sample from posterior
-    save(y, file=fnres, compress=T)
-    # load( fnres )
+  for (j in 1:U) {
+    r[j] ~ dnorm( r.mu[j], pow( r.sd[j], -2 ) ) 
+  }
 
 
-
-    ## 
-    b1=apply( y$B[,1,,], 1,quantile , probs=c(0.025,0.5,0.975), na.rm=T  )
-    f1=apply( y$F[,1,,], 1,quantile , probs=c(0.5), na.rm=T  )
-    NENS=data.frame(t(b1),F=f1,row.names=1999:2019)
-    NENS$U=1-exp(-NENS$F)
-    b2=apply( y$B[,2,,], 1,quantile , probs=c(0.025,0.5,0.975), na.rm=T  )
-    f2=apply( y$F[,2,,], 1,quantile , probs=c(0.5), na.rm=T  )
-    SENS=data.frame(t(b2),F=f2,row.names=1999:2019)
-    SENS$U=1-exp(-SENS$F)
-
-    b3=apply( y$B[,3,,], 1,quantile , probs=c(0.025,0.5,0.975), na.rm=T  )
-    f3=apply( y$F[,3,,], 1,quantile , probs=c(0.5), na.rm=T  )
-    CFA4X=data.frame(t(b3),F=f3,row.names=1999:2019)
-    CFA4X$U=1-exp(-CFA4X$F)
-
-    NENS
-    SENS
-    CFA4X
-    # Figures
-    graphics.off()
+  for (j in 1:U) {
+    #q.mu[j]  ~ dunif( q.min, q.max ) 
+    #q.sd[j]  ~ dunif( q.mu[j] * cv.normal.min, q.mu[j] *cv.normal.max )  # catchability coefficient (normal scale)
+    q[j] ~ dnorm( q.mu[j], pow( q.sd[j], -2 ) )  T(q.min, q.max)
+    #q[j] ~ dunif( q.min[j] , q.max[j] )
+  }
 
 
-    # frequency density of key parameters
-    figure.bugs( "K", y=y, sb=sb, fn=file.path(dir.output, "K.density.png" ) )
-    figure.bugs( "r", y=y, sb=sb, fn=file.path(dir.output, "r.density.png" ) )
-    figure.bugs( "q", y=y, sb=sb, fn=file.path(dir.output, "q.density.png" ) ,xrange=c(0,2))
-    figure.bugs( "FMSY", y=y, sb=sb, fn=file.path(dir.output, "FMSY.density.png" ) )
-    figure.bugs( "bo.sd", y=y, sb=sb, fn=file.path(dir.output, "bo.sd.density.png" ) )
-    figure.bugs( "bp.sd", y=y, sb=sb, fn=file.path(dir.output, "bp.sd.density.png" ) )
-
-    # timeseries
-    figure.bugs( type="timeseries", vname="biomass", y=y, sb=sb, fn=file.path(dir.output, "biomass.timeseries.png" ), save.plot=T )
-    figure.bugs( type="timeseries", vname="fishingmortality", y=y, sb=sb, fn=file.path(dir.output, "fishingmortality.timeseries.png" ) )
-
-    # Harvest control rules
-    figure.bugs( type="hcr", vname="default", y=y, sb=sb, fn=file.path(dir.output, "hcr.default.png" ), save.plot=T  )
-    figure.bugs( type="hcr", vname="simple", y=y, sb=sb, fn=file.path(dir.output, "hcr.simple.png" ) )
-
-    # diagnostics
-    figure.bugs( type="diagnostic.production", y=y, sb=sb, fn=file.path(dir.output, "diagnostic.production.png" ) )
-    figure.bugs( type="diagnostic.errors", y=y, sb=sb, fn=file.path(dir.output, "diagnostic.errors.png" ) )
-    figure.bugs( type="diagnostic.phase", y=y, sb=sb, fn=file.path(dir.output, "diagnostic.phase.png" ) )
+  for (j in 1:U) {
+    K[j] ~ dlnorm( K.mu[j], pow( K.sd[j], -1 )) # T(K.min[j], K.max[j] )
+  }
 
 
-    ndata = sb$N
-
-    # densities of biomass estimates for the year.assessment
-      for (i in 1:3) plot(density(y$B[ndata,i,,] ), main="")
-      qs = apply( y$B[ndata,,,], 1, quantile, probs=c(0.025, 0.5, 0.975) )
-      qs
-
-      # densities of biomass estimates for the previous year
-      for (i in 1:3) plot(density(y$B[ndata-1,i,,] ), main="")
-      qs = apply( y$B[ndata-1,,,], 1, quantile, probs=c(0.025, 0.5, 0.975) )
-      qs
-
-      # densities of F in assessment year
-      for (i in 1:3) plot(density( y$F[ndata,i,,] ), xlim=c(0.05, 0.5), main="")
-      qs = apply( y$F[ndata,,,], 1, quantile, probs=c(0.025, 0.5, 0.975) )
-      qs
-      qs = apply( y$F[ndata,,,], 1, mean )
-
-      # densities of F in previous year
-      for (i in 1:3) plot(density( y$F[ndata-1,i,,] ), main="")
-      qs = apply( y$F[ndata-1,,,], 1, quantile, probs=c(0.025, 0.5, 0.975) )
-      qs
-
-      # F for table ---
-      summary(y$F, median)
+  # -------------------  
+  # removals (catch) observation model, standardized to K (assuming no errors in observation of catch!)
+    for (j in 1:U) {
+      for (i in 1:N){
+        rem[i,j] <- CAT[i,j]/K[j]
+      }
+    }
 
 
-    debug = F
-    if (debug) {
+  # -------------------  
+  # biomass observation model 
+  #   This is slightly complicated because a fall / spring survey correction is required:
+  #   B represents the total fishable biomass available in fishing year y
+  #     in fall surveys:    Btot(t) = Bsurveyed(t) + removals(t) 
+  #     in spring surveys:  Btot(t) = Bsurveyed(t) + removals(t-1) 
+  #   this is conceptualized in the following time line: 
+  #     '|' == start/end of each new fishing year
+  #     Sf = Survey in fall
+  #     Ss = Survey in spring
+  #     |...(t-2)...|.Ss..(t-1)...|...(t=2004)..Sf.|...(t+1).Sf..|...(t+2)..Sf.|...
 
-      graphics.off()
+    for (j in 1:(U)) {
+      #bo.tau[j] ~ dunif( pow( log( 1 + pow( cv.lognormal.max, 2) ), -1 ), pow( log( 1 + pow( cv.lognormal.min, 2) ), -1 ) )  # min/max inverted because it is an inverse scale
+      #bo.sd[j] ~ dunif( bo.min[j], bo.max[j] )  
+      bo.sd[j] ~ dlnorm(bo.mup[j],pow(bo.sdp[j],-1))
+      bo.tau[j]  <- pow( bo.sd[j], -2 )
+    }
 
-      x11()
-      layout( matrix(c(1,2,3), 3, 1 ))
-      par(mar = c(5, 4, 0, 2))
+    for (j in 1:(U-1)) {
+      # spring surveys from 1998 to 2003
+      IOA[1,j] ~ dlnorm( log( max( q[j] * K[j] * (bm[1,j] - rem[1,j]) , eps)), bo.tau[j] )  # approximation
+      for (i in 2:(ty-1)) { 
+        IOA[i,j] ~ dlnorm( log( max( q[j] * K[j] * (bm[i,j]- rem[(i-1),j]), eps)), bo.tau[j] )  ;
+      }
+      # transition year
+      IOA[ty,j] ~ dlnorm( log( max( q[j] * K[j] * (bm[ty,j] - (rem[(ty-1),j] + rem[ty,j] )/2 ), eps)), bo.tau[j] ) ;  # approximation
+      # fall surveys    
+      for (i in (ty+1):N) {
+        IOA[i,j] ~ dlnorm( log( max( q[j] * K[j] * (bm[i,j] - rem[i,j]), eps)), bo.tau[j] ) ;
+      }
+    }
 
-      for( i in 1:3) hist(y$r[i,,], "fd")
-      for( i in 1:3) hist(y$q.sd[i,,], "fd")
-      for( i in 1:3) hist(y$K.sd[i,,], "fd")
-      for( i in 1:3) hist(y$b0.sd[i,,], "fd")
-      for( i in 1:3) hist(y$r.sd[i,,], "fd")
-      for( i in 1:3) hist(y$b0[i,,], "fd")
-
+    # Cfa 4X -- fall/winter fishery
+    # assume similar to a spring fishery but no need for separate q's
+    #    Btot(t) = Bsurveyed(t)+ removals(t-1)
+    #    NOTE: year designation in 4X is for the terminal year: ie. 2001-2002 => 2002
+    
+    IOA[1,cfa4x] ~ dlnorm( log( max( q[cfa4x] * K[cfa4x] * (bm[1,cfa4x] - rem[1,cfa4x]), eps)), bo.tau[cfa4x] ) ;  # approximation
+    for (i in 2:N) { 
+      IOA[i,cfa4x] ~ dlnorm( log( max( q[cfa4x] * K[cfa4x] * (bm[i,cfa4x]- rem[(i-1),cfa4x]), eps)), bo.tau[cfa4x] ) ;
     }
 
 
 
+  # -------------------  
+  # biomass process model 
+        
+    for (j in 1:U) {
+      #bp.tau[j] ~ dunif( pow( log( 1 + pow( cv.lognormal.max, 2) ), -1 ), pow( log( 1 + pow( cv.lognormal.min, 2) ), -1 ) )  
+      bp.sd[j] ~ dunif( bp.min[j], bp.max[j] )  
+      #bp.sd[j]  <- pow( sqrt(bp.tau[j]), -1 )
+      # bp.sd[j] ~ dlnorm(bp.mup[j],pow(bp.sdp[j],-1))
+      bp.tau[j]  <- pow( bp.sd[j], -2 )
+    }
+
+    for(j in 1:U) {
+      b0[j] ~ dunif( b0.min[j], b0.max[j] ) # starting b prior to first catch event 
+      bm[1,j] ~ dlnorm( log( max( b0[j], eps)), bp.tau[j] ) T(b.min, b.max ) ;  # biomass at first year   
+      for(i in 2:(N+M)) {
+        bm[i,j] ~ dlnorm( log( max(bm[i-1,j]*( 1 + r[j]*(1-bm[i-1,j])) - rem[i-1,j] , eps)), bp.tau[j] ) T(b.min, b.max) ;
+      }
+      
+      # forecasts
+      for(i in 1:M) {
+        rem[N+i,j] <- er*bm[N+i-1,j]
+      }
+    }
+
+
+  # -------------------  
+  # monitoring nodes and parameter estimates for output
+    for(j in 1:U) {
+      Bdrop[j]  <- 1 - step( bm[N+1,j]-bm[N,j] ) ; # test if bm(t) >= bm(t-1) 
+      BX2MSY[j] <- 1 - step( bm[N+1,j]-0.25 ) ; # test if bm >= 1/2 bmY
+      MSY[j]    <- r[j]* exp(K[j]) / 4  # maximum height of of the latent productivity (yield)
+      BMSY[j]   <- exp(K[j])/2  # biomass at MSY
+      FMSY[j]   <- 2 * MSY[j] / exp(K[j]) # fishing mortality at MSY
+      Fcrash[j] <- 4 * MSY[j] / exp(K[j]) # fishing mortality at which the stock will crash
+    }
+
+
+    # -------------------  
+    # fishing mortality
+    # force first year estimate assuming catches in year 0 to be similar to year 1 
+    for(j in 1:U) {
+      for(i in 1:N) {
+        F[i,j] <- -log( max(1 - rem[i,j] / bm[i,j], eps))  
+      }
+      for(i in (N+1):(N+M)) {
+        F[i,j] <- -log( max(1 - er * bm[i-1,j] / bm[i,j], eps)) 
+      }
+    }
+
+
+    # -------------------  
+    # annual production
+    for(j in 1:U) {
+      pd[1,j] <- bm[2,j]- bm[1,j] + rem[1,j] # approximation
+      for (i in 2:(N) ){
+        pd[i,j] <- (bm[i+1,j]- bm[i-1,j])/2 + rem[i,j]  # linear interpolation cancels out the bm[i,j] term
+      }
+      for(i in (N+1):(N+M-1)) {
+        pd[i,j] <- (bm[i+1,j]- bm[i-1,j])/2 + er * bm[i-1,j]   # linear interpolation cancels out the bm[i,j] term
+      }
+      pd[(N+M),j] <- (bm[(N+M),j]- bm[(N+M-1),j]) + er * bm[(N+M-1),j]   # approximation
+    }
+  
+
+
+    # -------------------  
+    # recaled estimates
+  
+    for(j in 1:U) {
+      for(i in 1:(N+M)) {
+        B[i,j] <- (bm[i,j] - rem[i,j]) * K[j]
+        P[i,j] <- pd[i,j]*K[j]
+        C[i,j] <- rem[i,j]*K[j]
+      }
+      for(i in 1:M) {
+        TAC[i,j] <- rem[N+i,j]*K[j]
+      }
+    }
+
+}
+
+    "
+
+    fn = tempfile()
+    cat( sb$jagsmodel, file=fn )
+
+    m = jags.model( file=fn, data=sb, n.chains=p$surplusproduction_model$n.chains, n.adapt=p$surplusproduction_model$n.adapt ) # recruitment + spring/summer q's + all observed CVs
+    
+    tomonitor = intersect( variable.names (m), sb$tomonitor )
+    
+    y = jags.samples(m, variable.names=tomonitor, n.iter=n.iter.total, thin=p$surplusproduction_model$n.thin) # sample from posterior
+    
+    res = list( jags=j, sb=sb, p=p)
+    save(res, file=p$surplusproduction_model$fnres, compress=T)
+
+    return(res)
+
+
+      if (0) {
+        dic.samples(m, n.iter=p$surplusproduction_model$n.iter ) # pDIC
+
+        graphics.off() ; x11(); layout( matrix(c(1,2,3), 3, 1 )); par(mar = c(5, 4, 0, 2))
+        for( i in 1:3) hist(y$cv.r[i,,], "fd")
+
+        # convergence testing -- by 1000 to 1500 convergence observed by Gelman shrink factor diagnostic
+        y = jags.samples(m, variable.names=tomonitor, n.iter=6000, thin=1 )
+
+        gelman.plot(y[["r"]])
+        gelman.plot(y[["K"]])
+        gelman.plot(y[["q"]])  # about 6-8000 runs required to converge
+        gelman.plot(y[["r.sd"]])
+        gelman.plot(y[["K.sd"]])
+        gelman.plot(y[["bo.sd"]])
+        gelman.plot(y[["bp.p"]])
+        geweke.plot(y[["r"]])
+
+        # update if not yet converged
+        #  update(m, n.iter=p$surplusproduction_model$n.iter ) # above seems enough for convergence but a few more to be sure
+
+        # determine autocorrelation thinning
+        # y = coda.samples(m, variable.names=c("K", "r", "q"), n.iter=20000, thin=10) # sample from posterior
+        # autocorr.plot(y)   # about 10 to 20 required
+        # plot(y, ask=T)
+        # autocorr(y, lags = c(0, 1, 5, 10, 50), relative=TRUE)
+
+        # final sampling from the posteriors
+        #  y = jags.samples(m, variable.names=tomonitor, n.iter=10000, thin=20) # sample from posterior
+        y = jags.samples(m, variable.names=tomonitor, n.iter=n.iter.total, thin=p$surplusproduction_model$n.thin) # sample from posterior
+        
+        
+
+        ## 
+        b1=apply( y$B[,1,,], 1,quantile , probs=c(0.025,0.5,0.975), na.rm=T  )
+        f1=apply( y$F[,1,,], 1,quantile , probs=c(0.5), na.rm=T  )
+        NENS=data.frame(t(b1),F=f1,row.names=1999:2019)
+        NENS$U=1-exp(-NENS$F)
+        b2=apply( y$B[,2,,], 1,quantile , probs=c(0.025,0.5,0.975), na.rm=T  )
+        f2=apply( y$F[,2,,], 1,quantile , probs=c(0.5), na.rm=T  )
+        SENS=data.frame(t(b2),F=f2,row.names=1999:2019)
+        SENS$U=1-exp(-SENS$F)
+
+        b3=apply( y$B[,3,,], 1,quantile , probs=c(0.025,0.5,0.975), na.rm=T  )
+        f3=apply( y$F[,3,,], 1,quantile , probs=c(0.5), na.rm=T  )
+        CFA4X=data.frame(t(b3),F=f3,row.names=1999:2019)
+        CFA4X$U=1-exp(-CFA4X$F)
+
+        NENS
+        SENS
+        CFA4X
+
+
+        x11()
+        layout( matrix(c(1,2,3), 3, 1 ))
+        par(mar = c(5, 4, 0, 2))
+
+        for( i in 1:3) hist(y$r[i,,], "fd")
+        for( i in 1:3) hist(y$q.sd[i,,], "fd")
+        for( i in 1:3) hist(y$K.sd[i,,], "fd")
+        for( i in 1:3) hist(y$b0.sd[i,,], "fd")
+        for( i in 1:3) hist(y$r.sd[i,,], "fd")
+        for( i in 1:3) hist(y$b0[i,,], "fd")
+
+      }
+
   }
 
 
+  # --------------------------
+
+
   if (DS=="LaplacesDemon") {
+
+    warning( "LaplacesDemon method is not yet complete")
+
     require(LaplacesDemonCpp)
       
-    if (!exists("current.year")) current.year=lubridate::year(Sys.Date())
-    p = bio.snowcrab::load.environment( year.assessment=current.year)
-
-
-    dir.create( p$surplusproduction_model$dir.output, recursive=T, showWarnings=F )
-    fnres = file.path( project.datadirectory("bio.snowcrab"), "R", paste( "surplus.prod.mcmc", p$year.assessment,"rdata", sep=".") )
-    #fnres = file.path( project.datadirectory("bio.snowcrab"), "R", paste( "surplus.prod.mcmc", p$year.assessment,"survey_final.rdata", sep=".") )
 
     sb = biomass.summary.db(p=p, DS="surplusproduction" )
 
@@ -511,206 +652,172 @@ surplusproduction_model = function(  p, data, DS="stan" ) {
 
       # ----------------------------------
 
-      Data$Missing = list(
-        O = list( 
-          n=length(intersect( 1:Data$Ndata, which( !is.finite(Data$O) ) )), 
-          idx=intersect( 1:Data$Ndata, which( !is.finite(Data$O) ) ) 
-        ), # observations of survey index
-        removals = list( 
-          n=length(intersect( 1:Data$Ndata, which( !is.finite(Data$removals) ) ) ), 
-          idx=intersect( 1:Data$Ndata, which( !is.finite(Data$removals) ) )  
-        )  # observations of removals
-      )
-
-      # ----------------------------------
-
-      if ( Data$Nforecasts > 0 ) {
-        # extend data for forecasts
-        Data$O = c( Data$O, rep(NA, Data$Nforecasts) )
-        Data$removals = c( Data$removals, rep(NA, Data$Nforecasts) )
-        Data$Forecasts = list( 
-          n = Data$Nforecasts,
-          idx = Data$Ndata + 1:Data$Nforecasts,
-          idx_1 = (Data$Ndata + 1:Data$Nforecasts) -1 
+      if (is.null( Data$Missing )) {
+        mO = which( !is.finite(Data$O))
+        mr = which( !is.finite(Data$removals) )
+        Data$Missing = list(
+          O = mO,
+          nO = length(mO) ,
+          removals = mr , 
+          nremovals = length( mr ),
+          n = length( mO) + length(mr) 
         )
       }
 
-      # ----------------------------------
-      # misc indexing
-      Data$idx = list(
-        t1 = 1,
-        t2 = 2:(Data$ty-1),
-        t2_1 = (2:(Data$ty-1) ) - 1,
-        t3 =  Data$ty,
-        t3_1 =  Data$ty-1,
-        t4 =  (Data$ty+1):Data$N,
-        icurrent  = 2:Data$N,
-        iprevious = 1:(Data$N-1),
-        idata = 1:Data$Ndata
-      )
-
-      # ----------------------------------
-      # paramater names and initial values
-      Data$parm.names = list(
-        r = Data$r0,
-        K = Data$K0,
-        q = Data$q0,
-        r_sd = Data$r0,
-        K_sd = Data$K0,
-        q_sd = Data$q0,
-        S0_sd = Data$S0,
-        S_sd = Data$S0,
-        O_sd = Data$O0,
-        R_sd = Data$R0,
-        S = rep( Data$S0, Data$N),
-        S0 = Data$S0
-      ) 
-      if (Data$Missing$removals$n > 0) Data$parm.names$removals_imp = rep(0, Data$Missing$removals$n)
-      if (Data$Missing$O$n > 0) Data$parm.names$O_imp = rep(0, Data$Missing$O$n)
-      Data$parm.names = as.parm.names( Data$parm.names )
-
-      # ----------------------------------
-      # index position of paramaters
-      Data$pos = list(
-        r=grep("\\<r\\>", Data$parm.names),
-        K=grep("\\<K\\>", Data$parm.names),
-        q=grep("\\<q\\>", Data$parm.names),
-        r_sd = grep("\\<r_sd\\>", Data$parm.names), 
-        K_sd = grep("\\<K_sd\\>", Data$parm.names),
-        q_sd = grep("\\<q_sd\\>", Data$parm.names),
-        S0_sd = grep("\\<S0_sd\\>", Data$parm.names),
-        S_sd=grep("\\<S_sd\\>", Data$parm.names),
-        O_sd=grep("\\<O_sd\\>", Data$parm.names),
-        R_sd =grep("\\<R_sd\\>", Data$parm.names),
-        S=grep("\\<S\\>", Data$parm.names),
-        S0=grep("\\<S0\\>", Data$parm.names)
-      )
-      if (Data$Missing$removals$n > 0) Data$pos$removals_imp = grep("\\<removals_imp\\>", Data$parm.names)
-      if (Data$Missing$O$n > 0) Data$pos$O_imp = grep("\\<O_imp\\>", Data$parm.names)
-
-      # ----------------------------------
-      # monitoring nodes
-      Data$mon.names = c("LP", "r", "K", "q" )
-      # Data$mon.names = c("LP", "r", "K", "q", paste0("S",1:Data$N), paste0("AR",1:(Data$N-1) ) )
-
-
-      # ----------------------------------
-      # Parameter Generating Function
-      # these parameters are operate on the log-scale to force positive values ...
-      Data$param$means = c( 
-        r=Data$r0, K=Data$K0, q=Data$q0, 
-        r_sd=Data$r0/2, K_sd=Data$K0/2,  q_sd=Data$q0/2, 
-        S0_sd=Data$S0/2, S_sd=0.2, O_sd=Data$O0/2, R_sd=Data$R0/2,
-        S=rep( 0.5, Data$N), S0=Data$S0
-      )
-      if (Data$Missing$removals$n > 0) {
-        Data$param$means = c( Data$param$means, removals_imp=rep(Data$R0, Data$Missing$removals$n ) )
-      }
-      if (Data$Missing$O$n > 0) {
-        Data$param$means = c( Data$param$means, O_imp=rep(Data$O0, Data$Missing$O$n) )
-      }
-      Data$param$sd = Data$param$means / 2 
-      Data$param$n = length(Data$param$means)
-
-      Data$PGF = function(Data) {
-        out = LaplacesDemonCpp::rnorm(Data$param$n, Data$param$means, Data$param$sd )
-        i = which( out < Data$eps )
-        if (length(i)>0) out[i] = -out[i] # reflect onto positive side
-        return( out  )
-      }
-      Data$PGF = compiler::cmpfun(Data$PGF)
-
-
-      # ----------------------------------
-      # define the model that generates the loglikelihoods (LL) and the log-posteriors (LP)
-      Data$Model = function(parm, Data) {
-        
-        Spred = Opred = rep(0, Data$N )   # initialize a few storage vectors
-          # NOTE: for lognormal: cv = sqrt(exp(sigma^2) - 1); 
-        # or sigma = sqrt(log(cv^2+ 1) ) ==> sigma = sqrt( log(0.25^2 + 1)) = 0.246 ~ cv -- i.e. cv ~ sd
-        i = which( parm < Data$eps )
-        if (length(i)>0) parm[i] = -parm[i] # reflect onto positive side
-
-        q =  parm[Data$pos$q]
-        r =  parm[Data$pos$r]
-        K =  parm[Data$pos$K]
-        S =  parm[Data$pos$S]
-        Spred[1] =  parm[Data$pos$S0]
-       
-       # SD params stay on log-scale
-        q_sd = parm[Data$pos$q_sd]
-        r_sd = parm[Data$pos$r_sd]
-        K_sd = parm[Data$pos$K_sd]
-        S0_sd = parm[Data$pos$S0_sd]
-        O_sd = parm[Data$pos$O_sd]
-        S_sd = parm[Data$pos$S_sd]
-        R_sd = parm[Data$pos$R_sd]
-        
-        llkimpute = 0
-        llkprior = c()
-        llkprior[Data$parm.names] = 0
-        llkprior[Data$pos$q] = dnorm( log(parm[Data$pos$q]), Data$log_q0, q_sd, log=TRUE ) ;
-        llkprior[Data$pos$r] = dnorm( log(parm[Data$pos$r]), Data$log_r0, r_sd, log=TRUE ) ;
-        llkprior[Data$pos$K] = dnorm( log(parm[Data$pos$K]), Data$log_K0, K_sd, log=TRUE ) ;
-        llkprior[Data$pos$S0] = dnorm( log(parm[Data$pos$S0]), log(Data$S0), S0_sd, log=TRUE ) ;
-        llkprior[Data$pos$q_sd] = dgamma( q_sd, shape=Data$q0, scale=100, log=TRUE );
-        llkprior[Data$pos$r_sd] = dgamma( r_sd, shape=Data$r0, scale=100, log=TRUE );
-        llkprior[Data$pos$K_sd] = dgamma( K_sd, shape=Data$K0, scale=100, log=TRUE );
-        llkprior[Data$pos$S0_sd] = dgamma( S0_sd, shape=Data$S0, scale=100, log=TRUE );
-        llkprior[Data$pos$O_sd] = dgamma( O_sd, shape=Data$O0, scale=100, log=TRUE );
-        llkprior[Data$pos$S_sd] = dgamma( S_sd, shape=0.5, scale=100, log=TRUE );
-        llkprior[Data$pos$R_sd] = dgamma( R_sd, shape=Data$R0, scale=100, log=TRUE );
-
-        R = Data$removals/K ;# make sure it is producing sensible values:
-        # impute missing data 
-        if ( Data$Missing$removals$n > 0 ) {
-          parm[Data$pos$removals_imp] = R[Data$Missing$removals$idx ] = LaplacesDemonCpp::interval( parm[Data$pos$removals_imp], Data$eps, Data$smax)  
-          llkimpute = llkimpute + sum( dnorm( log(R[Data$Missing$removals$idx ]), Data$log_R0, R_sd, log=TRUE ) );
+      if (is.null( Data$PGF )) {
+        # Parameter Generating Function
+        Data$PGF = function(Data) {
+          r=rnorm(Data$nregions, Data$r0, sd=Data$cv )
+          K=rnorm(1, log(Data$K0), sd=Data$cv ) # log scale
+          q=rnorm(1, Data$q0, sd=Data$cv )
+          S_sd=runif( 1 )
+          O_sd=runif( 1 )
+          S=rnorm( Data$N, log(Data$S0), sd=Data$cv ) # log scale 
+          S0=rnorm(1, log(Data$S0), sd=Data$cv ) # log scale
+          out = c(r, K, q, S_sd, O_sd, S, S0)
+          if (Data$Missing$nO > 0) {
+            Omissing = rnorm( Data$Missing$nO, log(Data$Omissing0), sd=Data$cv )
+            out = c( out, Omissing )
+          }
+          if (Data$Missing$nremovals > 0) {
+            removalsmissing = rnorm( Data$Missing$nremovals, log(Data$removalsmissing0), sd=Data$cv )
+            out = c( out, removalsmissing )
+          }
+          return( out  )
         }
-
-        if ( Data$Missing$O$n > 0 ) {
-          parm[Data$pos$O_imp] = Data$O[Data$Missing$O$idx ] = LaplacesDemonCpp::interval( parm[Data$pos$O_imp], Data$eps, Data$K0)  
-          llkimpute = llkimpute + sum(dnorm( log(Data$O[Data$Missing$O$idx ]), Data$log_O0, O_sd, log=TRUE ) ) ;    
-        }
-
-        if ( Data$Forecasts$n > 0 ) {
-          R[Data$Forecasts$idx] = S[Data$Forecasts$idx_1] * Data$er 
-          llkimpute = llkimpute + sum(dnorm( log(R[Data$Forecasts$idx]), Data$log_R0, R_sd, log=TRUE )) ;
-          Data$O[Data$Forecasts$idx] = runif( Data$Forecasts$n, Data$O_range[1], Data$O_range[2]  )
-          # likelihood for Data$O is below
-        }
-
-        # process model -- simple logistic
-        Spred[ Data$idx$icurrent] = S[Data$idx$iprevious] * 1.0 + r*{1-S[Data$idx$iprevious]} - R[Data$idx$iprevious] ;  # 
-        Spred = LaplacesDemonCpp::interval_random( Spred, Data$eps, Data$smax, 0.01 ) 
-        llkprior[Data$pos$S] = dnorm( log(parm[Data$pos$S]), log(Spred), S_sd, log=TRUE ) 
-
-        # observation model
-        Opred[Data$idx$t1] = S[Data$idx$t1] - R[Data$idx$t1] ; # first year approximation
-        Opred[Data$idx$t2] = S[Data$idx$t2] - R[Data$idx$t2_1] ;
-        Opred[Data$idx$t3] = S[Data$idx$t3] - (R[Data$idx$t3_1] + R[Data$idx$t3])/2 ; # transition year from Spring to Autumn survey
-        Opred[Data$idx$t4] = S[Data$idx$t4] - R[Data$idx$t4] ;
-        Opred = K*q*Opred
-        Opred = LaplacesDemonCpp::interval_random( Opred, Data$eps, Inf, 0.01 )
-        llkdata = dnorm( log(Data$O), log(Opred), O_sd, log=TRUE )
-     
-        # additional computed variables of interest 
-        ER = R / S ;
-        ER = LaplacesDemonCpp::interval_random( ER, Data$eps, Data$eps_1, 0.01 ) 
-        B = S*K
-        C = R*K
-        F = -log( 1 - ER) ; # fishing mortality
-        AR = S[ Data$idx$icurrent] / S[Data$idx$iprevious] ;  # "autocorelation" component
-
-        LL = sum( llkdata )  # log likelihood (of the data)
-        LP = LL + sum( llkprior ) + sum(llkimpute) # log posterior
-        out = list( LP=LP, Dev=-2*LL, Monitor=c(LP, r, K, q), yhat=S*K, parm=parm )
-        return( out  )
+        Data$PGF = compiler::cmpfun(Data$PGF)
       }
 
-      Data$Model.ML  = compiler::cmpfun( function(...) (Data$Model(...)$Dev / 2) )  # i.e. - log likelihood
-      Data$Model.PML = compiler::cmpfun( function(...) (- Data$Model(...)$LP) ) #i.e., - log posterior 
-      Data$Model = compiler::cmpfun(Data$Model) #  byte-compiling for more speed .. use RCPP if you want more speed
+      if (is.null( Data$parm.names )) {
+        # paramater names and initial values
+        pnames = list(
+          r = Data$r0,
+          K = Data$K0,
+          q = Data$q0,
+          S_sd = Data$cv,
+          O_sd = Data$cv,
+          S = rep( Data$S0, Data$N),
+          S0 = Data$S0
+        )
+        if (Data$Missing$nO > 0) pnames$Omissing = rep( Data$Omissing0, Data$Missing$nO )
+        if (Data$Missing$nremovals > 0)  pnames$removalsmissing = rep( Data$removalsmissing0, Data$Missing$nremovals )
+        Data$parm.names = as.parm.names( pnames )
+      }
+
+      if (is.null( Data$idx )) {
+        # index position of paramaters
+        Data$idx = list(
+          r=grep("\\<r\\>", Data$parm.names),
+          K=grep("\\<K\\>", Data$parm.names),
+          q=grep("\\<q\\>", Data$parm.names),
+          S_sd=grep("\\<S_sd\\>", Data$parm.names),
+          O_sd=grep("\\<O_sd\\>", Data$parm.names),
+          S=grep("\\<S\\>", Data$parm.names),
+          S0=grep("\\<S0\\>", Data$parm.names)
+        )
+        if (Data$Missing$nO > 0) Data$idx$Omissing = grep("\\<Omissing\\>", Data$parm.names)
+        if (Data$Missing$nremovals > 0)  Data$idx$removalsmissing = grep("\\<removalsmissing\\>", Data$parm.names)
+      }
+
+
+      if (is.null( Data$mon.names )) {
+        Data$mon.names = c("LP", "r", "K", "q" )
+        # Data$mon.names = c("LP", "r", "K", "q", paste0("S",1:Data$N), paste0("AR",1:(Data$N-1) ) )
+      }
+
+
+      if (is.null( Data$Model )) {
+        Data$Model = function(parm, Data) {
+          
+          Spred = Opred = rep(0, Data$N )   # initialize a few storage vectors
+
+          # constraints:
+          parm[Data$idx$q] = LaplacesDemonCpp::interval( parm[Data$idx$q], Data$eps, 2 );
+          parm[Data$idx$r] = LaplacesDemonCpp::interval( parm[Data$idx$r], Data$eps, 2 );
+          parm[Data$idx$K] = LaplacesDemonCpp::interval( parm[Data$idx$K], log(Data$eps), log(Data$K0*2) );
+          parm[Data$idx$S0] = LaplacesDemonCpp::interval( parm[Data$idx$S0], log(Data$eps), log(Data$smax) );
+          parm[Data$idx$S] = LaplacesDemonCpp::interval( parm[Data$idx$S], log(Data$eps), log(Data$smax) );
+
+          parm[Data$idx$O_sd] = LaplacesDemonCpp::interval( parm[Data$idx$O_sd], Data$eps, 1)
+          parm[Data$idx$S_sd] = LaplacesDemonCpp::interval( parm[Data$idx$S_sd], Data$eps, 1)
+
+          # these are SD's on log scale (0,1) is sufficient
+          # continue with SD priors as these are now on correct scale
+          
+          loglik = c()
+          loglik[Data$parm.names] = 0
+          loglik[Data$idx$q] = LaplacesDemonCpp::dhalfcauchy( parm[Data$idx$q], Data$cv,  TRUE ) ;
+          loglik[Data$idx$r] = dnorm( parm[Data$idx$r], Data$r0, Data$cv, TRUE ) ;
+          loglik[Data$idx$K] = dnorm( parm[Data$idx$K], log(Data$K0), Data$cv, TRUE ) ;
+          loglik[Data$idx$S0] = dnorm( parm[Data$idx$S0], log(Data$S0), Data$cv, TRUE ) ;
+          loglik[Data$idx$O_sd] = LaplacesDemonCpp::dhalfcauchy( parm[Data$idx$O_sd], Data$cv, TRUE );
+          loglik[Data$idx$S_sd] = LaplacesDemonCpp::dhalfcauchy( parm[Data$idx$S_sd], Data$cv, TRUE );
+
+          q = parm[Data$idx$q]
+          r = parm[Data$idx$r]
+          K = exp( parm[Data$idx$K] )
+          Spred[1] = exp( parm[Data$idx$S0] );
+          S = exp( parm[Data$idx$S] ) ;
+          O_sd = parm[Data$idx$O_sd]
+          S_sd = parm[Data$idx$S_sd]
+
+          R = Data$removals/K ;
+          if (exists( "Missing", Data ) ) {
+            if (Data$Missing$nremovals > 0) {
+              R[Data$Missing$removals ] = rlnorm( Data$Missing$nremovals, 
+                parm[Data$idx$removalsmissing], sd=Data$cv )
+              R = .Internal(pmax(na.rm=TRUE, R, Data$eps )) ;
+              loglik[Data$idx$removalsmissing] = dnorm( parm[Data$idx$removalsmissing], 
+                log(R[Data$Missing$removals ]), Data$cv )
+            }
+          }
+
+          AR = 1.0 + r*(1-S[Data$jj]) ;  # autocorelation component
+          Spred[ Data$ii ] = S[Data$jj] * AR - R[Data$jj] ;  # simple logistic
+          Spred = .Internal(pmax(na.rm=TRUE, Spred, Data$eps )) ;
+          loglik[Data$idx$S] = dnorm( parm[Data$idx$S], log(Spred), S_sd, TRUE );
+
+          # Likelihoods for observation model
+          i = 1 ;                   Opred[i] = S[i] - R[i] ;
+          i = 2:(Data$ty-1);        Opred[i] = S[i] - R[i-1] ;
+          i = Data$ty;              Opred[i] = S[i] - (R[i-1] + R[i])/2 ;
+          i = (Data$ty+1):Data$N ;  Opred[i] = S[i] - R[i] ;
+          Opred = .Internal(pmax( na.rm=TRUE, K*q*Opred, Data$eps ) ) ;
+          if (exists( "Missing", Data ) ) {
+            if (Data$Missing$nO > 0) {
+              Data$O[Data$Missing$O ] = rlnorm( Data$Missing$nO, parm[Data$idx$Omissing], sd=Data$cv )
+              Data$O[Data$Missing$O ] = .Internal(pmax(na.rm=TRUE, Data$O[Data$Missing$O ], Data$eps )) ;
+              loglik[Data$idx$Omissing] = dnorm( parm[Data$idx$Omissing], log(Data$O[Data$Missing$O ]), Data$cv )
+            }
+          }
+          ll_obs = dnorm( log(Data$O), log(Opred), O_sd, TRUE )
+
+          Smon = Rmon = ER = F = B = C = rep(0, Data$MN )
+          
+          Smon[1:Data$N] = S
+          Rmon[1:Data$N] = R
+          for( i in (Data$N+1):Data$MN ){
+            Smon[i] = Smon[i-1] * (1.0 + r*(1.0-Smon[i-1]) ) - Rmon[i-1]
+            Rmon[i] = Smon[i-1] * Data$er 
+          }
+          Smon = .Internal(pmax( na.rm=TRUE, Smon, Data$eps ) )
+          Rmon = .Internal(pmax( na.rm=TRUE, Rmon, Data$eps ) )
+          
+          # monitoring
+          ER = Rmon / Smon ;
+          B = Smon*K
+          C = Rmon*K
+          F = -log( 1 - ER) ; # fishing mortality
+                
+          LL = sum( ll_obs )  # log likelihood (of the data)
+          LP = LL + sum( loglik )  # log posterior
+          out = list( LP=LP, Dev=-2*LL, Monitor=c(LP, r, K, q), yhat=S*K, parm=parm )
+          return( out  )
+        }
+        Data$Model.ML  = compiler::cmpfun( function(...) (Data$Model(...)$Dev / 2) )  # i.e. - log likelihood
+        Data$Model.PML = compiler::cmpfun( function(...) (- Data$Model(...)$LP) ) #i.e., - log posterior 
+        Data$Model = compiler::cmpfun(Data$Model) #  byte-compiling for more speed .. use RCPP if you want more speed
+      }
 
       print (Data$Model( parm=Data$PGF(Data), Data=Data ) ) # test to see if return values are sensible
      
@@ -874,16 +981,10 @@ surplusproduction_model = function(  p, data, DS="stan" ) {
 
   if (DS=="tmb") {
 
+    warning( "TMB method is not yet complete")
 
     require(bio.base)
       
-    if (!exists("current.year")) current.year=lubridate::year(Sys.Date())
-    p = bio.snowcrab::load.environment( year.assessment=current.year)
-
-
-    dir.create( p$surplusproduction_model$dir.output, recursive=T, showWarnings=F )
-    fnres = file.path( project.datadirectory("bio.snowcrab"), "R", paste( "surplus.prod.mcmc", p$year.assessment,"rdata", sep=".") )
-    #fnres = file.path( project.datadirectory("bio.snowcrab"), "R", paste( "surplus.prod.mcmc", p$year.assessment,"survey_final.rdata", sep=".") )
 
     sb = biomass.summary.db(p=p, DS="surplusproduction" )
 

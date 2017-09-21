@@ -1,6 +1,9 @@
 
-  figure.bugs = function( vname="", type="density", sb=NULL, y=NULL, fn=NULL, labs=c("N-ENS","S-ENS","4X") ,save.plot=T, ...) {
+  figure.bugs = function( vname="", type="density", res=NULL, fn=NULL, labs=c("N-ENS","S-ENS","4X") ,save.plot=T, ...) {
  
+    y = res$jags
+    sb=res$sb
+    
     ntacs = sb$nProj
     yrs0 = as.numeric( as.character( rownames(sb$IOA) ) )
     yrs = c( yrs0, (max(yrs0)+c(1:sb$M) ) ) 

@@ -272,3 +272,6 @@ cor(spred,set$snowcrab.large.males_abundance, use="complete.obs")
 #      set$dyear = floor(set$julian / 365 ) + 1
 
 
+
+
+
