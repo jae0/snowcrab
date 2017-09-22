@@ -318,13 +318,12 @@ fishery_model = function(  p, DS="stan", plotresults=TRUE ) {
     rjags::load.module("dic")
     rjags::load.module("glm")
 
-    if (!exists(p$fishery_model = list(
-      # MCMC/Gibbs parameters
-      n.adapt = 4000,   # burn-in  .. 4000 is enough for the full model but in case ...
-      n.iter = 30000,
-      n.chains = 3 ,
-      n.thin = 100  # use of uniform distributions causes high autocorrelations ?
-    )
+    if (!exists("fishery_model", p)) p$fishery_model = list()
+    if (!exists("n.adapt", p$fishery_model)) p$fishery_model$n.adapt  = 5000  # burn-in  .. 4000 is enough for the full model 
+    if (!exists("n.iter ", p$fishery_model)) p$fishery_model$n.iter   = 10000  #  n.iter = 30000,
+    if (!exists("n.chains", p$fishery_model)) p$fishery_model$n.chains  = 8  #  n.chains = 8 ,
+    if (!exists("n.thin", p$fishery_model)) p$fishery_model$n.thin  = 100  # high autocorrelations 
+    
     n.iter.total = p$fishery_model$n.iter * p$fishery_model$n.thin
 
     sb = biomass.summary.db(p=p, DS="surplusproduction" )
