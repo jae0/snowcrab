@@ -1,4 +1,4 @@
-### --------- 
+res$mcmc## --------- 
 #### final estimation of biomass via fishery model:
 
   
@@ -11,107 +11,52 @@ p$surplusproduction_model$outdir = file.path(project.datadirectory('bio.snowcrab
 p$surplusproduction_model$fnres  = file.path(p$surplusproduction_model$outdir, paste( "surplus.prod.mcmc", p$year.assessment, p$surplusproduction_model$method, "rdata", sep=".") )
 
 
-
-if (p$surplusproduction_model$method=="stan"){
-  
-  res = surplusproduction_model( p=p, DS="stan" )
-  # load( p$surplusproduction_model$fnres )
-
-  outdir = p$surplusproduction_model$outdir
-    # frequency density of key parameters
-    figure.stan( "K", res=res, fn=file.path(outdir, "K.density.png" ) )
-    figure.stan( "r", res=res, fn=file.path(outdir, "r.density.png" ) )
-    figure.stan( "q", res=res, fn=file.path(outdir, "q.density.png" ) ,xrange=c(0,2))
-    figure.stan( "FMSY", res=res, fn=file.path(outdir, "FMSY.density.png" ) )
-    figure.stan( "bo.sd", res=res, fn=file.path(outdir, "bo.sd.density.png" ) )
-    figure.stan( "bp.sd", res=res, fn=file.path(outdir, "bp.sd.density.png" ) )
-
-    # timeseries
-    figure.stan( type="timeseries", vname="biomass", res=res, fn=file.path(outdir, "biomass.timeseries.png" ), save.plot=T )
-    figure.stan( type="timeseries", vname="fishingmortality", res=res, fn=file.path(outdir, "fishingmortality.timeseries.png" ) )
-
-    # Harvest control rules
-    figure.stan( type="hcr", vname="default", res=res, fn=file.path(outdir, "hcr.default.png" ), save.plot=T  )
-    figure.stan( type="hcr", vname="simple", res=res, fn=file.path(outdir, "hcr.simple.png" ) )
-
-    # diagnostics
-    figure.stan( type="diagnostic.production", res=res, fn=file.path(outdir, "diagnostic.production.png" ) )
-    figure.stan( type="diagnostic.errors", res=res, fn=file.path(outdir, "diagnostic.errors.png" ) )
-    figure.stan( type="diagnostic.phase", res=res, fn=file.path(outdir, "diagnostic.phase.png" ) )
-
-    # densities of biomass estimates for the year.assessment
-    for (i in 1:3) plot(density(y$B[res$sb$N,i,,] ), main="")
-    ( qs = apply(  res$stan$B[res$sb$N,,,], 1, quantile, probs=c(0.025, 0.5, 0.975) ) )
-
-    # densities of biomass estimates for the previous year
-    for (i in 1:3) plot(density( res$stan$B[res$sb$N-1,i,,] ), main="")
-    ( qs = apply(  res$stan$B[res$sb$N-1,,,], 1, quantile, probs=c(0.025, 0.5, 0.975) ) )
-
-    # densities of F in assessment year
-    for (i in 1:3) plot(density(  res$stan$F[res$sb$N,i,,] ), xlim=c(0.05, 0.5), main="")
-    ( qs = apply(  res$stan$F[res$sb$N,,,], 1, quantile, probs=c(0.025, 0.5, 0.975) ) )
-    ( qs = apply(  res$stan$F[res$sb$N,,,], 1, mean ) )
-
-    # densities of F in previous year
-    for (i in 1:3) plot(density(  res$stan$F[res$sb$N-1,i,,] ), main="")
-    ( qs = apply(  res$stan$F[res$sb$N-1,,,], 1, quantile, probs=c(0.025, 0.5, 0.975) ) )
-
-    # F for table ---
-    summary( res$stan$F, median)
+res = surplusproduction_model( p=p, DS=p$surplusproduction_model$method )
+# load( p$surplusproduction_model$fnres )
 
 
-}
+outdir = p$surplusproduction_model$outdir
+# frequency density of key parameters
+figure.mcmc( "K", res=res, fn=file.path(outdir, "K.density.png" ) )
+figure.mcmc( "r", res=res, fn=file.path(outdir, "r.density.png" ) )
+figure.mcmc( "q", res=res, fn=file.path(outdir, "q.density.png" ) ,xrange=c(0,2))
+figure.mcmc( "FMSY", res=res, fn=file.path(outdir, "FMSY.density.png" ) )
+figure.mcmc( "bo.sd", res=res, fn=file.path(outdir, "bo.sd.density.png" ) )
+figure.mcmc( "bp.sd", res=res, fn=file.path(outdir, "bp.sd.density.png" ) )
 
+# timeseries
+figure.mcmc( type="timeseries", vname="biomass", res=res, fn=file.path(outdir, "biomass.timeseries.png" ), save.plot=T )
+figure.mcmc( type="timeseries", vname="fishingmortality", res=res, fn=file.path(outdir, "fishingmortality.timeseries.png" ) )
 
-if (p$surplusproduction_model$method=="jags"){
-  
-  res = surplusproduction_model( p=p, DS="jags" )  # jags method is deprecated
-  # load( p$surplusproduction_model$fnres )
+# Harvest control rules
+figure.mcmc( type="hcr", vname="default", res=res, fn=file.path(outdir, "hcr.default.png" ), save.plot=T  )
+figure.mcmc( type="hcr", vname="simple", res=res, fn=file.path(outdir, "hcr.simple.png" ) )
 
-  outdir = p$surplusproduction_model$outdir
+# diagnostics
+figure.mcmc( type="diagnostic.production", res=res, fn=file.path(outdir, "diagnostic.production.png" ) )
+figure.mcmc( type="diagnostic.errors", res=res, fn=file.path(outdir, "diagnostic.errors.png" ) )
+figure.mcmc( type="diagnostic.phase", res=res, fn=file.path(outdir, "diagnostic.phase.png" ) )
 
-    # frequency density of key parameters
-    figure.bugs( "K", res=res, fn=file.path(outdir, "K.density.png" ) )
-    figure.bugs( "r", res=res, fn=file.path(outdir, "r.density.png" ) )
-    figure.bugs( "q", res=res, fn=file.path(outdir, "q.density.png" ) ,xrange=c(0,2))
-    figure.bugs( "FMSY", res=res, fn=file.path(outdir, "FMSY.density.png" ) )
-    figure.bugs( "bo.sd", res=res, fn=file.path(outdir, "bo.sd.density.png" ) )
-    figure.bugs( "bp.sd", res=res, fn=file.path(outdir, "bp.sd.density.png" ) )
+# densities of biomass estimates for the year.assessment
+for (i in 1:3) plot(density(res$mcmc$B[res$sb$N,i,,] ), main="")
+( qs = apply(  res$mcmc$B[res$sb$N,,,], 1, quantile, probs=c(0.025, 0.5, 0.975) ) )
 
-    # timeseries
-    figure.bugs( type="timeseries", vname="biomass", res=res, fn=file.path(outdir, "biomass.timeseries.png" ), save.plot=T )
-    figure.bugs( type="timeseries", vname="fishingmortality", res=res, fn=file.path(outdir, "fishingmortality.timeseries.png" ) )
+# densities of biomass estimates for the previous year
+for (i in 1:3) plot(density( res$mcmc$B[res$sb$N-1,i,,] ), main="")
+( qs = apply(  res$mcmc$B[res$sb$N-1,,,], 1, quantile, probs=c(0.025, 0.5, 0.975) ) )
 
-    # Harvest control rules
-    figure.bugs( type="hcr", vname="default", res=res, fn=file.path(outdir, "hcr.default.png" ), save.plot=T  )
-    figure.bugs( type="hcr", vname="simple", res=res, fn=file.path(outdir, "hcr.simple.png" ) )
+# densities of F in assessment year
+for (i in 1:3) plot(density(  res$mcmc$F[res$sb$N,i,,] ), xlim=c(0.05, 0.5), main="")
+( qs = apply(  res$mcmc$F[res$sb$N,,,], 1, quantile, probs=c(0.025, 0.5, 0.975) ) )
+( qs = apply(  res$mcmc$F[res$sb$N,,,], 1, mean ) )
 
-    # diagnostics
-    figure.bugs( type="diagnostic.production", res=res, fn=file.path(outdir, "diagnostic.production.png" ) )
-    figure.bugs( type="diagnostic.errors", res=res, fn=file.path(outdir, "diagnostic.errors.png" ) )
-    figure.bugs( type="diagnostic.phase", res=res, fn=file.path(outdir, "diagnostic.phase.png" ) )
+# densities of F in previous year
+for (i in 1:3) plot(density(  res$mcmc$F[res$sb$N-1,i,,] ), main="")
+( qs = apply(  res$mcmc$F[res$sb$N-1,,,], 1, quantile, probs=c(0.025, 0.5, 0.975) ) )
 
-    # densities of biomass estimates for the year.assessment
-    for (i in 1:3) plot(density(y$B[res$sb$N,i,,] ), main="")
-    ( qs = apply(  res$jags$B[res$sb$N,,,], 1, quantile, probs=c(0.025, 0.5, 0.975) ) )
+# F for table ---
+summary( res$mcmc$F, median)
 
-    # densities of biomass estimates for the previous year
-    for (i in 1:3) plot(density( res$jags$B[res$sb$N-1,i,,] ), main="")
-    ( qs = apply(  res$jags$B[res$sb$N-1,,,], 1, quantile, probs=c(0.025, 0.5, 0.975) ) )
-
-    # densities of F in assessment year
-    for (i in 1:3) plot(density(  res$jags$F[res$sb$N,i,,] ), xlim=c(0.05, 0.5), main="")
-    ( qs = apply(  res$jags$F[res$sb$N,,,], 1, quantile, probs=c(0.025, 0.5, 0.975) ) )
-    ( qs = apply(  res$jags$F[res$sb$N,,,], 1, mean ) )
-
-    # densities of F in previous year
-    for (i in 1:3) plot(density(  res$jags$F[res$sb$N-1,i,,] ), main="")
-    ( qs = apply(  res$jags$F[res$sb$N-1,,,], 1, quantile, probs=c(0.025, 0.5, 0.975) ) )
-
-    # F for table ---
-    summary( res$jags$F, median)
-
-}
 
 
 

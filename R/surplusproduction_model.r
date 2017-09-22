@@ -280,7 +280,7 @@ surplusproduction_model = function(  p, DS="stan", plotresults=TRUE ) {
           # chains = 5,             # number of Markov chains
           # cores = 5              # number of cores (using 2 just for the vignette)
 
-    res = list( stan=f, sb=sb, p=p)
+    res = list( mcmc=f, sb=sb, p=p)
     save(res, file=p$surplusproduction_model$fnres, compress=T)
     return(res)
 
@@ -309,14 +309,14 @@ surplusproduction_model = function(  p, DS="stan", plotresults=TRUE ) {
 
 
   if (DS=="jags") {
-    warning( "Jags method is deprecated")
+
+    warning( "Jags method is deprecated. Use stan.")
 
     require(rjags)
     rjags::load.module("dic")
     rjags::load.module("glm")
 
-
-    p$surplusproduction_model = list(
+    if (!exists(p$surplusproduction_model = list(
       # MCMC/Gibbs parameters
       n.adapt = 4000,   # burn-in  .. 4000 is enough for the full model but in case ...
       n.iter = 30000,
@@ -509,7 +509,7 @@ model {
     
     y = jags.samples(m, variable.names=tomonitor, n.iter=n.iter.total, thin=p$surplusproduction_model$n.thin) # sample from posterior
     
-    res = list( jags=j, sb=sb, p=p)
+    res = list( mcmc=y, sb=sb, p=p)
     save(res, file=p$surplusproduction_model$fnres, compress=T)
 
     return(res)
