@@ -1,9 +1,9 @@
 
-# species composition analysis from snow crab data
+## species composition analysis from snow crab data
+## in testing ...
 
   
-  if (!exists("current.year")) current.year=lubridate::year(Sys.Date())
-  p = bio.snowcrab::load.environment( year.assessment=current.year)
+  p = bio.snowcrab::load.environment( year.assessment=year.assessment)
 
 
   bioLibrary( "sorted.ordination")

@@ -4,8 +4,8 @@
 
   # ++++++++++ must check timing of 4X to make sure that the season is not an issue ++++++++++
   
-  if (!exists("current.year")) current.year=lubridate::year(Sys.Date())
-  p = bio.snowcrab::load.environment( year.assessment=current.year)
+  if (!exists("year.assessment")) year.assessment=lubridate::year(Sys.Date())
+  p = bio.snowcrab::load.environment( year.assessment=year.assessment )
 
 
   p$clusters = "localhost"

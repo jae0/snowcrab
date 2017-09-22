@@ -1,5 +1,8 @@
 
   fishery.model.jags = function( DS="", yr=NULL ) {
+
+    warning( "This function is deprecated")
+
     out = NULL
     bugsdir= system.file( "bugs", package="bio.snowcrab" )
     if (DS=="biomass.dynamic" ) {

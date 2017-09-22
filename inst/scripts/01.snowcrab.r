@@ -2,10 +2,11 @@
 require(bio.base)
 # require(raster)  ## TODO :: remove raster-based routines
 
-if (!exists("current.year")) current.year=lubridate::year(Sys.Date())
-# current.year=lubridate::year(Sys.Date()) -1   # or year previous to current
-
-p = bio.snowcrab::load.environment( year.assessment=current.year )
+if (!exists("year.assessment")) {
+  year.assessment=lubridate::year(Sys.Date())      # year.assessment 
+  year.assessment=lubridate::year(Sys.Date()) -1   # or year previous to current
+}
+p = bio.snowcrab::load.environment( year.assessment=year.assessment )
 #loadfunctions('bio.snowcrab')
 
 # get data tables from Oracle server and store local copies
@@ -59,7 +60,7 @@ if (obtain.database.snapshot) {
 # -------------------------------------------------------------------------------------
 # process the net configuration and the temperatures from seabird, netmind, etc ..
 # if just updating a single year, run the following, else all years will be run by default
-  if (updating.current.year) {
+  if (updating.year.assessment) {
     p$seabird.yToload = p$year.assessment
     p$minilog.yToload = p$year.assessment
     p$netmind.yToload = p$year.assessment

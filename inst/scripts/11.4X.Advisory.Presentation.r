@@ -1,8 +1,11 @@
 
 #logbook 4X
 
-year.assessment=2017
-p = bio.snowcrab::load.environment( year.assessment=2017)
+warning( "The 11.4X.Advisory.Presentation* files need to be merged and cleaned up .. Ben")
+
+if (!exists("year.assessment")) year.assessment=lubridate::year(Sys.Date())
+p = bio.snowcrab::load.environment( year.assessment=year.assessment )
+
 
 outdir = file.path(project.datadirectory('bio.snowcrab'),'assessments',  p$year.assessment, "presentations", '4X')
 dir.create(outdir,showWarnings=T)

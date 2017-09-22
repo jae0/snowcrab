@@ -1,8 +1,8 @@
   #BZ 2017 Not used in assessment
 #Deprecated
   
-  if (!exists("current.year")) current.year=lubridate::year(Sys.Date())
-  p = bio.snowcrab::load.environment( year.assessment=current.year)
+  if (!exists("year.assessment")) year.assessment=lubridate::year(Sys.Date())
+  p = bio.snowcrab::load.environment( year.assessment=year.assessment)
 
   # mapping of fisher stats
 

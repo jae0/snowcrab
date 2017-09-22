@@ -1,6 +1,8 @@
   
-  if (!exists("current.year")) current.year=lubridate::year(Sys.Date())
-  p = bio.snowcrab::load.environment( year.assessment=current.year)
+  if (!exists("year.assessment")) year.assessment=lubridate::year(Sys.Date())
+  p = bio.snowcrab::load.environment( year.assessment=year.assessment )
+
+
 
 # --------------------------------------------------------------
 #  Ensure the following scripts complete without error:
@@ -39,7 +41,7 @@
 # -------------------------------------------------------------------------------------
 # abundance .. positive valued data .. vn = "snowcrab.large.males_abundance"
 
-p = bio.snowcrab::load.environment( year.assessment=current.year )
+p = bio.snowcrab::load.environment( year.assessment )
 p$selection=list( 
   name = "snowcrab.large.males_abundance",
   type = "abundance",
@@ -123,9 +125,9 @@ GCV = 2.4006  Scale est. = 2.3943    n = 6853
 
 # -------------------------------------------------
 # presence-absence
-# current.year = 2016
+# year.assessment = 2016
 
-p = bio.snowcrab::load.environment( year.assessment=current.year )
+p = bio.snowcrab::load.environment( year.assessment=year.assessment )
 p$selection=list( 
   name = "snowcrab.large.males_presence_absence",
   type = "presence_absence",
@@ -211,7 +213,7 @@ UBRE = -0.031615  Scale est. = 1         n = 6853
 
 
 # collect all predictions into a single file and return:
-p = bio.snowcrab::load.environment( year.assessment=current.year )
+p = bio.snowcrab::load.environment( year.assessment=year.assessment )
 
 p$selection=list( 
   name = "snowcrab.large.males_abundance",

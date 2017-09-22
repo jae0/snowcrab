@@ -1,41 +1,43 @@
-res$mcmc## --------- 
-#### final estimation of biomass via fishery model:
 
-  
-if (!exists("current.year")) current.year=lubridate::year(Sys.Date())
-p = bio.snowcrab::load.environment( year.assessment=current.year)
-
-p$surplusproduction_model = list()
-p$surplusproduction_model$method = "stan"  # "jags", etc.
-p$surplusproduction_model$outdir = file.path(project.datadirectory('bio.snowcrab'), "assessments", p$year.assessment ),
-p$surplusproduction_model$fnres  = file.path(p$surplusproduction_model$outdir, paste( "surplus.prod.mcmc", p$year.assessment, p$surplusproduction_model$method, "rdata", sep=".") )
+## --------- 
+#### final estimation of biomass via fishery models and associated figures and tables:
 
 
-res = surplusproduction_model( p=p, DS=p$surplusproduction_model$method )
-# load( p$surplusproduction_model$fnres )
+if (!exists("year.assessment")) year.assessment=lubridate::year(Sys.Date())
+p = bio.snowcrab::load.environment( year.assessment=year.assessment )
 
 
-outdir = p$surplusproduction_model$outdir
+
+p$fishery_model = list()
+p$fishery_model$method = "stan"  # "jags", etc.
+p$fishery_model$outdir = file.path(project.datadirectory('bio.snowcrab'), "assessments", p$year.assessment )
+p$fishery_model$fnres  = file.path(p$fishery_model$outdir, paste( "surplus.prod.mcmc", p$year.assessment, p$fishery_model$method, "rdata", sep=".") )
+
+
+res = fishery_model( p=p, DS=p$fishery_model$method )
+# load( p$fishery_model$fnres )
+
+
 # frequency density of key parameters
-figure.mcmc( "K", res=res, fn=file.path(outdir, "K.density.png" ) )
-figure.mcmc( "r", res=res, fn=file.path(outdir, "r.density.png" ) )
-figure.mcmc( "q", res=res, fn=file.path(outdir, "q.density.png" ) ,xrange=c(0,2))
-figure.mcmc( "FMSY", res=res, fn=file.path(outdir, "FMSY.density.png" ) )
-figure.mcmc( "bo.sd", res=res, fn=file.path(outdir, "bo.sd.density.png" ) )
-figure.mcmc( "bp.sd", res=res, fn=file.path(outdir, "bp.sd.density.png" ) )
+figure.mcmc( "K", res=res, fn=file.path(p$fishery_model$outdir, "K.density.png" ) )
+figure.mcmc( "r", res=res, fn=file.path(p$fishery_model$outdir, "r.density.png" ) )
+figure.mcmc( "q", res=res, fn=file.path(p$fishery_model$outdir, "q.density.png" ) ,xrange=c(0,2))
+figure.mcmc( "FMSY", res=res, fn=file.path(p$fishery_model$outdir, "FMSY.density.png" ) )
+figure.mcmc( "bo.sd", res=res, fn=file.path(p$fishery_model$outdir, "bo.sd.density.png" ) )
+figure.mcmc( "bp.sd", res=res, fn=file.path(p$fishery_model$outdir, "bp.sd.density.png" ) )
 
 # timeseries
-figure.mcmc( type="timeseries", vname="biomass", res=res, fn=file.path(outdir, "biomass.timeseries.png" ), save.plot=T )
-figure.mcmc( type="timeseries", vname="fishingmortality", res=res, fn=file.path(outdir, "fishingmortality.timeseries.png" ) )
+figure.mcmc( type="timeseries", vname="biomass", res=res, fn=file.path(p$fishery_model$outdir, "biomass.timeseries.png" ), save.plot=T )
+figure.mcmc( type="timeseries", vname="fishingmortality", res=res, fn=file.path(p$fishery_model$outdir, "fishingmortality.timeseries.png" ) )
 
 # Harvest control rules
-figure.mcmc( type="hcr", vname="default", res=res, fn=file.path(outdir, "hcr.default.png" ), save.plot=T  )
-figure.mcmc( type="hcr", vname="simple", res=res, fn=file.path(outdir, "hcr.simple.png" ) )
+figure.mcmc( type="hcr", vname="default", res=res, fn=file.path(p$fishery_model$outdir, "hcr.default.png" ), save.plot=T  )
+figure.mcmc( type="hcr", vname="simple", res=res, fn=file.path(p$fishery_model$outdir, "hcr.simple.png" ) )
 
 # diagnostics
-figure.mcmc( type="diagnostic.production", res=res, fn=file.path(outdir, "diagnostic.production.png" ) )
-figure.mcmc( type="diagnostic.errors", res=res, fn=file.path(outdir, "diagnostic.errors.png" ) )
-figure.mcmc( type="diagnostic.phase", res=res, fn=file.path(outdir, "diagnostic.phase.png" ) )
+figure.mcmc( type="diagnostic.production", res=res, fn=file.path(p$fishery_model$outdir, "diagnostic.production.png" ) )
+figure.mcmc( type="diagnostic.errors", res=res, fn=file.path(p$fishery_model$outdir, "diagnostic.errors.png" ) )
+figure.mcmc( type="diagnostic.phase", res=res, fn=file.path(p$fishery_model$outdir, "diagnostic.phase.png" ) )
 
 # densities of biomass estimates for the year.assessment
 for (i in 1:3) plot(density(res$mcmc$B[res$sb$N,i,,] ), main="")

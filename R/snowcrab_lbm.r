@@ -115,7 +115,7 @@ snowcrab_lbm = function( ip=NULL, DS=NULL, p=NULL, voi=NULL, year=NULL, ret=NULL
 
     # additional indicators.db variables
     for (iv in names(p$indicators.variables)) {
-      p0 = bio.indicators::indicators.parameters( p=p, DS="default", current.year=p$current.year )
+      p0 = bio.indicators::indicators.parameters( p=p, DS="default", year.assessment=p$year.assessment )
       p0 = bio.indicators::indicators.parameters( p=p0, DS=iv  )
       p0 = bio.spacetime::spatial_parameters( p=p0, type=p$spatial.domain ) # return to correct domain
       vn = p0$indicators.variables[[iv]]
@@ -185,7 +185,7 @@ snowcrab_lbm = function( ip=NULL, DS=NULL, p=NULL, voi=NULL, year=NULL, ret=NULL
     names(PS)[ names(PS)=="amplitude"] ="tamplitude" 
 
     # make years coherent
-    p0 = bio.indicators::indicators.parameters(p=p, current.year=p$current.year )
+    p0 = bio.indicators::indicators.parameters(p=p, year.assessment=p$year.assessment )
     yr_index = match( p$yrs, p0$yrs )
     for ( vn in c("t", p0$bstats) ) PS[[vn]][] = PS[[vn]][,yr_index]
 
@@ -204,7 +204,7 @@ snowcrab_lbm = function( ip=NULL, DS=NULL, p=NULL, voi=NULL, year=NULL, ret=NULL
 
     # additional indicators.db variables with correct number of years
     for (iv in names(p$indicators.variables)) {
-      p0 = bio.indicators::indicators.parameters( p=p, DS="default", current.year=p$current.year )
+      p0 = bio.indicators::indicators.parameters( p=p, DS="default", year.assessment=p$year.assessment )
       p0 = bio.indicators::indicators.parameters( p=p0, DS=iv  )
       p0 = bio.spacetime::spatial_parameters( p=p0, type=p$spatial.domain ) # return to correct domain
       vn = p0$indicators.variables[[iv]]

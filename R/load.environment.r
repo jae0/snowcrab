@@ -16,7 +16,7 @@ load.environment = function( year.assessment=NULL, libs=NULL, p=NULL ) {
   if (!is.null(libs)) suppressMessages( RLibrary(libs) ) 
   if ( exists("libs", p) ) libs = c(libs, p$libs)
   
-  p = bio.snowcrab::snowcrab.parameters( p=p, DS="default", current.year=year.assessment ) 
+  p = bio.snowcrab::snowcrab.parameters( p=p, DS="default", year.assessment=year.assessment ) 
 
   return(p)
 }

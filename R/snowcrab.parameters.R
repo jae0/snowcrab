@@ -1,5 +1,5 @@
 
-snowcrab.parameters = function( p=NULL, DS="default", current.year=NULL, varname=NULL ) {
+snowcrab.parameters = function( p=NULL, DS="default", year.assessment=NULL, varname=NULL ) {
 
   if ( is.null(p) ) p=list()
 
@@ -22,18 +22,18 @@ snowcrab.parameters = function( p=NULL, DS="default", current.year=NULL, varname
       "bio.snowcrab", "bio.indicators" ) ) ) 
     p$libs = unique( p$libs )
 
-    if (is.null(current.year) ) stop( "must define current.year" )
+    if (is.null(year.assessment) ) stop( "must define year.assessment" )
 
-    p$current.year = current.year  # this is a synonym for year.assessment ... will eventually remove one of these
-    p$year.assessment = current.year
+    p$year.assessment = year.assessment  # this is a synonym for year.assessment ... will eventually remove one of these
+    p$year.assessment = year.assessment
 
-    p$seabird.yToload = 2012:p$current.year
-    p$minilog.yToload = 1999:p$current.year
-    p$netmind.yToload = 1999:p$current.year
-    p$esonar.yToload  = 2014:p$current.year
+    p$seabird.yToload = 2012:p$year.assessment
+    p$minilog.yToload = 1999:p$year.assessment
+    p$netmind.yToload = 1999:p$year.assessment
+    p$esonar.yToload  = 2014:p$year.assessment
     p$netmensuration.problems = c()
 
-    p$yrs = c(1999:p$current.year)  
+    p$yrs = c(1999:p$year.assessment)  
     p$ny = length(p$yrs)
     p$nt = p$ny # must specify, else assumed = 1 (1= no time)  ## nt=ny annual time steps, nt = ny*nw is seassonal
     p$nw = 10 # default value of 10 time steps for all temp and indicators
