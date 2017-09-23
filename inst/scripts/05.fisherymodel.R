@@ -40,21 +40,30 @@ figure.mcmc( type="diagnostic.errors", res=res, fn=file.path(p$fishery_model$out
 figure.mcmc( type="diagnostic.phase", res=res, fn=file.path(p$fishery_model$outdir, "diagnostic.phase.png" ) )
 
 # densities of biomass estimates for the year.assessment
-for (i in 1:3) plot(density(res$mcmc$B[res$sb$N,i,,] ), main="")
-( qs = apply(  res$mcmc$B[res$sb$N,,,], 1, quantile, probs=c(0.025, 0.5, 0.975) ) )
+x11()
+layout( matrix(c(1,2,3), 3, 1 ))
+par(mar = c(4.4, 4.4, 0.65, 0.75))
+for (i in 1:3) plot(density(res$mcmc$B[,res$sb$N,i] ), main="")
+( qs = apply(  res$mcmc$B[,res$sb$N,], 2, quantile, probs=c(0.025, 0.5, 0.975) ) )
 
 # densities of biomass estimates for the previous year
-for (i in 1:3) plot(density( res$mcmc$B[res$sb$N-1,i,,] ), main="")
-( qs = apply(  res$mcmc$B[res$sb$N-1,,,], 1, quantile, probs=c(0.025, 0.5, 0.975) ) )
+x11()
+layout( matrix(c(1,2,3), 3, 1 ))
+par(mar = c(4.4, 4.4, 0.65, 0.75))
+for (i in 1:3) plot(density( res$mcmc$B[,res$sb$N-1,i] ), main="")
+( qs = apply(  res$mcmc$B[,res$sb$N-1,], 2, quantile, probs=c(0.025, 0.5, 0.975) ) )
 
 # densities of F in assessment year
-for (i in 1:3) plot(density(  res$mcmc$F[res$sb$N,i,,] ), xlim=c(0.05, 0.5), main="")
-( qs = apply(  res$mcmc$F[res$sb$N,,,], 1, quantile, probs=c(0.025, 0.5, 0.975) ) )
-( qs = apply(  res$mcmc$F[res$sb$N,,,], 1, mean ) )
+x11()
+layout( matrix(c(1,2,3), 3, 1 ))
+par(mar = c(4.4, 4.4, 0.65, 0.75))
+for (i in 1:3) plot(density(  res$mcmc$F[,res$sb$N,i] ), xlim=c(0.01, 0.6), main="")
+( qs = apply(  res$mcmc$F[,res$sb$N,], 2, quantile, probs=c(0.025, 0.5, 0.975) ) )
+( qs = apply(  res$mcmc$F[,res$sb$N,], 2, mean ) )
 
 # densities of F in previous year
-for (i in 1:3) plot(density(  res$mcmc$F[res$sb$N-1,i,,] ), main="")
-( qs = apply(  res$mcmc$F[res$sb$N-1,,,], 1, quantile, probs=c(0.025, 0.5, 0.975) ) )
+for (i in 1:3) plot(density(  res$mcmc$F[,res$sb$N-1,i] ), xlim=c(0.01, 0.6), main="")
+( qs = apply(  res$mcmc$F[,res$sb$N-1,], 1, quantile, probs=c(0.025, 0.5, 0.975) ) )
 
 # F for table ---
 summary( res$mcmc$F, median)

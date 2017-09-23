@@ -5,22 +5,22 @@ fishery_model = function(  p, DS="stan", plotresults=TRUE ) {
     
     year.assessment=2016
     p = bio.snowcrab::load.environment( year.assessment=year.assessment)
-    p$fishery_model = list(
-      outdir = file.path(project.datadirectory('bio.snowcrab'), "assessments", p$year.assessment )
-    )
+    p$fishery_model = list()
+    p$fishery_model$outdir = file.path(project.datadirectory('bio.snowcrab'), "assessments", p$year.assessment )
 
   }
 
-  message( "Output to: ", p$fishery_model$outdir )
+  message( "Output location is: ", p$fishery_model$outdir )
 
-  outdir = p$fishery_model$outdir
-  dir.create( outdir, recursive=T, showWarnings=F )
+  dir.create( p$fishery_model$outdir, recursive=T, showWarnings=F )
  
 
   if (DS=="stan" ) {
 
     library(rstan)
-    
+    rstan_options(auto_write = TRUE)
+    options(mc.cores = parallel::detectCores())
+
     sb = biomass.summary.db(p=p, DS="surplusproduction" )
 
     # ----------------------------------
@@ -84,10 +84,7 @@ fishery_model = function(  p, DS="stan", plotresults=TRUE ) {
       transformed parameters {
         matrix[N,U] Y;  // index of abundance 
         matrix[N,U] Ymu;  // collator used to force positive values for lognormal
-        matrix[N,U] logYmu;
-
         matrix[MN,U] bmmu; // collator used to force positive values for lognormal
-        matrix[MN,U] logbmmu; 
         matrix[MN,U] rem;  // observed catch
 
         // copy parameters to a new variable (Y) with imputed missing values
@@ -166,8 +163,6 @@ fishery_model = function(  p, DS="stan", plotresults=TRUE ) {
           }
         }
 
-        logYmu = log( Ymu ) ;
-        logbmmu = log( bmmu );
 
       }
 
@@ -180,23 +175,27 @@ fishery_model = function(  p, DS="stan", plotresults=TRUE ) {
         q ~ normal( qmu, qsd )  ;
         qs ~ normal( qmu, qsd )  ;
         b0 ~ beta( 8, 2 ) ; // starting b prior to first catch event 
-        bosd ~ beta( 2, 8 ) ;
-        bpsd ~ beta( 2, 8 ) ;
-
+        bosd ~ cauchy( 0, 0.5 ) ;  // slightly informative .. center of mass between (0,1)
+        bpsd ~ cauchy( 0, 0.5 ) ;
 
 
         // -------------------  
         // biomass observation model 
         for (j in 1:U) {  
-          Y[1:N,j] ~ lognormal( logYmu[1:N,j], bosd[j] ) ;  
+          log(Y[1:N,j]) ~ normal( log(Ymu[1:N,j]), bosd[j] ) ;  // stan thinks Y is being transformed due to attempt to impute missing values .. ignore
         }
+ 
 
         // -------------------  
         // biomass process model 
         for (j in 1:U) {
-          bm[1:MN,j] ~ lognormal( logbmmu[1:MN,j], bpsd[j] ) ;     
+          log(bm[1:MN,j]) ~ normal( log(bmmu[1:MN,j]), bpsd[j] ) ;     
         }
-      
+
+        // could have used lognormal but this parameterization is 10X faster and more stable
+        target += - log(fabs(Y));  // required due to log transf above
+        target += - log(fabs(bm));
+
       }
 
       generated quantities {
@@ -271,8 +270,8 @@ fishery_model = function(  p, DS="stan", plotresults=TRUE ) {
 
     stanmodel = rstan::stan_model( model_code=surplus.stan )
 
-    f = sampling(stanmodel, data=sb, chains=5, iter=5000, warmup = 1000,
-      control = list(adapt_delta = 0.85, max_treedepth=12) )
+    f = sampling(stanmodel, data=sb, chains=4, iter=10000, warmup = 2000)
+      control = list(adapt_delta = 0.9, max_treedepth=15) )
           # warmup = 200,          # number of warmup iterations per chain
           # control = list(adapt_delta = 0.9),
           # # refresh = 500,          # show progress every 'refresh' iterations
@@ -280,7 +279,8 @@ fishery_model = function(  p, DS="stan", plotresults=TRUE ) {
           # chains = 5,             # number of Markov chains
           # cores = 5              # number of cores (using 2 just for the vignette)
 
-    res = list( mcmc=as.array(f), sb=sb, p=p)
+   
+    res = list( mcmc=extract(f), sb=sb, p=p)
     save(res, file=p$fishery_model$fnres, compress=T)
     return(res)
 
@@ -510,13 +510,28 @@ model {
     
     y = jags.samples(m, variable.names=tomonitor, n.iter=n.iter.total, thin=p$fishery_model$n.thin) # sample from posterior
     
-    res = list( mcmc=y, sb=sb, p=p)
+    jags2stan = function(x){
+      # merge chains together
+      print(attr(x, "varname"))
+      xdim = dim(x)
+      chain = length(xdim)
+      iter = chain-1
+      oorder = c(iter, chain, 1:(iter-1))
+      o = aperm( x,  oorder)
+      odim = dim(o)
+      dim(o) =c(odim[1]*odim[2], odim[3:length(odim)])
+      return( o)
+    }
+    out = lapply( y, jags2stan )
+
+    res = list( mcmc=out, sb=sb, p=p)
     save(res, file=p$fishery_model$fnres, compress=T)
 
     return(res)
 
 
       if (0) {
+
         dic.samples(m, n.iter=p$fishery_model$n.iter ) # pDIC
 
         graphics.off() ; x11(); layout( matrix(c(1,2,3), 3, 1 )); par(mar = c(5, 4, 0, 2))

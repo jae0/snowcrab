@@ -22,7 +22,7 @@
 
         for (i in 1:3) {
         for (yr in 1:sb$N) { 
-          dta = y$r[ yr,i,,]
+          dta = y$r[yr,i]
           qs = apply( dta, 2, quantile, probs=c(0.025, 0.5, 0.975) )
           qs = signif( qs, 3 )
           pdat = as.vector( dta)
@@ -51,10 +51,10 @@
     if ( type=="density" ) {  # default
     
       if ( vname=="K" ) {
-        qs = apply( y$K[,,], 1, quantile, probs=c(0.025, 0.5, 0.975) )
+        qs = apply( y$K, 2, quantile, probs=c(0.025, 0.5, 0.975) )
         qs = signif( qs, 3 )
         for (i in 1:3) {
-          pdat = as.vector(y$K[i,,])
+          pdat = as.vector(y$K[,i])
            prr=NULL
            prr$class="lognormal"
 
@@ -73,14 +73,14 @@
       }}
 
       if ( vname=="r" ) {
-        qs = apply( y$r[,,], 1, quantile, probs=c(0.025, 0.5, 0.975) )
+        qs = apply( y$r, 2, quantile, probs=c(0.025, 0.5, 0.975) )
         qs = signif( qs, 3 )
         for (i in 1:3) {    prr=NULL
           prr=NULL
           prr$class='normal'
           prr$mean=sb$r.mu[i]
           prr$sd=sqrt(sb$r.sd[i])
-          pdat = as.vector(y$r[i,,])
+          pdat = as.vector(y$r[,i])
           plot.freq.distribution.prior.posterior( prior=prr, posterior=pdat, ...  )
           legend( "topright", bty="n", legend=paste( labs[i], "\n", vname, " = ", qs[2,i], " {", qs[1,i], ", ",  qs[3,i], "}  ", sep="" ) )   
       }}
@@ -88,10 +88,10 @@
 
 
       if ( vname=="q" ) {
-        qs = apply( y$q[,,], 1, quantile, probs=c(0.025, 0.5, 0.975) )
+        qs = apply( y$q, 2, quantile, probs=c(0.025, 0.5, 0.975) )
         qs = signif( qs, 3 )
         for (i in 1:3) {
-          pdat = as.vector(y$q[i,,])
+          pdat = as.vector(y$q[,i])
           prr=NULL
           prr$class="normal"
           prr$mean=sb$q.mu[i]
@@ -101,10 +101,10 @@
       )}}
 
       if ( vname=="qs" ) {
-        QQ = apply( y$q[,,], 1, quantile, probs=c(0.025, 0.5, 0.975) )
+        QQ = apply( y$q, 2, quantile, probs=c(0.025, 0.5, 0.975) )
         QQ = signif( QQ, 3 )
         for (i in 1:3) {
-          pdat = as.vector(y$qs[i,,])
+          pdat = as.vector(y$qs[,i])
           # prr=NULL
           # prr$class="normal"
           # prr$mean=sb$q0x[i]
@@ -115,10 +115,10 @@
 
 
       if ( vname=="BMSY" ) {
-        qs = apply( y$BMSY[,,], 1, quantile, probs=c(0.025, 0.5, 0.975) )
+        qs = apply( y$BMSY, 2, quantile, probs=c(0.025, 0.5, 0.975) )
         qs = signif( qs, 3 )
         for (i in 1:3) {
-          pdat = as.vector(y$BMSY[i,,])
+          pdat = as.vector(y$BMSY[,i])
           prr=NULL
           prr$class="none"
           plot.freq.distribution.prior.posterior( prior=prr, posterior=pdat, ...  )
@@ -127,10 +127,10 @@
       )}}
   
       if ( vname=="FMSY" ) {
-        qs = apply( y$FMSY[,,], 1, quantile, probs=c(0.025, 0.5, 0.975) )
+        qs = apply( y$FMSY, 2, quantile, probs=c(0.025, 0.5, 0.975) )
         qs = signif( qs, 3 )
         for (i in 1:3) {
-          pdat = as.vector(y$FMSY[i,,])
+          pdat = as.vector(y$FMSY[,i])
           prr=NULL
           prr$class="none"
           plot.freq.distribution.prior.posterior( prior=prr, posterior=pdat, ...  )
@@ -138,10 +138,10 @@
             legend=paste( labs[i], " ", vname, " = ", qs[2,i], " {", qs[1,i], ", ",  qs[3,i], "}", sep="" )   
       )}}
 	if ( vname=="bo.sd" ) {
-        qs = apply( y$bo.sd[,,], 1, quantile, probs=c(0.025, 0.5, 0.975) )
+        qs = apply( y$bo.sd, 2, quantile, probs=c(0.025, 0.5, 0.975) )
         qs = signif( qs, 3 )
         for (i in 1:3) {
-          pdat = as.vector(y$bo.sd[i,,])
+          pdat = as.vector(y$bo.sd[,i])
           prr=NULL
           prr$class="lognormal"
           prr$meanlog=sb$bo.mup
@@ -151,10 +151,10 @@
             legend=paste( labs[i], " ", vname, " = ", qs[2,i], " {", qs[1,i], ", ",  qs[3,i], "}", sep="" )   
       )}}
           if ( vname=="bp.sd" ) {
-        qs = apply( y$bp.sd[,,], 1, quantile, probs=c(0.025, 0.5, 0.975) )
+        qs = apply( y$bp.sd, 2, quantile, probs=c(0.025, 0.5, 0.975) )
         qs = signif( qs, 3 )
         for (i in 1:3) {
-          pdat = as.vector(y$bp.sd[i,,])
+          pdat = as.vector(y$bp.sd[,i])
           prr=NULL
           prr$class='uniform'
           prr$max=3
@@ -176,15 +176,15 @@
       
       if (vname=="biomass") { 
 
-        SI =  apply( y$q, 1, median, na.rm=T  )
+        SI =  apply( y$q, 2, median, na.rm=T  )
 
         for (i in 1:3) {
           qIOA = sb$IOA[,i] / SI[i] 
           IOA = sb$IOA[,i] 
-          meanval = apply( y$B[,i,,], 1, mean, na.rm=T  )
+          meanval = apply( y$B[,,i], 2, mean, na.rm=T  )
 
           prs = seq( from=0.025, to=0.975, length.out=600)
-          Bq =  apply( y$B[,i,,], 1, quantile, probs=prs, na.rm=T  )
+          Bq =  apply( y$B[,,i], 2, quantile, probs=prs, na.rm=T  )
 
           yran = range(c(0, Bq, sb$IOA[,i] ), na.rm=T )*1.01
           plot( yrs, Bq[1,], type="n", ylim=yran, xlab="", ylab=""  )
@@ -206,10 +206,10 @@
       }}
 
       if (vname=="fishingmortality") { 
-        Fmsy = apply( y$FMSY, 1, mean, na.rm=T ) 
+        Fmsy = apply( y$FMSY, 2, mean, na.rm=T ) 
         for (i in 1:3) {
           prs = seq( from=0.025, to=0.975, length.out=600)
-          Fi = apply( y$F[1:sb$N,i,,], 1, quantile, probs=prs, na.rm=T )
+          Fi = apply( y$F[,1:sb$N,i], 2, quantile, probs=prs, na.rm=T )
           yran = range(c(0, max(c(Fi,Fmsy))), na.rm=T )*1.01
           yran = pmin( yran, 1.2 )
           plot( yrs0, Fi[1,], type="n", ylim=yran, xlab="", ylab="" )
@@ -229,11 +229,11 @@
     if (type=="hcr") {
       if (vname=="default") {
 
-        B =  apply( y$B, c(1,2), mean, na.rm=T  )
-        F =  apply( y$F, c(1,2), mean, na.rm=T  )
-        K =  apply( y$K, c(1), mean, na.rm=T  )
-        FMSY = apply( y$FMSY, c(1), mean, na.rm=T  )
-        BMSY = apply( y$BMSY, c(1), mean, na.rm=T  )
+        B =  apply( y$B, c(2,3), mean, na.rm=T  )
+        F =  apply( y$F, c(2,3), mean, na.rm=T  )
+        K =  apply( y$K, c(2), mean, na.rm=T  )
+        FMSY = apply( y$FMSY, c(2), mean, na.rm=T  )
+        BMSY = apply( y$BMSY, c(2), mean, na.rm=T  )
         
         for (i in 1:3 ) {
           ylims = c(0, min( 1, max( FMSY[i] * 1.25, F[hdat,i] ) ) )
@@ -241,7 +241,7 @@
             ylim=ylims, col="darkorange", cex=0.8, lwd=2, xlab="", ylab="", pch=20 )
  
 
-          # nn = as.matrix( cbind( Bx=as.vector( y$B[ndata,i,,] ), Fx = as.vector( y$F[ndata,i,,] ) ))
+          # nn = as.matrix( cbind( Bx=as.vector( y$B[,ndata,i] ), Fx = as.vector( y$F[,ndata,i] ) ))
           # ellipse.2d(nn[,1], nn[,2], pv=0.05, sc=30)
           
           if (i==3) title( xlab="Fishable biomass (kt)" ) 
@@ -311,23 +311,23 @@
       if (vname=="default.unmodelled") {
       
         B =  sb$IOA
-          F =  apply( y$F, c(1,2), mean, na.rm=T  )
+          F =  apply( y$F, c(2,3), mean, na.rm=T  )
             
           areas = c("cfa4x", "cfasouth", "cfanorth" )
           regions = c("4X", "S-ENS", "N-ENS")
     
           td = exploitationrates(p=p, areas=areas, labels=regions, CFA4X.exclude.year.assessment=FALSE )
    
-          K =  apply( y$K, c(1), mean, na.rm=T  )
-          FMSY = apply( y$FMSY, c(1), mean, na.rm=T  )
-          BMSY = apply( y$BMSY, c(1), mean, na.rm=T  )
+          K =  apply( y$K, c(2), mean, na.rm=T  )
+          FMSY = apply( y$FMSY, c(2), mean, na.rm=T  )
+          BMSY = apply( y$BMSY, c(2), mean, na.rm=T  )
 
         for (i in 1:3 ) {
           ylims = c(0, FMSY[i] * 1.25)
           plot( B[hdat,i], F[hdat,i],  type="b", xlim=c(0, K[i] * 1.1 ),  
             ylim=ylims, col="darkorange", cex=0.8, lwd=2, xlab="", ylab="", pch=20 )
 
-          # nn = as.matrix( cbind( Bx=as.vector( y$B[ndata,i,,] ), Fx = as.vector( y$F[ndata,i,,] ) ))
+          # nn = as.matrix( cbind( Bx=as.vector( y$B[,ndata,i] ), Fx = as.vector( y$F[,ndata,i] ) ))
           # ellipse.2d(nn[,1], nn[,2], pv=0.05, sc=30)
           
           if (i==3) title( xlab="Fishable biomass (kt)" ) 
@@ -389,13 +389,13 @@
       if (vname=="simple") {
         require(car)
      
-          B =  apply( y$B, c(1,2), mean, na.rm=T  )
-          F =  apply( y$F, c(1,2), mean, na.rm=T  )
-          C =  apply( y$C, c(1,2), mean, na.rm=T  )
-          K =  apply( y$K, c(1), mean, na.rm=T  )
+          B =  apply( y$B, c(2,3), mean, na.rm=T  )
+          F =  apply( y$F, c(2,3), mean, na.rm=T  )
+          C =  apply( y$C, c(2,3), mean, na.rm=T  )
+          K =  apply( y$K, c(2), mean, na.rm=T  )
 #          for (i in 1:3) C[,i] = C[,i]  * K[i]
-          FMSY = apply( y$FMSY, c(1), mean, na.rm=T  )
-          BMSY = apply( y$BMSY, c(1), mean, na.rm=T  )
+          FMSY = apply( y$FMSY, c(2), mean, na.rm=T  )
+          BMSY = apply( y$BMSY, c(2), mean, na.rm=T  )
         
           labs = c("N-ENS", "S-ENS", "4X")
 
@@ -413,7 +413,7 @@
           
           text( 0, ylims[2]*0.9,  labels=labs[i], pos=3, cex= 0.85 )
 
-          # nn = as.matrix( cbind( Bx=as.vector( y$B[ndata,i,,] ), Fx = as.vector( y$F[ndata,i,,] ) ))
+          # nn = as.matrix( cbind( Bx=as.vector( y$B[,ndata,i] ), Fx = as.vector( y$F[,ndata,i] ) ))
           # ellipse.2d(nn[,1], nn[,2], pv=0.05, sc=30)
 
           if (i==3) title( xlab="Fishable biomass (kt)" ) 
@@ -464,8 +464,8 @@
     
     if (type=="diagnostic.phase") {
       
-      B =  apply( y$B, c(1,2), mean, na.rm=T  )
-      K =  apply( y$K, c(1), mean, na.rm=T  )
+      B =  apply( y$B, c(2,), mean, na.rm=T  )
+      K =  apply( y$K, c(2), mean, na.rm=T  )
          
       for (i in 1:3 ) {
         plot( B[1:ndata-1,i], B[2:ndata,i],  type="b", xlab="t", ylab="t+1",
@@ -489,7 +489,7 @@
       eP = y$bp.sd
       eO = y$bo.sd
       for (i in 1:3 ) {
-          plot( eP[,i,,], eO[,i,,],  type="p", pch=22 ) 
+          plot( eP[,,i], eO[,,i],  type="p", pch=22 ) 
           if (i==2) title( ylab="Process error (SD)" ) 
           if (i==3) title( xlab="Observation error (SD)" ) 
 
@@ -501,14 +501,14 @@
 
     if (type=="diagnostic.production") {
        
-      B =  apply( y$B, c(1,2), mean, na.rm=T  )
-      P =  apply( y$P, c(1,2), mean, na.rm=T  )
+      B =  apply( y$B, c(2,3), mean, na.rm=T  )
+      P =  apply( y$P, c(2,3), mean, na.rm=T  )
 
-      MSY = apply( y$MSY, c(1), mean, na.rm=T  )
-      FMSY = apply( y$FMSY, c(1), mean, na.rm=T  )
-      BMSY = apply( y$BMSY, c(1), mean, na.rm=T  )
-      C =  apply( y$C, c(1,2), mean, na.rm=T  )
-      K =  apply( y$K, c(1), mean, na.rm=T  )
+      MSY = apply( y$MSY, c(2), mean, na.rm=T  )
+      FMSY = apply( y$FMSY, c(2), mean, na.rm=T  )
+      BMSY = apply( y$BMSY, c(2), mean, na.rm=T  )
+      C =  apply( y$C, c(2,3), mean, na.rm=T  )
+      K =  apply( y$K, c(2), mean, na.rm=T  )
          
       # production vs biomass
       x11()
