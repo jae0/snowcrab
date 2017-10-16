@@ -25,12 +25,12 @@
   areas = c("cfaall", "cfanorth", "cfa23", "cfa24", "cfa4x", "cfaslope")
   det0 = det
 
-  x11()
+  plot.new()
   mm = which(det0$sex==1)
   mmh = jae.hist( det0$cw[mm], s0, s1, bwh, bwd, title="Male all",
     xlab=paste("CW (log base ", base, ")", sep=""))
 
-  x11()
+  plot.new()
   for (y in years) {
   for (a in areas) {
   for (mat in c(1,2) ) {
@@ -130,12 +130,12 @@
   areas = c("cfaall", "cfanorth", "cfa23", "cfa24", "cfa4x", "cfaslope")
   det0 = det
 
-  x11()
+  plot.new()
   mm = which(det0$sex==2)
   mmh = jae.hist( det0$cw[mm], s0, s1, bwh, bwd, title="Female all",
     xlab=paste("CW (log base ", base, ")", sep=""))
 
-  x11()
+  plot.new()
   for (y in years) {
   for (a in areas) {
   for (mat in c(1,2) ) {

@@ -406,7 +406,7 @@
     }
     print(out)
 
-    x11()
+    plot.new()
     year = p$year.assessment
     setdata = set[ which(set$yr==year),]
     N = filter.region.polygon(setdata[,c("lon","lat")], "cfanorth")

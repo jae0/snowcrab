@@ -19,8 +19,8 @@ ee = krige.conv( coords=Q[,c("plon", "plat")], data=Q$t, locations=pred.grid, kr
 
 data(elevation)
 
-x11();points(elevation, cex.min=1, cex.max=4, pt.div="quint")
-x11();plot(elevation, lowess=T)
+plot.new();points(elevation, cex.min=1, cex.max=4, pt.div="quint")
+plot.new();plot(elevation, lowess=T)
 
 str(elevation)
 names(elevation)

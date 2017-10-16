@@ -52,7 +52,7 @@
 
    if(graphic=='png')Cairo( file=fn, type="png", bg="white",  units="in", width=5, height=6, dpi=350 )
    if(graphic=='pdf')pdf(file=fn, width=5, height=6, bg='white')
-   if(graphic=='R')x11(4,6)
+   if(graphic=='R')plot.new(4,6)
       setup.lattice.options()
       pl = xyplot( mean~year|region, data=td, ub=td$ub, lb=td$lb,
             layout=c(1,n.regions),

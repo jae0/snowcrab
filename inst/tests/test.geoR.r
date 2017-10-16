@@ -22,7 +22,7 @@ p = bio.snowcrab::load.environment( libs=c("geoR", "geoRglm"))
   av = variog(a, estimator.type="modulus", max.dist=150)
   av.env = variog.mc.env(a, obj.variog=av, nsim=1000)
 
-  x11()
+  plot.new()
   par(mfrow=c(1,2), mar=c(3,3,1.5,0.5))
   plot(av,type="b", envelope=av.env )
 

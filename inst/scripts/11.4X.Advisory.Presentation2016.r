@@ -63,21 +63,21 @@ dir.create(outdir,showWarnings=T)
         cpuegrids[[y]]<-gridData(subset(lp,yr==yy[y],c('EID','X','Y','cpue')),lvls=cpue.levels,bcol="YlOrRd",FUN=mean,border=NA,grid.size=2,sx=Min_lon,sy=Min_lat,ex=Max_lon,ey=Max_lat)
         grid.polyData[[2]][[y]] = cpuegrids[[y]][[2]]
 
-   		x11()
+   		plot.new()
    		bioMap(xlim=c(-66.5,-63.1),ylim=c(42.7,44.8),boundaries='snowcrab',poly.lst=effortgrids[[y]][1:2],title=yy[y])
 		ContLegend('bottomleft',lvls=effortgrids[[y]]$lvls,Cont.data=effortgrids[[y]],title='Effort (trap hauls)',inset=0.02,cex=0.8,bg='white')
 
    			savePlot(file.path(outdir,paste('logbook.effort',yy[y],'png',sep=".")),type='png')
 		dev.off()
 
-   		x11()
+   		plot.new()
    		bioMap(xlim=c(-66.5,-63.1),ylim=c(42.7,44.8),boundaries='snowcrab',poly.lst=catchgrids[[y]][1:2],title=yy[y])
 		ContLegend('bottomleft',lvls=catchgrids[[y]]$lvls,Cont.data=catchgrids[[y]],title='Catch (kg)',inset=0.02,cex=0.8,bg='white')
 
    			savePlot(file.path(outdir,paste('logbook.catch',yy[y],'png',sep=".")),type='png')
 		dev.off()
 
-   		x11()
+   		plot.new()
    		bioMap(xlim=c(-66.5,-63.1),ylim=c(42.7,44.8),boundaries='snowcrab',poly.lst=cpuegrids[[y]][1:2],title=yy[y])
 		ContLegend('bottomleft',lvls=cpuegrids[[y]]$lvls,Cont.data=cpuegrids[[y]],title='CPUE (kg/th)',inset=0.02,cex=0.8,bg='white')
 
@@ -89,7 +89,7 @@ dir.create(outdir,showWarnings=T)
 
 	landings = aggregate(landings~yr,data=logs,FUN=sum)
 	landings$landings=landings$landings/1000
-	x11()
+	plot.new()
 	plot(landings$landings, type="n", ylim=c(0,500), ylab="Landings (mt)", main="4X Landings by Year", xaxt="n", xlab="Year" )
 	axis(1, at=1:length(landings$landings), labels=landings$yr)
 	points(landings$landings, col="red", pch=20)
@@ -107,7 +107,7 @@ dir.create(outdir,showWarnings=T)
 	monthly = monthly[order(monthly$yr,monthly$fm),]
 	
 	#plot monthly landings
-	x11()
+	plot.new()
 	yu = as.numeric(max(as.numeric(monthly$yr)))
 	yrs=(yu-2):yu
 	tbz=monthly[monthly$yr %in% c(yrs),]
@@ -125,7 +125,7 @@ dir.create(outdir,showWarnings=T)
 	savePlot(file.path(outdir,'monthly.landings.png'),type='png')
 	
 	### Determine number of active vessel by month
-	x11()
+	plot.new()
 	boats = aggregate(cfv~month+yr,data=unique(logs[,c('cfv','month','yr')]),FUN=length)
 	mts= c("November", "December", "January", "February", "March")
 	boats$fm = recode(boats$month,"'11'='November';'12'='December';'1'='January';'2'='February';'3'='March'")
@@ -150,7 +150,7 @@ dir.create(outdir,showWarnings=T)
 
 #Plot annual EFFORT
 	traps = with(logs,tapply(effort,yr,sum,na.rm=T))
-	x11()
+	plot.new()
 	plot(traps, type="n", ylim=c(0,max(traps)), ylab="Trap Hauls", main="4X Trap Hauls by Year", xaxt="n", xlab="Year" )
 	axis(1, at=1:length(traps), labels=names(traps))
 	points(traps, col="red", pch=20)
@@ -165,7 +165,7 @@ dir.create(outdir,showWarnings=T)
 	cpue.traps = with(subset(logs,!is.na(effort)&!is.na(landings)),tapply(effort,yr,sum,na.rm=T))
 
 	cpue = cpue.catch/cpue.traps 
-	x11()
+	plot.new()
 	plot(cpue, type="n", ylim=c(0,max(cpue)), ylab="Kg / Trap Haul", main="4X CPUE by Year", xaxt="n", xlab="Year" )
 	axis(1, at=1:length(cpue), labels=names(cpue))
 	points(cpue, col="red", pch=20)
@@ -183,7 +183,7 @@ dir.create(outdir,showWarnings=T)
 	
 	cpue = jackknifeCPUE(jack,grouping=c('yr'))
 	
-	x11()
+	plot.new()
 	ylims = c(0,max(cpue$cpue+cpue$cpue.var)*1.2)
 	plot(cpue$yr, cpue$cpue,type="n", ylim=ylims, ylab="Kgs / Trap", main="4X Catch Rates by Year", xlab="Year" )
 	with(cpue,points(yr,cpue, col="red", pch=20,type='b'))
@@ -227,7 +227,7 @@ a = a[filter.region.polygon(a,'cfa4x'),]
   yrs=(yu-4):(yu-1)
 
 for (y in yrs)  {
-x11()
+plot.new()
 x=a[a$yr==y,]
 # --------------------------------------
 # divide into 5 CC's and create histograms of CW and combine into one table
@@ -316,7 +316,7 @@ savePlot(file.path(outdir,paste('cc.histogram',y,'png',sep=".")),type='png')
   
  output=out[,c(-2, -5)]
  
-  x11()
+  plot.new()
   gridExtra::grid.table(out, theme=ttheme_default(), rows=NULL)
   savePlot(file.path(outdir,paste('observersummary.png',sep=".")),type='png')
 #BZ TODO- Add number of observed trips?
@@ -351,7 +351,7 @@ eyr=max(as.numeric(as.character(obs$yr)))
 #the follow (by year), plots observed sets over commercial log sets
 #comparison of overlap of fishing and observed locations
 
-x11()
+plot.new()
 
 for (y in yrs){
     makeMap(area='4X',addSummerStrata=F,main=y)
@@ -376,7 +376,7 @@ leg=c(1,2,5,10)
 
 set = snowcrab.db('set.biologicals')
 for (i in yrs){
-      x11()
+      plot.new()
       bioMap(xlim=c(-66.5,-63.1),ylim=c(42.7,44.8),boundaries='snowcrab',main=i)
       with(subset(set,lon<(-63)&yr==i&totmass.male.mat>0),points(lon,lat,cex=bub.min+sqrt(totmass.male.mat)*bub.ex,pch=21,bg=rgb(0,1,0,0.2)))
       with(subset(set,lon<(-63)&yr==i&totmass.male.mat==0),points(lon,lat,pch=4,cex=bub.min))
@@ -422,14 +422,14 @@ for (i in yrs){
 # gmmf = sapply(Year,function(y){with(subset(d,yr==y),exp(mean(log(totmass.female.mat+offset)))-offset)})
 # gmif = sapply(Year,function(y){with(subset(d,yr==y),exp(mean(log(totmass.female.imm+offset)))-offset)})
 # 
-# x11()
+# plot.new()
 # plot(Year,gmmm,type='b',col='blue',xlab='Year',ylab='Geometric mean t / km^2',main='Male biomass',ylim=c(0,0.26),xlim=c(2002,2016),pch=16)
 # lines(Year,gmim,type='b',col='blue',pch=17,lty=2)
 # legend('topleft',c('mature','immature'),col=c('blue'),lty=1:2,pch=16:17)
 # savePlot(file.path(outdir,paste('survey.trend.males','png',sep=".")),type='png')
 # 
 # 
-# x11()
+# plot.new()
 # plot(Year,gmmf,type='b',col='red',xlab='Year',ylab='Geometric mean t / km^2',main='Female biomass',ylim=c(0,0.26),xlim=c(2002,2016),pch=16)
 # lines(Year,gmif,type='b',col='red',pch=17,lty=2)
 # legend('topleft',c('mature','immature'),col=c('red'),lty=1:2,pch=16:17)
@@ -449,7 +449,7 @@ for (i in yrs){
 # 
 # set = snowcrab.db('set.biologicals')
 # for (i in 2015:2002){
-# 	x11()
+# 	plot.new()
 # 	bioMap(xlim=c(-66.5,-63.1),ylim=c(42.7,44.8),boundaries='snowcrab',main=i)
 # 	with(subset(set,lon<(-63)&yr==i&totmass.male.mat>0),points(lon,lat,cex=bub.min+sqrt(totmass.male.mat)*bub.ex,pch=21,bg=rgb(0,1,0,0.2)))
 # 	with(subset(set,lon<(-63)&yr==i&totmass.male.mat==0),points(lon,lat,pch=4,cex=bub.min))
@@ -461,7 +461,7 @@ for (i in yrs){
 # 
 # set = snowcrab.db('set.biologicals')
 # for (i in 2015:2002){
-# 	x11()
+# 	plot.new()
 # 	bioMap('not4X',boundaries='snowcrab',main=i)
 # 	with(subset(set,yr==i&totmass.male.mat>0),points(lon,lat,cex=bub.min+sqrt(totmass.male.mat)*bub.ex,pch=21,bg=rgb(0,1,0,0.2)))
 # 	with(subset(set,yr==i&totmass.male.mat==0),points(lon,lat,pch=4,cex=bub.min))

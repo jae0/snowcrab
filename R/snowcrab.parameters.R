@@ -133,8 +133,7 @@ snowcrab.parameters = function( p=NULL, DS="default", year.assessment=NULL, varn
     if (!exists("lbm_local_modelengine", p)) p$lbm_local_modelengine ="gam"
     if (!exists("lbm_global_modelengine", p)) p$lbm_global_modelengine ="gam"
 
-    if (!exists("lbm_global_family", p)) p$lbm_global_family = gaussian( ) 
-    if (!exists("lbm_local_family", p)) p$lbm_local_family = gaussian()
+    if (!exists("lbm_global_family", p)) p$lbm_global_family = gaussian(link=log)
 
     # using covariates as a first pass essentially makes it ~ kriging with external drift .. no time or space here
     if (!exists("lbm_global_modelformula", p)) p$lbm_global_modelformula = formula( paste( 
@@ -162,8 +161,7 @@ snowcrab.parameters = function( p=NULL, DS="default", year.assessment=NULL, varn
 
     }  else if (p$lbm_local_modelengine == "habitat") {
 
-      p$lbm_global_family = binomial()
-      p$lbm_local_family = gaussian()  # after logit transform by global model, it becomes gaussian
+      p$lbm_global_family = binomial( link=log )
       
       if (!exists("lbm_local_modelformula", p))  p$lbm_local_modelformula = formula( paste(
         varname, '~ s(yr, k=10, bs="ts") + s(cos.w, k=3, bs="ts") + s(sin.w, k=3, bs="ts") ', 
@@ -189,7 +187,6 @@ snowcrab.parameters = function( p=NULL, DS="default", year.assessment=NULL, varn
  
       # bayesx families are specified as characters, this forces it to pass as is and 
       # then the next does the transformation internal to the "lbm__bayesx"
-      p$lbm_local_family = "gaussian" 
 
       # alternative models .. testing .. problem is that SE of fit is not accessible?
       p$lbm_local_modelformula = formula( paste( 

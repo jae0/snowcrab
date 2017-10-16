@@ -76,7 +76,7 @@ for(l in areas.crab) {
 ooi = oi[oi$cfa==l,]
      fn = file.path( outdir, paste( "groundfish.snowcrab.survey.species.one.axis",species,l, "png", sep="." ) )
 
-    x11()
+    plot.new()
     browser()
     panel.ci <- function(x, y, ly, uy, subscripts, pch = 20, col=c('black','red'), ...)   {
         x <- as.numeric(x)

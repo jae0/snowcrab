@@ -46,7 +46,7 @@
   td = create.projection.summary( p, fp$FB, rescale.results=F )
 
   for (ir in 1:length(p$regions)) {
-    x11()
+    plot.new()
     regs= p$regions[ir]
     reg.label = p$regions.labels[ir]
     pj = td[ which( td$region==regs ) ,]

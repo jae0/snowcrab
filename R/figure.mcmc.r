@@ -16,7 +16,7 @@
       # catch this first as the layout is different
         br = 75
 
-        x11()
+        plot.new()
         layout( matrix(c(1:(sb$N*3)), ncol=3, nrow=sb$N ))
         par(mar = c(1., 1., 0.65, 0.75))
 
@@ -40,7 +40,7 @@
     }
 
 
-    x11()
+    plot.new()
     layout( matrix(c(1,2,3), 3, 1 ))
     par(mar = c(4.4, 4.4, 0.65, 0.75))
    
@@ -511,7 +511,7 @@
       K =  apply( y$K, c(2), mean, na.rm=T  )
          
       # production vs biomass
-      x11()
+      plot.new()
       layout( matrix(c(1,2,3), 3, 1 ))
       par(mar = c(5, 4, 0, 2))
       for (i in 1:3) {

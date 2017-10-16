@@ -270,7 +270,7 @@ fishery_model = function(  p, DS="stan", plotresults=TRUE ) {
 
     stanmodel = rstan::stan_model( model_code=surplus.stan )
 
-    f = sampling(stanmodel, data=sb, chains=4, iter=10000, warmup = 2000)
+    f = sampling(stanmodel, data=sb, chains=4, iter=10000, warmup = 2000,
       control = list(adapt_delta = 0.9, max_treedepth=15) )
           # warmup = 200,          # number of warmup iterations per chain
           # control = list(adapt_delta = 0.9),
@@ -534,7 +534,7 @@ model {
 
         dic.samples(m, n.iter=p$fishery_model$n.iter ) # pDIC
 
-        graphics.off() ; x11(); layout( matrix(c(1,2,3), 3, 1 )); par(mar = c(5, 4, 0, 2))
+        graphics.off() ; plot.new(); layout( matrix(c(1,2,3), 3, 1 )); par(mar = c(5, 4, 0, 2))
         for( i in 1:3) hist(y$cv.r[i,,], "fd")
 
         # convergence testing -- by 1000 to 1500 convergence observed by Gelman shrink factor diagnostic
@@ -584,7 +584,7 @@ model {
         CFA4X
 
 
-        x11()
+        plot.new()
         layout( matrix(c(1,2,3), 3, 1 ))
         par(mar = c(5, 4, 0, 2))
 

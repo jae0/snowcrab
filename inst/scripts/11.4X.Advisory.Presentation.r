@@ -22,7 +22,7 @@ if(map.logs) {
      lp = na.omit(lp)
   	yy=sort(unique(lp$yr))
    	for( y in yy) {
-   				x11()
+   				plot.new()
    				makeMap(area='4X',addSummerStrata=F)
 		   		b=lp[which(lp$yr==y),]
 addPoints(b,pch=16, col='red')
@@ -60,7 +60,7 @@ if(map.logs.cpue) {
    	cols = color.code(n=length(qq))
   	yy=sort(unique(lp$yr))
    	for( y in yy) {
-   				x11()
+   				plot.new()
    				makeMap(area='4X',addSummerStrata=F)
 		   		b=lp[which(lp$yr==y),]
 			    fp = findCells(b,grr)
@@ -103,7 +103,7 @@ if(map.logs.cpue) {
 			yearly$mt=(yearly$kg)/1000
 
 #Plot annual landings
-			x11()
+			plot.new()
 			plot(yearly$mt, type="n", ylim=c(0,500), ylab="Landings (mt)", main="4X Landings by Year", xaxt="n", xlab="Year" )
 			axis(1, at=1:length(yearly$kg), labels=yearly$Year)
 			points(yearly$mt, col="red", pch=20)
@@ -120,7 +120,7 @@ if(map.logs.cpue) {
 			monthly = monthly[order(monthly$yr,monthly$fm),]
 
 #plot monthly landings
-			x11()
+			plot.new()
 			yu = as.numeric(max(as.numeric(monthly$yr)))
 			yrs=(yu-2):yu
 			tbz=monthly[monthly$yr %in% c(yrs),]
@@ -137,7 +137,7 @@ if(map.logs.cpue) {
 	savePlot(file.path(outdir,paste('monthly.landings.png',sep=".")),type='png')
 
 #Plot annual EFFORT
-	x11()
+	plot.new()
 	traps = aggregate(num_of_traps~yr,data=logs,FUN=sum)
 	plot(traps$yr,traps$num_of_traps, type="n", ylim=c(0,max(traps$num_of_traps)), ylab="Trap Hauls", main="4X Trap Hauls by Year", xlab="Year" )
 		points(traps$yr,traps$num_of_traps, col="red", pch=20,type='b')
@@ -168,7 +168,7 @@ if(map.logs.cpue) {
 # calculate mean catch rates for the season by CFA
 cpue = jackknifeCPUE(logs.fixed[,c('yr','catch','effort','area')],grouping=c('yr'))
 
-		x11()
+		plot.new()
 		ylims = c(0,max(cpue$cpue+cpue$cpue.var)*1.2)
 		plot(cpue$yr, cpue$cpue,type="n", ylim=ylims, ylab="Lbs / Trap", main="4X Catch Rates by Year", xlab="Year" )
 		with(cpue,points(yr,cpue, col="red", pch=20,type='b'))
@@ -184,7 +184,7 @@ for (a in as){
   logs.a = logs.fixed[which(logs.fixed$area==a),]
   cpue.a = jackknifeCPUE(logs.a[,c('yr','catch','effort','area')],grouping=c('yr','area'))
 
-		x11()
+		plot.new()
 		ylims = c(0,max(cpue$cpue+cpue$cpue.var)*1.2)
 		plot(cpue.a$yr, cpue.a$cpue,type="n", ylim=ylims, ylab="Lbs / Trap", main=a, xlab="Year" )
 		with(cpue.a,points(yr,cpue, col="red", pch=20,type='b'))
@@ -278,7 +278,7 @@ for (a in as){
 # 		monthcr = na.omit(monthcr)
 # 		monthcr$fm = recode(monthcr$month,"'November'=1;'December'=2;'January'=3;'February'=4;'March'=5;'April'=6")
 # 		monthcr = monthcr[order(monthcr$yr,monthcr$fm),]
-# 		x11()
+# 		plot.new()
 # 		ylims = c(0,200)
 # 		cols = c("red", "green4", "black",'blue')
 # 		plot(1:6, 1:6,type="n", ylim=ylims, ylab="Lbs / Trap", main="Monthly 4X Catch Rates by Year", xlab="Month" ,
@@ -305,7 +305,7 @@ for (a in as){
 #      lp = lp[which(lp$yr==2014),]
 #   	yy=unique(lp$month)
 #    	for( y in yy) {
-#    				x11()
+#    				plot.new()
 #    				makeMap(area='4X',addSummerStrata=F)
 # 		   		b=lp[which(lp$month==y),]
 # addPoints(b,pch=16, col='red')
@@ -317,7 +317,7 @@ for (a in as){
 # 			 	}
 # 
 # #effort by month
-# x11()
+# plot.new()
 # 	  logs.fixed$fm = recode(logs.fixed$month,"'November'=1;'December'=2;'January'=3;'February'=4;'March'=5;'April'=6")
 # 
 # 	traps = aggregate(num_of_traps~yr+fm+month,data=logs.fixed,FUN=sum)
@@ -337,7 +337,7 @@ for (a in as){
 
 
 ### Determine number of active vessel by month
-x11()
+plot.new()
 	boats = aggregate(vr_number~month+yr,data=unique(logs[,c('vr_number','month','yr')]),FUN=length)
 	mts= c("November", "December", "January", "February", "March")
 	boats=boats[boats$month %in% mts,]
@@ -498,7 +498,7 @@ set16$totmass.male.imm=as.numeric(set16$immature.male..kg.)/set16$surace_area.km
 set16$totmass.female.mat=as.numeric(set16$mature.female..kg.)/set16$surace_area.km.2/1000
 set16$totmass.female.imm=as.numeric(set16$immature.female..kg.)/set16$surace_area.km.2/1000
 
-x11()
+plot.new()
 plot(tdmm$year,tdmm$mean,type='b',col='blue',xlab='Year',ylab='Geometric mean t / km^2',main='Male biomass',ylim=c(0,0.13),xlim=c(2000,2016),pch=16)
 #offset = min(set$R0.mass[set$R0.mass>0])
 offset = min(set$totmass.male.com[set$totmass.male.com>0])
@@ -513,7 +513,7 @@ legend('topleft',c('mature','immature'),col=c('blue'),lty=1:2,pch=16:17)
 savePlot(file.path(outdir,paste('survey.trend.males','png',sep=".")),type='png')
 
 
-x11()
+plot.new()
 plot(tdmf$year,tdmf$mean,type='b',col='red',xlab='Year',ylab='Geometric mean t / km^2',main='Female biomass',ylim=c(0,0.13),xlim=c(2000,2016),pch=16)
 offset = min(set$totmass.female.mat[set$totmass.female.mat>0])
 points(2016,exp(mean(log(set16$totmass.female.mat+offset)))-offset,pch=16,col='red')
@@ -556,7 +556,7 @@ savePlot(file.path(outdir,paste('surveyMMbubbles.2016','png',sep=".")),type='png
 
 set = snowcrab.db('set.biologicals')
 for (i in 2015:2002){
-	x11()
+	plot.new()
 	bioMap(xlim=c(-66.5,-63.1),ylim=c(42.7,44.8),boundaries='snowcrab',main=i)
 	with(subset(set,lon<(-63)&yr==i&totmass.male.mat>0),points(lon,lat,cex=bub.min+sqrt(totmass.male.mat)*bub.ex,pch=21,bg=rgb(0,1,0,0.2)))
 	with(subset(set,lon<(-63)&yr==i&totmass.male.mat==0),points(lon,lat,pch=4,cex=bub.min))
@@ -568,7 +568,7 @@ for (i in 2015:2002){
 
 set = snowcrab.db('set.biologicals')
 for (i in 2015:2002){
-	x11()
+	plot.new()
 	bioMap('not4X',boundaries='snowcrab',main=i)
 	with(subset(set,yr==i&totmass.male.mat>0),points(lon,lat,cex=bub.min+sqrt(totmass.male.mat)*bub.ex,pch=21,bg=rgb(0,1,0,0.2)))
 	with(subset(set,yr==i&totmass.male.mat==0),points(lon,lat,pch=4,cex=bub.min))

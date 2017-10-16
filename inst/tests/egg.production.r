@@ -60,7 +60,7 @@
   names(out.k)= c("total.egg.kriged", "total.egg.kriged.upperbound", "total.egg.kriged.lowerbound")
   out.k$yr = as.numeric( rownames( out.k) )
   out = merge (fec.ind[, c("yr", "total.egg.all", "total.egg.all.sd")],out.k, by="yr" )  # log10(n)
-  x11()
+  plot.new()
   plot(out$yr, out$total.egg.kriged)
 
 
