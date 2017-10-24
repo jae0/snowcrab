@@ -66,7 +66,7 @@ p = bio.snowcrab::snowcrab.parameters( p=p, DS="lbm", varname=p$selection$name  
 # o = snowcrab_lbm(p=p, DS="lbm_inputs" )  # create fields for 
 DATA='snowcrab_lbm( p=p, DS="lbm_inputs" )'
 lbm( p=p, DATA=DATA, tasks=c("initiate", "globalmodel") ) # 30 min
-#   lbm( p=p, tasks=c( "stage0" ) ) # serial mode
+#   lbm( p=p, tasks=c( "serial_debug" ) ) # serial mode
 #   lbm( p=p, tasks=c( "continue" ) )    
 lbm( p=p, tasks=c( "stage1" ) ) #  3 hrs 
 lbm( p=p, tasks=c( "stage2" ) ) #   1 hrs
@@ -153,7 +153,7 @@ p = bio.snowcrab::snowcrab.parameters( p=p, DS="lbm", varname=p$selection$name  
 DATA='snowcrab_lbm( p=p, DS="lbm_inputs" )'
 
 lbm( p=p, DATA=DATA, tasks=c("initiate", "globalmodel") ) # 30 min
-#   lbm( p=p, tasks=c( "stage0" ) ) # serial mode
+#   lbm( p=p, tasks=c( "serial_debug" ) ) # serial mode
 #   lbm( p=p, tasks=c( "continue" ) )    
 lbm( p=p, tasks=c( "stage1" ) ) #  3 hrs 
 lbm( p=p, tasks=c( "stage2" ) ) #   1 hrs

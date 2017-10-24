@@ -50,7 +50,8 @@ p = bio.snowcrab::load.environment()
 
 
   # ----------------------------------------------------------
-  # Peter Koeller -- N immature male > 56 mm CW in areas 23ab and 24ab
+  # Shrimp assessment uses this as a recruitment index of snow crab 
+  # -- N immature male > 56 mm CW in areas 23ab and 24ab
   #  == R2 + R3 + R4
 
 
@@ -61,7 +62,7 @@ p = bio.snowcrab::load.environment()
   p$regions.to.model = "cfa.23ab.24ab"
   p$vars.to.model = "pre.recruit.no"
   p$yrs = p$yrs[ which(p$yrs>1997) ]
-  p$ofname = "kriged.results.koeller.rdata"
+  p$ofname = "snowcrab_recruitment_index_for_shrimp_assessment.rdata"
 
   pcoords = c("plon", "plat")
 
