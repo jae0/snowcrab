@@ -22,10 +22,15 @@ snowcrab.parameters = function( p=NULL, DS="default", year.assessment=NULL, varn
       "bio.snowcrab", "bio.indicators" ) ) ) 
     p$libs = unique( p$libs )
 
-    if (is.null(year.assessment) ) stop( "must define year.assessment" )
+    if (is.null(year.assessment) ) {
+      if ( exists("year.assessment", p) ) {
+        year.assessment=p$year.assessment
+      } else {
+        stop( "year.assessment was not defined" )
+      }
+    }
 
-    p$year.assessment = year.assessment  # this is a synonym for year.assessment ... will eventually remove one of these
-    p$year.assessment = year.assessment
+    p$year.assessment = year.assessment  
 
     p$seabird.yToload = 2012:p$year.assessment
     p$minilog.yToload = 1999:p$year.assessment

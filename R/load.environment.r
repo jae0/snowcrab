@@ -15,7 +15,15 @@ load.environment = function( year.assessment=NULL, libs=NULL, p=NULL ) {
   if (is.null(p)) p = list()
   if (!is.null(libs)) suppressMessages( RLibrary(libs) ) 
   if ( exists("libs", p) ) libs = c(libs, p$libs)
-  
+  if (is.null(year.assessment)) {
+    if ( exists("year.assessment", p) ) {
+      year.assessment=p$year.assessment
+    } else {
+      warning( paste( "year.assessment was not set .. assuming it is the current year" )
+      year.assessment = lubridate::year(Sys.Date())
+    }
+  }
+
   p = bio.snowcrab::snowcrab.parameters( p=p, DS="default", year.assessment=year.assessment ) 
 
   return(p)
