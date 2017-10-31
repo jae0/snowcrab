@@ -19,7 +19,7 @@ load.environment = function( year.assessment=NULL, libs=NULL, p=NULL ) {
     if ( exists("year.assessment", p) ) {
       year.assessment=p$year.assessment
     } else {
-      warning( paste( "year.assessment was not set .. assuming it is the current year" )
+      warning( "year.assessment was not set .. assuming it is the current year" )
       year.assessment = lubridate::year(Sys.Date())
     }
   }
