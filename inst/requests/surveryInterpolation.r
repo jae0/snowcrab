@@ -28,7 +28,8 @@ if(do.interpolation) {
 
 		dp$limm 		<- log(dp[,'gg']+1)
 		params 			<- list(nmax=15,drange=15,power=0.8)
-		fp 				<- interpol.grid(dp[,c('plon','plat','limm')],locs=spatial_grid(p=p, nm=c("x","y")) ,method='inv.dist.gstat',params=params,outfile='iminterp.dat')
+# 		fp 				<- interpol.grid(dp[,c('plon','plat','limm')],locs=spatial_grid(p=p, nm=c("x","y")) ,method='inv.dist.gstat',params=params,outfile='iminterp.dat')
+    fp        <- iwd(dp[,c('plon','plat','limm')],locs=spatial_grid(p=p, nm=c("x","y")) ,method='inv.dist.gstat',params=params,outfile='iminterp.dat')
 		er 				<- with(dp[dp$limm>0,],quantile(limm,probs=c(0.025,0.975)))
 		datarange 		<- c(0,seq( er[1], er[2], length.out=100))
         corners 		<- data.frame(rbind( cbind( plon=c(220, 990), plat=c(4750, 5270) )))

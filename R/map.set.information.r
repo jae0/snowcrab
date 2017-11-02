@@ -74,6 +74,7 @@ map.set.information = function(p, outdir, variables,mapyears, plot.method="level
           res = cbind( predlocs[,1:2], predict(u, xnew=predlocs[,1:2]))
         }
         if(interpolate.method=='idw'){
+          require(gstat)
           u = gstat(id = "z", formula = z ~ 1, locations = ~ plon + plat, data = xyzi, set = list(idp = idp))
           res = predict(u, predlocs[,1:2])[,1:3]
         }
