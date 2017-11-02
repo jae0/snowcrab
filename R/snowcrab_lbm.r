@@ -7,6 +7,17 @@ snowcrab_lbm = function( ip=NULL, DS=NULL, p=NULL, voi=NULL, year=NULL, ret=NULL
   if (exists( "libs", p)) RLibrary( p$libs )
    
 
+  if (DS=="lbm_inputs") {
+    # mostly based on indicators.db( DS="lbm_inputs") 
+    INP = snowcrab_lbm(p=p, DS="input_data" )  # , voi=p$selection$name
+    PS  = snowcrab_lbm(p=p, DS="output_data"  ) # , voi=p$selection$name
+    LOCS = bathymetry.db(p=p, DS="baseline")
+    return (list(input=INP, output=list( LOCS=LOCS, COV=PS )) )
+  }
+
+
+  # --------------------------
+
   if (DS %in% c("input_data") ) {
     set = bio.indicators::survey.db( p=p, DS="set.filter" ) # mature male > 95 mm 
  
@@ -164,12 +175,12 @@ snowcrab_lbm = function( ip=NULL, DS=NULL, p=NULL, voi=NULL, year=NULL, ret=NULL
     dr = list()
     ps_varnames = setdiff( p$varnames, p$variables$LOCS )
     
-    for (voi in ps_varnames) {
-      dr[[voi]] = quantile( set[,voi], probs=p$lbm_quantile_bounds, na.rm=TRUE ) # use 95%CI
-      il = which( set[,voi] < dr[[voi]][1] )
-      if ( length(il) > 0 ) set[il,voi] = dr[[voi]][1]
-      iu = which( set[,voi] > dr[[voi]][2] )
-      if ( length(iu) > 0 ) set[iu,voi] = dr[[voi]][2]
+    for (pvn in ps_varnames) {
+      dr[[pvn]] = quantile( set[,pvn], probs=p$lbm_quantile_bounds, na.rm=TRUE ) # use 95%CI
+      il = which( set[,pvn] < dr[[pvn]][1] )
+      if ( length(il) > 0 ) set[il,pvn] = dr[[pvn]][1]
+      iu = which( set[,pvn] > dr[[pvn]][2] )
+      if ( length(iu) > 0 ) set[iu,pvn] = dr[[pvn]][2]
     }
 
     return (set)
@@ -187,7 +198,18 @@ snowcrab_lbm = function( ip=NULL, DS=NULL, p=NULL, voi=NULL, year=NULL, ret=NULL
     # make years coherent
     p0 = bio.indicators::indicators.parameters(p=p, year.assessment=p$year.assessment )
     yr_index = match( p$yrs, p0$yrs )
-    for ( vn in c("t", p0$bstats) ) PS[[vn]][] = PS[[vn]][,yr_index]
+    yg = which(is.finite(yr_index))
+    ym = which(is.na(yr_index))
+    if (length(ym) > 0) {
+      for ( vn in c("t", p0$bstats) ) {
+        PS[[vn]][yg] = PS[[vn]][,yr_index[yg]]
+        PS[[vn]][ym] = rowMeans( PS[[vn]][], na.rm=TRUE )
+      }
+    } else {
+      for ( vn in c("t", p0$bstats) ) {
+        PS[[vn]][] = PS[[vn]][,yr_index]
+      }
+    }
 
    # the following are modelled on a log-scale ... need zero-checks
     ## hack -- zero-values : predictions of log(0) fail 
@@ -210,8 +232,17 @@ snowcrab_lbm = function( ip=NULL, DS=NULL, p=NULL, voi=NULL, year=NULL, ret=NULL
       vn = p0$indicators.variables[[iv]]
       sn = indicators.db( p=p0, DS="baseline", varnames=vn )
       yr_index = match( p$yrs, p0$yrs )
-      for ( vv in p$indicators.variables[[iv]]) {
-        PS[[vv]] = sn[[vv]][, yr_index]
+      yg = which(is.finite(yr_index))
+      ym = which(is.na(yr_index))
+      if (length(ym) > 0) {
+        for ( vv in p$indicators.variables[[iv]] ) {
+          PS[[vv]][yg] = sn[[vv]][,yr_index[yg]]
+          PS[[vv]][ym] = rowMeans( sn[[vv]][], na.rm=TRUE )
+        }
+      } else {
+        for ( vv in p$indicators.variables[[iv]] ) {
+          PS[[vv]] = sn[[vv]][,yr_index]
+        }
       }
     }
 
@@ -228,17 +259,6 @@ snowcrab_lbm = function( ip=NULL, DS=NULL, p=NULL, voi=NULL, year=NULL, ret=NULL
   }
 
   # -----------------------------------
-
-  if (DS=="lbm_inputs") {
-    # mostly based on indicators.db( DS="lbm_inputs") 
-    INP = snowcrab_lbm(p=p, DS="input_data", voi=p$selection$name )
-    PS  = snowcrab_lbm(p=p, DS="output_data", voi=p$selection$name )
-    LOCS = bathymetry.db(p=p, DS="baseline")
-    return (list(input=INP, output=list( LOCS=LOCS, COV=PS )) )
-  }
-
-
-  # --------------------------
 
 
     if ( DS %in% c("predictions", "predictions.redo" ) ) {
@@ -433,12 +453,12 @@ snowcrab_lbm = function( ip=NULL, DS=NULL, p=NULL, voi=NULL, year=NULL, ret=NULL
 
       if ( DS=="baseline" ) {
         BL = list()
-        for (voi in varnames ) {
-          projectdir = file.path(p$project.root, "modelled", voi, p$spatial.domain )
+        for (bvn in varnames ) {
+          projectdir = file.path(p$project.root, "modelled", bvn, p$spatial.domain )
           outfile =  file.path( projectdir, paste( "snowcrab", "baseline", ret, p$spatial.domain, "rdata", sep= ".") )
           TS = NULL
           load( outfile)
-          BL[[voi]] = TS
+          BL[[bvn]] = TS
         }
         return (BL)
       }

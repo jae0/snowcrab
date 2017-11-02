@@ -1,5 +1,5 @@
   
-  if (!exists("year.assessment")) year.assessment=lubridate::year(Sys.Date())
+  if (!exists("year.assessment")) year.assessment=lubridate::year(Sys.Date()) 
   p = bio.snowcrab::load.environment( year.assessment=year.assessment )
 
 
@@ -41,7 +41,7 @@
 # -------------------------------------------------------------------------------------
 # abundance .. positive valued data .. vn = "snowcrab.large.males_abundance"
 
-p = bio.snowcrab::load.environment( year.assessment )
+p = bio.snowcrab::load.environment( year.assessment=year.assessment )
 p$selection=list( 
   name = "snowcrab.large.males_abundance",
   type = "abundance",
@@ -51,8 +51,8 @@ p$selection=list(
   len= c( 95, 200 )/10, #  mm -> cm ; indicators.db in cm
   drop.groundfish.data=TRUE # esp from 1970 to 1999 measurement of invertebrates was sporatic .. zero-values are dropped as they are unreliable 
 )
-p$lbm_local_modelengine = "twostep"
 p$lbm_global_family = gaussian(link=log)
+p$lbm_local_modelengine = "twostep"
 
 # 11 hrs with these settings
 p$lbm_twostep_space = "krige"
