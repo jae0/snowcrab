@@ -157,20 +157,6 @@ snowcrab_lbm = function( ip=NULL, DS=NULL, p=NULL, voi=NULL, year=NULL, ret=NULL
     }
     set = na.omit(set)
 
-    # the following are modelled on a log-scale ... need zero-checks
-    ## hack -- zero-values : predictions of log(0) fail 
-    set$dZ [ which( set$dZ < exp(-5)) ] = exp(-5)
-    set$dZ [ which( set$dZ > exp(5)) ] = exp(5)
-
-    ## hack -- zero-values : predictions of log(0) fail 
-    set$ddZ [ which( set$ddZ < exp(-6)) ] = exp(-6)
-    set$ddZ [ which( set$ddZ > exp(5)) ] = exp(5)
-
-    ## hack -- extreme-values .. error in exptrapolation of substrate 
-    set$log.substrate.grainsize[ which( set$log.substrate.grainsize < -6) ] = -6
-    set$log.substrate.grainsize [ which( set$log.substrate.grainsize > 5) ] = 5
-
-
     # cap quantiles of dependent vars
     dr = list()
     ps_varnames = setdiff( p$varnames, p$variables$LOCS )
@@ -195,7 +181,7 @@ snowcrab_lbm = function( ip=NULL, DS=NULL, p=NULL, voi=NULL, year=NULL, ret=NULL
     PS = indicators.db( p=p, DS="prediction.surface" ) # a list object with static and annually varying variables  
     names(PS)[ names(PS)=="amplitude"] ="tamplitude" 
 
-    # make years coherent
+    # make years coherent for temperatures
     p0 = bio.indicators::indicators.parameters(p=p, year.assessment=p$year.assessment )
     yr_index = match( p$yrs, p0$yrs )
     yg = which(is.finite(yr_index))
@@ -211,20 +197,7 @@ snowcrab_lbm = function( ip=NULL, DS=NULL, p=NULL, voi=NULL, year=NULL, ret=NULL
       }
     }
 
-   # the following are modelled on a log-scale ... need zero-checks
-    ## hack -- zero-values : predictions of log(0) fail 
-    PS$dZ [ which( PS$dZ < exp(-5)) ] = exp(-5)
-    PS$dZ [ which( PS$dZ > exp(5)) ] = exp(5)
-
-    ## hack -- zero-values : predictions of log(0) fail 
-    PS$ddZ [ which( PS$ddZ < exp(-6)) ] = exp(-6)
-    PS$ddZ [ which( PS$ddZ > exp(5)) ] = exp(5)
-
-    ## hack -- extreme-values .. error in exptrapolation of substrate .. fisx this in bio.substrate
-    PS$log.substrate.grainsize[ which( PS$log.substrate.grainsize < -6) ] = -6
-    PS$log.substrate.grainsize [ which( PS$log.substrate.grainsize > 5) ] = 5
-
-    # additional indicators.db variables with correct number of years
+    # indicators.db variables 
     for (iv in names(p$indicators.variables)) {
       p0 = bio.indicators::indicators.parameters( p=p, DS="default", year.assessment=p$year.assessment )
       p0 = bio.indicators::indicators.parameters( p=p0, DS=iv  )
@@ -320,7 +293,6 @@ snowcrab_lbm = function( ip=NULL, DS=NULL, p=NULL, voi=NULL, year=NULL, ret=NULL
       }
     
     }
-
 
 
     #  -------------------------------
