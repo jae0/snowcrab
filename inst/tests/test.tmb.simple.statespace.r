@@ -40,7 +40,7 @@ rfGeoR = geoR::grf( nsim=1, cov.model="matern", cov.pars=c(sigmasq=0.8, phi=0.75
 
 RandomFields methods ...
 
-require(bio.spacetime)
+require(lbm)
 # est cov params
 vg = lbm::lbm_variogram( locs_xy, z, methods="gstat" )
 vg = lbm::lbm_variogram( locs_xy, z, methods="geoR" )

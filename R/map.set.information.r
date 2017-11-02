@@ -103,7 +103,7 @@ map.set.information = function(p, outdir, variables,mapyears, plot.method="level
           ckey=list(labels=list(at=log(labs+offset),labels=labs,cex=2))
         }
 
-       try( map( xyz, xyz.coords="planar", cfa.regions=T, depthcontours=T, pts=set_xyz[,c("plon","plat")], annot=y, fn=outfn, loc=outloc, at=datarange , col.regions=cols(length(datarange)+1), colpts=F, corners=p$corners, display=F,colorkey=ckey))
+       try( lbm::lbm_map( xyz, xyz.coords="planar", cfa.regions=T, depthcontours=T, pts=set_xyz[,c("plon","plat")], annot=y, fn=outfn, loc=outloc, at=datarange , col.regions=cols(length(datarange)+1), colpts=F, corners=p$corners, display=F,colorkey=ckey))
       }
       #if (plot.method=="pbsmapping") {} #nah
 

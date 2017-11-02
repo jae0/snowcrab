@@ -46,7 +46,7 @@ map.fisheries.data = function(p, outdir,  FUN, yrs, variable='effort',probs=c(0,
     outloc = file.path( outdir,variable)
 
     # do the map
-    try( map( xyz[[i]], xyz.coords="planar", cfa.regions=T, depthcontours=T, pts=NULL, annot=yrs[i], fn=outfn, loc=outloc, at=datarange,colorkey=NULL , col.regions=cols(length(datarange)+1), colpts=F, corners=p$corners, display=F,rez=c(pres,pres)))
+    try( lbm::lbm_map( xyz[[i]], xyz.coords="planar", cfa.regions=T, depthcontours=T, pts=NULL, annot=yrs[i], fn=outfn, loc=outloc, at=datarange,colorkey=NULL , col.regions=cols(length(datarange)+1), colpts=F, corners=p$corners, display=F,rez=c(pres,pres)))
   }
 }
 

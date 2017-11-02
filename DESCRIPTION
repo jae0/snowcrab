@@ -42,9 +42,8 @@ Imports:
   bio.utilities 
 Suggests:
   bio.groundfish,
-  lbm,
   netmensuration,
-  bio.spacetime, 
+  lbm, 
   bio.substrate,
   bio.temperature
 License: MIT

@@ -104,7 +104,7 @@
       V = SpatialPoints( lgbk[,c("lon", "lat")], proj4strvalue )
       coastline = maps::map( database="worldHires", regions=c("Canada", "US"), fill=TRUE, plot=FALSE )
       coastlineSp = maptools::map2SpatialPolygons( coastline, IDs=coastline$names, proj4string=proj4strvalue  )
-      bboxSP = bio.spacetime::boundingbox(p$corners$lon, p$corners$lat)
+      bboxSP = lbm::boundingbox(p$corners$lon, p$corners$lat)
       keep <- rgeos::gContains( bboxSP, coastlineSp, byid=TRUE ) | rgeos::gOverlaps( bboxSP, coastlineSp, byid=TRUE )
       stopifnot( ncol(keep)==1 )
       coastlineSp = coastlineSp[drop(keep),]

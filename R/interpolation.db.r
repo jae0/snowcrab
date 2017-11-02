@@ -119,7 +119,7 @@
         y = p$yrs[iy]
         outfn = paste( "prediction.abundance.mean", y, sep=".")
         xyz = cbind( bs[, c("plon", "plat")], m[,iy] )
-        map( xyz=xyz, cfa.regions=T, depthcontours=T, pts=NULL, annot=y,
+        lbm::lbm_map( xyz=xyz, cfa.regions=T, depthcontours=T, pts=NULL, annot=y,
           annot.cex=annot.cex, corners=p$planar.corners, fn=outfn, loc=projectdir, at=datarange,
           col.regions=cols, rez=c(p$pres,p$pres) )
       }
@@ -133,7 +133,7 @@
         y = p$yrs[iy]
         outfn = paste( "prediction.abundance.sd", y, sep=".")
         xyz = cbind( bs[, c("plon", "plat")], s[,iy] )
-        map( xyz=xyz, cfa.regions=T, depthcontours=T, pts=NULL, annot=y,
+        lbm::lbm_map( xyz=xyz, cfa.regions=T, depthcontours=T, pts=NULL, annot=y,
           annot.cex=annot.cex, corners=p$planar.corners, fn=outfn, loc=projectdir, at=datarange,
           col.regions=cols, rez=c(p$pres,p$pres) )
       }
@@ -425,7 +425,7 @@
           datarange = seq( 0, 1, length.out=150)
           cols = color.code( "seis", datarange )
           outfn = paste( "prediction.habitat.mean", v, y, sep=".")
-          map( xyz=PS[,c("plon", "plat", "habitat.mean")], cfa.regions=T, depthcontours=T, pts=NULL, annot=paste( v, y ),
+          lbm::lbm_map( xyz=PS[,c("plon", "plat", "habitat.mean")], cfa.regions=T, depthcontours=T, pts=NULL, annot=paste( v, y ),
             annot.cex=annot.cex, corners=p$planar.corners, fn=outfn, loc=loc.map, at=datarange,
             col.regions=cols, rez=c(p$pres,p$pres) )
         }
@@ -434,7 +434,7 @@
           datarange = seq( er[1], er[2], length.out=150)
           cols = color.code( "seis", datarange )
           outfn = paste( "prediction.abundance.mean", v, y, sep=".")
-          map( xyz=PS[ , c("plon", "plat", "abundance.mean.log")], cfa.regions=T, depthcontours=T, pts=NULL, annot= paste( v, y ),
+          lbm::lbm_map( xyz=PS[ , c("plon", "plat", "abundance.mean.log")], cfa.regions=T, depthcontours=T, pts=NULL, annot= paste( v, y ),
             annot.cex=annot.cex, corners=p$planar.corners, fn=outfn, loc=loc.map, at=datarange,
             col.regions=cols, rez=c(p$pres,p$pres) )
         }
@@ -446,7 +446,7 @@
           datarange = seq( er[1], er[2], length.out=150)
           cols = color.code( "seis", datarange )
           outfn = paste( "prediction.abundance.mean.estimationarea", v, y, sep=".")
-          map( xyz=tomap, cfa.regions=T, depthcontours=T, pts=NULL,
+          lbm::lbm_map( xyz=tomap, cfa.regions=T, depthcontours=T, pts=NULL,
             annot=paste( v, y ), annot.cex=annot.cex, corners=p$planar.corners, fn=outfn, loc=loc.map, at=datarange,
             col.regions=cols, rez=c(p$pres,p$pres) )
           rm (tomap) ; gc()

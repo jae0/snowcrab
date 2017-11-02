@@ -71,5 +71,5 @@ for(y in p$yrs) {
         # cols = colorRampPalette(c("darkblue","cyan","green", "yellow", "orange","darkred", "black"), space = "Lab")
         names( xyz) = c("plon", "plat", "z")
 
-        map( xyz, xyz.coords="planar", cfa.regions=T, depthcontours=T,  annot=y, fn=outfn, loc=outloc, at=datarange , col.regions=cols(length(datarange)+1), colpts=T, corners=corners )
+        lbm::lbm_map( xyz, xyz.coords="planar", cfa.regions=T, depthcontours=T,  annot=y, fn=outfn, loc=outloc, at=datarange , col.regions=cols(length(datarange)+1), colpts=T, corners=corners )
 }

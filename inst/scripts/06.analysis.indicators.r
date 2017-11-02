@@ -8,7 +8,7 @@
 
 
 	p$libs = unique( c( p$libs, bioLibrary( 
-    "bio.spacetime", "bio.utilities", "parallel", "sorted.ordination", "bio.indicators") ) )
+    "lbm", "bio.utilities", "parallel", "sorted.ordination", "bio.indicators") ) )
 
   # setwd( project.datadirectory("bio.indicators") )
 
