@@ -10,8 +10,8 @@
 # loadfunctions('bio.snowcrab')
 
 # below lines set parallel mapping / figures
-   p$do.parallel = FALSE  # mapping in parallel is broken .. must fix ::TODO
-  #p$do.parallel = TRUE  # mapping in parallel is broken .. must fix ::TODO
+ #  p$do.parallel = FALSE  # mapping in parallel is broken .. must fix ::TODO
+  p$do.parallel = TRUE  # mapping in parallel is broken .. must fix ::TODO  ... fixed? JC 2017
 
 # If parallel=T, below lines dtermine number of clusters to dedicate  
   p$clusters = rep("localhost", 24 )
@@ -63,7 +63,7 @@
 
   # ------------------------------------------
   # Map:  Interpolated mean/geometric mean of various variables in the set data table
-  p$do.parallel=F
+#  p$do.parallel=F
   p$corners = data.frame(plon=c(220, 990), plat=c(4750, 5270) )
 
   outdir = file.path( project.datadirectory("bio.snowcrab"), "R", "maps", "survey","snowcrab","annual" ) 
