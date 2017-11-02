@@ -1,30 +1,9 @@
- map.survey.locations = function(p, basedir, newyear=T, map.method="GMT" ) {
+ map.survey.locations = function(p, basedir, newyear=T, map.method="lattice" ) {
 
 
     set = snowcrab.db( DS="set.clean")
     years = sort( unique( set$yr ) )
     if (newyear) years = p$year.assessment
-
-    if ( map.method=="GMT" ) {
-
-      set = set[, c("yr", "lon", "lat")]
-      set = set[ is.finite( rowSums(set) ) ,]
-
-      p$psxyoptions = "-Sc0.1c -G20"  # Sc = circle with size 0.1cm, G is color/grayscale
-      p$basedir = basedir
-
-      for (y in years) {
-        toplot = set[ which(set$yr==y), c("lon", "lat")]
-        p$outfile.basename = file.path(p$basedir, paste("survey.locations", y, sep=".") )
-        print(  p$outfile.basename )
-        gmt.xyplot ( p, toplot, y, conversions=p$conversions  )
-      }
-
-      pause(30)
-      files.to.delete = list.files( p$basedir, "^survey.locations.*.ps$", all.files=T, full.names=T, recursive=T)
-      remove.files ( files.to.delete )
-
-    }
 
     if (map.method=="lattice" ) {
 

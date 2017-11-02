@@ -75,21 +75,6 @@ snowcrab.parameters = function( p=NULL, DS="default", year.assessment=NULL, varn
     p$habitat.threshold.quantile = 0.05 # quantile at which to consider zero-valued abundance
     p$threshold.distance = 5 # predict no farther than this distance km from survey stations
    
-  
-    if (1) {
-      #  things that will be removed soon :: TODO
-
-      p$annot.cex=2
-      p$do.parallel = TRUE
-      p$ext2 = extent(matrix(c(-66.4, 42.2, -57.2, 47.4), nrow=2, ncol=2)) #MG extent of mapping frame
-      p$extUTM = extent(matrix(c(219287.2, 4677581, 937584, 5265946), nrow=2, ncol=2)) #MG UTM extent of mapping frame
-      p$geog.proj = "+proj=longlat +ellps=WGS84"
-
-      ## these are kriging related parameters:: the method is deprecated
-      p = gmt.parameters( p=p )
-
-     }
-
   }
 
 

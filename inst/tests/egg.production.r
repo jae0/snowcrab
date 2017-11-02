@@ -31,12 +31,12 @@
 
 
   ###################
-  # krige
-    krige.ordinary( p )  # ~ 6 hr on "io X 8"
-    K = krige.block ( p  ) # to est CI and get data summaries ~ 2 days
-    krige.map ( p  )  # ~ 1 day?
-    gmt.cleanup() # clean up any stragglers
-    cmd( "rsync -avzn tethys:/home/jae/bio.snowcrab/R /home/jae/bio.snowcrab/" )
+  # # krige
+  #   krige.ordinary( p )  # ~ 6 hr on "io X 8"
+  #   K = krige.block ( p  ) # to est CI and get data summaries ~ 2 days
+  #   krige.map ( p  )  # ~ 1 day?
+  #   gmt.cleanup() # clean up any stragglers
+  #   cmd( "rsync -avzn tethys:/home/jae/bio.snowcrab/R /home/jae/bio.snowcrab/" )
 
 
 

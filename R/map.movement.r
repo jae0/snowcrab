@@ -22,13 +22,15 @@
     p$basedir = outdir
     p$outfile.basename = file.path(p$basedir, "arrows" )
 
-    if (redo.basemap) gmt.basemap (p)
+    stop ("deprecated")
+    
+    # if (redo.basemap) gmt.basemap (p)
 
-    gmt.arrows(p, toplot, conversions=p$conversions )
+    # gmt.arrows(p, toplot, conversions=p$conversions )
    
-    pause(30)
-    files = sort( list.files( p$basedir, filter="[*.ps]$", all.files=T, full.names=T, recursive=T ))
-    remove.files ( files ) 
+    # pause(30)
+    # files = sort( list.files( p$basedir, filter="[*.ps]$", all.files=T, full.names=T, recursive=T ))
+    # remove.files ( files ) 
 
   }
 

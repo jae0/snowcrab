@@ -70,7 +70,7 @@
 
   #BZ TODO add a variable to p for mapyears  
   # just for the roadshow
-    map.set.information( p, variables=c('totmass.male.com', 'totmass.female.mat'),mapyears=2014:p$year.assessment,outdir=outdir) #,plot.method='gmt')
+    map.set.information( p, variables=c('totmass.male.com', 'totmass.female.mat'),mapyears=2014:p$year.assessment,outdir=outdir)  
     map.set.information( p, variables='t',mapyears=2014:p$year.assessment,outdir=outdir,log.variable=F,add.zeros=F,theta=100)   
     
     # bycatch (geometric means)
@@ -105,7 +105,6 @@
   # Map: Survey locations
 
     map.survey.locations( p, basedir=file.path(project.datadirectory("bio.snowcrab"), "R", "maps", "survey.locations"),  newyear=F, map.method="lattice"  )
-   # map.survey.locations( p, basedir=file.path(project.datadirectory("bio.snowcrab"), "R", "maps", "survey.locations"),  newyear=F, map.method="gmt"  )
   #  map.survey.locations( p, basedir=file.path(project.datadirectory("bio.snowcrab"), "R", "maps", "survey.locations"),  newyear=F, map.method="googleearth"  )
 
   # ------------------------------------------
@@ -122,9 +121,10 @@
   # Map: Logbook data
   outdir = file.path( project.datadirectory("bio.snowcrab"), "R", "maps", "logbook","snowcrab","annual" ) 
   p$corners = data.frame(plon=c(220, 990), plat=c(4750, 5270) )
-    map.fisheries.data( p, variable= 'effort',outdir=outdir,FUN=sum,probs=c(0,0.975))
-    map.fisheries.data( p, variable= 'cpue',outdir=outdir,FUN=mean,probs=c(0,0.975))
-    map.fisheries.data( p, variable= 'landings',outdir=outdir,FUN=sum,probs=c(0,0.975))
+  
+  map.fisheries.data( p, variable= 'effort', outdir=outdir, FUN=sum, probs=c(0,0.975))
+  map.fisheries.data( p, variable= 'cpue', outdir=outdir, FUN=mean, probs=c(0,0.975))
+  map.fisheries.data( p, variable= 'landings', outdir=outdir, FUN=sum, probs=c(0,0.975))
 
  
 
@@ -133,22 +133,11 @@
    # p$do.parallel=F
    map.cat.information( p, outdir=file.path( project.datadirectory("bio.snowcrab"), "R", "maps", "species" ) )
 
-  # ------------------------------------------
-  p=bio.snowcrab::load.environment()
-  # Map:Fisheries logbook data (Effort, CPUE, Landings)
-  #BZ 2017. raster approach deprecated. consider removing in 2018
-    # MG: This is not working properly, you must open the script and run through once by hand???
-  # MG: To fix
-    #map.fisheries.data( p)
-    #raster.map.variables( p, grid.fun=mean, variables = c("effort", "landings", "cpue"))
-  # Map: fisheries logbook data (Effort, CPUE, Landings)  with a colour scale stretched only over the past two years
-    #raster.map.variables.year.assessment( p, grid.fun=mean, variables = c("effort", "landings", "cpue"), years=c('2014', '2015'))
 
   # ------------------------------------------
   # Map: Survey locations
 
     map.survey.locations( p, basedir=file.path(project.datadirectory("bio.snowcrab"), "R", "maps", "survey.locations"),  newyear=F, map.method="lattice"  )
-    #map.survey.locations( p, basedir=file.path(project.datadirectory("bio.snowcrab"), "R", "maps", "survey.locations"),  newyear=F, map.method="gmt"  )
    # map.survey.locations( p, basedir=file.path(project.datadirectory("bio.snowcrab"), "R", "maps", "survey.locations"),  newyear=F, map.method="googleearth"  )
 
   # ------------------------------------------
@@ -488,18 +477,12 @@ abline(h=50)
   ###############################  Retired figures #########################
 
 
-  # ------------------------------------------
-  # Map: Basemap of the Scotian Shelf used by all other mapping routines
-  #   creating a partial postscript file via GMT
-  #   .. only required if changing resolution or spatial extent
-  #  gmt.basemap (p)
 
     # ------------------------------------------
   # Map: Scotian Shelf with CFA lines and labels  .. using gmt
   # this is the basemap from map.r which is then post-labelled in sodipodi
   #  p$outdir = file.path(p$annual.results,"figures")
   #  p$outfile.basename = file.path(p$outdir, "map.CFAs")
-    # p$basemap = file.path( project.datadirectory("bio.snowcrab"), "R", p$basemap)
   #  map.basemap.with.cfa.lines( p, conversions=c("ps2png")  )
 
 

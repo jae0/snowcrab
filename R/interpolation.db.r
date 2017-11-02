@@ -1,6 +1,6 @@
 
   interpolation.db = function( ip=NULL, DS=NULL, p=NULL, 
-    varnames = c("snowcrab.large.males_abundance", "snowcrab.large.males_presence_absence") ) {
+    varnames = c("snowcrab.large.males_abundance", "snowcrab.large.males_presence_absence", annot.cex=2) ) {
 
     if (DS %in% c( "biomass", "biomass.redo" )) {
     
@@ -120,7 +120,7 @@
         outfn = paste( "prediction.abundance.mean", y, sep=".")
         xyz = cbind( bs[, c("plon", "plat")], m[,iy] )
         map( xyz=xyz, cfa.regions=T, depthcontours=T, pts=NULL, annot=y,
-          annot.cex=p$annot.cex, corners=p$planar.corners, fn=outfn, loc=projectdir, at=datarange,
+          annot.cex=annot.cex, corners=p$planar.corners, fn=outfn, loc=projectdir, at=datarange,
           col.regions=cols, rez=c(p$pres,p$pres) )
       }
 
@@ -134,7 +134,7 @@
         outfn = paste( "prediction.abundance.sd", y, sep=".")
         xyz = cbind( bs[, c("plon", "plat")], s[,iy] )
         map( xyz=xyz, cfa.regions=T, depthcontours=T, pts=NULL, annot=y,
-          annot.cex=p$annot.cex, corners=p$planar.corners, fn=outfn, loc=projectdir, at=datarange,
+          annot.cex=annot.cex, corners=p$planar.corners, fn=outfn, loc=projectdir, at=datarange,
           col.regions=cols, rez=c(p$pres,p$pres) )
       }
 
@@ -426,7 +426,7 @@
           cols = color.code( "seis", datarange )
           outfn = paste( "prediction.habitat.mean", v, y, sep=".")
           map( xyz=PS[,c("plon", "plat", "habitat.mean")], cfa.regions=T, depthcontours=T, pts=NULL, annot=paste( v, y ),
-            annot.cex=p$annot.cex, corners=p$planar.corners, fn=outfn, loc=loc.map, at=datarange,
+            annot.cex=annot.cex, corners=p$planar.corners, fn=outfn, loc=loc.map, at=datarange,
             col.regions=cols, rez=c(p$pres,p$pres) )
         }
 
@@ -435,7 +435,7 @@
           cols = color.code( "seis", datarange )
           outfn = paste( "prediction.abundance.mean", v, y, sep=".")
           map( xyz=PS[ , c("plon", "plat", "abundance.mean.log")], cfa.regions=T, depthcontours=T, pts=NULL, annot= paste( v, y ),
-            annot.cex=p$annot.cex, corners=p$planar.corners, fn=outfn, loc=loc.map, at=datarange,
+            annot.cex=annot.cex, corners=p$planar.corners, fn=outfn, loc=loc.map, at=datarange,
             col.regions=cols, rez=c(p$pres,p$pres) )
         }
 
@@ -447,7 +447,7 @@
           cols = color.code( "seis", datarange )
           outfn = paste( "prediction.abundance.mean.estimationarea", v, y, sep=".")
           map( xyz=tomap, cfa.regions=T, depthcontours=T, pts=NULL,
-            annot=paste( v, y ), annot.cex=p$annot.cex, corners=p$planar.corners, fn=outfn, loc=loc.map, at=datarange,
+            annot=paste( v, y ), annot.cex=annot.cex, corners=p$planar.corners, fn=outfn, loc=loc.map, at=datarange,
             col.regions=cols, rez=c(p$pres,p$pres) )
           rm (tomap) ; gc()
         }
