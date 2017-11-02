@@ -9,17 +9,6 @@ map.set.information = function(p, outdir, variables,mapyears, plot.method="level
 
    #variables = c('totmass.male.com', 'totmass.female.mat')
 
-    if (plot.method =="gmt") {
-      # overrides to defaults
-      p$tension = "-T.4"  # 0.35+ for steep; 0.25 for smooth
-      p$maskres = "-S16k"
-      p$interpres = "-nb"
-      outdir = file.path( outdir, p$spatial.domain )
-      gmt.map.variables( set, p=p, variables=variables, plottimes=p$plottimes, basedir=outdir, conversions=p$conversions )
-      return("Done")
-    }
-
-
       # define compact list of variable year combinations for parallel processing
       if(missing(mapyears))mapyears = sort( unique(set$yr) )
       p = make.list( list(variables, mapyears ), Y=p )

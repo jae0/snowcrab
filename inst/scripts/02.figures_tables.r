@@ -99,7 +99,6 @@
     map.set.information( p, variables= mass.vars,outdir=outdir)
     map.set.information( p, variables= no.vars,outdir=outdir,probs=c(0,0.975))
 
-    #map.set.information.diff( p, outdir=file.path( project.datadirectory("bio.snowcrab"), "R", "maps", "survey.diff" )  )
 
 
   # ------------------------------------------
@@ -131,7 +130,7 @@
 
   # ------------------------------------------
   # Map: Numerical density of by-catch species
-   p$do.parallel=F
+   # p$do.parallel=F
    map.cat.information( p, outdir=file.path( project.datadirectory("bio.snowcrab"), "R", "maps", "species" ) )
 
   # ------------------------------------------
