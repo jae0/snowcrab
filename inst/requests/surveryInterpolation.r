@@ -5,6 +5,7 @@
 
 
 p = bio.snowcrab::load.environment()
+require(raster)
 
 	  do.interpolation=F
 

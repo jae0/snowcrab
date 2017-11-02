@@ -196,7 +196,7 @@
       #round the effort to per x1000 trap hauls
       print(r)
       print(res)
-      }
+    }
 
 
 # ----------------------------------------

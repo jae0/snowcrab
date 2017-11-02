@@ -28,7 +28,6 @@ Imports:
   maptools,  
   mgcv, 
   parallel, 
-  raster, 
   RColorBrewer, 
   rasterVis, 
   rgdal, 

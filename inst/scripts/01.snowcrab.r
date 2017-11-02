@@ -1,6 +1,5 @@
 
 require(bio.base)
-# require(raster)  ## TODO :: remove raster-based routines
 
 if (!exists("year.assessment")) {
   year.assessment=lubridate::year(Sys.Date())      # year.assessment 
