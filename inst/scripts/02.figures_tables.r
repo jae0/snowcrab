@@ -84,7 +84,7 @@
     # Means
     # variables that shouldn't be logged 
     set = snowcrab.db( DS="set.biologicals")
-    variables = variable.list.expand("all.data")
+    variables = bio.indicators::variable.list.expand("all.data")
     variables = intersect( variables, names(set) )
  
     nolog.variables = c("t","z","sexratio.all","sexratio.mat","sexratio.imm","julian",variables[grep("cw",variables)])
@@ -386,7 +386,7 @@
 
     out = data.frame(yr=sort( unique(set$yr )) )
     for (reg in c("cfaall", "cfanorth", "cfasouth","cfa4x"  ) ) {
-      d = filter.region.polygon(set[,c("lon","lat")], reg)
+      d = bio.polygons::polygon_inside(set[,c("lon","lat")], reg)
       e = as.data.frame( xtabs(~yr, data=set[d,])  )
       names(e) = c("yr", reg)
       e$yr = as.numeric(as.character(e$yr) )
@@ -397,9 +397,9 @@
     plot.new()
     year = p$year.assessment
     setdata = set[ which(set$yr==year),]
-    N = filter.region.polygon(setdata[,c("lon","lat")], "cfanorth")
-    S = filter.region.polygon(setdata[,c("lon","lat")], "cfasouth")
-    X = filter.region.polygon(setdata[,c("lon","lat")], "cfa4x")
+    N = bio.polygons::polygon_inside(setdata[,c("lon","lat")], "cfanorth")
+    S = bio.polygons::polygon_inside(setdata[,c("lon","lat")], "cfasouth")
+    X = bio.polygons::polygon_inside(setdata[,c("lon","lat")], "cfa4x")
     plot(setdata$lon, setdata$lat)
     points(setdata$lon[N], setdata$lat[N],col="red",pch=20)
     points(setdata$lon[S], setdata$lat[S],col="blue",pch=20)

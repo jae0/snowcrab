@@ -9,7 +9,7 @@ vgm = variofit(vg); rm(vg) ;gc()
 
 # requires 32 GB
 pred.grid = spatial_grid(p)
-inside = filter.region.polygon( pred.grid[,c(1:2)], region="cfaall", planar=T,  proj.type=p$internal.projection )
+inside = bio.polygons::polygon_inside( pred.grid[,c(1:2)], region="cfaall", planar=T,  proj.type=p$internal.projection )
 pred.grid = pred.grid [ inside ,]
 rm(inside); gc()
 

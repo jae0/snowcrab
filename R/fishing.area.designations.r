@@ -4,9 +4,9 @@
     if (type=="lonlat") planar=F
     if (type=="planar") planar=T
 
-    icfa4x = filter.region.polygon( x, "cfa4x", planar=planar)
-    icfanorth = filter.region.polygon( x, "cfanorth", planar=planar)
-    icfasouth = filter.region.polygon( x, "cfasouth", planar=planar)
+    icfa4x = bio.polygons::polygon_inside( x, "cfa4x", planar=planar)
+    icfanorth = bio.polygons::polygon_inside( x, "cfanorth", planar=planar)
+    icfasouth = bio.polygons::polygon_inside( x, "cfasouth", planar=planar)
     G = rep( NA, nrow( x ) )
     G[icfa4x] = "cfa4x"
     G[icfanorth] = "cfanorth"

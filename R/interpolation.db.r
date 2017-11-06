@@ -157,7 +157,7 @@
       K = NULL
       nreg = length(p$regions)
       for (r in 1:nreg ){
-        aoi = filter.region.polygon(x=bs[ , c("plon", "plat")], region=p$regions[r], planar=T)
+        aoi = bio.polygons::polygon_inside(x=bs[ , c("plon", "plat")], region=p$regions[r], planar=T)
         aoi = intersect( aoi, which( bs$plon > 250 ) )
         out = matrix( NA, nrow=p$ny, ncol=3) 
         
@@ -213,7 +213,7 @@
       K = NULL
       nreg = length(p$regions)
       for (r in 1:nreg ){
-        aoi = filter.region.polygon(x=bs[ , c("plon", "plat")], region=p$regions[r], planar=T)
+        aoi = bio.polygons::polygon_inside(x=bs[ , c("plon", "plat")], region=p$regions[r], planar=T)
         aoi = intersect( aoi, which( bs$plon > 250 ) )
         out = matrix( NA, nrow=p$ny, ncol=2) 
         
@@ -459,7 +459,7 @@
 
         for (r in p$regions ){
 
-          iRegion.PS = filter.region.polygon(x=PS[ , c("plon", "plat")], region=r, planar=T)
+          iRegion.PS = bio.polygons::polygon_inside(x=PS[ , c("plon", "plat")], region=r, planar=T)
           iEastof250 = which( PS$plon > 250 )
           iRegion.PS = intersect( iRegion.PS, iEastof250 )
 

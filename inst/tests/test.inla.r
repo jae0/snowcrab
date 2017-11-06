@@ -137,7 +137,7 @@ inla.setOption(scale.model.default = TRUE)  # better numerical performance of IG
   bubble(set, "B")
   spplot(set, "B")
 
-  bb = read.table( find.bio.gis( "snowcrab.boundingbox") )
+  bb = read.table( bio.polygons::polygon_file( "snowcrab.boundingbox") )
   names(bb) =c("lon", "lat" )
   bb = lonlat2planar( bb, p$internal.projection )
 
@@ -231,7 +231,7 @@ sd           1.385588         NA  1.0899911  1.382066   1.726755        NA      
   region = "cfanorth"
   region = "cfasouth"
 
-  i = filter.region.polygon(x=fp[,c("plon", "plat")], region=region, planar=T)
+  i = bio.polygons::polygon_inside(x=fp[,c("plon", "plat")], region=region, planar=T)
   fp = fp[i,]
   require(lattice)
   levelplot( B~plon+plat, data=fp, aspect="iso")

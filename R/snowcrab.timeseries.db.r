@@ -17,7 +17,7 @@ snowcrab.timeseries.db = function( DS="default", p=NULL, regions=c( "cfa4x", "cf
     for (a in regions) {
       dat[,a] = NA
       ai = NULL
-      ai = filter.region.polygon(dat, a)
+      ai = bio.polygons::polygon_inside(dat, a)
       if (length(ai) > 0) dat[ai,a] = a
     }
     tsdata = expand.grid( region=regions, year=yrs, variable=vn, stringsAsFactors=FALSE, KEEP.OUT.ATTRS=FALSE )
@@ -86,7 +86,7 @@ snowcrab.timeseries.db = function( DS="default", p=NULL, regions=c( "cfa4x", "cf
     for (a in regions) {
       dat[,a] = NA
       ai = NULL
-      ai = filter.region.polygon(dat, a) 
+      ai = bio.polygons::polygon_inside(dat, a) 
       if (length(ai) > 0) dat[ai,a] = a
     }
 
@@ -161,7 +161,7 @@ snowcrab.timeseries.db = function( DS="default", p=NULL, regions=c( "cfa4x", "cf
     for (a in regions) {
       dat[,a] = NA
       ai = NULL
-      ai = filter.region.polygon(dat, a)
+      ai = bio.polygons::polygon_inside(dat, a)
       if (length(ai) > 0) dat[ai,a] = a
     }
 
@@ -226,7 +226,7 @@ snowcrab.timeseries.db = function( DS="default", p=NULL, regions=c( "cfa4x", "cf
     for (a in regions) {
       dat[,a] = NA
       ai = NULL
-      ai = filter.region.polygon(dat, a)
+      ai = bio.polygons::polygon_inside(dat, a)
       if (length(ai) > 0) dat[ai,a] = a
     }
 

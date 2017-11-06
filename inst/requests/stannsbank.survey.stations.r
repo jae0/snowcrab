@@ -3,7 +3,7 @@
 p = bio.snowcrab::load.environment()
 
 dat = snowcrab.db('set.biologicals')
-pp = read.csv(find.bio.gis('StAnnsMPA.csv'))
+pp = read.csv(bio.polygons::polygon_file('StAnnsMPA.csv'))
 require(PBSmapping)
 
 dat$X = dat$lon

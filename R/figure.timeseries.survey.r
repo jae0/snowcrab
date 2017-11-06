@@ -17,7 +17,12 @@
     tdb = snowcrab.timeseries.db( DS=type )
 
     if(missing(variables)){
-      variables =  c( variable.list.expand("all.to.model"), variable.list.expand("snowcrab.cw"), variable.list.expand("physical") ,'sexratio.mat','sexratio.imm','sexratio.all')
+      variables =  c( 
+         bio.indicators::variable.list.expand("all.to.model"), 
+         bio.indicators::variable.list.expand("snowcrab.cw"), 
+         bio.indicators::variable.list.expand("physical"),
+         'sexratio.mat','sexratio.imm','sexratio.all' 
+      )
       variables = intersect( variables, unique(tdb$variable))
     }
 

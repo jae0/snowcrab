@@ -8,7 +8,7 @@
     if (years=="all") years = sort( unique( odb$fishyr ) )
 #years=2014
     for (reg in regions) {
-      r = filter.region.polygon(x=odb, region=recode.areas(reg), planar=F)
+      r = bio.polygons::polygon_inside(x=odb, region=bio.polygons::polygon_internal_code(reg), planar=F)
       for (y in years) {
         # remove production (pre-sorted) samples in historical data
         #if(y < 2004) odb = odb[which(odb$prodcd_id=="0"),]

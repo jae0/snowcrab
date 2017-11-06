@@ -37,7 +37,7 @@
       nodelabel = p$nodelabels[iv] 
       yc = as.character(y)
       ic = filter.class( det, type=nodelabel )
-      ir = filter.region.polygon(det.locs, region=region)
+      ir = bio.polygons::polygon_inside(det.locs, region=region)
       iy = which( det.years==y )
       i = sort( intersect( intersect(  ir, iy) , ic )  )
       if (length(i)<1) next

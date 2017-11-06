@@ -91,10 +91,10 @@
       h = which( !is.na( lgbk$lon + lgbk$lat ) )
       lgbk = lgbk[h,]
 
-      i = filter.region.polygon( lgbk[, c("lon", "lat")], region="cfaall")
+      i = bio.polygons::polygon_inside( lgbk[, c("lon", "lat")], region="cfaall")
       lgbk = lgbk[i,]
 
-      j = filter.region.polygon( lgbk[, c("lon", "lat")], region="isobath1000m")
+      j = bio.polygons::polygon_inside( lgbk[, c("lon", "lat")], region="isobath1000m")
       lgbk = lgbk[j,]
 
       # additional constraint ..
@@ -124,10 +124,10 @@
 
 
       # only accept "correctly" positioned data within each subarea ... in case miscoded data have a large effect
-      icfa4x = filter.region.polygon( lgbk[, c("lon", "lat")], "cfa4x")
-      icfanorth = filter.region.polygon( lgbk[, c("lon", "lat")], "cfanorth")
-      icfa23 = filter.region.polygon( lgbk[, c("lon", "lat")], "cfa23")
-      icfa24 = filter.region.polygon( lgbk[, c("lon", "lat")], "cfa24")
+      icfa4x = bio.polygons::polygon_inside( lgbk[, c("lon", "lat")], "cfa4x")
+      icfanorth = bio.polygons::polygon_inside( lgbk[, c("lon", "lat")], "cfanorth")
+      icfa23 = bio.polygons::polygon_inside( lgbk[, c("lon", "lat")], "cfa23")
+      icfa24 = bio.polygons::polygon_inside( lgbk[, c("lon", "lat")], "cfa24")
 
       gooddata = sort( unique( c(icfa4x, icfanorth, icfa23, icfa24 ) ) )
       lgbk = lgbk[gooddata, ]

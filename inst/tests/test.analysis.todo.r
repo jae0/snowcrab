@@ -166,7 +166,7 @@
 gc()
   i = NULL
   z = NULL
-  i = filter.region.polygon(x=bk[, c("plon", "plat")], region=r, planar=T)
+  i = bio.polygons::polygon_inside(x=bk[, c("plon", "plat")], region=r, planar=T)
   o = bk[i, c("plon", "plat")]
   surfacearea = length(i) * (p$pres*p$pres) / 1000 # divide by 1000 to make kt or kn
   z = predict(object=g, newdata=data.frame(plon=0, plat=0), block=o)

@@ -17,10 +17,10 @@
     region = "cfaall"
     tmp0 = ss[, c("lon0", "lat0")]
       names(tmp0) = c("lon", "lat")
-      ss0 = filter.region.polygon(tmp0, region=region)
+      ss0 = bio.polygons::polygon_inside(tmp0, region=region)
     tmp1 = ss[, c("lon1", "lat1")]
       names(tmp1) = c("lon", "lat")
-      ss1 = filter.region.polygon(tmp0, region=region)
+      ss1 = bio.polygons::polygon_inside(tmp0, region=region)
   ss = ss[ unique( c( ss0,ss1) ) , ]
 
   # googleearth does not like '&' .. remove them

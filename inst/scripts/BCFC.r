@@ -272,7 +272,7 @@ hl=68
  
  
 # --------------------------------------
-# convert lat's and long's to recognizable format for recode.areas
+# convert lat's and long's to recognizable format for bio.polygons::polygon_internal_code
 a=setsobs
 h=names(a)
 h[h=="LATITUDE"] = "lat"
@@ -425,7 +425,7 @@ cfa=c("cfanorth", "cfa23", "cfa24", "cfa4x")
  
 x$cfa=NA
 for  (a in cfa){
-     rowindex= filter.region.polygon(x,recode.areas(a))
+     rowindex= bio.polygons::polygon_inside(x,bio.polygons::polygon_internal_code(a))
      x$cfa[rowindex]=a
 }
  
@@ -433,11 +433,11 @@ area=c("cfanorth", "cfasouth", "cfa4x")
  
 x$area=NA
 for (a in area){
-rowindex= filter.region.polygon(x,recode.areas(a))
+rowindex= bio.polygons::polygon_inside(x,bio.polygons::polygon_internal_code(a))
 x$area[rowindex]=a
 }
  
-#4X fishing activity on 4X line doesn't get recoded properly by recode.areas
+#4X fishing activity on 4X line doesn't get recoded properly by bio.polygons::polygon_internal_code
 #force thes into 4X
 x$long=NA
 x$long=-(as.numeric(x$lon))

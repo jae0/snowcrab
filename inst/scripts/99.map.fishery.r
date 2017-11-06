@@ -21,7 +21,7 @@
 
  # bring in fishery data
   sm = landings.db( )
-  sm = sm[ filter.region.polygon ( sm, region="scotia.fundy" ), ]
+  sm = sm[ bio.polygons::polygon_inside ( sm, region="scotia.fundy" ), ]
 
   # rename a few vars to allow use of function "aggregate.fish.stats", below
   sm$catch = sm$landings

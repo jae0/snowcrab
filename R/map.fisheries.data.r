@@ -2,7 +2,7 @@ map.fisheries.data = function(p, outdir,  FUN, yrs, variable='effort',probs=c(0,
 
   x = logbook.db( DS="logbook" )
   
-  x = x [filter.region.polygon( x, region="isobath1000m"),]
+  x = x [bio.polygons::polygon_inside( x, region="isobath1000m"),]
   x = x[ which(x$effort <= 300) ,]
   x = x[ which(x$cpue < 500),]
   

@@ -21,9 +21,9 @@
       x$yr=as.factor(x$yr)
 
       x$reg = NA # initialise the column / field
-      x$reg[ filter.region.polygon(x,recode.areas("cfanorth")) ] = "cfanorth"
-      x$reg[ filter.region.polygon(x,recode.areas("cfasouth")) ] = "cfasouth"
-      x$reg[ filter.region.polygon(x,recode.areas("cfa4x")) ] = "cfa4x"
+      x$reg[ bio.polygons::polygon_inside(x,bio.polygons::polygon_internal_code("cfanorth")) ] = "cfanorth"
+      x$reg[ bio.polygons::polygon_inside(x,bio.polygons::polygon_internal_code("cfasouth")) ] = "cfasouth"
+      x$reg[ bio.polygons::polygon_inside(x,bio.polygons::polygon_internal_code("cfa4x")) ] = "cfa4x"
       x = x[ which( x$reg %in% c("cfanorth", "cfasouth" ) ) ,]
       x$reg=as.factor(x$reg)
 

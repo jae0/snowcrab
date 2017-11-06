@@ -67,7 +67,7 @@
       cols = c("gray40", "gray100" )
 
       for (a in 1:(ncols)) {
-        set0 = set[filter.region.polygon(set, areas[a]),]
+        set0 = set[bio.polygons::polygon_inside(set, areas[a]),]
         for (y in 1:nrows) {
           set1 = set0[ which(set0$yr==year[y] ), ]
           sids = sort(unique(set1$sid))
@@ -135,7 +135,7 @@
       cols = c("gray40", "gray100" )
 
       for (a in 1:(ncols)) {
-        set0 = set[filter.region.polygon(set, areas[a]),]
+        set0 = set[bio.polygons::polygon_inside(set, areas[a]),]
         for (y in 1:nrows) {
           set1 = set0[ which(set0$yr==year[y]) , ]
           sids = sort(unique(set1$sid))

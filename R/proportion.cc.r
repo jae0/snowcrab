@@ -9,7 +9,7 @@
 
     # Remove CW's outside norms and remove production (pre-sorted) samples
     i = which( odb$sex==male & odb$fishyr==year )  # --- fishing year is used and not the actual year caught
-    r = filter.region.polygon(x=odb, region=recode.areas(region), planar=F)
+    r = bio.polygons::polygon_inside(x=odb, region=bio.polygons::polygon_internal_code(region), planar=F)
 
     c.r.y = unique( intersect (r, i) )
 

@@ -34,7 +34,7 @@
   for (y in years) {
   for (a in areas) {
   for (mat in c(1,2) ) {
-    ij = filter.region.polygon(det0, a)
+    ij = bio.polygons::polygon_inside(det0, a)
     if (length(ij)<30) next
     det = det0[ij,]
     ii = which(det$sex==1 & det$mat==mat & as.numeric(substring(det$trip,6,9))==y)
@@ -139,7 +139,7 @@
   for (y in years) {
   for (a in areas) {
   for (mat in c(1,2) ) {
-    ij = filter.region.polygon(det0, a)
+    ij = bio.polygons::polygon_inside(det0, a)
     if (length(ij)<30) next
     det = det0[ij,]
     ii = which(det$sex==2 & det$mat==mat & as.numeric(substring(det$trip,6,9))==y)
@@ -241,7 +241,7 @@
       xlim=c(s0,s1)
 
       for (a in 1:(ncols)) {
-        set0 = set[filter.region.polygon(set, areas[a]),]
+        set0 = set[bio.polygons::polygon_inside(set, areas[a]),]
         for (y in 1:nrows) {
           set1 = set0[ which(set0$yr==years[y]) , ]
           sids = sort(unique(set1$sid))
@@ -296,7 +296,7 @@
       xlim=c(s0,s1)
 
       for (a in 1:(ncols)) {
-        set0 = set[filter.region.polygon(set, areas[a]),]
+        set0 = set[bio.polygons::polygon_inside(set, areas[a]),]
         for (y in 1:nrows) {
           set1 = set0[ which(set0$yr==years[y]) , ]
           sids = sort(unique(set1$sid))
