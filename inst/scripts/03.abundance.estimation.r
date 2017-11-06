@@ -64,13 +64,7 @@ p$lbm_distance_scale = 50
 p = bio.snowcrab::snowcrab.parameters( p=p, DS="lbm", varname=p$selection$name  )
 
 # o = snowcrab_lbm(p=p, DS="lbm_inputs" )  # create fields for 
-DATA='snowcrab_lbm( p=p, DS="lbm_inputs" )'
-lbm( p=p, DATA=DATA, tasks=c("initiate", "globalmodel") ) # 30 min
-#   lbm( p=p, tasks=c( "serial_debug" ) ) # serial mode
-#   lbm( p=p, tasks=c( "continue" ) )    
-lbm( p=p, tasks=c( "stage1" ) ) #  3 hrs 
-lbm( p=p, tasks=c( "stage2" ) ) #   1 hrs
-lbm( p=p, tasks=c( "save" ) )
+lbm( p=p, DATA='snowcrab_lbm( p=p, DS="lbm_inputs" )', runmode="stage2" ) # 30 min
 
 p = make.list( list( yrs=p$yrs), Y=p )
 parallel.run( snowcrab_lbm, p=p, DS="predictions.redo" ) # warp predictions to other grids
