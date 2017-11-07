@@ -37,7 +37,6 @@ Imports:
   vegan, 
   bio.base,
   bio.bathymetry, 
-  bio.coastline,
   bio.polygons,
   bio.utilities 
 Suggests:
