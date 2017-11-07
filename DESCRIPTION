@@ -26,6 +26,8 @@ Imports:
   lattice, 
   lubridate,
   maptools,  
+  maps,
+  mapdata,
   mgcv, 
   parallel, 
   RColorBrewer, 

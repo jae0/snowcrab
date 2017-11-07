@@ -278,6 +278,7 @@
       x$plon = grid.internal( x$plon, grid$plon )
       x$plat = grid.internal( x$plat, grid$plat )
       yrs = c(T,F)
+      
       for ( Y in yrs ) {
         if (Y) {
           fn = fn2
@@ -312,6 +313,8 @@
         tmp = matrix(unlist(strsplit(as.character(out$gridid), ".", fixed=T)), ncol=ncols, byrow=T)
         out$plat = as.numeric(tmp[,2])
         out$plon = as.numeric(tmp[,1])
+
+        out = out[ which(is.finite(out$plat+out$plon)), ]
 
         out$gridid = as.character( out$gridid )
 
