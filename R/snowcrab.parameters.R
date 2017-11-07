@@ -7,7 +7,6 @@ snowcrab.parameters = function( p=NULL, DS="default", year.assessment=NULL, varn
 
     p$project.name = "bio.snowcrab"
     p$project.root = file.path( project.datadirectory( p$project.name ) )
-    p$project.outdir.root = project.datadirectory( p$project.name, "R" ) #required for interpolations and mapping
     
     rlibs = c( "lubridate", "rgdal", "parallel", "sp", "lattice", "fields", "mgcv" , 
                "geosphere",  "DBI", "Cairo", "Hmisc", "vegan", "akima",   "latticeExtra",  "maptools",  
