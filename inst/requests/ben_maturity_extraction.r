@@ -2,7 +2,7 @@
 
 #p = bio.snowcrab::load.environment()
 
- setwd( file.path( project.datadirectory("bio.snowcrab"), "R" )
+ setwd( file.path( project.datadirectory("bio.snowcrab"), "output" )
  load("det.georef.rdata")
  load("set.complete.rdata")
 

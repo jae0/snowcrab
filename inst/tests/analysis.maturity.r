@@ -4,7 +4,7 @@
 
   # maturity temporal transition
 
-  det = snowcrab.db("det.georef")
+  det = snowcrab.db("det.georeferenced")
   to.keep = c("trip", "set", "sex", "cw", "mass", "abdomen", "chela", "mat",
     "shell", "gonad", "eggcol", "eggPr", "durometer", "legs",
     "station", "t0", "lon", "lat",

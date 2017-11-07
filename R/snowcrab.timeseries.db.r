@@ -1,7 +1,7 @@
 
 snowcrab.timeseries.db = function( DS="default", p=NULL, regions=c( "cfa4x", "cfanorth", "cfasouth", "cfaall" ), trim=0, vn=NULL, sdci=F ) {
 
-  tsoutdir = project.datadirectory( "bio.snowcrab", "R" )
+  tsoutdir = file.path( p$project.outputdir, "timeseries" )
 
   if (DS == "default") return( snowcrab.timeseries.db( DS="biologicals") )
 

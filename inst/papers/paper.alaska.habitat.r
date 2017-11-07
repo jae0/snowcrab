@@ -28,7 +28,7 @@
       panel.mathdensity( dmath=dnorm, col = "black", args=list(mean=mean(x),sd=sd(x)))
    } )
 
-   Pr( "png", dname=file.path(project.datadirectory("bio.snowcrab"), "R"), fname="temp.hist", trim=F , res=144)
+   Pr( "png", dname=project.datadirectory("bio.snowcrab", "output"), fname="temp.hist", trim=F , res=144)
 
 
   histogram( ~ z | sex + mat , data = xdet,
@@ -38,7 +38,7 @@
       panel.mathdensity( dmath=dnorm, col = "black", args=list(mean=mean(x),sd=sd(x)))
    } )
 
-   Pr( "png", dname=file.path(project.datadirectory("bio.snowcrab"), "R"), fname="temp.hist", trim=F , res=144)
+   Pr( "png", dname=project.datadirectory("bio.snowcrab", "output"), fname="temp.hist", trim=F , res=144)
 
 
 
@@ -49,7 +49,7 @@
       panel.mathdensity( dmath=dnorm, col = "black", args=list(mean=mean(x),sd=sd(x)))
    } )
 `
-   Pr( "png", dname=file.path(project.datadirectory("bio.snowcrab"), "R"), fname="temp.hist", trim=F , res=144)
+   Pr( "png", dname=project.datadirectory("bio.snowcrab", "output"), fname="temp.hist", trim=F , res=144)
 
 
 

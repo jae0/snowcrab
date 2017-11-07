@@ -5,6 +5,7 @@
     year.assessment=lubridate::year(Sys.Date())      # year.assessment 
     year.assessment=lubridate::year(Sys.Date()) -1   # or year previous to current
   }
+
   p = bio.snowcrab::load.environment( year.assessment=year.assessment )
 
 # loadfunctions('bio.snowcrab')
@@ -66,7 +67,7 @@
 #  p$do.parallel=F
   p$corners = data.frame(plon=c(220, 990), plat=c(4750, 5270) )
 
-  outdir = file.path( project.datadirectory("bio.snowcrab"), "R", "maps", "survey","snowcrab","annual" ) 
+  outdir = file.path( p$project.outputdir, "maps", "survey", "snowcrab","annual" ) 
 
   #BZ TODO add a variable to p for mapyears  
   # just for the roadshow
@@ -104,22 +105,22 @@
   # ------------------------------------------
   # Map: Survey locations
 
-    map.survey.locations( p, basedir=file.path(project.datadirectory("bio.snowcrab"), "R", "maps", "survey.locations"),  newyear=F, map.method="lattice"  )
-  #  map.survey.locations( p, basedir=file.path(project.datadirectory("bio.snowcrab"), "R", "maps", "survey.locations"),  newyear=F, map.method="googleearth"  )
+    map.survey.locations( p, basedir=file.path(p$project.outputdir, "maps", "survey.locations"),  newyear=F, map.method="lattice"  )
+  #  map.survey.locations( p, basedir=file.path(p$project.outputdir, "maps", "survey.locations"),  newyear=F, map.method="googleearth"  )
 
   # ------------------------------------------
   # Map: Observer locations
-    map.observer.locations( p, basedir=file.path(project.datadirectory("bio.snowcrab"), "R", "maps","observer.locations" ), newyear=F , map.method="lattice"  )
+    map.observer.locations( p, basedir=file.path(p$project.outputdir, "maps","observer.locations" ), newyear=F , map.method="lattice"  )
 
   # ------------------------------------------
   # Map: Logbook recorded locations
-    map.logbook.locations( p, basedir=file.path(project.datadirectory("bio.snowcrab"), "R", "maps","logbook.locations" ), newyear=F , map.method="lattice"  )
+    map.logbook.locations( p, basedir=file.path(p$project.outputdir, "maps","logbook.locations" ), newyear=F , map.method="lattice"  )
 
 
 
   # ------------------------------------------
   # Map: Logbook data
-  outdir = file.path( project.datadirectory("bio.snowcrab"), "R", "maps", "logbook","snowcrab","annual" ) 
+  outdir = file.path( p$project.outputdir, "maps", "logbook","snowcrab","annual" ) 
   p$corners = data.frame(plon=c(220, 990), plat=c(4750, 5270) )
   
   map.fisheries.data( p, variable= 'effort', outdir=outdir, FUN=sum, probs=c(0,0.975))
@@ -131,22 +132,22 @@
   # ------------------------------------------
   # Map: Numerical density of by-catch species
    # p$do.parallel=F
-   map.cat.information( p, outdir=file.path( project.datadirectory("bio.snowcrab"), "R", "maps", "species" ) )
+   map.cat.information( p, outdir=file.path( p$project.outputdir, "maps", "species" ) )
 
 
   # ------------------------------------------
   # Map: Survey locations
 
-    map.survey.locations( p, basedir=file.path(project.datadirectory("bio.snowcrab"), "R", "maps", "survey.locations"),  newyear=F, map.method="lattice"  )
-   # map.survey.locations( p, basedir=file.path(project.datadirectory("bio.snowcrab"), "R", "maps", "survey.locations"),  newyear=F, map.method="googleearth"  )
+    map.survey.locations( p, basedir=file.path(p$project.outputdir, "maps", "survey.locations"),  newyear=F, map.method="lattice"  )
+   # map.survey.locations( p, basedir=file.path(p$project.outputdir, "maps", "survey.locations"),  newyear=F, map.method="googleearth"  )
 
   # ------------------------------------------
   # Map: Observer locations
-    map.observer.locations( p, basedir=file.path(project.datadirectory("bio.snowcrab"), "R", "maps","observer.locations" ), newyear=F , map.method="lattice"  )
+    map.observer.locations( p, basedir=file.path(p$project.outputdir, "maps","observer.locations" ), newyear=F , map.method="lattice"  )
 
   # ------------------------------------------
   # Map: Logbook recorded locations
-    map.logbook.locations( p, basedir=file.path(project.datadirectory("bio.snowcrab"), "R", "maps","logbook.locations" ), newyear=F , map.method="lattice"  )
+    map.logbook.locations( p, basedir=file.path(p$project.outputdir, "maps","logbook.locations" ), newyear=F , map.method="lattice"  )
 
   # ------------------------------------------
   
@@ -202,7 +203,7 @@
 # ----------------------------------------
 #  Carapace condition from observed data  < 95mm CW
 
-    outtabledir= file.path(project.datadirectory("bio.snowcrab"), "assessments", "2015", "tables", "observer")
+    outtabledir= file.path(project.datadirectory("bio.snowcrab"), "assessments", p$year.assessment, "tables", "observer")
 
     odb = odb0
     odb = odb[ which( odb$cw < 95 & odb$prodcd_id=="0" ) ,]
@@ -509,27 +510,27 @@ abline(h=50)
 
   # ------------------------------------------
   # Timeseries: Larval brachyura from the SSIP data
-    ##figure.timeseries.larvae( outdir=file.path(project.datadirectory("bio.snowcrab"), "R", "timeseries", "larvae") )
+    ##figure.timeseries.larvae( outdir=file.path(p$project.outputdir, "timeseries", "larvae") )
 
 
 
   # ------------------------------------------
   # Growth as a a function of instar for Scotian Shelf snow crab
-    figure.growth.instar( outdir=file.path(project.datadirectory("bio.snowcrab"), "R", "growth") )
+    figure.growth.instar( outdir=file.path(p$project.outputdir, "growth") )
 
 
   # ------------------------------------------
   # Map: Larval distributions from the Scotian Shelf Ichtyoplankton Program data
-    map.larvae( p, outdir=file.path(project.datadirectory("bio.snowcrab"), "R", "maps", "larvae"), conversions=conversions )
+    map.larvae( p, outdir=file.path(p$project.outputdir, "maps", "larvae"), conversions=conversions )
 
     # Map: Crab movement from mark-recapture data
     #MG I think Brent is primarily mapping this stuff now. Not sure the data has been updated in a while
-    # map.movement( p, outdir=file.path(project.datadirectory("bio.snowcrab"), "R", "maps", "mark.recapture") )
+    # map.movement( p, outdir=file.path(p$project.outputdir, "maps", "mark.recapture") )
     
     # ------------------------------------------
     # Map: Spatial representation of maturity patterns of snow crab
     #MG Not sure we use these maps either, check with Adam and Jae
-    # map.maturity( p, outdir=file.path(project.datadirectory("bio.snowcrab"), "R", "maps", "maturity"), newyear=T )
+    # map.maturity( p, outdir=file.path(p$project.outputdir, "maps", "maturity"), newyear=T )
     
 
 

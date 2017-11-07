@@ -1,7 +1,7 @@
 
   p = bio.snowcrab::load.environment()
 
-  det = snowcrab.db("det.georef")
+  det = snowcrab.db("det.georeferenced")
 
   hvar="cw" #!
 
@@ -106,7 +106,7 @@
 # --- females
 
 
-  det = snowcrab.db("det.georef")
+  det = snowcrab.db("det.georeferenced")
 
   hvar="cw" #!
 

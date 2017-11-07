@@ -1,6 +1,8 @@
 
   biomass.summary.db = function( DS="complete", p=NULL ) {
     #browser()
+    
+    sum_outdir = file.path( sum_outdir, "timeseries" )
 
     if (DS=="surplusproduction" ){
       res =  biomass.summary.db(p=p, DS="complete")
@@ -75,7 +77,7 @@
 
 
     if (DS %in% c("complete", "complete.redo") ) {
-      fn = file.path( project.datadirectory("bio.snowcrab"), "R", "bugs.rdata" )
+      fn = file.path( sum_outdir, "complete_ts.rdata" )
       if ( DS == "complete") {
         out = NULL
         if (file.exists(fn)) load(fn)
@@ -120,7 +122,7 @@
 
 
     if (DS %in% c("L", "L.redo" ) ) {
-      fn = file.path( project.datadirectory("bio.snowcrab"), "R", "L.bugs.rdata" )
+      fn = file.path( sum_outdir, "L_ts.rdata" )
       L=NULL
       if (DS=="L") {
         if (file.exists(fn)) load(fn)
@@ -135,7 +137,7 @@
 
 
     if (DS %in% c("B", "B.redo" )) {
-      fn = file.path( project.datadirectory("bio.snowcrab"), "R", "B.bugs.rdata" )
+      fn = file.path( sum_outdir, "B_ts.rdata" )
       B=NULL
       if (DS=="B") {
         if (file.exists(fn)) load(fn)
@@ -161,7 +163,7 @@
 
 
     if (DS %in% c("B.sd", "B.sd.redo" )) {
-      fn = file.path( project.datadirectory("bio.snowcrab"), "R", "B.sd.bugs.rdata" )
+      fn = file.path( sum_outdir, "B.sd_ts.rdata" )
       B=NULL
       if (DS=="B.sd") {
         if (file.exists(fn)) load(fn)
@@ -186,7 +188,7 @@
 
 
     if (DS %in% c("R_geomean", "R_geomean.redo" )) {
-      fn = file.path( project.datadirectory("bio.snowcrab"), "R", "R_geomean.bugs.rdata" )
+      fn = file.path( sum_outdir, "R_geomean_ts.rdata" )
       Bx = NULL
       if (DS=="R_geomean") {
         if (file.exists(fn)) load(fn)
@@ -218,7 +220,7 @@
 
 
     if (DS %in% c("B_geomean", "B_geomean.redo" )) {
-      fn = file.path( project.datadirectory("bio.snowcrab"), "R", "B_geomean.bugs.rdata" )
+      fn = file.path( sum_outdir, "B_geomean_ts.rdata" )
       Bx = NULL
       if (DS=="B_geomean") {
         if (file.exists(fn)) load(fn)
@@ -247,7 +249,7 @@
 
 
     if (DS %in% c("B_geomean.sd", "B_geomean.sd.redo" )) {
-      fn = file.path( project.datadirectory("bio.snowcrab"), "R", "B_geomean.sd.bugs.rdata" )
+      fn = file.path( sum_outdir, "B_geomean.sd_ts.rdata" )
       Bx = NULL
       if (DS=="B_geomean.sd") {
         if (file.exists(fn)) load(fn)
@@ -276,7 +278,7 @@
 
 
     if (DS %in% c("R_geomean.sd", "R_geomean.sd.redo" )) {
-      fn = file.path( project.datadirectory("bio.snowcrab"), "R", "R_geomean.sd.bugs.rdata" )
+      fn = file.path( sum_outdir, "R_geomean.sd_ts.rdata" )
       Bx = NULL
       if (DS=="R_geomean.sd") {
         if (file.exists(fn)) load(fn)
@@ -304,7 +306,7 @@
     }
 
     if (DS %in% c("R", "R.redo" )) {
-      fn = file.path( project.datadirectory("bio.snowcrab"), "R", "R.bugs.rdata" )
+      fn = file.path( sum_outdir, "R_ts.rdata" )
       R=NULL
       if (DS=="R") {
         if (file.exists(fn)) load(fn)
@@ -333,7 +335,7 @@
 
 
     if (DS %in% c("R.sd", "R.sd.redo" )) {
-      fn = file.path( project.datadirectory("bio.snowcrab"), "R", "R.sd.bugs.rdata" )
+      fn = file.path( sum_outdir, "R.sd_ts.rdata" )
       R=NULL
       if (DS=="R.sd") {
         if (file.exists(fn)) load(fn)

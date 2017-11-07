@@ -25,7 +25,7 @@ dal = Filter(function(x)!all(is.na(x)),dal)
 dal$yr = NULL
 
 #species data
-outloc = project.datadirectory( "bio.snowcrab", "R", "requests" )
+outloc = project.datadirectory( "bio.snowcrab", "output", "requests" )
 fn = file.path( outloc, "StAnnsSCSurveySpeciesData.csv" )
 write.csv(dal,file=fn, row.names=F)
 

@@ -12,7 +12,7 @@ makeMap(addSurvey=T)
     n.areas = length(areas)
     varnames = names(set)
 #    vars = varnames[ grep ( vars, varnames) ]
-fdir <-file.path( project.datadirectory("bio.snowcrab"), "R", "gam","habitat" )
+fdir <-file.path( p$project.outputdir, "habitat" )
         fs <- dir(fdir)
     fs <- fs[setdiff(grep('K.R0.mass',fs) , grep('environmentals.only',fs))]
         lo <- c()
@@ -30,7 +30,7 @@ fdir <-file.path( project.datadirectory("bio.snowcrab"), "R", "gam","habitat" )
         td = rbind(td,td1)
         td$year =td$yr
         td$sa.region = td$sa.region/1000
-        load(file.path(project.datadirectory('bio.snowcrab'),"R","ts.rdata"))
+        load(file.path(p$project.outputdir, "ts.rdata"))
     ts1 <- ts[which(ts$variable=='totno.male.com' & ts$region %in% areas & ts$year > 2003),c('year','region','mean','ub','lb')]
       td1 <- merge(ts1,td, by=c('year','region'),all.x=T)
 

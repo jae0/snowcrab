@@ -37,8 +37,8 @@
   names(l) = c("station", "lon.2005", "lat.2005", "lon.2006", "lat.2006")
   l = as.data.frame(l)
 
-  write.table(l, file=file.path( project.datadirectory("bio.snowcrab"), "R", "trawl.stations.toadd.txt") ,sep=";")
-  write.table(set[todrop,c("station", "lon", "lat")], file=file.path( project.datadirectory("bio.snowcrab"), "R", "trawl.stations.toremove.txt"), sep=";")
+  write.table(l, file=file.path( project.datadirectory("bio.snowcrab"), "output", "trawl.stations.toadd.txt") ,sep=";")
+  write.table(set[todrop,c("station", "lon", "lat")], file=file.path( project.datadirectory("bio.snowcrab"), "output", "trawl.stations.toremove.txt"), sep=";")
 
 
 

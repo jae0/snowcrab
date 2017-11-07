@@ -26,7 +26,7 @@
   if( make.maturity.db ) {
     maturity = make.maturity.spatial( distance=50 )
     save(maturity, file="maturity.rdata", compress=T)
-    # load(file.path( project.datadirectory("bio.snowcrab"), "R", "maturity.rdata"))
+    # load(file.path( project.datadirectory("bio.snowcrab"), "output", "maturity.rdata"))
   }
 
 

@@ -119,7 +119,7 @@ p = bio.snowcrab::load.environment()
     ubound = XX$ubound
     surfacearea = XX$surfacearea
 
-    ts.plotandsave(xx, yy, lbound, ubound, surfacearea, action="save", title="Biomass (x 1000 t)", filename=paste(v,r,sep="."), outdir=file.path(project.datadirectory("bio.snowcrab"), "R", "Requests") )
+    ts.plotandsave(xx, yy, lbound, ubound, surfacearea, action="save", title="Biomass (x 1000 t)", filename=paste(v,r,sep="."), outdir=file.path(project.datadirectory("bio.snowcrab"), "output", "Requests") )
 
   }
   }
@@ -351,7 +351,7 @@ observer.data.request.oracle = function () {
 
 p = bio.snowcrab::load.environment()
 
-    det = snowcrab.db("det.georef")  # this contains year
+    det = snowcrab.db("det.georeferenced")  # this contains year
     det = det[ which(det$mat ==1 & det$sex==2) ,]
 
     means = as.data.frame.table( tapply( det$cw, det$yr, mean, na.rm=T)  )
@@ -593,7 +593,7 @@ p = bio.snowcrab::load.environment()
 
 p = bio.snowcrab::load.environment()
 
-	load(file.path( project.datadirectory("bio.snowcrab"), "R", "cat_georef.rdata"))
+	load(file.path( project.datadirectory("bio.snowcrab"), "output", "cat_georef.rdata"))
 
 whelks = c(4210, 4211, 4212, 4227, 4228)  # Family Buccinidae
 cucumbers = c(6600, 6600, 6611, 6700 , 6705, 6710 , 6711 , 6712, 6713, 6714, 6715, 6716, 6717, 6718, 6719, 6720 ) # class Holothuroidea
@@ -618,7 +618,7 @@ write.table( out, file="temp.csv", sep =";")
 
 p = bio.snowcrab::load.environment()
 
-load(file.path( project.datadirectory("bio.snowcrab"), "R", "cat.georef.rdata"))
+load(file.path( project.datadirectory("bio.snowcrab"), "output", "cat.georef.rdata"))
 cat$totno = cat$totno * cat$sa
 to.extract = c("lon", "lat", "yr", "totno", "spec")
 yrs = which(cat$yr > 2003)

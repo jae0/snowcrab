@@ -6,18 +6,8 @@
   require (effects) # for "effect" for adjusted means
   require(car) # for "Anova"
 
-  MSwindows=T
-  if (MSwindows) {
-    workdir=work.directory
-
-    source( file.path( "C://Scripts", "egg.maturation.functions.r" ) )
-
-  } else { # assume linux
-
-    workdir = file.path( project.datadirectory( "bio.snowcrab"), "R" )  # linux
+    workdir = file.path( project.datadirectory( "bio.snowcrab"), "output" )  # linux
   	p = bio.snowcrab::load.environment()
-
-  }
 
 
 # recreate the data files, only if the data needs to be refreshed

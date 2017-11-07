@@ -5,7 +5,7 @@
     female = 1
 
     M = NULL
-    fn = file.path( project.datadirectory("bio.snowcrab"), "R", paste( sex, id, "rdata", sep=".") )
+    fn = file.path( project.datadirectory("bio.snowcrab"), "output", paste( sex, id, "rdata", sep=".") )
 
     if (!redo)  {
       if (file.exists(fn)) load(fn)

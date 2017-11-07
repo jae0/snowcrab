@@ -305,7 +305,7 @@ snowcrab.db = function( DS, p=NULL, yrs=NULL) {
   # --------------------
 
   if (DS %in% c("det.initial", "det.initial.redo") ) {
-    fn = file.path(project.datadirectory("bio.snowcrab"), "R", "det.initial.rdata")
+    fn = file.path(project.datadirectory("bio.snowcrab"), "output", "det.initial.rdata")
     if (DS =="det.initial") {
       load(fn)
       return(det)
@@ -468,7 +468,7 @@ snowcrab.db = function( DS, p=NULL, yrs=NULL) {
 
 
   if (DS %in% c("cat.initial", "cat.initial.redo") ) {
-    fn = file.path(project.datadirectory("bio.snowcrab"), "R", "cat.initial.rdata")
+    fn = file.path(project.datadirectory("bio.snowcrab"), "output", "cat.initial.rdata")
     if(DS =="cat.initial" ) {
       load(fn)
       return(cat)
@@ -763,7 +763,7 @@ snowcrab.db = function( DS, p=NULL, yrs=NULL) {
   # -------------------------------
 
   if (DS %in% c("det.georeferenced", "det.georeferenced.redo" ) ) {
-    fn = file.path( project.datadirectory("bio.snowcrab"), "R", "det.georef.rdata" )
+    fn = file.path( project.datadirectory("bio.snowcrab"), "output", "det.georef.rdata" )
     if (DS=="det.georeferenced") {
       load(fn)
       return(det)
@@ -781,7 +781,7 @@ snowcrab.db = function( DS, p=NULL, yrs=NULL) {
 
 
   if (DS %in% c("cat.georeferenced", "cat.georeferenced.redo" ) ) {
-    fn = file.path( project.datadirectory("bio.snowcrab"), "R", "cat.georef.rdata" )
+    fn = file.path( project.datadirectory("bio.snowcrab"), "output", "cat.georef.rdata" )
     if (DS=="cat.georeferenced") {
       load(fn)
       return(cat)
@@ -805,7 +805,7 @@ snowcrab.db = function( DS, p=NULL, yrs=NULL) {
   if ( DS %in% c("set.biologicals", "set.biologicals.redo") ) {
     # browser()
 
-    fn = file.path( project.datadirectory("bio.snowcrab"), "R", "set.biologicals.rdata")
+    fn = file.path( project.datadirectory("bio.snowcraoutput"), "R", "set.biologicals.rdata")
 
     if (DS=="set.biologicals" ) {
       load(fn)
@@ -1002,7 +1002,7 @@ snowcrab.db = function( DS, p=NULL, yrs=NULL) {
 
   if (DS %in% c( "set.complete", "set.complete.redo") ) {
 
-    fn = file.path( project.datadirectory("bio.snowcrab"), "R", "set.complete.rdata")
+    fn = file.path( project.datadirectory("bio.snowcraoutput"), "R", "set.complete.rdata")
 
     if (DS %in% c("set", "set.complete") ){
       load( fn )
