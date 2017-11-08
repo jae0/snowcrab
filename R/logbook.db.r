@@ -314,7 +314,7 @@
         out$plat = as.numeric(tmp[,2])
         out$plon = as.numeric(tmp[,1])
         out$gridid = as.character( out$gridid )
-
+ 
         if (Y) out$yr = as.numeric(tmp[,3])
 
         fg = out[ which(is.finite(out$plat+out$plon)), ]
