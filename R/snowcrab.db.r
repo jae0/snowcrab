@@ -749,6 +749,12 @@ snowcrab.db = function( DS, p=NULL, yrs=NULL) {
     # merge surfacearea from net mesnuration into the database
     set = clean.surface.area( set, qreject = c( 0, 1 ))
 
+    zmod = glm( Zx ~ z - 1, data=set) 
+    zres = residuals( zmod)
+    # hist(abs(zres), "fd")
+    not.reliable = which( abs(zres) > 25 )
+    set$z[not.reliable] = NA  # force these to a default lookup from from bathymetry.db  
+
     set$slon = NULL
     set$slat = NULL
     set$Tx = NULL
@@ -757,8 +763,6 @@ snowcrab.db = function( DS, p=NULL, yrs=NULL) {
     set$cfa = NULL
     set$gear = NULL
 
-    #  set2015= set[which(set$yr==2015),]
-    #  print(head(set2015))
     save( set, file=fn, compress=TRUE )
     return(fn)
   }
@@ -818,13 +822,10 @@ snowcrab.db = function( DS, p=NULL, yrs=NULL) {
     }
 
     factors = c("trip", "set")
-
-
-    X = snowcrab.db( DS="set.clean" )
-    nsClean = nrow(X)
     nsInit = nrow( snowcrab.db( DS="setInitial" )) 
 
-    if (nsClean != nsInit) stop("Merge issues")
+    X = snowcrab.db( DS="set.clean" )
+    if ( nrow(X) != nsInit) stop("Merge issues")
 
     Y = snowcrab.db( DS="det.initial" )
 
@@ -1030,7 +1031,7 @@ snowcrab.db = function( DS, p=NULL, yrs=NULL) {
       set$z[ii] = bio.bathymetry::bathymetry.lookup( p=p, locs=set[ii,c("plon", "plat")], vnames="z" )
     }
     set$z = log( set$z )
-
+    # as of 2016, there are 11 locations where there are missing depths, because they are outside the area defined for snow crab ... they are all bad sets too (set_type=4) in NENS ... ignoring for now 
  
     # bring in time varing features:: temperature
     ii = which(!is.finite(set$t))
