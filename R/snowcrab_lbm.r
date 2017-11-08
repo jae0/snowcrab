@@ -128,7 +128,7 @@ snowcrab_lbm = function( ip=NULL, DS=NULL, p=NULL, voi=NULL, year=NULL, ret=NULL
     for (iv in names(p$indicators.variables)) {
       p0 = bio.indicators::indicators.parameters( p=p, DS="default", year.assessment=p$year.assessment )
       p0 = bio.indicators::indicators.parameters( p=p0, DS=iv  )
-      p0 = lbm::spatial_parameters( p=p0, type=p$spatial.domain ) # return to correct domain
+      p0 = bio.polygons::spatial_parameters( p=p0, type=p$spatial.domain ) # return to correct domain
       vn = p0$indicators.variables[[iv]]
       sn = indicators.lookup( p=p0, DS="spatial.annual", locsmap=locsmap, timestamp=set[,"timestamp"], 
         varnames=vn, DB=indicators.db( p=p0, DS="baseline", varnames=vn ) )
@@ -139,7 +139,7 @@ snowcrab_lbm = function( ip=NULL, DS=NULL, p=NULL, voi=NULL, year=NULL, ret=NULL
       mm = which( !is.finite(set[,vn[1]]) )
       if (length(mm) > 0) {
         # catch stragglers from a larger domain
-        p0 = lbm::spatial_parameters( p=p0, type="SSE" ) 
+        p0 = bio.polygons::spatial_parameters( p=p0, type="SSE" ) 
         locsmapsse = match( 
           lbm::array_map( "xy->1", set[mm, c("plon","plat")], gridparams=p0$gridparams ), 
           lbm::array_map( "xy->1", bathysse[,c("plon","plat")], gridparams=p0$gridparams ) )
@@ -201,7 +201,7 @@ snowcrab_lbm = function( ip=NULL, DS=NULL, p=NULL, voi=NULL, year=NULL, ret=NULL
     for (iv in names(p$indicators.variables)) {
       p0 = bio.indicators::indicators.parameters( p=p, DS="default", year.assessment=p$year.assessment )
       p0 = bio.indicators::indicators.parameters( p=p0, DS=iv  )
-      p0 = lbm::spatial_parameters( p=p0, type=p$spatial.domain ) # return to correct domain
+      p0 = bio.polygons::spatial_parameters( p=p0, type=p$spatial.domain ) # return to correct domain
       vn = p0$indicators.variables[[iv]]
       sn = indicators.db( p=p0, DS="baseline", varnames=vn )
       yr_index = match( p$yrs, p0$yrs )
