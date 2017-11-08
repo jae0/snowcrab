@@ -1,9 +1,3 @@
-#' minilog.db
-#' @param DS
-#' @param Y
-#' @author Jae Choi
-#' @return returns a plot of CPUE data by date along with the predicted line as well as a data.frame with raw data and predicted data
-#' @export
 
   minilog.db = function( DS="", Y=NULL, plotdata=TRUE ){
 
@@ -140,7 +134,7 @@
           }
           if (length(mm) > 0 ) flist= flist[mm]
         }
-       mini.stat = NULL
+        mini.stat = NULL
         for ( i in flist ) {
           load( i )
           mini.stat = rbind( mini.stat, miniStats )
@@ -153,6 +147,14 @@
         #res$t0 = as.POSIXct( res$t0, tz="UTC", origin=lubridate::origin )
         #res$t1 = as.POSIXct( res$t1, tz="UTC", origin=lubridate::origin )
         #res$dt = difftime( res$t1, res$t0 )
+       ids = paste(res$trip, res$set, sep=".") 
+       uu = which( duplicated( ids ) )
+       if (length(uu)>0 ) {
+          message( "Duplicated trip/set found .. please fix this at the data level:" )
+          toshow = which( ids %in% ids[uu] )
+          print( res[ toshow,] )
+       }
+
        return (res)
       }
 

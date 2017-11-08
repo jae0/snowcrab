@@ -1,19 +1,7 @@
 
 snowcrab.db = function( DS, p=NULL, yrs=NULL) {
-	# long!
+
 	# handles all basic data tables, etc. ... 
-  # DS
-  # "set.rawdata" 
-  # "det.rawdata" 
-  # "cat.rawdata" 
-  # "setInitial" 
-  # "det.initial" 
-  # "cat.initial" 
-  # "set.clean" 
-  # "det.georeferenced" 
-  # "cat.georeferenced" 
-  # "set.biologicals" 
-  # "set.complete" 
 
   # sex codes
   male = 0
@@ -161,7 +149,7 @@ snowcrab.db = function( DS, p=NULL, yrs=NULL) {
     set$dist0 = geosphere::distGeo( set[,c("lon", "lat" )], set[,c( "lon1", "lat1") ] )  # m
     ii = which( set$dist0 > 1000 | set$dist0 < 100 )
     if ( length(ii) > 0 ) {
-      print( "Positional information incorrect or suspect in the following:" )
+      print( "Positional information from 'set' incorrect or suspect in the following as the naive tow distance, 'dist0' seems out of range (100 to 1000m):" )
       oo = set[ ii, c("trip", "set", "dist", "dist0", "lon", "lat", "lon1", "lat1", "towquality") ]
       print( oo )
     }
@@ -644,6 +632,7 @@ snowcrab.db = function( DS, p=NULL, yrs=NULL) {
 
     # the beginning here is identical to the netmind.db( "stat.redo" ) .. simpler to keep it this way (jae)
     set = snowcrab.db( DS="setInitial")  # timestamp in UTC
+    nI = nrow(set)
 
     sbStats =  seabird.db( DS="stats" )  # timestamp in UTC
 
@@ -651,16 +640,32 @@ snowcrab.db = function( DS, p=NULL, yrs=NULL) {
     set_sb = merge( set[, c("trip", "set") ], sbStats[,sbv], by=c("trip","set"), all.x=TRUE, all.y=FALSE, sort=FALSE )
     # tapply( as.numeric(set_sb$dt), year(set_sb$t1), mean, na.rm=T )
     # tapply( as.numeric(set_sb$dt), year(set_sb$t1), function(x) length(which(is.finite(x))) )
+    if (nrow(set) !=nI ) stop( "merge error with seabird0" )
 
     mlStats =  minilog.db( DS="stats" )
+    ids = paste(mlStats$trip, mlStats$set, sep=".") 
+    uu = which( duplicated( ids ) )
+    if (length(uu)>0 ) {
+      message( "Duplicated minilog data (mlStats) trip/set:" )
+      toshow = which( ids %in% ids[uu] )
+      print( mlStats[ toshow,] )
+      message("Dropping for now ... ")
+      mlStats = mlStats[-uu,]
+    }
+
      # mlStats$dt = as.numeric(mlStats$dt )
     mlv =  c('trip', 'set', "z",    "zsd",    "t",    "tsd",    "n",    "t0",    "t1",    "dt", "minilog_uid" )
     set_ml = merge( set[, c("trip", "set") ], mlStats[,mlv], by=c("trip","set"), all.x=TRUE, all.y=FALSE, sort=FALSE )
     # tapply( as.numeric(set_ml$dt), lubridate::year(set_ml$t1), mean, na.rm=T )
     # tapply( as.numeric(set_ml$dt), year(set_ml$t1), function(x) length(which(is.finite(x))) )
 
+    if (nrow(set) !=nI ) stop( "merge error with minilogs0" )
+
     set = merge( set, set_sb, by=c("trip", "set" ), all.x=TRUE, all.y=FALSE, sort=FALSE )
+    if (nrow(set) !=nI ) stop( "merge error with seabird" )
+    
     set = merge( set, set_ml, by=c("trip", "set" ), all.x=TRUE, all.y=FALSE, sort=FALSE, suffixes=c("", ".ml" ))
+    if (nrow(set) !=nI ) stop( "merge error with minilogs" )
     
     # use seabird data as the standard, replace with minilog data where missing
     ii = which(!is.finite( set$t0) )
@@ -695,6 +700,7 @@ snowcrab.db = function( DS, p=NULL, yrs=NULL) {
 
     nm = netmind.db( DS="stats" )
     set = merge( set, nm, by =c("trip","set"), all.x=TRUE, all.y=FALSE, suffixes=c("", ".nm") )
+    if (nrow(set) !=nI ) stop( "merge error with netmind" )
 
     # last resort: use netmind data to fill
     ii = which(!is.finite( set$t0) )
@@ -760,7 +766,6 @@ snowcrab.db = function( DS, p=NULL, yrs=NULL) {
 
   # --------------------------------
 
-  # -------------------------------
 
   if (DS %in% c("det.georeferenced", "det.georeferenced.redo" ) ) {
     fn = file.path( project.datadirectory("bio.snowcrab"), "data", "det.georef.rdata" )
@@ -814,9 +819,13 @@ snowcrab.db = function( DS, p=NULL, yrs=NULL) {
 
     factors = c("trip", "set")
 
+
     X = snowcrab.db( DS="set.clean" )
-    #X2015 = X[which(X$yr==2015),]
-    #head(X2015)
+    nsClean = nrow(X)
+    nsInit = nrow( snowcrab.db( DS="setInitial" )) 
+
+    if (nsClean != nsInit) stop("Merge issues")
+
     Y = snowcrab.db( DS="det.initial" )
 
     # add various variables to set-level data
@@ -926,7 +935,7 @@ snowcrab.db = function( DS, p=NULL, yrs=NULL) {
     rm(Y); gc()
     set = X
 
-    if ( nrow( snowcrab.db( DS="set.clean" )) != nrow( set) ) {   print( "Merge failure ... " );  stop()    }
+    if ( nsInit != nrow( set) ) {   print( "Merge failure 1... " );  stop()    }
 
     # X2015 = X[which(X$yr == 2015),]
     # print(head(X2015))
@@ -950,6 +959,7 @@ snowcrab.db = function( DS, p=NULL, yrs=NULL) {
     var="totmass.all";  X[,var] = X[,var] / 10^3
 
     set = X
+    if ( nsInit != nrow( set) ) {   print( "Merge failure 2... " );  stop()    }
 
     # complete area designations
     set = fishing.area.designations(set, type="lonlat")
@@ -980,6 +990,7 @@ snowcrab.db = function( DS, p=NULL, yrs=NULL) {
         stop()
       }
     }
+    if ( nsInit != nrow( set) ) {   print( "Merge failure 3... " );  stop()    }
 
     j = unique( c(grep("ms.mass", names(set)), grep("ms.no.", names(set)) ))
     for ( k in j ) {
@@ -988,7 +999,7 @@ snowcrab.db = function( DS, p=NULL, yrs=NULL) {
       set[,k] = set[,k] / set$sa
     }
 
-    if ( nrow( snowcrab.db( DS="setInitial" )) != nrow( set) ) {   print( "Merge failure ... " );  stop()    }
+    if ( nsInit != nrow( set) ) {   print( "Merge failure ... " );  stop()    }
     # X2015 = X[which(X$yr == 2015),]
     # print(head(X2015))
 
@@ -1036,8 +1047,6 @@ snowcrab.db = function( DS, p=NULL, yrs=NULL) {
     set = logbook.fisheries.stats.merge( set ) # add gridded logbook data
 
     if ( nrow( snowcrab.db( DS="setInitial" )) != nrow( set) ) {   print( "Merge failure ... " );  stop()    }
-    # X2015 = X[which(X$yr == 2015),]
-    # print(head(X2015))
 
     save(set, file=fn, compress=T)
 

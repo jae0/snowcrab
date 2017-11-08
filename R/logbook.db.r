@@ -39,6 +39,9 @@
 		}
 
 
+    # -------------------------
+
+
     if (DS %in% c("rawdata.licence.redo", "rawdata.licence" ) ) {
 
       filename.licence = file.path( project.datadirectory("bio.snowcrab"), "data", "logbook", "lic.datadump.rdata" )
@@ -279,7 +282,7 @@
       x$plon = grid.internal( x$plon, grid$plon )
       x$plat = grid.internal( x$plat, grid$plat )
       yrs = c(T,F)
-      
+      message ("The following warnings are ok: JC ... just a few NA's created which will be removed..")
       for ( Y in yrs ) {
         if (Y) {
           fn = fn2
@@ -397,6 +400,10 @@
     }   # end if historical
 
 
+
+    # -------------------------
+
+
     if (DS %in% c("fisheries.complete", "fisheries.complete.redo" )) {
 
       fn = file.path( project.datadirectory("bio.snowcrab"), "data", "logbook", "logbook.complete.rdata" )
@@ -443,6 +450,7 @@
       return  ("Complete")
     }
 
+    # -------------------------
 
     if (DS %in% c("logbook.gridded",  "logbook.gridded.redo" ) ) {
 
