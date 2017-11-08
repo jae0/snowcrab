@@ -313,14 +313,11 @@
         tmp = matrix(unlist(strsplit(as.character(out$gridid), ".", fixed=T)), ncol=ncols, byrow=T)
         out$plat = as.numeric(tmp[,2])
         out$plon = as.numeric(tmp[,1])
-
-        out = out[ which(is.finite(out$plat+out$plon)), ]
-
         out$gridid = as.character( out$gridid )
 
         if (Y) out$yr = as.numeric(tmp[,3])
 
-        fg = out
+        fg = out[ which(is.finite(out$plat+out$plon)), ]
         save( fg, file=fn, compress=T )
       }
 
