@@ -99,13 +99,17 @@
 
       # additional constraint ..
       # remove data that are strange in location .. land
-      require(mapdata)
+  
       proj4strvalue=CRS("+proj=longlat +datum=WGS84")
       V = SpatialPoints( lgbk[,c("lon", "lat")], proj4strvalue )
-      coastline = maps::map( database="worldHires", regions=c("Canada", "US"), fill=TRUE, plot=FALSE )
-      coastlineSp = maptools::map2SpatialPolygons( coastline, IDs=coastline$names, proj4string=proj4strvalue  )
+      
+      coastlineSp =  bio.polygons::coastline.db( p=p, DS="mapdata.coastPolygon", crs="+proj=longlat +datum=WGS84" )
+
+      # coastline = maps::map( database="worldHires", regions=c("Canada", "US"), fill=TRUE, plot=FALSE )
+      # coastlineSp = maptools::map2SpatialPolygons( coastline, IDs=coastline$names, proj4string=proj4strvalue  )
       bboxSP = lbm::boundingbox(p$corners$lon, p$corners$lat)
       keep <- rgeos::gContains( bboxSP, coastlineSp, byid=TRUE ) | rgeos::gOverlaps( bboxSP, coastlineSp, byid=TRUE )
+
       stopifnot( ncol(keep)==1 )
       coastlineSp = coastlineSp[drop(keep),]
       land = which ( !is.na(over( V, coastlineSp ) )) 
@@ -151,9 +155,7 @@
         return(logbook)
       }
 
-
 			# stop(" MUST ADD EXTERNAL DATA -- landings in GULF ")
-
 
 			# logbooks from historical data tables (1996-2003; but 2002 and 2003 seem to be partial records)
       lb.historical = logbook.db( DS="fisheries.historical" )
@@ -241,8 +243,9 @@
       pp = which ( x$effort > 240 ) # small traps were used at times with large 240 trap compliments
       if ( length(pp) > 0 ) x$effort[pp] = NA
 
+      x = lonlat2planar( x,  proj.type=p$internal.projection )
       logbook = x
-
+ 
       save (logbook, file=filename, compress=T )  # this is for plotting maps, etc
 
       return( "Complete" )
@@ -271,8 +274,6 @@
 
       x = logbook.db( DS="logbook.filtered.positions" )
 
-      x = lonlat2planar( x,  proj.type=p$internal.projection )
-      
       grid = spatial_grid(p=p, DS="planar.coords")
 
       x$plon = grid.internal( x$plon, grid$plon )
@@ -408,7 +409,7 @@
 			logbook = logbook.db(DS="logbook.filtered.positions")
 
       nl0 = nrow( logbook )
-      logbook = lonlat2planar( logbook,  proj.type=p$internal.projection )
+
       grid = spatial_grid(p=p, DS="planar.coords")
 
       logbook$plon = grid.internal( logbook$plon, grid$plon )

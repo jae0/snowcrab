@@ -10,7 +10,7 @@
 #Require the following:
 #snowcrab.db("complete.redo") 
 
-#Run bio.groundfish::(inst/01.groundfish.r), need to update year within or run next line
+#Run bio.groundfish::(inst/scripts/01.groundfish.r), need to update year within or run next line
   #system.file(package="bio.groundfish", "scripts", "01.groundfish.r")
 
 #Run bio.groundfish::(inst/scripts/temperature.r), need to update year within
@@ -236,9 +236,6 @@ figure.timeseries.snowcrab.habitat.temperatures(p=p) # /bio.data/bio.snowcrab/as
 # update data summaries of the above results
 p$vars.tomodel="R0.mass"
 biomass.summary.db("complete.redo", p=p) #Uses the model results to create a habitat area expanded survey index
-
-# biomass.summary.survey.db("complete.redo", p=p)#Uses average surface area from the past 5 years if a habitat area expanded surface area is not possible -- JC .. no longer used .. marked for deletion
-
 
 
 

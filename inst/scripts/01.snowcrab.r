@@ -28,9 +28,9 @@ if (obtain.database.snapshot) {
 
   if (make.fisheries.data) {
     observer.db( DS="odb.redo", p=p ) # 3 minutes
-    # fishing ground are used for determination of contraints for interpolation
     logbook.db( DS="logbook.redo", p=p )
     logbook.db( DS="logbook.filtered.positions.redo", p=p )
+    # fishing ground are used for determination of contraints for interpolation
     logbook.db( DS="fishing.grounds.redo",  p=p )
     logbook.db( DS="logbook.gridded.redo", p=p )
   }
@@ -42,7 +42,7 @@ if (obtain.database.snapshot) {
   # sequence is important ... do not change
   # creates initial rdata and sqlite db
   snowcrab.db( DS="setInitial.redo", p=p ) # this is required by the seabird.db (but not minilog and netmind)
-  snowcrab.db( DS ="set.clean.redo", p=p )
+  snowcrab.db( DS="set.clean.redo", p=p )
 
     # few sanity checks on the initial data pulled from the raw tables
     problems = data.quality.check( type="stations", p=p)  # duplicates
