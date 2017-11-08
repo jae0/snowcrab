@@ -42,6 +42,8 @@ if (obtain.database.snapshot) {
   # sequence is important ... do not change
   # creates initial rdata and sqlite db
   snowcrab.db( DS="setInitial.redo", p=p ) # this is required by the seabird.db (but not minilog and netmind)
+  snowcrab.db( DS ="set.clean.redo", p=p )
+
     # few sanity checks on the initial data pulled from the raw tables
     problems = data.quality.check( type="stations", p=p)  # duplicates
     problems = data.quality.check( type="count.stations", p=p)
