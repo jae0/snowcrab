@@ -15,13 +15,13 @@
       }
 
       
-      set = bio.indicators::survey.db( p=p, DS="set.filter" ) # mature male > 95 mm 
+      set = ecmd::survey.db( p=p, DS="set.filter" ) # mature male > 95 mm 
  
       ii = which( set$totmass > 0 )
-      qs = quantile( set$totmass[ii], probs=p$lbm_quantile_bounds, na.rm=TRUE )
+      qs = quantile( set$totmass[ii], probs=p$ecmei_quantile_bounds, na.rm=TRUE )
       qs = log(qs) # 
 
-      bm = snowcrab_lbm( p=p, DS="baseline", ret="mean", varnames=varnames )
+      bm = snowcrab_ecmei( p=p, DS="baseline", ret="mean", varnames=varnames )
       m = bm[[1]]  # biomass
       h = bm[[2]]  # habitat
       bm= NULL
@@ -37,17 +37,17 @@
       if (length(rr) > 0 ) m[rr] = qs[2]
 
       if(0) {
-        bs = bio.bathymetry::bathymetry.db(p=p, DS="baseline")
+        bs = bathymetry.db(p=p, DS="baseline")
         levelplot( m[,16] ~ plon+plat, bs, aspect="iso")
         for (i in 1:16) print(levelplot( m[,i] ~ plon+plat, bs, aspect="iso"))
       }
 
       # more range checks
-      s = snowcrab_lbm( p=p, DS="baseline", ret="sd", varnames=varnames )
+      s = snowcrab_ecmei( p=p, DS="baseline", ret="sd", varnames=varnames )
       # range checks
       s = log( exp(s[[1]]) * s[[2]] ) # s[[2]] is serving as weight/probabilities
       
-      sq = quantile(s, probs=p$lbm_quantile_bounds[2], na.rm=TRUE ) 
+      sq = quantile(s, probs=p$ecmei_quantile_bounds[2], na.rm=TRUE ) 
       # s[which(s > sq)] = sq  # cap upper bound of sd
 
       # mm = which(( m - 1.96*s ) < 0 )
@@ -119,7 +119,7 @@
         y = p$yrs[iy]
         outfn = paste( "prediction.abundance.mean", y, sep=".")
         xyz = cbind( bs[, c("plon", "plat")], m[,iy] )
-        lbm::lbm_map( xyz=xyz, cfa.regions=T, depthcontours=T, pts=NULL, annot=y,
+        ecmei::ecmei_map( xyz=xyz, cfa.regions=T, depthcontours=T, pts=NULL, annot=y,
           annot.cex=annot.cex, corners=p$planar.corners, fn=outfn, loc=projectdir, at=datarange,
           col.regions=cols, rez=c(p$pres,p$pres) )
       }
@@ -133,7 +133,7 @@
         y = p$yrs[iy]
         outfn = paste( "prediction.abundance.sd", y, sep=".")
         xyz = cbind( bs[, c("plon", "plat")], s[,iy] )
-        lbm::lbm_map( xyz=xyz, cfa.regions=T, depthcontours=T, pts=NULL, annot=y,
+        ecmei::ecmei_map( xyz=xyz, cfa.regions=T, depthcontours=T, pts=NULL, annot=y,
           annot.cex=annot.cex, corners=p$planar.corners, fn=outfn, loc=projectdir, at=datarange,
           col.regions=cols, rez=c(p$pres,p$pres) )
       }
@@ -203,8 +203,8 @@
 
     if (DS =="habitat.temperatures") {
 
-      bm = bio.snowcrab::interpolation.db( p=p, DS="biomass" )
-      ps = bio.snowcrab::snowcrab_lbm(p=p, DS="output_data", voi=p$selection$name )
+      bm = interpolation.db( p=p, DS="biomass" )
+      ps = snowcrab_ecmei(p=p, DS="output_data", voi=p$selection$name )
 
       temp = ps$t * bm$h
 

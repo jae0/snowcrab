@@ -3,7 +3,7 @@ map.set.information = function(p, outdir, variables,mapyears, plot.method="level
 
     set = snowcrab.db( DS="set.biologicals")
     if(missing(variables)){
-      variables = bio.indicators::variable.list.expand("all.data")
+      variables = ecmd::variable.list.expand("all.data")
       variables = intersect( variables, names(set) )
     }
 
@@ -17,7 +17,7 @@ map.set.information = function(p, outdir, variables,mapyears, plot.method="level
 
       id = 1: p$nruns
 
-      predlocs = bio.bathymetry::bathymetry.db(p=p, DS="baseline")
+      predlocs = bathymetry.db(p=p, DS="baseline")
       for (i in id ) {
         v = p$runs[i,1]
         y = p$runs[i,2]
@@ -103,7 +103,7 @@ map.set.information = function(p, outdir, variables,mapyears, plot.method="level
           ckey=list(labels=list(at=log(labs+offset),labels=labs,cex=2))
         }
 
-       try( lbm::lbm_map( xyz, xyz.coords="planar", cfa.regions=T, depthcontours=T, pts=set_xyz[,c("plon","plat")], annot=y, fn=outfn, loc=outloc, at=datarange , col.regions=cols(length(datarange)+1), colpts=F, corners=p$corners, display=F,colorkey=ckey))
+       try( ecmei::ecmei_map( xyz, xyz.coords="planar", cfa.regions=T, depthcontours=T, pts=set_xyz[,c("plon","plat")], annot=y, fn=outfn, loc=outloc, at=datarange , col.regions=cols(length(datarange)+1), colpts=F, corners=p$corners, display=F,colorkey=ckey))
       }
       #if (plot.method=="pbsmapping") {} #nah
 

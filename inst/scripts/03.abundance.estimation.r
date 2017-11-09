@@ -14,19 +14,19 @@
   #system.file(package="bio.groundfish", "scripts", "01.groundfish.r")
 
 #Run bio.groundfish::(inst/scripts/temperature.r), need to update year within
-  #system.file(package="bio.temperature", "scripts", "temperature.r") or run next line
+  #system.file(package="ecmei", "scripts", "01.temperature.R") or run next line
 
 #Substrate and bathymetry can be run (as per above) if suspect significant changes in one or both of these datasets
 
 #BZ 2017 these lines below can directly run the indicators without goint to run individual scripts
-#  system.file(package="bio.indicators", "scripts", "01.indicators.r")  
-#  system.file(package="bio.indicators", "scripts", "02.biochem.r") 
-#  system.file(package="bio.indicators", "scripts", "02.condition.r") 
-#  system.file(package="bio.indicators", "scripts", "02.landings.r") 
-#  system.file(package="bio.indicators", "scripts", "02.metabolism.r") 
-#  system.file(package="bio.indicators", "scripts", "02.sizespectrum.r") 
-#  system.file(package="bio.indicators", "scripts", "02.speciesarea.r")
-#  system.file(package="bio.indicators", "scripts", "02.*.speciescomposition") 
+#  system.file(package="ecmd", "scripts", "01.indicators.r")  
+#  system.file(package="ecmd", "scripts", "02.biochem.r") 
+#  system.file(package="ecmd", "scripts", "02.condition.r") 
+#  system.file(package="ecmd", "scripts", "02.landings.r") 
+#  system.file(package="ecmd", "scripts", "02.metabolism.r") 
+#  system.file(package="ecmd", "scripts", "02.sizespectrum.r") 
+#  system.file(package="ecmd", "scripts", "02.speciesarea.r")
+#  system.file(package="ecmd", "scripts", "02.*.speciescomposition") 
 
 # 1. Define some additional starting parameters for debugging
 #    choose various over-rides: these are initially defined in parameters.r
@@ -51,29 +51,29 @@ p$selection=list(
   len= c( 95, 200 )/10, #  mm -> cm ; indicators.db in cm
   drop.groundfish.data=TRUE # esp from 1970 to 1999 measurement of invertebrates was sporatic .. zero-values are dropped as they are unreliable 
 )
-p$lbm_global_family = gaussian(link=log)
-p$lbm_local_modelengine = "twostep"
+p$ecmei_global_family = gaussian(link=log)
+p$ecmei_local_modelengine = "twostep"
 
 # 11 hrs with these settings
-p$lbm_twostep_space = "krige"
-p$lbm_gam_optimizer=c("outer", "bfgs") 
-p$lbm_distance_statsgrid = 2 # resolution (km) of data aggregation (i.e. generation of the ** statistics ** )
-p$lbm_distance_prediction = p$lbm_distance_statsgrid * 0.75 # this is a half window km
-p$lbm_distance_scale = 50
+p$ecmei_twostep_space = "krige"
+p$ecmei_gam_optimizer=c("outer", "bfgs") 
+p$ecmei_distance_statsgrid = 2 # resolution (km) of data aggregation (i.e. generation of the ** statistics ** )
+p$ecmei_distance_prediction = p$ecmei_distance_statsgrid * 0.75 # this is a half window km
+p$ecmei_distance_scale = 50
 
-p = bio.snowcrab::snowcrab.parameters( p=p, DS="lbm", varname=p$selection$name  )
+p = bio.snowcrab::snowcrab.parameters( p=p, DS="ecmei", varname=p$selection$name  )
 
-# o = snowcrab_lbm(p=p, DS="lbm_inputs" )  # create fields for 
-lbm( p=p, DATA='snowcrab_lbm( p=p, DS="lbm_inputs" )', runmode="stage2" ) # 30 min
+# o = snowcrab_ecmei(p=p, DS="ecmei_inputs" )  # create fields for 
+ecmei( p=p, DATA='snowcrab_ecmei( p=p, DS="ecmei_inputs" )', runmode="stage2" ) # 30 min
 
 p = make.list( list( yrs=p$yrs), Y=p )
-parallel.run( snowcrab_lbm, p=p, DS="predictions.redo" ) # warp predictions to other grids
-snowcrab_lbm( p=p, DS="lbm.stats.redo" ) # warp stats to other grids
-snowcrab_lbm( p=p, DS="complete.redo" )
-snowcrab_lbm( p=p, DS="baseline.redo" )
-snowcrab_lbm( p=p, DS="map.all" )
+parallel.run( snowcrab_ecmei, p=p, DS="predictions.redo" ) # warp predictions to other grids
+snowcrab_ecmei( p=p, DS="ecmei.stats.redo" ) # warp stats to other grids
+snowcrab_ecmei( p=p, DS="complete.redo" )
+snowcrab_ecmei( p=p, DS="baseline.redo" )
+snowcrab_ecmei( p=p, DS="map.all" )
 
-global_model = lbm_db( p=p, DS="global_model") 
+global_model = ecmei_db( p=p, DS="global_model") 
 summary( global_model )
 plot(global_model)
 
@@ -131,36 +131,36 @@ p$selection=list(
   drop.groundfish.data=TRUE # esp from 1970 to 1999 measurement of invertebrates was sporatic .. zero-values are dropped as they are unreliable 
 )
 
-p$lbm_global_family = binomial()
+p$ecmei_global_family = binomial()
 
-p$lbm_local_modelengine = "twostep"
-p$lbm_twostep_space = "krige"
-p$lbm_gam_optimizer=c("outer", "bfgs") 
-p$lbm_distance_statsgrid = 2 # resolution (km) of data aggregation (i.e. generation of the ** statistics ** )
-p$lbm_distance_prediction = p$lbm_distance_statsgrid * 0.75 # this is a half window km
-p$lbm_distance_scale = 50
+p$ecmei_local_modelengine = "twostep"
+p$ecmei_twostep_space = "krige"
+p$ecmei_gam_optimizer=c("outer", "bfgs") 
+p$ecmei_distance_statsgrid = 2 # resolution (km) of data aggregation (i.e. generation of the ** statistics ** )
+p$ecmei_distance_prediction = p$ecmei_distance_statsgrid * 0.75 # this is a half window km
+p$ecmei_distance_scale = 50
 
 
-p = bio.snowcrab::snowcrab.parameters( p=p, DS="lbm", varname=p$selection$name  )
+p = bio.snowcrab::snowcrab.parameters( p=p, DS="ecmei", varname=p$selection$name  )
 
-# o = snowcrab_lbm(p=p, DS="lbm_inputs" )  # create fields for 
-DATA='snowcrab_lbm( p=p, DS="lbm_inputs" )'
+# o = snowcrab_ecmei(p=p, DS="ecmei_inputs" )  # create fields for 
+DATA='snowcrab_ecmei( p=p, DS="ecmei_inputs" )'
 
-lbm( p=p, DATA=DATA, tasks=c("initiate", "globalmodel") ) # 30 min
-#   lbm( p=p, tasks=c( "serial_debug" ) ) # serial mode
-#   lbm( p=p, tasks=c( "continue" ) )    
-lbm( p=p, tasks=c( "stage1" ) ) #  3 hrs 
-lbm( p=p, tasks=c( "stage2" ) ) #   1 hrs
-lbm( p=p, tasks=c( "save" ) )
+ecmei( p=p, DATA=DATA, tasks=c("initiate", "globalmodel") ) # 30 min
+#   ecmei( p=p, tasks=c( "serial_debug" ) ) # serial mode
+#   ecmei( p=p, tasks=c( "continue" ) )    
+ecmei( p=p, tasks=c( "stage1" ) ) #  3 hrs 
+ecmei( p=p, tasks=c( "stage2" ) ) #   1 hrs
+ecmei( p=p, tasks=c( "save" ) )
 
 p = make.list( list( yrs=p$yrs), Y=p )
-parallel.run( snowcrab_lbm, p=p, DS="predictions.redo" ) # warp predictions to other grids
-snowcrab_lbm( p=p, DS="lbm.stats.redo" ) # warp stats to other grids
-snowcrab_lbm( p=p, DS="complete.redo" )
-snowcrab_lbm( p=p, DS="baseline.redo" )
-snowcrab_lbm( p=p, DS="map.all" )
+parallel.run( snowcrab_ecmei, p=p, DS="predictions.redo" ) # warp predictions to other grids
+snowcrab_ecmei( p=p, DS="ecmei.stats.redo" ) # warp stats to other grids
+snowcrab_ecmei( p=p, DS="complete.redo" )
+snowcrab_ecmei( p=p, DS="baseline.redo" )
+snowcrab_ecmei( p=p, DS="map.all" )
 
-global_model = lbm_db( p=p, DS="global_model") 
+global_model = ecmei_db( p=p, DS="global_model") 
 summary( global_model )
 plot(global_model)
 
@@ -217,7 +217,7 @@ p$selection=list(
   drop.groundfish.data=TRUE # esp from 1970 to 1999 measurement of invertebrates was sporatic .. zero-values are dropped as they are unreliable 
 )
 
-p = bio.snowcrab::snowcrab.parameters( p=p, DS="lbm", varname=p$selection$name  )
+p = bio.snowcrab::snowcrab.parameters( p=p, DS="ecmei", varname=p$selection$name  )
 
 interpolation.db( DS="biomass.redo", p=p  )
 interpolation.db( DS="biomass.map", p=p  )
@@ -240,7 +240,7 @@ biomass.summary.db("complete.redo", p=p) #Uses the model results to create a hab
 
 
 ### --------- prediction success:
-set = snowcrab_lbm(p=p, DS="input_data", voi=p$selection$name )
+set = snowcrab_ecmei(p=p, DS="input_data", voi=p$selection$name )
 
 S = set[ , c("plon", "plat") ]
 

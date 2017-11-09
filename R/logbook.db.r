@@ -110,7 +110,7 @@
 
       # coastline = maps::map( database="worldHires", regions=c("Canada", "US"), fill=TRUE, plot=FALSE )
       # coastlineSp = maptools::map2SpatialPolygons( coastline, IDs=coastline$names, proj4string=proj4strvalue  )
-      bboxSP = lbm::boundingbox(p$corners$lon, p$corners$lat)
+      bboxSP = ecmei::boundingbox(p$corners$lon, p$corners$lat)
       keep <- rgeos::gContains( bboxSP, coastlineSp, byid=TRUE ) | rgeos::gOverlaps( bboxSP, coastlineSp, byid=TRUE )
 
       stopifnot( ncol(keep)==1 )
@@ -123,8 +123,8 @@
       # keep those in the domain and deeper than depth=10 m
       z = bathymetry.db(p=p, DS="baseline", varnames=c("plon", "plat", "z")) 
       aoi = which( z$z > 10 ) # negative = above land
-      pidz = lbm::array_map( "xy->1", z[aoi,c("plon", "plat")], gridparams=p$gridparams ) 
-      pidl = lbm::array_map( "xy->1", lgbk[,c("plon", "plat")], gridparams=p$gridparams )
+      pidz = ecmei::array_map( "xy->1", z[aoi,c("plon", "plat")], gridparams=p$gridparams ) 
+      pidl = ecmei::array_map( "xy->1", lgbk[,c("plon", "plat")], gridparams=p$gridparams )
       inaoi = which( is.finite( match( pidl, pidz ) )) 
       good = which(is.finite( inaoi))
       lgbk = lgbk[ good,]    
@@ -435,7 +435,7 @@
       if (length(oo) > 0 )  logbook$z[ oo ] = NA
       ii = which(!is.finite(logbook$z))
       if (length(ii)>0){
-        logbook$z[ii] = bio.bathymetry::bathymetry.lookup( p=p, locs=logbook[ii,c("plon", "plat")], vnames="z" )
+        logbook$z[ii] = bathymetry.lookup( p=p, locs=logbook[ii,c("plon", "plat")], vnames="z" )
       }
       logbook$z = log( logbook$z )
 
@@ -443,7 +443,7 @@
       if (length(ii)>0) logbook = logbook[ -ii, ]
 
       # bring in time varing features:: temperature
-      logbook$t = bio.temperature::temperature.lookup( p=p, locs=logbook[, c("plon","plat")], timestamp=logbook$timestamp )
+      logbook$t = temperature.lookup( p=p, locs=logbook[, c("plon","plat")], timestamp=logbook$timestamp )
 
 			save( logbook, file=fn, compress=T )
 

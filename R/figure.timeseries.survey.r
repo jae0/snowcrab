@@ -18,9 +18,9 @@
 
     if(missing(variables)){
       variables =  c( 
-         bio.indicators::variable.list.expand("all.to.model"), 
-         bio.indicators::variable.list.expand("snowcrab.cw"), 
-         bio.indicators::variable.list.expand("physical"),
+         ecmd::variable.list.expand("all.to.model"), 
+         ecmd::variable.list.expand("snowcrab.cw"), 
+         ecmd::variable.list.expand("physical"),
          'sexratio.mat','sexratio.imm','sexratio.all' 
       )
       variables = intersect( variables, unique(tdb$variable))
@@ -35,12 +35,12 @@
     tdb$region = factor(tdb$region, levels=areas, labels =regions)
 
     #  load transformation tables associated with a given variable
-    tl = bio.indicators::lookup.datatransformation('snowcrab')
+    tl = ecmd::lookup.datatransformation('snowcrab')
 
     if (file.exists( tl$repository) ) {
       load (tl$repository)
     } else {
-      REPOS = bio.indicators::recode.variable.initiate.db ( db )
+      REPOS = ecmd::recode.variable.initiate.db ( db )
     }
     tvars = REPOS$varname[which(REPOS$transform=='log10')]
 

@@ -38,15 +38,13 @@ Imports:
   sp, 
   vegan, 
   bio.base,
-  bio.bathymetry, 
+  ecmd, 
   bio.polygons,
   bio.utilities 
 Suggests:
   bio.groundfish,
   netmensuration,
-  lbm, 
-  bio.substrate,
-  bio.temperature
+  ecmei
 License: MIT
 LazyData: true
 URL: https://github.com/jae0/bio.snowcrab/
