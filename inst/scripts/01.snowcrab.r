@@ -118,7 +118,7 @@ if (obtain.database.snapshot) {
 
 # -------------------------------------------------------------------------------------
 # update a database of simple transformation ranges, etc.. for plotting range, etc.
-  REPOS = bio.indicators::recode.variable.initiate.db ( db="snowcrab" )
+  REPOS = ecmd::recode.variable.initiate.db ( db="snowcrab" )
  
 # -------------------------------------------------------------------------------------
 # create some simple/crude timeseries

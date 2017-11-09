@@ -18,7 +18,7 @@
         annot = paste ("Logbook locations", y)
         fn = paste("logbook.locations", y, sep=".")
         print(fn)
-        lbm::lbm_map( toplot, cfa.regions=T, depthcontours=T, annot=annot, fn=fn, loc=basedir, corners=p$corners )
+        ecmei::ecmei_map( toplot, cfa.regions=T, depthcontours=T, annot=annot, fn=fn, loc=basedir, corners=p$corners )
       }
 
     }

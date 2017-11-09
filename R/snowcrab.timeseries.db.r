@@ -34,7 +34,7 @@ snowcrab.timeseries.db = function( DS="default", p=NULL, regions=c( "cfa4x", "cf
       v = vn[vi]
       if ( !is.numeric( dat[,v] ) ) next()
       print( paste( vi, v) )
-      XX = bio.indicators::variable.recode( dat[,v], v, direction="forward", db="snowcrab" ) # transform variables where necessary
+      XX = ecmd::variable.recode( dat[,v], v, direction="forward", db="snowcrab" ) # transform variables where necessary
       for (r in regions) {
         ri = which( dat[,r] == r)
         if (length(ri)==0) next()
@@ -44,18 +44,18 @@ snowcrab.timeseries.db = function( DS="default", p=NULL, regions=c( "cfa4x", "cf
         XXsd = tapply( XX[ri], INDEX=dat$year[ri], FUN=sd, na.rm=TRUE ) 
         tsi = which(tsdata$variable==v & tsdata$region==r)
 
-        tsdata[ tsi,"mean"] = bio.indicators::variable.recode (XXmean[ tsdata[ tsi, "year"] ], v, direction="backward", db="snowcrab" )
+        tsdata[ tsi,"mean"] = ecmd::variable.recode (XXmean[ tsdata[ tsi, "year"] ], v, direction="backward", db="snowcrab" )
         tsdata[ tsi,"n"] = XXn[ tsdata[ tsi, "year"] ]
-        tsdata[ tsi,"se"] = bio.indicators::variable.recode (XXse[ tsdata[ tsi, "year"] ], v, direction="backward", db="snowcrab" )
-        tsdata[ tsi,"sd"] = bio.indicators::variable.recode (XXsd[ tsdata[ tsi, "year"] ], v, direction="backward", db="snowcrab" )
+        tsdata[ tsi,"se"] = ecmd::variable.recode (XXse[ tsdata[ tsi, "year"] ], v, direction="backward", db="snowcrab" )
+        tsdata[ tsi,"sd"] = ecmd::variable.recode (XXsd[ tsdata[ tsi, "year"] ], v, direction="backward", db="snowcrab" )
         XXlb = XXmean - XXse* 1.96
         XXub = XXmean + XXse* 1.96
         if(sdci){
           XXlb = XXmean - XXsd* 1.96
           XXub = XXmean + XXsd* 1.96
         }
-        tsdata[ tsi,"lb"] = bio.indicators::variable.recode (XXlb[ tsdata[ tsi, "year"] ], v, direction="backward", db="snowcrab" )
-        tsdata[ tsi,"ub"] = bio.indicators::variable.recode (XXub[ tsdata[ tsi, "year"] ], v, direction="backward", db="snowcrab" )
+        tsdata[ tsi,"lb"] = ecmd::variable.recode (XXlb[ tsdata[ tsi, "year"] ], v, direction="backward", db="snowcrab" )
+        tsdata[ tsi,"ub"] = ecmd::variable.recode (XXub[ tsdata[ tsi, "year"] ], v, direction="backward", db="snowcrab" )
       }
     }
     tsdata$year = as.numeric( tsdata$year)
@@ -104,7 +104,7 @@ snowcrab.timeseries.db = function( DS="default", p=NULL, regions=c( "cfa4x", "cf
       v = vn[vi]
       if ( !is.numeric( dat[,v] ) ) next()
       print( paste( vi, v) )
-      XX = bio.indicators::variable.recode( dat[,v], v, direction="forward", db="snowcrab" ) # transform variables where necessary
+      XX = ecmd::variable.recode( dat[,v], v, direction="forward", db="snowcrab" ) # transform variables where necessary
       for (r in regions) {
         ri = which( dat[,r] == r)
         if (length(ri)==0) next()
@@ -114,18 +114,18 @@ snowcrab.timeseries.db = function( DS="default", p=NULL, regions=c( "cfa4x", "cf
         XXsd = tapply( XX[ri], INDEX=dat$year[ri], FUN=sd, na.rm=TRUE ) 
         tsi = which(tsdata$variable==v & tsdata$region==r)
 
-        tsdata[ tsi,"mean"] = bio.indicators::variable.recode (XXmean[ tsdata[ tsi, "year"] ], v, direction="backward", db="snowcrab" )
+        tsdata[ tsi,"mean"] = ecmd::variable.recode (XXmean[ tsdata[ tsi, "year"] ], v, direction="backward", db="snowcrab" )
         tsdata[ tsi,"n"] = XXn[ tsdata[ tsi, "year"] ]
-        tsdata[ tsi,"se"] = bio.indicators::variable.recode (XXse[ tsdata[ tsi, "year"] ], v, direction="backward", db="snowcrab" )
-        tsdata[ tsi,"sd"] = bio.indicators::variable.recode (XXsd[ tsdata[ tsi, "year"] ], v, direction="backward", db="snowcrab" )
+        tsdata[ tsi,"se"] = ecmd::variable.recode (XXse[ tsdata[ tsi, "year"] ], v, direction="backward", db="snowcrab" )
+        tsdata[ tsi,"sd"] = ecmd::variable.recode (XXsd[ tsdata[ tsi, "year"] ], v, direction="backward", db="snowcrab" )
         XXlb = XXmean - XXse* 1.96
         XXub = XXmean + XXse* 1.96
         if(sdci){
           XXlb = XXmean - XXsd* 1.96 # confidence intervals for population instead of mean
           XXub = XXmean + XXsd* 1.96
         }
-        tsdata[ tsi,"lb"] = bio.indicators::variable.recode (XXlb[ tsdata[ tsi, "year"] ], v, direction="backward", db="snowcrab" )
-        tsdata[ tsi,"ub"] = bio.indicators::variable.recode (XXub[ tsdata[ tsi, "year"] ], v, direction="backward", db="snowcrab" )
+        tsdata[ tsi,"lb"] = ecmd::variable.recode (XXlb[ tsdata[ tsi, "year"] ], v, direction="backward", db="snowcrab" )
+        tsdata[ tsi,"ub"] = ecmd::variable.recode (XXub[ tsdata[ tsi, "year"] ], v, direction="backward", db="snowcrab" )
       }
     }
     tsdata$year = as.numeric( tsdata$year)
@@ -178,7 +178,7 @@ snowcrab.timeseries.db = function( DS="default", p=NULL, regions=c( "cfa4x", "cf
       v = vn[vi]
       if ( !is.numeric( dat[,v] ) ) next()
       print( paste( vi, v) )
-      XX = bio.indicators::variable.recode( dat[,v], v, direction="forward", db="snowcrab" ) # transform variables where necessary
+      XX = ecmd::variable.recode( dat[,v], v, direction="forward", db="snowcrab" ) # transform variables where necessary
       for (r in regions) {
         ri = which( dat[,r] == r)
         if (length(ri)==0) next()
@@ -187,13 +187,13 @@ snowcrab.timeseries.db = function( DS="default", p=NULL, regions=c( "cfa4x", "cf
         XXse = tapply( XX[ri], INDEX=dat$year[ri], FUN=sd, na.rm=TRUE ) / XXn
         tsi = which(tsdata$variable==v & tsdata$region==r)
 
-        tsdata[ tsi,"mean"] = bio.indicators::variable.recode (XXmean[ tsdata[ tsi, "year"] ], v, direction="backward", db="snowcrab" )
+        tsdata[ tsi,"mean"] = ecmd::variable.recode (XXmean[ tsdata[ tsi, "year"] ], v, direction="backward", db="snowcrab" )
         tsdata[ tsi,"n"] = XXn[ tsdata[ tsi, "year"] ]
-        tsdata[ tsi,"se"] = bio.indicators::variable.recode (XXse[ tsdata[ tsi, "year"] ], v, direction="backward", db="snowcrab" )
+        tsdata[ tsi,"se"] = ecmd::variable.recode (XXse[ tsdata[ tsi, "year"] ], v, direction="backward", db="snowcrab" )
         XXlb = XXmean - XXse* 1.96
         XXub = XXmean + XXse* 1.96
-        tsdata[ tsi,"lb"] = bio.indicators::variable.recode (XXlb[ tsdata[ tsi, "year"] ], v, direction="backward", db="snowcrab" )
-        tsdata[ tsi,"ub"] = bio.indicators::variable.recode (XXub[ tsdata[ tsi, "year"] ], v, direction="backward", db="snowcrab" )
+        tsdata[ tsi,"lb"] = ecmd::variable.recode (XXlb[ tsdata[ tsi, "year"] ], v, direction="backward", db="snowcrab" )
+        tsdata[ tsi,"ub"] = ecmd::variable.recode (XXub[ tsdata[ tsi, "year"] ], v, direction="backward", db="snowcrab" )
       }
     }
     tsdata$year = as.numeric( tsdata$year)
@@ -243,7 +243,7 @@ snowcrab.timeseries.db = function( DS="default", p=NULL, regions=c( "cfa4x", "cf
       v = vn[vi]
       if ( !is.numeric( dat[,v] ) ) next()
       print( paste( vi, v) )
-      XX = bio.indicators::variable.recode( dat[,v], v, direction="forward", db="snowcrab" ) # transform variables where necessary
+      XX = ecmd::variable.recode( dat[,v], v, direction="forward", db="snowcrab" ) # transform variables where necessary
       for (r in regions) {
         ri = which( dat[,r] == r)
         if (length(ri)==0) next()
@@ -252,13 +252,13 @@ snowcrab.timeseries.db = function( DS="default", p=NULL, regions=c( "cfa4x", "cf
         XXse = tapply( XX[ri], INDEX=dat$year[ri], FUN=sd, na.rm=TRUE ) / XXn
         tsi = which(tsdata$variable==v & tsdata$region==r)
 
-        tsdata[ tsi,"mean"] = bio.indicators::variable.recode (XXmean[ tsdata[ tsi, "year"] ], v, direction="backward", db="snowcrab" )
+        tsdata[ tsi,"mean"] = ecmd::variable.recode (XXmean[ tsdata[ tsi, "year"] ], v, direction="backward", db="snowcrab" )
         tsdata[ tsi,"n"] = XXn[ tsdata[ tsi, "year"] ]
-        tsdata[ tsi,"se"] = bio.indicators::variable.recode (XXse[ tsdata[ tsi, "year"] ], v, direction="backward", db="snowcrab" )
+        tsdata[ tsi,"se"] = ecmd::variable.recode (XXse[ tsdata[ tsi, "year"] ], v, direction="backward", db="snowcrab" )
         XXlb = XXmean - XXse* 1.96
         XXub = XXmean + XXse* 1.96
-        tsdata[ tsi,"lb"] = bio.indicators::variable.recode (XXlb[ tsdata[ tsi, "year"] ], v, direction="backward", db="snowcrab" )
-        tsdata[ tsi,"ub"] = bio.indicators::variable.recode (XXub[ tsdata[ tsi, "year"] ], v, direction="backward", db="snowcrab" )
+        tsdata[ tsi,"lb"] = ecmd::variable.recode (XXlb[ tsdata[ tsi, "year"] ], v, direction="backward", db="snowcrab" )
+        tsdata[ tsi,"ub"] = ecmd::variable.recode (XXub[ tsdata[ tsi, "year"] ], v, direction="backward", db="snowcrab" )
       }
     }
     tsdata$year = as.numeric( tsdata$year)

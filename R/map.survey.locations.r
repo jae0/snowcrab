@@ -16,7 +16,7 @@
         annot = paste ("Survey locations", y)
         fn = paste("survey.locations", y, sep=".")
         print(fn)
-        lbm::lbm_map( toplot, cfa.regions=T, depthcontours=T, annot=annot, fn=fn, loc=basedir, corners=corners )
+        ecmei::ecmei_map( toplot, cfa.regions=T, depthcontours=T, annot=annot, fn=fn, loc=basedir, corners=corners )
 
       }
     }
