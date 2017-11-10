@@ -1,6 +1,6 @@
 #Emera Tagging
 
-bioLibrary( 'bio.utilities','emgis', 'bio.snowcrab')
+bioLibrary( 'emgis', 'bio.snowcrab')
 
 dn = file.path(project.datadirectory("bio.snowcrab"),'data','tagging','Emera')
 

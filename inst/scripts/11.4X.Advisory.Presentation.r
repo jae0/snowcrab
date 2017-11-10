@@ -13,7 +13,7 @@ dir.create(outdir,showWarnings=T)
 #Map the Area
 if(map.logs) {
     require(PBSmapping)
-    bioLibrary ( 'emei','bio.utilities','emgis' )
+    bioLibrary ( 'emei', 'emgis' )
     logs = logbook.db('logbook')
     #logs$yr = logs$yr -1 # to make fishing year start of season ie march 2015 is fishing year 2014
     logs = makePBS(logs,polygon=F)
@@ -38,7 +38,7 @@ addPoints(b,pch=16, col='red')
 
 if(map.logs.cpue) {
     require(PBSmapping)
-    bioLibrary( 'emei','bio.utilities','emgis' )
+    bioLibrary( 'emei', 'emgis' )
     logs = logbook.db('logbook')
 
     res.lon = 0.045855 # = 2km on SS
@@ -295,7 +295,7 @@ for (a in as){
 # 
 # if(map.logs.month) {
 #     require(PBSmapping)
-#     bioLibrary(c('emei','bio.utilities','emgis'))
+#     bioLibrary(c('emei', 'emgis'))
 #    logs = logs.fixed
 #     logs = makePBS(logs,polygon=F)
 #     logs$fm = recode(logs$month,"'November'=1;'December'=2;'January'=3;'February'=4;'March'=5;'April'=6")

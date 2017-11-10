@@ -15,7 +15,7 @@ dir.create(outdir,showWarnings=T)
 #Map the Area
     require(PBSmapping)
     require(SpatialHub)
-    bioLibrary ( 'spacetime','bio.utilities','emgis' )
+    bioLibrary ( 'emei', 'emgis' )
     
 #do new db pull, as needed, landings data from past winter, often not there from assessment time
     logbook.db(DS='rawdata.logbook.redo',yrs=1996:p$year.assessment)

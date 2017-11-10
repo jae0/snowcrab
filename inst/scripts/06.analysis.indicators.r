@@ -8,7 +8,7 @@
 
 
 	p$libs = unique( c( p$libs, bioLibrary( 
-    "emei", "bio.utilities", "parallel", "sorted.ordination", "emgis") ) )
+    "emei", "parallel", "sorted.ordination", "emgis") ) )
 
   # setwd( project.datadirectory("emgis") )
 
