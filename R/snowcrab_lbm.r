@@ -1,5 +1,5 @@
 
-snowcrab_ecmei = function( ip=NULL, DS=NULL, p=NULL, voi=NULL, year=NULL, ret=NULL, varnames=NULL ) {
+snowcrab_emei = function( ip=NULL, DS=NULL, p=NULL, voi=NULL, year=NULL, ret=NULL, varnames=NULL ) {
 
   # over-ride default dependent variable name if it exists
   if (is.null(voi)) if (exists("selection",p)) if (exists("name", p$selection)) voi=p$selection$name
@@ -7,10 +7,10 @@ snowcrab_ecmei = function( ip=NULL, DS=NULL, p=NULL, voi=NULL, year=NULL, ret=NU
   if (exists( "libs", p)) RLibrary( p$libs )
    
 
-  if (DS=="ecmei_inputs") {
-    # mostly based on indicators.db( DS="ecmei_inputs") 
-    INP = snowcrab_ecmei(p=p, DS="input_data" )  # , voi=p$selection$name
-    PS  = snowcrab_ecmei(p=p, DS="output_data"  ) # , voi=p$selection$name
+  if (DS=="emei_inputs") {
+    # mostly based on indicators.db( DS="emei_inputs") 
+    INP = snowcrab_emei(p=p, DS="input_data" )  # , voi=p$selection$name
+    PS  = snowcrab_emei(p=p, DS="output_data"  ) # , voi=p$selection$name
     LOCS = bathymetry.db(p=p, DS="baseline")
     return (list(input=INP, output=list( LOCS=LOCS, COV=PS )) )
   }
@@ -19,7 +19,7 @@ snowcrab_ecmei = function( ip=NULL, DS=NULL, p=NULL, voi=NULL, year=NULL, ret=NU
   # --------------------------
 
   if (DS %in% c("input_data") ) {
-    set = ecmd::survey.db( p=p, DS="set.filter" ) # mature male > 95 mm 
+    set = emgis::survey.db( p=p, DS="set.filter" ) # mature male > 95 mm 
  
     if ( p$selection$type=="abundance") {
       # snowcrab survey data only
@@ -68,7 +68,7 @@ snowcrab_ecmei = function( ip=NULL, DS=NULL, p=NULL, voi=NULL, year=NULL, ret=NU
 
     set = set[ which(set$yr %in% p$yrs ), ]
 
-    coast = bio.polygons::coastline.db( p=p, DS="mapdata.coastPolygon" )
+    coast = emgis::coastline.db( p=p, DS="mapdata.coastPolygon" )
     coast = spTransform( coast, CRS("+proj=longlat +datum=WGS84") )
     setcoord = SpatialPoints( as.matrix( set[, c("lon", "lat")]),  proj4string=CRS("+proj=longlat +datum=WGS84") )
     inside = sp::over( setcoord, coast )
@@ -88,8 +88,8 @@ snowcrab_ecmei = function( ip=NULL, DS=NULL, p=NULL, voi=NULL, year=NULL, ret=NU
 
     # redo as set has changed
     locsmap = match( 
-      ecmei::array_map( "xy->1", set[,c("plon","plat")], gridparams=p$gridparams ), 
-      ecmei::array_map( "xy->1", bathy[,c("plon","plat")], gridparams=p$gridparams ) )
+      emei::array_map( "xy->1", set[,c("plon","plat")], gridparams=p$gridparams ), 
+      emei::array_map( "xy->1", bathy[,c("plon","plat")], gridparams=p$gridparams ) )
 
     # spatial vars and climatologies 
     newvars = c("dZ", "ddZ", "log.substrate.grainsize", "tmean.climatology", "tsd.climatology", "b.range", "t.range" )
@@ -100,8 +100,8 @@ snowcrab_ecmei = function( ip=NULL, DS=NULL, p=NULL, voi=NULL, year=NULL, ret=NU
     if (length(oo) > 0) {
       # catch stragglers from a larger domain 
       locsmapsse = match( 
-        ecmei::array_map( "xy->1", set[oo, c("plon","plat")], gridparams=psse$gridparams ), 
-        ecmei::array_map( "xy->1", bathysse[,c("plon","plat")], gridparams=psse$gridparams ) )
+        emei::array_map( "xy->1", set[oo, c("plon","plat")], gridparams=psse$gridparams ), 
+        emei::array_map( "xy->1", bathysse[,c("plon","plat")], gridparams=psse$gridparams ) )
       sn = indicators.lookup( p=psse, DS="spatial", locsmap=locsmapsse, varnames=newvars )
       for (nv in newvars) set[oo,nv] = sn[,nv]
     }
@@ -116,8 +116,8 @@ snowcrab_ecmei = function( ip=NULL, DS=NULL, p=NULL, voi=NULL, year=NULL, ret=NU
     if (length(nn) > 0) {
       # catch stragglers from a larger domain 
       locsmapsse = match( 
-        ecmei::array_map( "xy->1", set[nn, c("plon","plat")], gridparams=psse$gridparams ), 
-        ecmei::array_map( "xy->1", bathysse[,c("plon","plat")], gridparams=psse$gridparams ) )
+        emei::array_map( "xy->1", set[nn, c("plon","plat")], gridparams=psse$gridparams ), 
+        emei::array_map( "xy->1", bathysse[,c("plon","plat")], gridparams=psse$gridparams ) )
       sn = indicators.lookup( p=psse, DS="spatial.annual", locsmap=locsmapsse, timestamp=set[nn,"timestamp"], varnames=newvars )
       for (nv in newvars) set[nn,nv] = sn[,nv]
     }
@@ -126,15 +126,9 @@ snowcrab_ecmei = function( ip=NULL, DS=NULL, p=NULL, voi=NULL, year=NULL, ret=NU
 
     # additional indicators.db variables
     for (iv in names(p$indicators.variables)) {
-<<<<<<< HEAD
-      p0 = bio.indicators::indicators.parameters( p=p, DS="default", year.assessment=p$year.assessment )
-      p0 = bio.indicators::indicators.parameters( p=p0, DS=iv  )
-      p0 = bio.polygons::spatial_parameters( p=p0, type=p$spatial.domain ) # return to correct domain
-=======
-      p0 = ecmd::indicators.parameters( p=p, DS="default", year.assessment=p$year.assessment )
-      p0 = ecmd::indicators.parameters( p=p0, DS=iv  )
-      p0 = ecmei::spatial_parameters( p=p0, type=p$spatial.domain ) # return to correct domain
->>>>>>> develop
+      p0 = emgis::indicators.parameters( p=p, DS="default", year.assessment=p$year.assessment )
+      p0 = emgis::indicators.parameters( p=p0, DS=iv  )
+      p0 = emei::spatial_parameters( p=p0, type=p$spatial.domain ) # return to correct domain
       vn = p0$indicators.variables[[iv]]
       sn = indicators.lookup( p=p0, DS="spatial.annual", locsmap=locsmap, timestamp=set[,"timestamp"], 
         varnames=vn, DB=indicators.db( p=p0, DS="baseline", varnames=vn ) )
@@ -145,14 +139,10 @@ snowcrab_ecmei = function( ip=NULL, DS=NULL, p=NULL, voi=NULL, year=NULL, ret=NU
       mm = which( !is.finite(set[,vn[1]]) )
       if (length(mm) > 0) {
         # catch stragglers from a larger domain
-<<<<<<< HEAD
-        p0 = bio.polygons::spatial_parameters( p=p0, type="SSE" ) 
-=======
-        p0 = ecmei::spatial_parameters( p=p0, type="SSE" ) 
->>>>>>> develop
+        p0 = emei::spatial_parameters( p=p0, type="SSE" ) 
         locsmapsse = match( 
-          ecmei::array_map( "xy->1", set[mm, c("plon","plat")], gridparams=p0$gridparams ), 
-          ecmei::array_map( "xy->1", bathysse[,c("plon","plat")], gridparams=p0$gridparams ) )
+          emei::array_map( "xy->1", set[mm, c("plon","plat")], gridparams=p0$gridparams ), 
+          emei::array_map( "xy->1", bathysse[,c("plon","plat")], gridparams=p0$gridparams ) )
         sn = indicators.lookup( p=p0, DS="spatial.annual", locsmap=locsmapsse, timestamp=set[mm,"timestamp"], 
           varnames=vn, DB=indicators.db( p=p0, DS="baseline", varnames=vn ) )
         for (nv in vn) set[mm,nv] = sn[,nv]
@@ -172,7 +162,7 @@ snowcrab_ecmei = function( ip=NULL, DS=NULL, p=NULL, voi=NULL, year=NULL, ret=NU
     ps_varnames = setdiff( p$varnames, p$variables$LOCS )
     
     for (pvn in ps_varnames) {
-      dr[[pvn]] = quantile( set[,pvn], probs=p$ecmei_quantile_bounds, na.rm=TRUE ) # use 95%CI
+      dr[[pvn]] = quantile( set[,pvn], probs=p$emei_quantile_bounds, na.rm=TRUE ) # use 95%CI
       il = which( set[,pvn] < dr[[pvn]][1] )
       if ( length(il) > 0 ) set[il,pvn] = dr[[pvn]][1]
       iu = which( set[,pvn] > dr[[pvn]][2] )
@@ -192,7 +182,7 @@ snowcrab_ecmei = function( ip=NULL, DS=NULL, p=NULL, voi=NULL, year=NULL, ret=NU
     names(PS)[ names(PS)=="amplitude"] ="tamplitude" 
 
     # make years coherent for temperatures
-    p0 = ecmd::indicators.parameters(p=p, year.assessment=p$year.assessment )
+    p0 = emgis::indicators.parameters(p=p, year.assessment=p$year.assessment )
     yr_index = match( p$yrs, p0$yrs )
     yg = which(is.finite(yr_index))
     ym = which(is.na(yr_index))
@@ -209,10 +199,9 @@ snowcrab_ecmei = function( ip=NULL, DS=NULL, p=NULL, voi=NULL, year=NULL, ret=NU
 
     # indicators.db variables 
     for (iv in names(p$indicators.variables)) {
-
-      p0 = ecmd::indicators.parameters( p=p, DS="default", year.assessment=p$year.assessment )
-      p0 = ecmd::indicators.parameters( p=p0, DS=iv  )
-      p0 = ecmei::spatial_parameters( p=p0, type=p$spatial.domain ) # return to correct domain
+      p0 = emgis::indicators.parameters( p=p, DS="default", year.assessment=p$year.assessment )
+      p0 = emgis::indicators.parameters( p=p0, DS=iv  )
+      p0 = emei::spatial_parameters( p=p0, type=p$spatial.domain ) # return to correct domain
 
       vn = p0$indicators.variables[[iv]]
       sn = indicators.db( p=p0, DS="baseline", varnames=vn )
@@ -233,7 +222,7 @@ snowcrab_ecmei = function( ip=NULL, DS=NULL, p=NULL, voi=NULL, year=NULL, ret=NU
 
     ps_varnames = setdiff( p$varnames, p$variables$LOCS )
 
-    PS = PS[ which(names(PS) %in% ps_varnames ) ] # time vars, if they are part of the model will be created within ecmei
+    PS = PS[ which(names(PS) %in% ps_varnames ) ] # time vars, if they are part of the model will be created within emei
 
     oo = setdiff(p$varnames, c(ps_varnames, p$variables$LOCS) )
     if (length(oo) > 0 ) {
@@ -247,7 +236,7 @@ snowcrab_ecmei = function( ip=NULL, DS=NULL, p=NULL, voi=NULL, year=NULL, ret=NU
 
 
     if ( DS %in% c("predictions", "predictions.redo" ) ) {
-      # NOTE: the primary interpolated data were already created by ecmei. 
+      # NOTE: the primary interpolated data were already created by emei. 
       # This routine points to this data and also creates 
       # subsets of the data where required, determined by "spatial.domain.subareas" 
       
@@ -255,7 +244,7 @@ snowcrab_ecmei = function( ip=NULL, DS=NULL, p=NULL, voi=NULL, year=NULL, ret=NU
       
       if (DS %in% c("predictions")) {
         P = V = NULL
-        fn = file.path( projectdir, paste("ecmei.prediction", ret,  year, "rdata", sep=".") )
+        fn = file.path( projectdir, paste("emei.prediction", ret,  year, "rdata", sep=".") )
         if (is.null(ret)) ret="mean"
         if (file.exists(fn) ) load(fn) 
         if (ret=="mean") return (P)
@@ -271,17 +260,17 @@ snowcrab_ecmei = function( ip=NULL, DS=NULL, p=NULL, voi=NULL, year=NULL, ret=NU
         # print (r)
         year = p$runs[r, "yrs"]
         # default domain
-        PP0 = ecmei_db( p=p, DS="ecmei.prediction", yr=year, ret="mean")
-        VV0 = ecmei_db( p=p, DS="ecmei.prediction", yr=year, ret="sd")
+        PP0 = emei_db( p=p, DS="emei.prediction", yr=year, ret="mean")
+        VV0 = emei_db( p=p, DS="emei.prediction", yr=year, ret="sd")
         p0 = spatial_parameters( p=p, type=p$spatial.domain ) # from
         L0 = bathymetry.db( p=p0, DS="baseline" )
-        L0i = ecmei::array_map( "xy->2", L0[, c("plon", "plat")], gridparams=p0$gridparams )
+        L0i = emei::array_map( "xy->2", L0[, c("plon", "plat")], gridparams=p0$gridparams )
         sreg = setdiff( p$spatial.domain.subareas, p$spatial.domain ) 
 
         for ( gr in sreg ) {
           p1 = spatial_parameters( p=p, type=gr ) # 'warping' from p -> p1
           L1 = bathymetry.db( p=p1, DS="baseline" )
-          L1i = ecmei::array_map( "xy->2", L1[, c("plon", "plat")], gridparams=p1$gridparams )
+          L1i = emei::array_map( "xy->2", L1[, c("plon", "plat")], gridparams=p1$gridparams )
           L1 = planar2lonlat( L1, proj.type=p1$internal.crs )
           L1$plon_1 = L1$plon # store original coords
           L1$plat_1 = L1$plat
@@ -291,8 +280,8 @@ snowcrab_ecmei = function( ip=NULL, DS=NULL, p=NULL, voi=NULL, year=NULL, ret=NU
           V = spatial_warp( VV0[], L0, L1, p0, p1, "fast", L0i, L1i )
           projectdir_p1 = file.path(p$project.root, "modelled", voi, p1$spatial.domain ) 
           dir.create( projectdir_p1, recursive=T, showWarnings=F )
-          fn1_sg = file.path( projectdir_p1, paste("ecmei.prediction.mean",  year, "rdata", sep=".") )
-          fn2_sg = file.path( projectdir_p1, paste("ecmei.prediction.sd",  year, "rdata", sep=".") )
+          fn1_sg = file.path( projectdir_p1, paste("emei.prediction.mean",  year, "rdata", sep=".") )
+          fn2_sg = file.path( projectdir_p1, paste("emei.prediction.sd",  year, "rdata", sep=".") )
           save( P, file=fn1_sg, compress=T )
           save( V, file=fn2_sg, compress=T )
           print (fn1_sg)
@@ -309,30 +298,30 @@ snowcrab_ecmei = function( ip=NULL, DS=NULL, p=NULL, voi=NULL, year=NULL, ret=NU
 
     #  -------------------------------
 
-    if (DS %in% c(  "ecmei.stats", "ecmei.stats.redo" )){
+    if (DS %in% c(  "emei.stats", "emei.stats.redo" )){
 
       
-      if (DS %in% c("ecmei.stats")) {
+      if (DS %in% c("emei.stats")) {
         stats = NULL
         projectdir = file.path(p$project.root, "modelled", voi, p$spatial.domain )
-        fn = file.path( projectdir, paste( "ecmei.statistics", "rdata", sep=".") )
+        fn = file.path( projectdir, paste( "emei.statistics", "rdata", sep=".") )
         if (file.exists(fn) ) load(fn) 
         return( stats )
       }
 
       # downscale and warp from p(0) -> p1
       # default domain
-      S0 = ecmei_db( p=p, DS="stats.to.prediction.grid" )
+      S0 = emei_db( p=p, DS="stats.to.prediction.grid" )
       Snames = colnames(S0)
       p0 = spatial_parameters( p=p, type=p$spatial.domain ) # from
       L0 = bathymetry.db( p=p0, DS="baseline" )
-      L0i = ecmei::array_map( "xy->2", L0[, c("plon", "plat")], gridparams=p0$gridparams )
+      L0i = emei::array_map( "xy->2", L0[, c("plon", "plat")], gridparams=p0$gridparams )
       sreg = setdiff( p$spatial.domain.subareas, p$spatial.domain ) 
 
       for ( gr in sreg ) {
         p1 = spatial_parameters( p=p, type=gr ) # 'warping' from p -> p1
         L1 = bathymetry.db( p=p1, DS="baseline" )
-        L1i = ecmei::array_map( "xy->2", L1[, c("plon", "plat")], gridparams=p1$gridparams )
+        L1i = emei::array_map( "xy->2", L1[, c("plon", "plat")], gridparams=p1$gridparams )
         L1 = planar2lonlat( L1, proj.type=p1$internal.crs )
         L1$plon_1 = L1$plon # store original coords
         L1$plat_1 = L1$plat
@@ -345,7 +334,7 @@ snowcrab_ecmei = function( ip=NULL, DS=NULL, p=NULL, voi=NULL, year=NULL, ret=NU
         colnames(stats) = Snames
         projectdir_p1 = file.path(p$project.root, "modelled", voi, p1$spatial.domain ) 
         dir.create( projectdir_p1, recursive=T, showWarnings=F )
-        fn1_sg = file.path( projectdir_p1, paste("ecmei.statistics", "rdata", sep=".") )
+        fn1_sg = file.path( projectdir_p1, paste("emei.statistics", "rdata", sep=".") )
         save( stats, file=fn1_sg, compress=T )
         print (fn1_sg)
       }
@@ -389,7 +378,7 @@ snowcrab_ecmei = function( ip=NULL, DS=NULL, p=NULL, voi=NULL, year=NULL, ret=NU
         p1 = spatial_parameters( p=p, type=gr ) #target projection    
         L1 = bathymetry.db(p=p1, DS="baseline")
 
-        BS = snowcrab_ecmei( p=p1, DS="ecmei.stats" )
+        BS = snowcrab_emei( p=p1, DS="emei.stats" )
         colnames(BS) = paste(voi, colnames(BS), sep=".")
         IC = cbind( L1, BS )
 
@@ -399,17 +388,17 @@ snowcrab_ecmei = function( ip=NULL, DS=NULL, p=NULL, voi=NULL, year=NULL, ret=NU
         if (is.null(voi)) p1$variables$Y = voi # need to send this to get the correct results
         for (iy in 1:p$ny) {
           yr = p$yrs[iy]
-          PS[,iy] = ecmei_db( p=p1, DS="ecmei.prediction", yr=yr, ret="mean")
-          PSsd[,iy] = ecmei_db( p=p1, DS="ecmei.prediction", yr=yr, ret="sd")
+          PS[,iy] = emei_db( p=p1, DS="emei.prediction", yr=yr, ret="mean")
+          PSsd[,iy] = emei_db( p=p1, DS="emei.prediction", yr=yr, ret="sd")
         }
 
-        # qPS = quantile( PS, probs=p$ecmei_quantile_bounds, na.rm=TRUE )
+        # qPS = quantile( PS, probs=p$emei_quantile_bounds, na.rm=TRUE )
         # u = which( PS < qPS[1])
         # if (length(u)>0) PS[u] = qPS[1]
         # v = which( PS > qPS[2])
         # if (length(v)>0) PS[v] = qPS[2]
         
-        # qPSsd = quantile( PSsd, probs=p$ecmei_quantile_bounds, na.rm=TRUE )
+        # qPSsd = quantile( PSsd, probs=p$emei_quantile_bounds, na.rm=TRUE )
         # u = which( PSsd < qPSsd[1])
         # if (length(u)>0) PSsd[u] = qPSsd[1]
         # v = which( PSsd > qPSsd[2])
@@ -466,7 +455,7 @@ snowcrab_ecmei = function( ip=NULL, DS=NULL, p=NULL, voi=NULL, year=NULL, ret=NU
         
         for (i in 1:p$ny ) {
           yr = p$yrs[i]
-          TS[,i] = ecmei_db( p=p1, DS="ecmei.prediction", yr=yr, ret="mean")
+          TS[,i] = emei_db( p=p1, DS="emei.prediction", yr=yr, ret="mean")
          }
 
         outfile =  file.path( projectdir, paste( "snowcrab", "baseline", "mean", p1$spatial.domain, "rdata", sep= ".") )
@@ -475,7 +464,7 @@ snowcrab_ecmei = function( ip=NULL, DS=NULL, p=NULL, voi=NULL, year=NULL, ret=NU
         TS = matrix( NA, nrow=nL1, ncol=p$ny )
         for (i in 1:p$ny ) {
           yr = p$yrs[i]
-          TS[,i] = ecmei_db( p=p1, DS="ecmei.prediction", yr=yr, ret="sd")
+          TS[,i] = emei_db( p=p1, DS="emei.prediction", yr=yr, ret="sd")
          }
 
         outfile =  file.path( projectdir, paste( "snowcrab", "baseline", "sd", p1$spatial.domain, "rdata", sep= ".") )
@@ -499,8 +488,8 @@ snowcrab_ecmei = function( ip=NULL, DS=NULL, p=NULL, voi=NULL, year=NULL, ret=NU
       print (gr)
       p1 = spatial_parameters(  p=p, type= gr )
       p1 = make.list( list( yrs=p1$yrs), Y=p1 )
-      snowcrab_ecmei( p=p1, DS="map.climatology" ) # no parallel option .. just a few
-      parallel.run( snowcrab_ecmei, p=p1, DS="map.annual", voi=voi )
+      snowcrab_emei( p=p1, DS="map.climatology" ) # no parallel option .. just a few
+      parallel.run( snowcrab_emei, p=p1, DS="map.annual", voi=voi )
     }
 
   }
@@ -521,7 +510,7 @@ snowcrab_ecmei = function( ip=NULL, DS=NULL, p=NULL, voi=NULL, year=NULL, ret=NU
     for (iy in ip ) {
       y = p$runs[iy, "yrs"]
       print(y)
-      H = snowcrab_ecmei( p=p, DS="predictions", year=y, ret="mean" )
+      H = snowcrab_emei( p=p, DS="predictions", year=y, ret="mean" )
       if (is.null(H)) next ()
       xyz = cbind(loc, H)
       uu = which( is.finite(rowSums(xyz)))
@@ -536,11 +525,11 @@ snowcrab_ecmei = function( ip=NULL, DS=NULL, p=NULL, voi=NULL, year=NULL, ret=NU
       cols = color.code( "blue.black", datarange )
       annot = gsub( ".", " ", toupper(voi), fixed=TRUE )
       outfn = paste( voi, "mean", y, sep=".")
-      ecmei::ecmei_map( xyz=xyz, cfa.regions=FALSE, depthcontours=TRUE, pts=NULL, 
+      emei::emei_map( xyz=xyz, cfa.regions=FALSE, depthcontours=TRUE, pts=NULL, 
         loc=projectdir, fn=outfn, annot=annot, at=datarange , col.regions=cols,
         corners=p$corners, spatial.domain=p$spatial.domain ) 
 
-      H = snowcrab_ecmei( p=p, DS="predictions", year=y, ret="sd" )
+      H = snowcrab_emei( p=p, DS="predictions", year=y, ret="sd" )
       if (is.null(H)) next ()
       xyz = cbind(loc, H)
       uu = which( is.finite(rowSums(xyz)))
@@ -556,7 +545,7 @@ snowcrab_ecmei = function( ip=NULL, DS=NULL, p=NULL, voi=NULL, year=NULL, ret=NU
       annot = gsub( ".", " ", toupper(voi), fixed=TRUE )
       outfn = paste( voi, "sd", y, sep=".")
 
-      ecmei::ecmei_map( xyz=xyz, cfa.regions=FALSE, depthcontours=TRUE, pts=NULL, 
+      emei::emei_map( xyz=xyz, cfa.regions=FALSE, depthcontours=TRUE, pts=NULL, 
         loc=projectdir, fn=outfn, annot=annot, at=datarange , col.regions=cols,
         corners=p$corners, spatial.domain=p$spatial.domain ) 
       print( file.path( projectdir, outfn))
@@ -574,7 +563,7 @@ snowcrab_ecmei = function( ip=NULL, DS=NULL, p=NULL, voi=NULL, year=NULL, ret=NU
     
     loc = bathymetry.db(p=p, DS="baseline" )
 
-    H = snowcrab_ecmei( p=p, DS="complete" )
+    H = snowcrab_emei( p=p, DS="complete" )
     vnames = setdiff( names(H), c("plon", "plat" ))
     
     for (vn in vnames ) {
@@ -590,7 +579,7 @@ snowcrab_ecmei = function( ip=NULL, DS=NULL, p=NULL, voi=NULL, year=NULL, ret=NU
       }
       cols = color.code( "blue.black", datarange )
       annot = gsub( ".", " ", toupper(vn), fixed=TRUE )
-      ecmei::ecmei_map( xyz=xyz, cfa.regions=FALSE, depthcontours=TRUE, pts=NULL, 
+      emei::emei_map( xyz=xyz, cfa.regions=FALSE, depthcontours=TRUE, pts=NULL, 
         loc=projectdir, fn=vn, annot=annot, at=datarange, col.regions=cols,
         corners=p$corners, spatial.domain=p$spatial.domain ) 
       print( file.path( projectdir, vn))

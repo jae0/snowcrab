@@ -85,7 +85,7 @@
     # Means
     # variables that shouldn't be logged 
     set = snowcrab.db( DS="set.biologicals")
-    variables = ecmd::variable.list.expand("all.data")
+    variables = emgis::variable.list.expand("all.data")
     variables = intersect( variables, names(set) )
  
     nolog.variables = c("t","z","sexratio.all","sexratio.mat","sexratio.imm","julian",variables[grep("cw",variables)])
@@ -387,7 +387,7 @@
 
     out = data.frame(yr=sort( unique(set$yr )) )
     for (reg in c("cfaall", "cfanorth", "cfasouth","cfa4x"  ) ) {
-      d = bio.polygons::polygon_inside(set[,c("lon","lat")], reg)
+      d = emgis::polygon_inside(set[,c("lon","lat")], reg)
       e = as.data.frame( xtabs(~yr, data=set[d,])  )
       names(e) = c("yr", reg)
       e$yr = as.numeric(as.character(e$yr) )
@@ -398,9 +398,9 @@
     plot.new()
     year = p$year.assessment
     setdata = set[ which(set$yr==year),]
-    N = bio.polygons::polygon_inside(setdata[,c("lon","lat")], "cfanorth")
-    S = bio.polygons::polygon_inside(setdata[,c("lon","lat")], "cfasouth")
-    X = bio.polygons::polygon_inside(setdata[,c("lon","lat")], "cfa4x")
+    N = emgis::polygon_inside(setdata[,c("lon","lat")], "cfanorth")
+    S = emgis::polygon_inside(setdata[,c("lon","lat")], "cfasouth")
+    X = emgis::polygon_inside(setdata[,c("lon","lat")], "cfa4x")
     plot(setdata$lon, setdata$lat)
     points(setdata$lon[N], setdata$lat[N],col="red",pch=20)
     points(setdata$lon[S], setdata$lat[S],col="blue",pch=20)

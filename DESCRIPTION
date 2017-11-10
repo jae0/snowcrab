@@ -1,5 +1,5 @@
 Package: bio.snowcrab
-Title: Snow crab assessment suite for bio and associated projects. 
+Title: Snow crab assessment suite for em* and associated projects. 
 Version: 0.1
 Authors@R: c(
   person("Jae", "Choi", email = "choijaeseok@gmail.com", role = c("aut", "cre")),
@@ -9,7 +9,7 @@ Authors@R: c(
   person("Ben", "Zisserson", email = "Ben.Zisserson@dfo-mpo.g.ca", role = c("aut")),
   person("Adam", "Cook", email = "Adam.Cook@dfo-mpo.gc.ca", role = c("aut")) ) 
 Description: The snow crab assessment suite used by Maritimes Region in Canada. It is  
-  designed to be used as part of the bio project. 
+  designed to be used as part of the em* project. 
 Depends: R (>= 3.0.0)
 Imports:
   akima, 
@@ -37,16 +37,15 @@ Imports:
   ROracle,
   sp, 
   vegan, 
-  bio.base,
-  ecmd, 
-  bio.polygons,
-  bio.utilities 
-Suggests:
+  emenv,
+  emgis, 
   bio.groundfish,
   netmensuration,
-  ecmei
+  emei
+Suggests:
 License: MIT
 LazyData: true
 URL: https://github.com/jae0/bio.snowcrab/
+
 
 
