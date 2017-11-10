@@ -19,7 +19,7 @@
         annot = paste ("Observer locations", y)
         fn = paste("observer.locations", y, sep=".")
         print(fn)
-        ecmei::ecmei_map( xyz=toplot,  cfa.regions=T, depthcontours=T, annot=annot, fn=fn, loc=basedir, corners=corners )
+        emei::emei_map( xyz=toplot,  cfa.regions=T, depthcontours=T, annot=annot, fn=fn, loc=basedir, corners=corners )
 
       }
 

@@ -15,7 +15,7 @@ dir.create(outdir,showWarnings=T)
 #Map the Area
     require(PBSmapping)
     require(SpatialHub)
-    bioLibrary ( 'spacetime','bio.utilities','bio.polygons' )
+    bioLibrary ( 'spacetime','bio.utilities','emgis' )
     
 #do new db pull, as needed, landings data from past winter, often not there from assessment time
     logbook.db(DS='rawdata.logbook.redo',yrs=1996:p$year.assessment)
@@ -213,7 +213,7 @@ l$tripset=paste(l$TRIP, l$SET_NO, sep=":")
 
 a = l[l$FISH_LENGTH>50 & l$FISH_LENGTH<170,]
 # --------------------------------------
-# convert lat's and long's to recognizable format for bio.polygons::polygon_internal_code
+# convert lat's and long's to recognizable format for emgis::polygon_internal_code
 	h=names(a)
 	h[h=="LATITUDE"] = "lat"
 	h[h=="LONGITUDE"] = "lon"
@@ -226,7 +226,7 @@ a = l[l$FISH_LENGTH>50 & l$FISH_LENGTH<170,]
 
 #----------------------------------------
 # create columns for area and CFA
-a = a[bio.polygons::polygon_inside(a,'cfa4x'),]
+a = a[emgis::polygon_inside(a,'cfa4x'),]
   yu = p$year.assessment
   yrs=(yu-4):(yu-1)
 
@@ -398,7 +398,7 @@ for (i in yrs){
 # #survey Index
 # set = snowcrab.db('set.biologicals')
 # 
-# d = set[bio.polygons::polygon_inside(set,'cfa4x'),c('yr','totmass.male.com')]
+# d = set[emgis::polygon_inside(set,'cfa4x'),c('yr','totmass.male.com')]
 # d = subset(d,yr>2001)
 # 
 # # zero inflated "hurdle" model
@@ -417,7 +417,7 @@ for (i in yrs){
 # set16$totmass.female.mat=as.numeric(set16$mature.female..kg.)/set16$surace_area.km.2/1000
 # set16$totmass.female.imm=as.numeric(set16$immature.female..kg.)/set16$surace_area.km.2/1000
 # 
-# d = rbind(d,set16[bio.polygons::polygon_inside(set16,'cfa4x'),c('yr','totmass.male.com',"totmass.male.ncom","totmass.female.mat","totmass.female.imm")])
+# d = rbind(d,set16[emgis::polygon_inside(set16,'cfa4x'),c('yr','totmass.male.com',"totmass.male.ncom","totmass.female.mat","totmass.female.imm")])
 # 
 # Year = 2002:(p$year.assessment-1)
 # offset=0.1

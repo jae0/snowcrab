@@ -114,7 +114,7 @@
       odb$yr = lubridate::year(odb$timestamp)
 
       # cfa 4X has a fishing season that spans two years recode "yr" to "fishyr" to accomodate this
-      cfa4x = bio.polygons::polygon_inside(odb, bio.polygons::polygon_internal_code("cfa4x"))
+      cfa4x = emgis::polygon_inside(odb, emgis::polygon_internal_code("cfa4x"))
       to.offset = which( lubridate::month(odb$timestamp) >= 1 & lubridate::month(odb$timestamp) <= 7 )
       to.offset = sort(intersect(cfa4x, to.offset))
       odb$fishyr = odb$yr

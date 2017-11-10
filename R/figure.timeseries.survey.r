@@ -18,9 +18,9 @@
 
     if(missing(variables)){
       variables =  c( 
-         ecmd::variable.list.expand("all.to.model"), 
-         ecmd::variable.list.expand("snowcrab.cw"), 
-         ecmd::variable.list.expand("physical"),
+         emgis::variable.list.expand("all.to.model"), 
+         emgis::variable.list.expand("snowcrab.cw"), 
+         emgis::variable.list.expand("physical"),
          'sexratio.mat','sexratio.imm','sexratio.all' 
       )
       variables = intersect( variables, unique(tdb$variable))
@@ -35,12 +35,12 @@
     tdb$region = factor(tdb$region, levels=areas, labels =regions)
 
     #  load transformation tables associated with a given variable
-    tl = ecmd::lookup.datatransformation('snowcrab')
+    tl = emgis::lookup.datatransformation('snowcrab')
 
     if (file.exists( tl$repository) ) {
       load (tl$repository)
     } else {
-      REPOS = ecmd::recode.variable.initiate.db ( db )
+      REPOS = emgis::recode.variable.initiate.db ( db )
     }
     tvars = REPOS$varname[which(REPOS$transform=='log10')]
 

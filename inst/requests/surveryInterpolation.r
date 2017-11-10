@@ -40,7 +40,7 @@ if(do.interpolation) {
         if(!geo.mean) fo 				<- file.path("C:","~","bio","snowcrab","Adam","Emera","abundance maps","global average","arithmean")
 
         dir.create(fo,recursive=T,showWarnings=F)
-        ecmei::ecmei_map( fp[,1:3], xyz.coords="planar", cfa.regions=T, depthcontours=T, fn=gps[i], loc=fo, at=datarange , col.regions=cols(length(datarange)+1), colpts=T, corners=p$planar.corners,annot=gps[i] )
+        emei::emei_map( fp[,1:3], xyz.coords="planar", cfa.regions=T, depthcontours=T, fn=gps[i], loc=fo, at=datarange , col.regions=cols(length(datarange)+1), colpts=T, corners=p$planar.corners,annot=gps[i] )
 
         ras 			<- rasterFromXYZ(fp[,c('plon','plat','z')],crs=lookup.projection.params(p$internal.projection))
 

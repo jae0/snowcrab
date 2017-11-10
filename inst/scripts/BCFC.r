@@ -1,7 +1,7 @@
 
 #Welcome to BCFC. Ben’s Clunky Fucking Code! It’s ugly but it works.
   
-  require(bio.base)
+  require(emenv)
   
   if (!exists("year.assessment")) year.assessment=lubridate::year(Sys.Date())
   p = bio.snowcrab::load.environment( year.assessment=year.assessment )
@@ -272,7 +272,7 @@ hl=68
  
  
 # --------------------------------------
-# convert lat's and long's to recognizable format for bio.polygons::polygon_internal_code
+# convert lat's and long's to recognizable format for emgis::polygon_internal_code
 a=setsobs
 h=names(a)
 h[h=="LATITUDE"] = "lat"
@@ -425,7 +425,7 @@ cfa=c("cfanorth", "cfa23", "cfa24", "cfa4x")
  
 x$cfa=NA
 for  (a in cfa){
-     rowindex= bio.polygons::polygon_inside(x,bio.polygons::polygon_internal_code(a))
+     rowindex= emgis::polygon_inside(x,emgis::polygon_internal_code(a))
      x$cfa[rowindex]=a
 }
  
@@ -433,11 +433,11 @@ area=c("cfanorth", "cfasouth", "cfa4x")
  
 x$area=NA
 for (a in area){
-rowindex= bio.polygons::polygon_inside(x,bio.polygons::polygon_internal_code(a))
+rowindex= emgis::polygon_inside(x,emgis::polygon_internal_code(a))
 x$area[rowindex]=a
 }
  
-#4X fishing activity on 4X line doesn't get recoded properly by bio.polygons::polygon_internal_code
+#4X fishing activity on 4X line doesn't get recoded properly by emgis::polygon_internal_code
 #force thes into 4X
 x$long=NA
 x$long=-(as.numeric(x$lon))

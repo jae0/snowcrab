@@ -13,7 +13,7 @@ dir.create(outdir,showWarnings=T)
 #Map the Area
 if(map.logs) {
     require(PBSmapping)
-    bioLibrary ( 'ecmei','bio.utilities','bio.polygons' )
+    bioLibrary ( 'emei','bio.utilities','emgis' )
     logs = logbook.db('logbook')
     #logs$yr = logs$yr -1 # to make fishing year start of season ie march 2015 is fishing year 2014
     logs = makePBS(logs,polygon=F)
@@ -38,7 +38,7 @@ addPoints(b,pch=16, col='red')
 
 if(map.logs.cpue) {
     require(PBSmapping)
-    bioLibrary( 'ecmei','bio.utilities','bio.polygons' )
+    bioLibrary( 'emei','bio.utilities','emgis' )
     logs = logbook.db('logbook')
 
     res.lon = 0.045855 # = 2km on SS
@@ -295,7 +295,7 @@ for (a in as){
 # 
 # if(map.logs.month) {
 #     require(PBSmapping)
-#     bioLibrary(c('ecmei','bio.utilities','bio.polygons'))
+#     bioLibrary(c('emei','bio.utilities','emgis'))
 #    logs = logs.fixed
 #     logs = makePBS(logs,polygon=F)
 #     logs$fm = recode(logs$month,"'November'=1;'December'=2;'January'=3;'February'=4;'March'=5;'April'=6")
@@ -377,7 +377,7 @@ l = observer.db('rawdata',yrs=2014:2015)
 
 		a = l[l$FISH_LENGTH>50 & l$FISH_LENGTH<170,]
 		# --------------------------------------
-# convert lat's and long's to recognizable format for bio.polygons::polygon_internal_code
+# convert lat's and long's to recognizable format for emgis::polygon_internal_code
 	h=names(a)
 	h[h=="LATITUDE"] = "lat"
 	h[h=="LONGITUDE"] = "lon"
@@ -388,7 +388,7 @@ l = observer.db('rawdata',yrs=2014:2015)
 #----------------------------------------
 # create columns for area and CFA
 
-a = a[bio.polygons::polygon_inside(a,'cfa4x'),]
+a = a[emgis::polygon_inside(a,'cfa4x'),]
 a$mn = months(a$BOARD_DATE)
 a = a[which((a$mn %in% c('November','December') & a$year %in% 2015) | (a$mn %in% c('January','February','March') & a$year %in% 2016)),]
 x=a
@@ -468,7 +468,7 @@ savePlot(file.path(outdir,paste('observer.map.2015','png',sep=".")),type='png')
 #survey Index
 set = snowcrab.db('set.biologicals')
 
-d = set[bio.polygons::polygon_inside(set,'cfa4x'),c('yr','totmass.male.com')]
+d = set[emgis::polygon_inside(set,'cfa4x'),c('yr','totmass.male.com')]
 d = subset(d,yr>2001)
 
 
