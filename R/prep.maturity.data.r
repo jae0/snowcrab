@@ -21,9 +21,9 @@
       x$yr=as.factor(x$yr)
 
       x$reg = NA # initialise the column / field
-      x$reg[ emgis::polygon_inside(x,emgis::polygon_internal_code("cfanorth")) ] = "cfanorth"
-      x$reg[ emgis::polygon_inside(x,emgis::polygon_internal_code("cfasouth")) ] = "cfasouth"
-      x$reg[ emgis::polygon_inside(x,emgis::polygon_internal_code("cfa4x")) ] = "cfa4x"
+      x$reg[ stmdat::polygon_inside(x,stmdat::polygon_internal_code("cfanorth")) ] = "cfanorth"
+      x$reg[ stmdat::polygon_inside(x,stmdat::polygon_internal_code("cfasouth")) ] = "cfasouth"
+      x$reg[ stmdat::polygon_inside(x,stmdat::polygon_internal_code("cfa4x")) ] = "cfa4x"
       x = x[ which( x$reg %in% c("cfanorth", "cfasouth" ) ) ,]
       x$reg=as.factor(x$reg)
 

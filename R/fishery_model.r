@@ -999,7 +999,7 @@ model {
 
     warning( "TMB method is not yet complete")
 
-    require(emenv)
+    require(stmenv)
       
 
     sb = biomass.summary.db(p=p, DS="surplusproduction" )

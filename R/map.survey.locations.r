@@ -16,7 +16,7 @@
         annot = paste ("Survey locations", y)
         fn = paste("survey.locations", y, sep=".")
         print(fn)
-        emei::emei_map( toplot, cfa.regions=T, depthcontours=T, annot=annot, fn=fn, loc=basedir, corners=corners )
+        stm::stm_map( toplot, cfa.regions=T, depthcontours=T, annot=annot, fn=fn, loc=basedir, corners=corners )
 
       }
     }

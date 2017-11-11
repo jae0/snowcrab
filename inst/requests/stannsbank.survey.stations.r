@@ -3,7 +3,7 @@
 p = bio.snowcrab::load.environment()
 
 dat = snowcrab.db('set.biologicals')
-pp = read.csv(emgis::polygon_file('StAnnsMPA.csv'))
+pp = read.csv(stmdat::polygon_file('StAnnsMPA.csv'))
 require(PBSmapping)
 
 dat$X = dat$lon

@@ -94,10 +94,10 @@
       h = which( !is.na( lgbk$lon + lgbk$lat ) )
       lgbk = lgbk[h,]
 
-      i = emgis::polygon_inside( lgbk[, c("lon", "lat")], region="cfaall")
+      i = stmdat::polygon_inside( lgbk[, c("lon", "lat")], region="cfaall")
       lgbk = lgbk[i,]
 
-      j = emgis::polygon_inside( lgbk[, c("lon", "lat")], region="isobath1000m")
+      j = stmdat::polygon_inside( lgbk[, c("lon", "lat")], region="isobath1000m")
       lgbk = lgbk[j,]
 
       # additional constraint ..
@@ -106,11 +106,11 @@
       proj4strvalue=CRS("+proj=longlat +datum=WGS84")
       V = SpatialPoints( lgbk[,c("lon", "lat")], proj4strvalue )
       
-      coastlineSp =  emgis::coastline.db( p=p, DS="mapdata.coastPolygon", crs="+proj=longlat +datum=WGS84" )
+      coastlineSp =  stmdat::coastline.db( p=p, DS="mapdata.coastPolygon", crs="+proj=longlat +datum=WGS84" )
 
       # coastline = maps::map( database="worldHires", regions=c("Canada", "US"), fill=TRUE, plot=FALSE )
       # coastlineSp = maptools::map2SpatialPolygons( coastline, IDs=coastline$names, proj4string=proj4strvalue  )
-      bboxSP = emgis::boundingbox(p$corners$lon, p$corners$lat)
+      bboxSP = stmdat::boundingbox(p$corners$lon, p$corners$lat)
       keep <- rgeos::gContains( bboxSP, coastlineSp, byid=TRUE ) | rgeos::gOverlaps( bboxSP, coastlineSp, byid=TRUE )
 
       stopifnot( ncol(keep)==1 )
@@ -123,18 +123,18 @@
       # keep those in the domain and deeper than depth=10 m
       z = bathymetry.db(p=p, DS="baseline", varnames=c("plon", "plat", "z")) 
       aoi = which( z$z > 10 ) # negative = above land
-      pidz = emei::array_map( "xy->1", z[aoi,c("plon", "plat")], gridparams=p$gridparams ) 
-      pidl = emei::array_map( "xy->1", lgbk[,c("plon", "plat")], gridparams=p$gridparams )
+      pidz = stm::array_map( "xy->1", z[aoi,c("plon", "plat")], gridparams=p$gridparams ) 
+      pidl = stm::array_map( "xy->1", lgbk[,c("plon", "plat")], gridparams=p$gridparams )
       inaoi = which( is.finite( match( pidl, pidz ) )) 
       good = which(is.finite( inaoi))
       lgbk = lgbk[ good,]    
 
 
       # only accept "correctly" positioned data within each subarea ... in case miscoded data have a large effect
-      icfa4x = emgis::polygon_inside( lgbk[, c("lon", "lat")], "cfa4x")
-      icfanorth = emgis::polygon_inside( lgbk[, c("lon", "lat")], "cfanorth")
-      icfa23 = emgis::polygon_inside( lgbk[, c("lon", "lat")], "cfa23")
-      icfa24 = emgis::polygon_inside( lgbk[, c("lon", "lat")], "cfa24")
+      icfa4x = stmdat::polygon_inside( lgbk[, c("lon", "lat")], "cfa4x")
+      icfanorth = stmdat::polygon_inside( lgbk[, c("lon", "lat")], "cfanorth")
+      icfa23 = stmdat::polygon_inside( lgbk[, c("lon", "lat")], "cfa23")
+      icfa24 = stmdat::polygon_inside( lgbk[, c("lon", "lat")], "cfa24")
 
       gooddata = sort( unique( c(icfa4x, icfanorth, icfa23, icfa24 ) ) )
       lgbk = lgbk[gooddata, ]

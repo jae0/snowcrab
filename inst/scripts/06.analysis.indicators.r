@@ -8,9 +8,9 @@
 
 
 	p$libs = unique( c( p$libs, bioLibrary( 
-    "emei", "parallel", "sorted.ordination", "emgis") ) )
+    "stm", "parallel", "sorted.ordination", "stmdat") ) )
 
-  # setwd( project.datadirectory("emgis") )
+  # setwd( project.datadirectory("stmdat") )
 
   # not all are fully refreshed automatically .. they are just place holders for now
 
@@ -53,8 +53,8 @@
 
 
 
-  indic = indicators.ts.db( db="emgis.all.glue" )  # glue all time-series together
-  # indic = indicators.ts.db( db="emgis.all" ) # load the glued version
+  indic = indicators.ts.db( db="stmdat.all.glue" )  # glue all time-series together
+  # indic = indicators.ts.db( db="stmdat.all" ) # load the glued version
 
 
  # indic$data$Nwells.drilled = cumsum.jae(indic$data$Nwells.drilled)
@@ -66,12 +66,12 @@
   t1 = 2015
 
   # ordination of selected key factors
-  indic = indicators.ts.db( db="emgis.all" )
+  indic = indicators.ts.db( db="stmdat.all" )
 
-  d = emgis.subset ( indic, type="keyfactors" )
+  d = stmdat.subset ( indic, type="keyfactors" )
 #  save( d, file="/home/adam/tmp/ordin.rdata", compress=TRUE )
 
-  Y = pca.analyse.data(d, t0, t1, fname=file.path(project.datadirectory("emgis"), "keyfactors" ) )
+  Y = pca.analyse.data(d, t0, t1, fname=file.path(project.datadirectory("stmdat"), "keyfactors" ) )
 
 
   sub = indic$data[, c("T_bottom_misaine", "SST_halifax", "ice_coverage.km.2", "Gulf.Stream.front.Ref.62lon", "T_sable_annual", "snowcrab.bottom.habitat.area", "snowcrab.kriged.R0.mass", "snowcrab.fishery.landings", "snowcrab.fishery.cpue", "groundfish.stratified.mean.temp" )]
@@ -92,31 +92,31 @@ for (i in .keyfactors) {
   # human
   .human = c(indic$landings.totals.NS, indic$landedvalue.totals.NS, indic$human )
   .human = setdiff( .human, "No.Fish.processors" ) # this has no data yet
-  Y = pca.analyse.data( indic$data, .human, t0, t1, fname=file.path(project.datadirectory("emgis"), "human") )
+  Y = pca.analyse.data( indic$data, .human, t0, t1, fname=file.path(project.datadirectory("stmdat"), "human") )
 
   # fishery landings
   .fishery = c(indic$landings.NS, indic$landings.totals.NS )
-  Y = pca.analyse.data( indic$data, .fishery, t0, t1, fname=file.path(project.datadirectory("emgis"), "fishery" ))
+  Y = pca.analyse.data( indic$data, .fishery, t0, t1, fname=file.path(project.datadirectory("stmdat"), "fishery" ))
 
   # fishery landed value
   .fishery.value = c(indic$landedvalue.NS, indic$landedvalue.totals.NS )
-  Y = pca.analyse.data( indic$data, .fishery.value, t0, t1, fname=file.path(project.datadirectory("emgis"), "landedvalue" ))
+  Y = pca.analyse.data( indic$data, .fishery.value, t0, t1, fname=file.path(project.datadirectory("stmdat"), "landedvalue" ))
 
   # fishery -- overall
   .fishery = c(indic$landedvalue.NS, indic$landedvalue.totals.NS, indic$landings.NS, indic$landings.totals.NS )
-  Y = pca.analyse.data( indic$data, .fishery, t0=1970, t1, fname=file.path(project.datadirectory("emgis"), "fishery.overall" ))
+  Y = pca.analyse.data( indic$data, .fishery, t0=1970, t1, fname=file.path(project.datadirectory("stmdat"), "fishery.overall" ))
 
   # snowcrab
   .snowcrab = c(indic$snowcrab, "groundfish.stratified.mean.totwgt.snowcrab", "groundfish.stratified.mean.totno.snowcrab" )
-  Y = pca.analyse.data(indic$data, .snowcrab, t0, t1, fname=file.path(project.datadirectory("emgis"), "snowcrab" ))
+  Y = pca.analyse.data(indic$data, .snowcrab, t0, t1, fname=file.path(project.datadirectory("stmdat"), "snowcrab" ))
 
   # climate
   .climate = c( indic$climate )
-  Y = pca.analyse.data(indic$data, .climate, t0, t1, fname=file.path(project.datadirectory("emgis"), "climate" ))
+  Y = pca.analyse.data(indic$data, .climate, t0, t1, fname=file.path(project.datadirectory("stmdat"), "climate" ))
 
   # ecosystem
   .ecosystem = c( indic$ecosystem )
-  Y = pca.analyse.data(indic$data, .ecosystem, t0, t1, fname=file.path(project.datadirectory("emgis"), "ecosystem" ))
+  Y = pca.analyse.data(indic$data, .ecosystem, t0, t1, fname=file.path(project.datadirectory("stmdat"), "ecosystem" ))
 
 
 

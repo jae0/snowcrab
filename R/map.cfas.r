@@ -6,7 +6,7 @@ map.cfas = function( p, conversions=c("ps2png") ) {
   geog.proj <- CRS("+proj=longlat +ellps=WGS84")
   #seis <- colorRampPalette(c("darkblue","blue3", "green", "yellow", "orange","red3", "darkred"), space = "Lab")
 
-  polydir = file.path(project.datadirectory("emgis"), "data", "Basemaps", "Marine", "Coastline")
+  polydir = file.path(project.datadirectory("stmdat"), "data", "Basemaps", "Marine", "Coastline")
 
   setwd(polydir)
 
@@ -15,7 +15,7 @@ map.cfas = function( p, conversions=c("ps2png") ) {
   coast <- gSimplify(coast, tol=0.01, topologyPreserve=TRUE)
 
 
-  cfadir =  file.path(project.datadirectory("emgis"), "data", "Management_Areas", "Fisheries", "Snowcrab")
+  cfadir =  file.path(project.datadirectory("stmdat"), "data", "Management_Areas", "Fisheries", "Snowcrab")
   setwd(cfadir)
 
   cfa20 = read.table("cfa20.dat")

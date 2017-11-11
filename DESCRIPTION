@@ -37,11 +37,11 @@ Imports:
   ROracle,
   sp, 
   vegan, 
-  emenv,
-  emgis, 
+  stmenv,
+  stmdat, 
   bio.groundfish,
   netmensuration,
-  emei
+  stm
 Suggests:
 License: MIT
 LazyData: true

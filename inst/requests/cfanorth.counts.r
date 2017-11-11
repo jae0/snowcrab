@@ -3,7 +3,7 @@
 p = bio.snowcrab::load.environment()
 
   w = snowcrab.db( DS ="set.biologicals", p=p )
-  w = w[ emgis::polygon_inside( w, "cfanorth"),]
+  w = w[ stmdat::polygon_inside( w, "cfanorth"),]
 
   out = data.frame( cbind(
     no.male = tapply( w$totno.male, w$yr, sum, na.rm=T) ,

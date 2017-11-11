@@ -2,7 +2,7 @@ map.fisheries.data = function(p, outdir,  FUN, yrs, variable='effort',probs=c(0,
 
   x = logbook.db( DS="logbook" )
   
-  x = x [emgis::polygon_inside( x, region="isobath1000m"),]
+  x = x [stmdat::polygon_inside( x, region="isobath1000m"),]
   x = x[ which(x$effort <= 300) ,]
   x = x[ which(x$cpue < 500),]
   
@@ -46,7 +46,7 @@ map.fisheries.data = function(p, outdir,  FUN, yrs, variable='effort',probs=c(0,
     outloc = file.path( outdir,variable)
 
     # do the map
-    try( emei::emei_map( xyz[[i]], xyz.coords="planar", cfa.regions=T, depthcontours=T, pts=NULL, annot=yrs[i], fn=outfn, loc=outloc, at=datarange,colorkey=NULL , col.regions=cols(length(datarange)+1), colpts=F, corners=p$corners, display=F,rez=c(pres,pres)))
+    try( stm::stm_map( xyz[[i]], xyz.coords="planar", cfa.regions=T, depthcontours=T, pts=NULL, annot=yrs[i], fn=outfn, loc=outloc, at=datarange,colorkey=NULL , col.regions=cols(length(datarange)+1), colpts=F, corners=p$corners, display=F,rez=c(pres,pres)))
   }
 }
 

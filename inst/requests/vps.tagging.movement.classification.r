@@ -49,7 +49,7 @@ if(redo.base.data) {}
 
         filt.data = rbind(filt.data,oo1)
 
-        bioLibrary( 'emgis')
+        bioLibrary( 'stmdat')
 
         xx = range(oo$lon)
         yy = range(oo$lat)

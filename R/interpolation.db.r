@@ -15,13 +15,13 @@
       }
 
       
-      set = emgis::survey.db( p=p, DS="set.filter" ) # mature male > 95 mm 
+      set = stmdat::survey.db( p=p, DS="set.filter" ) # mature male > 95 mm 
  
       ii = which( set$totmass > 0 )
-      qs = quantile( set$totmass[ii], probs=p$emei_quantile_bounds, na.rm=TRUE )
+      qs = quantile( set$totmass[ii], probs=p$stm_quantile_bounds, na.rm=TRUE )
       qs = log(qs) # 
 
-      bm = snowcrab_emei( p=p, DS="baseline", ret="mean", varnames=varnames )
+      bm = snowcrab_stm( p=p, DS="baseline", ret="mean", varnames=varnames )
       m = bm[[1]]  # biomass
       h = bm[[2]]  # habitat
       bm= NULL
@@ -43,11 +43,11 @@
       }
 
       # more range checks
-      s = snowcrab_emei( p=p, DS="baseline", ret="sd", varnames=varnames )
+      s = snowcrab_stm( p=p, DS="baseline", ret="sd", varnames=varnames )
       # range checks
       s = log( exp(s[[1]]) * s[[2]] ) # s[[2]] is serving as weight/probabilities
       
-      sq = quantile(s, probs=p$emei_quantile_bounds[2], na.rm=TRUE ) 
+      sq = quantile(s, probs=p$stm_quantile_bounds[2], na.rm=TRUE ) 
       # s[which(s > sq)] = sq  # cap upper bound of sd
 
       # mm = which(( m - 1.96*s ) < 0 )
@@ -119,7 +119,7 @@
         y = p$yrs[iy]
         outfn = paste( "prediction.abundance.mean", y, sep=".")
         xyz = cbind( bs[, c("plon", "plat")], m[,iy] )
-        emei::emei_map( xyz=xyz, cfa.regions=T, depthcontours=T, pts=NULL, annot=y,
+        stm::stm_map( xyz=xyz, cfa.regions=T, depthcontours=T, pts=NULL, annot=y,
           annot.cex=annot.cex, corners=p$planar.corners, fn=outfn, loc=projectdir, at=datarange,
           col.regions=cols, rez=c(p$pres,p$pres) )
       }
@@ -133,7 +133,7 @@
         y = p$yrs[iy]
         outfn = paste( "prediction.abundance.sd", y, sep=".")
         xyz = cbind( bs[, c("plon", "plat")], s[,iy] )
-        emei::emei_map( xyz=xyz, cfa.regions=T, depthcontours=T, pts=NULL, annot=y,
+        stm::stm_map( xyz=xyz, cfa.regions=T, depthcontours=T, pts=NULL, annot=y,
           annot.cex=annot.cex, corners=p$planar.corners, fn=outfn, loc=projectdir, at=datarange,
           col.regions=cols, rez=c(p$pres,p$pres) )
       }
@@ -157,7 +157,7 @@
       K = NULL
       nreg = length(p$regions)
       for (r in 1:nreg ){
-        aoi = emgis::polygon_inside(x=bs[ , c("plon", "plat")], region=p$regions[r], planar=T)
+        aoi = stmdat::polygon_inside(x=bs[ , c("plon", "plat")], region=p$regions[r], planar=T)
         aoi = intersect( aoi, which( bs$plon > 250 ) )
         out = matrix( NA, nrow=p$ny, ncol=3) 
         
@@ -204,14 +204,14 @@
     if (DS =="habitat.temperatures") {
 
       bm = interpolation.db( p=p, DS="biomass" )
-      ps = snowcrab_emei(p=p, DS="output_data", voi=p$selection$name )
+      ps = snowcrab_stm(p=p, DS="output_data", voi=p$selection$name )
 
       temp = ps$t * bm$h
 
       K = NULL
       nreg = length(p$regions)
       for (r in 1:nreg ){
-        aoi = emgis::polygon_inside(x=bs[ , c("plon", "plat")], region=p$regions[r], planar=T)
+        aoi = stmdat::polygon_inside(x=bs[ , c("plon", "plat")], region=p$regions[r], planar=T)
         aoi = intersect( aoi, which( bs$plon > 250 ) )
         out = matrix( NA, nrow=p$ny, ncol=2) 
         

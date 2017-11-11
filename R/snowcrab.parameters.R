@@ -15,7 +15,7 @@ snowcrab.parameters = function( p=NULL, DS="default", year.assessment=NULL, varn
 
     p$libs = c( p$libs, suppressMessages( RLibrary( rlibs ) ) )
     p$libs = c( p$libs, suppressMessages( bioLibrary (
-      "emenv", "bio.taxonomy", "emei", "emgis",  "netmensuration", 
+      "stmenv", "bio.taxonomy", "stm", "stmdat",  "netmensuration", 
       "bio.groundfish", 
       "bio.snowcrab" ) ) ) 
     p$libs = unique( p$libs )
@@ -67,8 +67,8 @@ snowcrab.parameters = function( p=NULL, DS="default", year.assessment=NULL, varn
     p$recode.data = TRUE
 
     if (!exists("clusters", p)) p$clusters = rep("localhost", detectCores() )
-    if (!exists("varstomodel", p))    p$varstomodel   = emgis::variable.list.expand("all.to.model")
-    if (!exists("vars.to.model", p))  p$vars.to.model = emgis::variable.list.expand("all.to.model") # not sure why we have vars.to.model and vartomodel ... clean this up :: TODO
+    if (!exists("varstomodel", p))    p$varstomodel   = stmdat::variable.list.expand("all.to.model")
+    if (!exists("vars.to.model", p))  p$vars.to.model = stmdat::variable.list.expand("all.to.model") # not sure why we have vars.to.model and vartomodel ... clean this up :: TODO
 
     p$habitat.threshold.quantile = 0.05 # quantile at which to consider zero-valued abundance
     p$threshold.distance = 5 # predict no farther than this distance km from survey stations
@@ -76,11 +76,11 @@ snowcrab.parameters = function( p=NULL, DS="default", year.assessment=NULL, varn
   }
 
 
-  if (DS=="emei") {
+  if (DS=="stm") {
 
-    if (!("emei" %in% p$libs)) {
-      RLibrary( "emei" )
-      p$libs = c( p$libs, "emei" )  # required for parallel processing
+    if (!("stm" %in% p$libs)) {
+      RLibrary( "stm" )
+      p$libs = c( p$libs, "stm" )  # required for parallel processing
     }
     
     if (!exists("storage.backend", p)) p$storage.backend="bigmemory.ram"
@@ -88,14 +88,14 @@ snowcrab.parameters = function( p=NULL, DS="default", year.assessment=NULL, varn
 
     if (!exists("boundary", p)) p$boundary = FALSE 
     if (!exists("depth.filter", p)) p$depth.filter = 0 # depth (m) stats locations with elevation > 0 m as being on land (and so ignore)
-    if (!exists("emei_quantile_bounds", p)) p$emei_quantile_bounds = c(0.025, 0.975) # remove these extremes in interpolations
+    if (!exists("stm_quantile_bounds", p)) p$stm_quantile_bounds = c(0.025, 0.975) # remove these extremes in interpolations
     
-    if (!exists("emei_rsquared_threshold", p)) p$emei_rsquared_threshold = 0.2 # lower threshold
-    if (!exists("emei_distance_statsgrid", p)) p$emei_distance_statsgrid = 3 # resolution (km) of data aggregation (i.e. generation of the ** statistics ** )
-    if (!exists("emei_distance_prediction", p)) p$emei_distance_prediction = p$emei_distance_statsgrid*0.75  # this is a half window km
-    if (!exists("emei_distance_scale", p)) p$emei_distance_scale = 50 # km ... approx guess of 95% AC range 
-    if (!exists("emei_distance_min", p)) p$emei_distance_min = 2 
-    if (!exists("emei_distance_max", p)) p$emei_distance_max = 65
+    if (!exists("stm_rsquared_threshold", p)) p$stm_rsquared_threshold = 0.2 # lower threshold
+    if (!exists("stm_distance_statsgrid", p)) p$stm_distance_statsgrid = 3 # resolution (km) of data aggregation (i.e. generation of the ** statistics ** )
+    if (!exists("stm_distance_prediction", p)) p$stm_distance_prediction = p$stm_distance_statsgrid*0.75  # this is a half window km
+    if (!exists("stm_distance_scale", p)) p$stm_distance_scale = 50 # km ... approx guess of 95% AC range 
+    if (!exists("stm_distance_min", p)) p$stm_distance_min = 2 
+    if (!exists("stm_distance_max", p)) p$stm_distance_max = 65
   
     if (!exists("n.min", p)) p$n.min = 120 # n.min/n.max changes with resolution must be more than the number of knots/edf
     # min number of data points req before attempting to model timeseries in a localized space
@@ -112,82 +112,82 @@ snowcrab.parameters = function( p=NULL, DS="default", year.assessment=NULL, varn
     # additional variable to extract from indicators.db for inputs
     p$indicators.variables = list()
     for (id in c("speciescomposition", "speciesarea", "sizespectrum", "condition", "metabolism", "biochem") ) {
-      pz = emgis::indicators.parameters( p=p, DS=id )
+      pz = stmdat::indicators.parameters( p=p, DS=id )
       pz_vars = intersect( pz$varstomodel, p$variables$COV )
       if (length(pz_vars) > 0) p$indicators.variables[[id]] = pz_vars 
     }
 
-    if (!exists("emei_variogram_method", p)) p$emei_variogram_method = "fast"
-    if (!exists("emei_local_modelengine", p)) p$emei_local_modelengine ="gam"
-    if (!exists("emei_global_modelengine", p)) p$emei_global_modelengine ="gam"
+    if (!exists("stm_variogram_method", p)) p$stm_variogram_method = "fast"
+    if (!exists("stm_local_modelengine", p)) p$stm_local_modelengine ="gam"
+    if (!exists("stm_global_modelengine", p)) p$stm_global_modelengine ="gam"
 
-    if (!exists("emei_global_family", p)) p$emei_global_family = gaussian(link=log)
+    if (!exists("stm_global_family", p)) p$stm_global_family = gaussian(link=log)
 
     # using covariates as a first pass essentially makes it ~ kriging with external drift .. no time or space here
-    if (!exists("emei_global_modelformula", p)) p$emei_global_modelformula = formula( paste( 
+    if (!exists("stm_global_modelformula", p)) p$stm_global_modelformula = formula( paste( 
       varname, ' ~ s(t, k=3, bs="ts") + s(tmean.climatology, k=3, bs="ts") + s(tsd.climatology, k=3, bs="ts")  ', 
       ' + s( log(z), k=3, bs="ts") + s( log(dZ), k=3, bs="ts") + s( log(ddZ), k=3, bs="ts") ',
       ' + s( log(mr), k=3, bs="ts") + s( Npred, k=3, bs="ts") + s( smr, k=3, bs="ts")  ',
       ' + s(log.substrate.grainsize, k=3, bs="ts") + s(ca1, k=3, bs="ts") + s(ca2, k=3, bs="ts")   ' ))  # no space 
 
-    if (p$emei_local_modelengine =="twostep") {
+    if (p$stm_local_modelengine =="twostep") {
 
       # this is the time component (mostly) .. space enters as a rough constraint 
-      if (!exists("emei_local_modelformula", p))  p$emei_local_modelformula = formula( paste(
+      if (!exists("stm_local_modelformula", p))  p$stm_local_modelformula = formula( paste(
         varname, '~ s(yr, k=10, bs="ts") + s(cos.w, k=3, bs="ts") + s(sin.w, k=3, bs="ts") ', 
           ' + s(cos.w, sin.w, yr, bs="ts", k=20) ',
           ' + s(plon, k=3, bs="ts") + s(plat, k=3, bs="ts") + s(plon, plat, k=20, bs="ts") ' ) )
-      if (!exists("emei_local_model_distanceweighted", p)) p$emei_local_model_distanceweighted = TRUE
+      if (!exists("stm_local_model_distanceweighted", p)) p$stm_local_model_distanceweighted = TRUE
 
       # this is the spatial component
-      # p$emei_twostep_space = "spatial.process"
-      # p$emei_twostep_space = "fft"
-      # p$emei_twostep_space = "tps"
-      if (!exists("emei_twostep_space", p))  p$emei_twostep_space = "krige"
-      # if (!exists("emei_twostep_space", p))  p$emei_twostep_space = "tps"
-      if (!exists("emei_gam_optimizer", p)) p$emei_gam_optimizer=c("outer", "bfgs") 
+      # p$stm_twostep_space = "spatial.process"
+      # p$stm_twostep_space = "fft"
+      # p$stm_twostep_space = "tps"
+      if (!exists("stm_twostep_space", p))  p$stm_twostep_space = "krige"
+      # if (!exists("stm_twostep_space", p))  p$stm_twostep_space = "tps"
+      if (!exists("stm_gam_optimizer", p)) p$stm_gam_optimizer=c("outer", "bfgs") 
 
-    }  else if (p$emei_local_modelengine == "habitat") {
+    }  else if (p$stm_local_modelengine == "habitat") {
 
-      p$emei_global_family = binomial( link=log )
+      p$stm_global_family = binomial( link=log )
       
-      if (!exists("emei_local_modelformula", p))  p$emei_local_modelformula = formula( paste(
+      if (!exists("stm_local_modelformula", p))  p$stm_local_modelformula = formula( paste(
         varname, '~ s(yr, k=10, bs="ts") + s(cos.w, k=3, bs="ts") + s(sin.w, k=3, bs="ts") ', 
           ' + s(cos.w, sin.w, yr, bs="ts", k=10)  ',
           ' + s(plon, k=3, bs="ts") + s(plat, k=3, bs="ts") + s(plon, plat, k=10, bs="ts") ' ) )
 
-      if (!exists("emei_local_model_distanceweighted", p)) p$emei_local_model_distanceweighted = TRUE
-      # if (!exists("emei_gam_optimizer", p)) p$emei_gam_optimizer="perf"
-      if (!exists("emei_gam_optimizer", p)) p$emei_gam_optimizer=c("outer", "bfgs") 
+      if (!exists("stm_local_model_distanceweighted", p)) p$stm_local_model_distanceweighted = TRUE
+      # if (!exists("stm_gam_optimizer", p)) p$stm_gam_optimizer="perf"
+      if (!exists("stm_gam_optimizer", p)) p$stm_gam_optimizer=c("outer", "bfgs") 
     
-    }  else if (p$emei_local_modelengine == "gam") {
+    }  else if (p$stm_local_modelengine == "gam") {
 
-      if (!exists("emei_local_modelformula", p))  p$emei_local_modelformula = formula( paste(
+      if (!exists("stm_local_modelformula", p))  p$stm_local_modelformula = formula( paste(
         varname, '~ s(yr, bs="ts") + s(cos.w, k=3, bs="ts") + s(sin.w, k=3, bs="ts") ', 
           ' + s(cos.w, sin.w, yr, bs="ts", k=25)  ',
           ' + s(plon, k=3, bs="ts") + s(plat, k=3, bs="ts") + s(plon, plat, k=25, bs="ts") ' ) )
 
-      if (!exists("emei_local_model_distanceweighted", p)) p$emei_local_model_distanceweighted = TRUE
-      # if (!exists("emei_gam_optimizer", p)) p$emei_gam_optimizer="perf"
-      if (!exists("emei_gam_optimizer", p)) p$emei_gam_optimizer=c("outer", "bfgs") 
+      if (!exists("stm_local_model_distanceweighted", p)) p$stm_local_model_distanceweighted = TRUE
+      # if (!exists("stm_gam_optimizer", p)) p$stm_gam_optimizer="perf"
+      if (!exists("stm_gam_optimizer", p)) p$stm_gam_optimizer=c("outer", "bfgs") 
     
-    }  else if (p$emei_local_modelengine == "bayesx") {
+    }  else if (p$stm_local_modelengine == "bayesx") {
  
       # bayesx families are specified as characters, this forces it to pass as is and 
-      # then the next does the transformation internal to the "emei__bayesx"
+      # then the next does the transformation internal to the "stm__bayesx"
 
       # alternative models .. testing .. problem is that SE of fit is not accessible?
-      p$emei_local_modelformula = formula( paste( 
+      p$stm_local_modelformula = formula( paste( 
         varname, ' ~ sx(yr, bs="ps") + sx(cos.w, bs="ps") + s(sin.w, bs="ps") +s(z, bs="ps") + sx(plon, bs="ps") + sx(plat,  bs="ps")', 
           ' + sx(plon, plat, cos.w, sin.w, yr, bs="te") ' )
           # te is tensor spline
       )
-      p$emei_local_model_bayesxmethod="MCMC"
-      p$emei_local_model_distanceweighted = FALSE
+      p$stm_local_model_bayesxmethod="MCMC"
+      p$stm_local_model_distanceweighted = FALSE
     
     } else {
     
-      message( "The specified emei_local_modelengine is not tested/supported ... you are on your own ;) ..." )
+      message( "The specified stm_local_modelengine is not tested/supported ... you are on your own ;) ..." )
 
     }
 

@@ -11,7 +11,7 @@ proportion.soft = function(odb, region, year) {
 
 # Remove CW's outside norms and remove production (pre-sorted) samples
   i = which( odb$sex==male & odb$fishyr==year )  # --- fishing year is used and not the actual year caught
-  r = emgis::polygon_inside(x=odb, region=emgis::polygon_internal_code(region), planar=F)
+  r = stmdat::polygon_inside(x=odb, region=stmdat::polygon_internal_code(region), planar=F)
 
   c.r.y = unique( intersect (r, i) )
 

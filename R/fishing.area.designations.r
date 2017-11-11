@@ -4,9 +4,9 @@
     if (type=="lonlat") planar=F
     if (type=="planar") planar=T
 
-    icfa4x = emgis::polygon_inside( x, "cfa4x", planar=planar)
-    icfanorth = emgis::polygon_inside( x, "cfanorth", planar=planar)
-    icfasouth = emgis::polygon_inside( x, "cfasouth", planar=planar)
+    icfa4x = stmdat::polygon_inside( x, "cfa4x", planar=planar)
+    icfanorth = stmdat::polygon_inside( x, "cfanorth", planar=planar)
+    icfasouth = stmdat::polygon_inside( x, "cfasouth", planar=planar)
     G = rep( NA, nrow( x ) )
     G[icfa4x] = "cfa4x"
     G[icfanorth] = "cfanorth"

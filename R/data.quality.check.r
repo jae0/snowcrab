@@ -22,7 +22,7 @@
       nregions = length(p$regions)
       res = matrix( NA, nrow=nyears, ncol=nregions)
       for (r in 1:nregions) {
-        nr = emgis::polygon_inside(x=set, region=emgis::polygon_internal_code(p$regions[r]), planar=F)
+        nr = stmdat::polygon_inside(x=set, region=stmdat::polygon_internal_code(p$regions[r]), planar=F)
         for (y in 1:nyears) {
           ni = which( set$yr==years[y] )
           res[y,r] = length( unique( intersect (nr, ni) ) )
@@ -40,7 +40,7 @@
     if(type=="position") {
       set <- snowcrab.db( DS="setInitial" )
       plot(set$lon, set$lat)
-      inside = emgis::polygon_inside( set[, c("lon", "lat") ], "cfaall")
+      inside = stmdat::polygon_inside( set[, c("lon", "lat") ], "cfaall")
       if (length (inside) == nrow(set) ) {
         print("All data are within positional bounds")
         return (NULL)
