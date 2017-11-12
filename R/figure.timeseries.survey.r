@@ -18,9 +18,9 @@
 
     if(missing(variables)){
       variables =  c( 
-         stmdat::variable.list.expand("all.to.model"), 
-         stmdat::variable.list.expand("snowcrab.cw"), 
-         stmdat::variable.list.expand("physical"),
+         emaf::variable.list.expand("all.to.model"), 
+         emaf::variable.list.expand("snowcrab.cw"), 
+         emaf::variable.list.expand("physical"),
          'sexratio.mat','sexratio.imm','sexratio.all' 
       )
       variables = intersect( variables, unique(tdb$variable))
@@ -35,12 +35,12 @@
     tdb$region = factor(tdb$region, levels=areas, labels =regions)
 
     #  load transformation tables associated with a given variable
-    tl = stmdat::lookup.datatransformation('snowcrab')
+    tl = emaf::lookup.datatransformation('snowcrab')
 
     if (file.exists( tl$repository) ) {
       load (tl$repository)
     } else {
-      REPOS = stmdat::recode.variable.initiate.db ( db )
+      REPOS = emaf::recode.variable.initiate.db ( db )
     }
     tvars = REPOS$varname[which(REPOS$transform=='log10')]
 

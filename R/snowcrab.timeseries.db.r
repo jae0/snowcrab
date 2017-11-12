@@ -18,7 +18,7 @@ snowcrab.timeseries.db = function( DS="default", p=NULL, regions=c( "cfa4x", "cf
     for (a in regions) {
       dat[,a] = NA
       ai = NULL
-      ai = stmdat::polygon_inside(dat, a)
+      ai = emaf::polygon_inside(dat, a)
       if (length(ai) > 0) dat[ai,a] = a
     }
     tsdata = expand.grid( region=regions, year=yrs, variable=vn, stringsAsFactors=FALSE, KEEP.OUT.ATTRS=FALSE )
@@ -34,7 +34,7 @@ snowcrab.timeseries.db = function( DS="default", p=NULL, regions=c( "cfa4x", "cf
       v = vn[vi]
       if ( !is.numeric( dat[,v] ) ) next()
       print( paste( vi, v) )
-      XX = stmdat::variable.recode( dat[,v], v, direction="forward", db="snowcrab" ) # transform variables where necessary
+      XX = emaf::variable.recode( dat[,v], v, direction="forward", db="snowcrab" ) # transform variables where necessary
       for (r in regions) {
         ri = which( dat[,r] == r)
         if (length(ri)==0) next()
@@ -44,18 +44,18 @@ snowcrab.timeseries.db = function( DS="default", p=NULL, regions=c( "cfa4x", "cf
         XXsd = tapply( XX[ri], INDEX=dat$year[ri], FUN=sd, na.rm=TRUE ) 
         tsi = which(tsdata$variable==v & tsdata$region==r)
 
-        tsdata[ tsi,"mean"] = stmdat::variable.recode (XXmean[ tsdata[ tsi, "year"] ], v, direction="backward", db="snowcrab" )
+        tsdata[ tsi,"mean"] = emaf::variable.recode (XXmean[ tsdata[ tsi, "year"] ], v, direction="backward", db="snowcrab" )
         tsdata[ tsi,"n"] = XXn[ tsdata[ tsi, "year"] ]
-        tsdata[ tsi,"se"] = stmdat::variable.recode (XXse[ tsdata[ tsi, "year"] ], v, direction="backward", db="snowcrab" )
-        tsdata[ tsi,"sd"] = stmdat::variable.recode (XXsd[ tsdata[ tsi, "year"] ], v, direction="backward", db="snowcrab" )
+        tsdata[ tsi,"se"] = emaf::variable.recode (XXse[ tsdata[ tsi, "year"] ], v, direction="backward", db="snowcrab" )
+        tsdata[ tsi,"sd"] = emaf::variable.recode (XXsd[ tsdata[ tsi, "year"] ], v, direction="backward", db="snowcrab" )
         XXlb = XXmean - XXse* 1.96
         XXub = XXmean + XXse* 1.96
         if(sdci){
           XXlb = XXmean - XXsd* 1.96
           XXub = XXmean + XXsd* 1.96
         }
-        tsdata[ tsi,"lb"] = stmdat::variable.recode (XXlb[ tsdata[ tsi, "year"] ], v, direction="backward", db="snowcrab" )
-        tsdata[ tsi,"ub"] = stmdat::variable.recode (XXub[ tsdata[ tsi, "year"] ], v, direction="backward", db="snowcrab" )
+        tsdata[ tsi,"lb"] = emaf::variable.recode (XXlb[ tsdata[ tsi, "year"] ], v, direction="backward", db="snowcrab" )
+        tsdata[ tsi,"ub"] = emaf::variable.recode (XXub[ tsdata[ tsi, "year"] ], v, direction="backward", db="snowcrab" )
       }
     }
     tsdata$year = as.numeric( tsdata$year)
@@ -87,7 +87,7 @@ snowcrab.timeseries.db = function( DS="default", p=NULL, regions=c( "cfa4x", "cf
     for (a in regions) {
       dat[,a] = NA
       ai = NULL
-      ai = stmdat::polygon_inside(dat, a) 
+      ai = emaf::polygon_inside(dat, a) 
       if (length(ai) > 0) dat[ai,a] = a
     }
 
@@ -104,7 +104,7 @@ snowcrab.timeseries.db = function( DS="default", p=NULL, regions=c( "cfa4x", "cf
       v = vn[vi]
       if ( !is.numeric( dat[,v] ) ) next()
       print( paste( vi, v) )
-      XX = stmdat::variable.recode( dat[,v], v, direction="forward", db="snowcrab" ) # transform variables where necessary
+      XX = emaf::variable.recode( dat[,v], v, direction="forward", db="snowcrab" ) # transform variables where necessary
       for (r in regions) {
         ri = which( dat[,r] == r)
         if (length(ri)==0) next()
@@ -114,18 +114,18 @@ snowcrab.timeseries.db = function( DS="default", p=NULL, regions=c( "cfa4x", "cf
         XXsd = tapply( XX[ri], INDEX=dat$year[ri], FUN=sd, na.rm=TRUE ) 
         tsi = which(tsdata$variable==v & tsdata$region==r)
 
-        tsdata[ tsi,"mean"] = stmdat::variable.recode (XXmean[ tsdata[ tsi, "year"] ], v, direction="backward", db="snowcrab" )
+        tsdata[ tsi,"mean"] = emaf::variable.recode (XXmean[ tsdata[ tsi, "year"] ], v, direction="backward", db="snowcrab" )
         tsdata[ tsi,"n"] = XXn[ tsdata[ tsi, "year"] ]
-        tsdata[ tsi,"se"] = stmdat::variable.recode (XXse[ tsdata[ tsi, "year"] ], v, direction="backward", db="snowcrab" )
-        tsdata[ tsi,"sd"] = stmdat::variable.recode (XXsd[ tsdata[ tsi, "year"] ], v, direction="backward", db="snowcrab" )
+        tsdata[ tsi,"se"] = emaf::variable.recode (XXse[ tsdata[ tsi, "year"] ], v, direction="backward", db="snowcrab" )
+        tsdata[ tsi,"sd"] = emaf::variable.recode (XXsd[ tsdata[ tsi, "year"] ], v, direction="backward", db="snowcrab" )
         XXlb = XXmean - XXse* 1.96
         XXub = XXmean + XXse* 1.96
         if(sdci){
           XXlb = XXmean - XXsd* 1.96 # confidence intervals for population instead of mean
           XXub = XXmean + XXsd* 1.96
         }
-        tsdata[ tsi,"lb"] = stmdat::variable.recode (XXlb[ tsdata[ tsi, "year"] ], v, direction="backward", db="snowcrab" )
-        tsdata[ tsi,"ub"] = stmdat::variable.recode (XXub[ tsdata[ tsi, "year"] ], v, direction="backward", db="snowcrab" )
+        tsdata[ tsi,"lb"] = emaf::variable.recode (XXlb[ tsdata[ tsi, "year"] ], v, direction="backward", db="snowcrab" )
+        tsdata[ tsi,"ub"] = emaf::variable.recode (XXub[ tsdata[ tsi, "year"] ], v, direction="backward", db="snowcrab" )
       }
     }
     tsdata$year = as.numeric( tsdata$year)
@@ -162,7 +162,7 @@ snowcrab.timeseries.db = function( DS="default", p=NULL, regions=c( "cfa4x", "cf
     for (a in regions) {
       dat[,a] = NA
       ai = NULL
-      ai = stmdat::polygon_inside(dat, a)
+      ai = emaf::polygon_inside(dat, a)
       if (length(ai) > 0) dat[ai,a] = a
     }
 
@@ -178,7 +178,7 @@ snowcrab.timeseries.db = function( DS="default", p=NULL, regions=c( "cfa4x", "cf
       v = vn[vi]
       if ( !is.numeric( dat[,v] ) ) next()
       print( paste( vi, v) )
-      XX = stmdat::variable.recode( dat[,v], v, direction="forward", db="snowcrab" ) # transform variables where necessary
+      XX = emaf::variable.recode( dat[,v], v, direction="forward", db="snowcrab" ) # transform variables where necessary
       for (r in regions) {
         ri = which( dat[,r] == r)
         if (length(ri)==0) next()
@@ -187,13 +187,13 @@ snowcrab.timeseries.db = function( DS="default", p=NULL, regions=c( "cfa4x", "cf
         XXse = tapply( XX[ri], INDEX=dat$year[ri], FUN=sd, na.rm=TRUE ) / XXn
         tsi = which(tsdata$variable==v & tsdata$region==r)
 
-        tsdata[ tsi,"mean"] = stmdat::variable.recode (XXmean[ tsdata[ tsi, "year"] ], v, direction="backward", db="snowcrab" )
+        tsdata[ tsi,"mean"] = emaf::variable.recode (XXmean[ tsdata[ tsi, "year"] ], v, direction="backward", db="snowcrab" )
         tsdata[ tsi,"n"] = XXn[ tsdata[ tsi, "year"] ]
-        tsdata[ tsi,"se"] = stmdat::variable.recode (XXse[ tsdata[ tsi, "year"] ], v, direction="backward", db="snowcrab" )
+        tsdata[ tsi,"se"] = emaf::variable.recode (XXse[ tsdata[ tsi, "year"] ], v, direction="backward", db="snowcrab" )
         XXlb = XXmean - XXse* 1.96
         XXub = XXmean + XXse* 1.96
-        tsdata[ tsi,"lb"] = stmdat::variable.recode (XXlb[ tsdata[ tsi, "year"] ], v, direction="backward", db="snowcrab" )
-        tsdata[ tsi,"ub"] = stmdat::variable.recode (XXub[ tsdata[ tsi, "year"] ], v, direction="backward", db="snowcrab" )
+        tsdata[ tsi,"lb"] = emaf::variable.recode (XXlb[ tsdata[ tsi, "year"] ], v, direction="backward", db="snowcrab" )
+        tsdata[ tsi,"ub"] = emaf::variable.recode (XXub[ tsdata[ tsi, "year"] ], v, direction="backward", db="snowcrab" )
       }
     }
     tsdata$year = as.numeric( tsdata$year)
@@ -227,7 +227,7 @@ snowcrab.timeseries.db = function( DS="default", p=NULL, regions=c( "cfa4x", "cf
     for (a in regions) {
       dat[,a] = NA
       ai = NULL
-      ai = stmdat::polygon_inside(dat, a)
+      ai = emaf::polygon_inside(dat, a)
       if (length(ai) > 0) dat[ai,a] = a
     }
 
@@ -243,7 +243,7 @@ snowcrab.timeseries.db = function( DS="default", p=NULL, regions=c( "cfa4x", "cf
       v = vn[vi]
       if ( !is.numeric( dat[,v] ) ) next()
       print( paste( vi, v) )
-      XX = stmdat::variable.recode( dat[,v], v, direction="forward", db="snowcrab" ) # transform variables where necessary
+      XX = emaf::variable.recode( dat[,v], v, direction="forward", db="snowcrab" ) # transform variables where necessary
       for (r in regions) {
         ri = which( dat[,r] == r)
         if (length(ri)==0) next()
@@ -252,13 +252,13 @@ snowcrab.timeseries.db = function( DS="default", p=NULL, regions=c( "cfa4x", "cf
         XXse = tapply( XX[ri], INDEX=dat$year[ri], FUN=sd, na.rm=TRUE ) / XXn
         tsi = which(tsdata$variable==v & tsdata$region==r)
 
-        tsdata[ tsi,"mean"] = stmdat::variable.recode (XXmean[ tsdata[ tsi, "year"] ], v, direction="backward", db="snowcrab" )
+        tsdata[ tsi,"mean"] = emaf::variable.recode (XXmean[ tsdata[ tsi, "year"] ], v, direction="backward", db="snowcrab" )
         tsdata[ tsi,"n"] = XXn[ tsdata[ tsi, "year"] ]
-        tsdata[ tsi,"se"] = stmdat::variable.recode (XXse[ tsdata[ tsi, "year"] ], v, direction="backward", db="snowcrab" )
+        tsdata[ tsi,"se"] = emaf::variable.recode (XXse[ tsdata[ tsi, "year"] ], v, direction="backward", db="snowcrab" )
         XXlb = XXmean - XXse* 1.96
         XXub = XXmean + XXse* 1.96
-        tsdata[ tsi,"lb"] = stmdat::variable.recode (XXlb[ tsdata[ tsi, "year"] ], v, direction="backward", db="snowcrab" )
-        tsdata[ tsi,"ub"] = stmdat::variable.recode (XXub[ tsdata[ tsi, "year"] ], v, direction="backward", db="snowcrab" )
+        tsdata[ tsi,"lb"] = emaf::variable.recode (XXlb[ tsdata[ tsi, "year"] ], v, direction="backward", db="snowcrab" )
+        tsdata[ tsi,"ub"] = emaf::variable.recode (XXub[ tsdata[ tsi, "year"] ], v, direction="backward", db="snowcrab" )
       }
     }
     tsdata$year = as.numeric( tsdata$year)

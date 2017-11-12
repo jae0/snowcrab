@@ -8,7 +8,7 @@
     if (years=="all") years = sort( unique( odb$fishyr ) )
 #years=2014
     for (reg in regions) {
-      r = stmdat::polygon_inside(x=odb, region=stmdat::polygon_internal_code(reg), planar=F)
+      r = emaf::polygon_inside(x=odb, region=emaf::polygon_internal_code(reg), planar=F)
       for (y in years) {
         # remove production (pre-sorted) samples in historical data
         #if(y < 2004) odb = odb[which(odb$prodcd_id=="0"),]

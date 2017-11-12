@@ -38,7 +38,7 @@ Imports:
   sp, 
   vegan, 
   stmenv,
-  stmdat, 
+  emaf, 
   bio.groundfish,
   netmensuration,
   stm

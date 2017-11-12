@@ -19,14 +19,14 @@
 #Substrate and bathymetry can be run (as per above) if suspect significant changes in one or both of these datasets
 
 #BZ 2017 these lines below can directly run the indicators without goint to run individual scripts
-#  system.file(package="stmdat", "scripts", "01.indicators.r")  
-#  system.file(package="stmdat", "scripts", "02.biochem.r") 
-#  system.file(package="stmdat", "scripts", "02.condition.r") 
-#  system.file(package="stmdat", "scripts", "02.landings.r") 
-#  system.file(package="stmdat", "scripts", "02.metabolism.r") 
-#  system.file(package="stmdat", "scripts", "02.sizespectrum.r") 
-#  system.file(package="stmdat", "scripts", "02.speciesarea.r")
-#  system.file(package="stmdat", "scripts", "02.*.speciescomposition") 
+#  system.file(package="emaf", "scripts", "01.indicators.r")  
+#  system.file(package="emaf", "scripts", "02.biochem.r") 
+#  system.file(package="emaf", "scripts", "02.condition.r") 
+#  system.file(package="emaf", "scripts", "02.landings.r") 
+#  system.file(package="emaf", "scripts", "02.metabolism.r") 
+#  system.file(package="emaf", "scripts", "02.sizespectrum.r") 
+#  system.file(package="emaf", "scripts", "02.speciesarea.r")
+#  system.file(package="emaf", "scripts", "02.*.speciescomposition") 
 
 # 1. Define some additional starting parameters for debugging
 #    choose various over-rides: these are initially defined in parameters.r

@@ -15,7 +15,7 @@ snowcrab.parameters = function( p=NULL, DS="default", year.assessment=NULL, varn
 
     p$libs = c( p$libs, suppressMessages( RLibrary( rlibs ) ) )
     p$libs = c( p$libs, suppressMessages( bioLibrary (
-      "stmenv", "bio.taxonomy", "stm", "stmdat",  "netmensuration", 
+      "stmenv", "bio.taxonomy", "stm", "emaf",  "netmensuration", 
       "bio.groundfish", 
       "bio.snowcrab" ) ) ) 
     p$libs = unique( p$libs )
@@ -67,8 +67,8 @@ snowcrab.parameters = function( p=NULL, DS="default", year.assessment=NULL, varn
     p$recode.data = TRUE
 
     if (!exists("clusters", p)) p$clusters = rep("localhost", detectCores() )
-    if (!exists("varstomodel", p))    p$varstomodel   = stmdat::variable.list.expand("all.to.model")
-    if (!exists("vars.to.model", p))  p$vars.to.model = stmdat::variable.list.expand("all.to.model") # not sure why we have vars.to.model and vartomodel ... clean this up :: TODO
+    if (!exists("varstomodel", p))    p$varstomodel   = emaf::variable.list.expand("all.to.model")
+    if (!exists("vars.to.model", p))  p$vars.to.model = emaf::variable.list.expand("all.to.model") # not sure why we have vars.to.model and vartomodel ... clean this up :: TODO
 
     p$habitat.threshold.quantile = 0.05 # quantile at which to consider zero-valued abundance
     p$threshold.distance = 5 # predict no farther than this distance km from survey stations
@@ -112,7 +112,7 @@ snowcrab.parameters = function( p=NULL, DS="default", year.assessment=NULL, varn
     # additional variable to extract from indicators.db for inputs
     p$indicators.variables = list()
     for (id in c("speciescomposition", "speciesarea", "sizespectrum", "condition", "metabolism", "biochem") ) {
-      pz = stmdat::indicators.parameters( p=p, DS=id )
+      pz = emaf::indicators.parameters( p=p, DS=id )
       pz_vars = intersect( pz$varstomodel, p$variables$COV )
       if (length(pz_vars) > 0) p$indicators.variables[[id]] = pz_vars 
     }

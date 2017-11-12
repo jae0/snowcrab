@@ -3,7 +3,7 @@ map.set.information = function(p, outdir, variables,mapyears, plot.method="level
 
     set = snowcrab.db( DS="set.biologicals")
     if(missing(variables)){
-      variables = stmdat::variable.list.expand("all.data")
+      variables = emaf::variable.list.expand("all.data")
       variables = intersect( variables, names(set) )
     }
 

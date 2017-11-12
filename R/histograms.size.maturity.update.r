@@ -74,7 +74,7 @@
       cols = c("blue3", "darkslategray1")
 
       for (a in 1:(ncols)) {
-        set0 = set[stmdat::polygon_inside(set, areas[a]),]
+        set0 = set[emaf::polygon_inside(set, areas[a]),]
         for (y in 1:nrows) {
           set1 = set0[ which(set0$yr==year[y] ), ]
           sids = sort(unique(set1$sid))
@@ -149,7 +149,7 @@
       cols = c("firebrick1", "lightpink" )
 
       for (a in 1:(ncols)) {
-        set0 = set[stmdat::polygon_inside(set, areas[a]),]
+        set0 = set[emaf::polygon_inside(set, areas[a]),]
         for (y in 1:nrows) {
           set1 = set0[ which(set0$yr==year[y]) , ]
           sids = sort(unique(set1$sid))

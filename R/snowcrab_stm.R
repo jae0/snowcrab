@@ -19,7 +19,7 @@ snowcrab_stm = function( ip=NULL, DS=NULL, p=NULL, voi=NULL, year=NULL, ret=NULL
   # --------------------------
 
   if (DS %in% c("input_data") ) {
-    set = stmdat::survey.db( p=p, DS="set.filter" ) # mature male > 95 mm 
+    set = emaf::survey.db( p=p, DS="set.filter" ) # mature male > 95 mm 
  
     if ( p$selection$type=="abundance") {
       # snowcrab survey data only
@@ -68,7 +68,7 @@ snowcrab_stm = function( ip=NULL, DS=NULL, p=NULL, voi=NULL, year=NULL, ret=NULL
 
     set = set[ which(set$yr %in% p$yrs ), ]
 
-    coast = stmdat::coastline.db( p=p, DS="mapdata.coastPolygon" )
+    coast = emaf::coastline.db( p=p, DS="mapdata.coastPolygon" )
     coast = spTransform( coast, CRS("+proj=longlat +datum=WGS84") )
     setcoord = SpatialPoints( as.matrix( set[, c("lon", "lat")]),  proj4string=CRS("+proj=longlat +datum=WGS84") )
     inside = sp::over( setcoord, coast )
@@ -126,8 +126,8 @@ snowcrab_stm = function( ip=NULL, DS=NULL, p=NULL, voi=NULL, year=NULL, ret=NULL
 
     # additional indicators.db variables
     for (iv in names(p$indicators.variables)) {
-      p0 = stmdat::indicators.parameters( p=p, DS="default", year.assessment=p$year.assessment )
-      p0 = stmdat::indicators.parameters( p=p0, DS=iv  )
+      p0 = emaf::indicators.parameters( p=p, DS="default", year.assessment=p$year.assessment )
+      p0 = emaf::indicators.parameters( p=p0, DS=iv  )
       p0 = stm::spatial_parameters( p=p0, type=p$spatial.domain ) # return to correct domain
       vn = p0$indicators.variables[[iv]]
       sn = indicators.lookup( p=p0, DS="spatial.annual", locsmap=locsmap, timestamp=set[,"timestamp"], 
@@ -182,7 +182,7 @@ snowcrab_stm = function( ip=NULL, DS=NULL, p=NULL, voi=NULL, year=NULL, ret=NULL
     names(PS)[ names(PS)=="amplitude"] ="tamplitude" 
 
     # make years coherent for temperatures
-    p0 = stmdat::indicators.parameters(p=p, year.assessment=p$year.assessment )
+    p0 = emaf::indicators.parameters(p=p, year.assessment=p$year.assessment )
     yr_index = match( p$yrs, p0$yrs )
     yg = which(is.finite(yr_index))
     ym = which(is.na(yr_index))
@@ -199,8 +199,8 @@ snowcrab_stm = function( ip=NULL, DS=NULL, p=NULL, voi=NULL, year=NULL, ret=NULL
 
     # indicators.db variables 
     for (iv in names(p$indicators.variables)) {
-      p0 = stmdat::indicators.parameters( p=p, DS="default", year.assessment=p$year.assessment )
-      p0 = stmdat::indicators.parameters( p=p0, DS=iv  )
+      p0 = emaf::indicators.parameters( p=p, DS="default", year.assessment=p$year.assessment )
+      p0 = emaf::indicators.parameters( p=p0, DS=iv  )
       p0 = stm::spatial_parameters( p=p0, type=p$spatial.domain ) # return to correct domain
 
       vn = p0$indicators.variables[[iv]]
