@@ -1,7 +1,7 @@
 
 #Welcome to BCFC. Ben’s Clunky Fucking Code! It’s ugly but it works.
   
-  require(emaf_base)
+  require(emaf.base)
   
   if (!exists("year.assessment")) year.assessment=lubridate::year(Sys.Date())
   p = bio.snowcrab::load.environment( year.assessment=year.assessment )
