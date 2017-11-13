@@ -4,7 +4,7 @@
 redo=FALSE
 if(redo) {
 
-  bioLibrary('bio.snowcrab')
+  project.library('bio.snowcrab')
 
   options(stringsAsFactors=F)
   t13 = read.csv(file.path(project.datadirectory('bio.snowcrab'),'data','tagging','OTN_cabotline_detections_2013.csv'),header=T)

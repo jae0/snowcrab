@@ -37,7 +37,7 @@ Imports:
   ROracle,
   sp, 
   vegan, 
-  stmenv,
+  emaf_base,
   emaf, 
   bio.groundfish,
   netmensuration,

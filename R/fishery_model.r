@@ -999,7 +999,7 @@ model {
 
     warning( "TMB method is not yet complete")
 
-    require(stmenv)
+    require(emaf_base)
       
 
     sb = biomass.summary.db(p=p, DS="surplusproduction" )
@@ -1075,7 +1075,7 @@ model {
     rjags::load.module("dic")
     rjags::load.module("glm")
 
-    bioLibrary( "bio.models")
+    project.library( "bio.models")
 
     ###  all data follow this sequence: c("cfanorth", "cfasouth", "cfa4x")
     redo.data=F

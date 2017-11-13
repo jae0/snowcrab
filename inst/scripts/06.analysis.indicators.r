@@ -7,7 +7,7 @@
 
 
 
-	p$libs = unique( c( p$libs, bioLibrary( 
+	p$libs = unique( c( p$libs, project.library( 
     "stm", "parallel", "sorted.ordination", "emaf") ) )
 
   # setwd( project.datadirectory("emaf") )
@@ -141,7 +141,7 @@ loadfunctions("bmvm")  ## mostly complete
 
 
 
-  bioLibrary( "sorted.ordination")
+  project.library( "sorted.ordination")
 
   set = snowcrab.db("set.with.cat")
   allvars = c(

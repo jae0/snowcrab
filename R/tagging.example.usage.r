@@ -1,7 +1,7 @@
 
   tagging.example.usage = function() {
 
-    bioLibrary( "bio.snowcrab" )
+    project.library( "bio.snowcrab" )
 
     marked.file = "tags.1996_2001.csv"
     recaps.file = "recaptures.csv"

@@ -10,6 +10,6 @@ require ("devtools")
 install_github( "jae0/bio.snowcrab" )
 ```
 
-Setup environment as indicated in: https://github.com/jae0/stmenv
+Setup environment as indicated in: https://github.com/jae0/emaf_base
 
 

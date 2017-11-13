@@ -14,8 +14,8 @@ snowcrab.parameters = function( p=NULL, DS="default", year.assessment=NULL, varn
                "boot", "grid", "RColorBrewer",  "spatstat", "rgeos", "bigmemory" ,"numDeriv")
 
     p$libs = c( p$libs, suppressMessages( RLibrary( rlibs ) ) )
-    p$libs = c( p$libs, suppressMessages( bioLibrary (
-      "stmenv", "bio.taxonomy", "stm", "emaf",  "netmensuration", 
+    p$libs = c( p$libs, suppressMessages( project.library (
+      "emaf_base", "bio.taxonomy", "stm", "emaf",  "netmensuration", 
       "bio.groundfish", 
       "bio.snowcrab" ) ) ) 
     p$libs = unique( p$libs )
