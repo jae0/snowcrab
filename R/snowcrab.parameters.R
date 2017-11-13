@@ -6,7 +6,7 @@ snowcrab.parameters = function( p=NULL, DS="default", year.assessment=NULL, varn
   if ( DS=="default") {
 
     p$project.name = "bio.snowcrab"
-    p$project.root = file.path( project.datadirectory( p$project.name ) )
+    p$data_root = file.path( project.datadirectory( p$project.name ) )
     p$project.outputdir = project.datadirectory( p$project.name, "output" ) #required for interpolations and mapping
     
     rlibs = c( "lubridate", "rgdal", "parallel", "sp", "lattice", "fields", "mgcv" , 

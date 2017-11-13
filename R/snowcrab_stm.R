@@ -240,7 +240,7 @@ snowcrab_stm = function( ip=NULL, DS=NULL, p=NULL, voi=NULL, year=NULL, ret=NULL
       # This routine points to this data and also creates 
       # subsets of the data where required, determined by "spatial.domain.subareas" 
       
-      projectdir = file.path(p$project.root, "modelled", voi, p$spatial.domain )
+      projectdir = file.path(p$data_root, "modelled", voi, p$spatial.domain )
       
       if (DS %in% c("predictions")) {
         P = V = NULL
@@ -278,7 +278,7 @@ snowcrab_stm = function( ip=NULL, DS=NULL, p=NULL, voi=NULL, year=NULL, ret=NULL
           p1$wght = fields::setup.image.smooth( nrow=p1$nplons, ncol=p1$nplats, dx=p1$pres, dy=p1$pres, theta=p1$pres, xwidth=4*p1$pres, ywidth=4*p1$pres )
           P = spatial_warp( PP0[], L0, L1, p0, p1, "fast", L0i, L1i )
           V = spatial_warp( VV0[], L0, L1, p0, p1, "fast", L0i, L1i )
-          projectdir_p1 = file.path(p$project.root, "modelled", voi, p1$spatial.domain ) 
+          projectdir_p1 = file.path(p$data_root, "modelled", voi, p1$spatial.domain ) 
           dir.create( projectdir_p1, recursive=T, showWarnings=F )
           fn1_sg = file.path( projectdir_p1, paste("stm.prediction.mean",  year, "rdata", sep=".") )
           fn2_sg = file.path( projectdir_p1, paste("stm.prediction.sd",  year, "rdata", sep=".") )
@@ -303,7 +303,7 @@ snowcrab_stm = function( ip=NULL, DS=NULL, p=NULL, voi=NULL, year=NULL, ret=NULL
       
       if (DS %in% c("stm.stats")) {
         stats = NULL
-        projectdir = file.path(p$project.root, "modelled", voi, p$spatial.domain )
+        projectdir = file.path(p$data_root, "modelled", voi, p$spatial.domain )
         fn = file.path( projectdir, paste( "stm.statistics", "rdata", sep=".") )
         if (file.exists(fn) ) load(fn) 
         return( stats )
@@ -332,7 +332,7 @@ snowcrab_stm = function( ip=NULL, DS=NULL, p=NULL, voi=NULL, year=NULL, ret=NULL
           stats[,i] = spatial_warp( S0[,i], L0, L1, p0, p1, "fast", L0i, L1i )
         }
         colnames(stats) = Snames
-        projectdir_p1 = file.path(p$project.root, "modelled", voi, p1$spatial.domain ) 
+        projectdir_p1 = file.path(p$data_root, "modelled", voi, p1$spatial.domain ) 
         dir.create( projectdir_p1, recursive=T, showWarnings=F )
         fn1_sg = file.path( projectdir_p1, paste("stm.statistics", "rdata", sep=".") )
         save( stats, file=fn1_sg, compress=T )
@@ -356,7 +356,7 @@ snowcrab_stm = function( ip=NULL, DS=NULL, p=NULL, voi=NULL, year=NULL, ret=NULL
    
       if (DS=="complete") {
         IC = NULL
-        projectdir = file.path(p$project.root, "modelled", voi, p$spatial.domain )
+        projectdir = file.path(p$data_root, "modelled", voi, p$spatial.domain )
         dir.create(projectdir, recursive=T, showWarnings=F)
         outfile =  file.path( projectdir, paste( "snowcrab", "complete", p$spatial.domain, "rdata", sep= ".") )
         if ( file.exists( outfile ) ) load( outfile )
@@ -409,7 +409,7 @@ snowcrab_stm = function( ip=NULL, DS=NULL, p=NULL, voi=NULL, year=NULL, ret=NULL
         IC = cbind( IC, CL )
         PS = PSsd = NULL
 
-        projectdir = file.path(p$project.root, "modelled", voi, p1$spatial.domain )
+        projectdir = file.path(p$data_root, "modelled", voi, p1$spatial.domain )
         dir.create( projectdir, recursive=T, showWarnings=F )
         outfile =  file.path( projectdir, paste( "snowcrab", "complete", p1$spatial.domain, "rdata", sep= ".") )
         save( IC, file=outfile, compress=T )
@@ -427,7 +427,7 @@ snowcrab_stm = function( ip=NULL, DS=NULL, p=NULL, voi=NULL, year=NULL, ret=NULL
       if ( DS=="baseline" ) {
         BL = list()
         for (bvn in varnames ) {
-          projectdir = file.path(p$project.root, "modelled", bvn, p$spatial.domain )
+          projectdir = file.path(p$data_root, "modelled", bvn, p$spatial.domain )
           outfile =  file.path( projectdir, paste( "snowcrab", "baseline", ret, p$spatial.domain, "rdata", sep= ".") )
           TS = NULL
           load( outfile)
@@ -445,7 +445,7 @@ snowcrab_stm = function( ip=NULL, DS=NULL, p=NULL, voi=NULL, year=NULL, ret=NULL
       for (gr in grids ) {
         print(gr)
         p1 = spatial_parameters( p=p, type=gr ) #target projection    
-        projectdir = file.path(p$project.root, "modelled", voi, p1$spatial.domain )
+        projectdir = file.path(p$data_root, "modelled", voi, p1$spatial.domain )
         dir.create( projectdir, recursive=T, showWarnings=F )
 
         L1 = bathymetry.db(p=p1, DS="baseline")
@@ -498,7 +498,7 @@ snowcrab_stm = function( ip=NULL, DS=NULL, p=NULL, voi=NULL, year=NULL, ret=NULL
 
 
   if ( DS %in% c("map.annual" ) ) {
-    projectdir = file.path(p$project.root, "maps", voi, p$spatial.domain, "annual" )
+    projectdir = file.path(p$data_root, "maps", voi, p$spatial.domain, "annual" )
     dir.create( projectdir, recursive=T, showWarnings=F )
     
     if (is.null(ip)) ip = 1:p$nruns
@@ -558,7 +558,7 @@ snowcrab_stm = function( ip=NULL, DS=NULL, p=NULL, voi=NULL, year=NULL, ret=NULL
 
 
   if ( DS %in% c("map.climatology" ) ) {
-    projectdir = file.path(p$project.root, "maps", voi, p$spatial.domain, "climatology" )
+    projectdir = file.path(p$data_root, "maps", voi, p$spatial.domain, "climatology" )
     dir.create( projectdir, recursive=T, showWarnings=F )
     
     loc = bathymetry.db(p=p, DS="baseline" )

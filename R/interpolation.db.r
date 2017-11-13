@@ -111,7 +111,7 @@
       save( B, file=fn, compress=TRUE )
       B = NULL
 
-      projectdir = file.path(p$project.root, "maps", "fishable.biomass", p$spatial.domain )
+      projectdir = file.path(p$data_root, "maps", "fishable.biomass", p$spatial.domain )
       datarange = seq( qs[1]-0.1, qs[2]+0.1, length.out=150)
       cols = color.code( "seis", datarange )
       m[which(!is.finite(m))] = qs[1]
