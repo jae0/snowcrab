@@ -81,9 +81,7 @@ snowcrab_stm = function( ip=NULL, DS=NULL, p=NULL, voi=NULL, year=NULL, ret=NULL
 
     bathy = bathymetry.db(p=p, DS="baseline")
 
-    psse = p
-    psse$spatial.domain = "SSE"
-    psse = spatial_parameters( p=psse )  # data are from this domain .. so far
+    psse = spatial_parameters( p=p, spatial.domain = "SSE" )  # data are from this domain .. so far
     bathysse = bathymetry.db(p=psse, DS="baseline")
 
     # redo as set has changed
@@ -128,7 +126,7 @@ snowcrab_stm = function( ip=NULL, DS=NULL, p=NULL, voi=NULL, year=NULL, ret=NULL
     for (iv in names(p$indicators.variables)) {
       p0 = emaf::indicators.parameters( p=p, DS="default", year.assessment=p$year.assessment )
       p0 = emaf::indicators.parameters( p=p0, DS=iv  )
-      p0 = stm::spatial_parameters( p=p0, type=p$spatial.domain ) # return to correct domain
+      p0 = stm::spatial_parameters( p=p0, spatial.domain=p$spatial.domain ) # return to correct domain
       vn = p0$indicators.variables[[iv]]
       sn = indicators.lookup( p=p0, DS="spatial.annual", locsmap=locsmap, timestamp=set[,"timestamp"], 
         varnames=vn, DB=indicators.db( p=p0, DS="baseline", varnames=vn ) )
@@ -139,7 +137,7 @@ snowcrab_stm = function( ip=NULL, DS=NULL, p=NULL, voi=NULL, year=NULL, ret=NULL
       mm = which( !is.finite(set[,vn[1]]) )
       if (length(mm) > 0) {
         # catch stragglers from a larger domain
-        p0 = stm::spatial_parameters( p=p0, type="SSE" ) 
+        p0 = stm::spatial_parameters( p=p0, spatial.domain="SSE" ) 
         locsmapsse = match( 
           stm::array_map( "xy->1", set[mm, c("plon","plat")], gridparams=p0$gridparams ), 
           stm::array_map( "xy->1", bathysse[,c("plon","plat")], gridparams=p0$gridparams ) )
@@ -201,7 +199,7 @@ snowcrab_stm = function( ip=NULL, DS=NULL, p=NULL, voi=NULL, year=NULL, ret=NULL
     for (iv in names(p$indicators.variables)) {
       p0 = emaf::indicators.parameters( p=p, DS="default", year.assessment=p$year.assessment )
       p0 = emaf::indicators.parameters( p=p0, DS=iv  )
-      p0 = stm::spatial_parameters( p=p0, type=p$spatial.domain ) # return to correct domain
+      p0 = stm::spatial_parameters( p=p0, spatial.domain=p$spatial.domain ) # return to correct domain
 
       vn = p0$indicators.variables[[iv]]
       sn = indicators.db( p=p0, DS="baseline", varnames=vn )
@@ -262,13 +260,13 @@ snowcrab_stm = function( ip=NULL, DS=NULL, p=NULL, voi=NULL, year=NULL, ret=NULL
         # default domain
         PP0 = stm_db( p=p, DS="stm.prediction", yr=year, ret="mean")
         VV0 = stm_db( p=p, DS="stm.prediction", yr=year, ret="sd")
-        p0 = spatial_parameters( p=p, type=p$spatial.domain ) # from
+        p0 = spatial_parameters( p=p ) # from
         L0 = bathymetry.db( p=p0, DS="baseline" )
         L0i = stm::array_map( "xy->2", L0[, c("plon", "plat")], gridparams=p0$gridparams )
         sreg = setdiff( p$spatial.domain.subareas, p$spatial.domain ) 
 
         for ( gr in sreg ) {
-          p1 = spatial_parameters( p=p, type=gr ) # 'warping' from p -> p1
+          p1 = spatial_parameters( p=p, spatial.domain=gr ) # 'warping' from p -> p1
           L1 = bathymetry.db( p=p1, DS="baseline" )
           L1i = stm::array_map( "xy->2", L1[, c("plon", "plat")], gridparams=p1$gridparams )
           L1 = planar2lonlat( L1, proj.type=p1$internal.crs )
@@ -313,13 +311,13 @@ snowcrab_stm = function( ip=NULL, DS=NULL, p=NULL, voi=NULL, year=NULL, ret=NULL
       # default domain
       S0 = stm_db( p=p, DS="stats.to.prediction.grid" )
       Snames = colnames(S0)
-      p0 = spatial_parameters( p=p, type=p$spatial.domain ) # from
+      p0 = spatial_parameters( p=p ) # from
       L0 = bathymetry.db( p=p0, DS="baseline" )
       L0i = stm::array_map( "xy->2", L0[, c("plon", "plat")], gridparams=p0$gridparams )
       sreg = setdiff( p$spatial.domain.subareas, p$spatial.domain ) 
 
       for ( gr in sreg ) {
-        p1 = spatial_parameters( p=p, type=gr ) # 'warping' from p -> p1
+        p1 = spatial_parameters( p=p, spatial.domain=gr ) # 'warping' from p -> p1
         L1 = bathymetry.db( p=p1, DS="baseline" )
         L1i = stm::array_map( "xy->2", L1[, c("plon", "plat")], gridparams=p1$gridparams )
         L1 = planar2lonlat( L1, proj.type=p1$internal.crs )
@@ -375,7 +373,7 @@ snowcrab_stm = function( ip=NULL, DS=NULL, p=NULL, voi=NULL, year=NULL, ret=NULL
       for (gr in grids ) {
         print(gr)
 
-        p1 = spatial_parameters( p=p, type=gr ) #target projection    
+        p1 = spatial_parameters( p=p, spatial.domain=gr ) #target projection    
         L1 = bathymetry.db(p=p1, DS="baseline")
 
         BS = snowcrab_stm( p=p1, DS="stm.stats" )
@@ -444,7 +442,7 @@ snowcrab_stm = function( ip=NULL, DS=NULL, p=NULL, voi=NULL, year=NULL, ret=NULL
    
       for (gr in grids ) {
         print(gr)
-        p1 = spatial_parameters( p=p, type=gr ) #target projection    
+        p1 = spatial_parameters( p=p, spatial.domain=gr ) #target projection    
         projectdir = file.path(p$data_root, "modelled", voi, p1$spatial.domain )
         dir.create( projectdir, recursive=T, showWarnings=F )
 
@@ -486,7 +484,7 @@ snowcrab_stm = function( ip=NULL, DS=NULL, p=NULL, voi=NULL, year=NULL, ret=NULL
     allgrids = unique(c( p$spatial.domain.subareas, p$spatial.domain) )
     for ( gr in allgrids ) {
       print (gr)
-      p1 = spatial_parameters(  p=p, type= gr )
+      p1 = spatial_parameters(  p=p, spatial.domain= gr )
       p1 = make.list( list( yrs=p1$yrs), Y=p1 )
       snowcrab_stm( p=p1, DS="map.climatology" ) # no parallel option .. just a few
       parallel.run( snowcrab_stm, p=p1, DS="map.annual", voi=voi )
