@@ -9,7 +9,7 @@
 
     # Remove CW's outside norms and remove production (pre-sorted) samples
     i = which( odb$sex==male & odb$fishyr==year )  # --- fishing year is used and not the actual year caught
-    r = emaf::polygon_inside(x=odb, region=emaf::polygon_internal_code(region), planar=F)
+    r = aegis::polygon_inside(x=odb, region=aegis::polygon_internal_code(region), planar=F)
 
     c.r.y = unique( intersect (r, i) )
 

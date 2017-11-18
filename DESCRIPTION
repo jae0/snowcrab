@@ -37,8 +37,8 @@ Imports:
   ROracle,
   sp, 
   vegan, 
-  emaf.base,
-  emaf, 
+  aegis.env,
+  aegis, 
   bio.groundfish,
   netmensuration,
   stm

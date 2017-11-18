@@ -19,14 +19,14 @@
 #Substrate and bathymetry can be run (as per above) if suspect significant changes in one or both of these datasets
 
 #BZ 2017 these lines below can directly run the indicators without goint to run individual scripts
-#  system.file(package="emaf", "scripts", "01.indicators.r")  
-#  system.file(package="emaf", "scripts", "02.biochem.r") 
-#  system.file(package="emaf", "scripts", "02.condition.r") 
-#  system.file(package="emaf", "scripts", "02.landings.r") 
-#  system.file(package="emaf", "scripts", "02.metabolism.r") 
-#  system.file(package="emaf", "scripts", "02.sizespectrum.r") 
-#  system.file(package="emaf", "scripts", "02.speciesarea.r")
-#  system.file(package="emaf", "scripts", "02.*.speciescomposition") 
+#  system.file(package="aegis", "scripts", "01.indicators.r")  
+#  system.file(package="aegis", "scripts", "02.biochem.r") 
+#  system.file(package="aegis", "scripts", "02.condition.r") 
+#  system.file(package="aegis", "scripts", "02.landings.r") 
+#  system.file(package="aegis", "scripts", "02.metabolism.r") 
+#  system.file(package="aegis", "scripts", "02.sizespectrum.r") 
+#  system.file(package="aegis", "scripts", "02.speciesarea.r")
+#  system.file(package="aegis", "scripts", "02.*.speciescomposition") 
 
 # 1. Define some additional starting parameters for debugging
 #    choose various over-rides: these are initially defined in parameters.r
@@ -48,7 +48,7 @@ p$selection=list(
   sex=0, # male
   mat=1, # do not use maturity status in groundfish data as it is suspect .. 
   spec_bio=bio.taxonomy::taxonomy.recode( from="spec", to="parsimonious", tolookup=2526 ),
-  len= c( 95, 200 )/10, #  mm -> cm ; indicators.db in cm
+  len= c( 95, 200 )/10, #  mm -> cm ; aegis_db in cm
   drop.groundfish.data=TRUE # esp from 1970 to 1999 measurement of invertebrates was sporatic .. zero-values are dropped as they are unreliable 
 )
 p$stm_global_family = gaussian(link=log)
@@ -127,7 +127,7 @@ p$selection=list(
   sex=0, # male
   mat=1, # do not use maturity status in groundfish data as it is suspect ..   
   spec_bio=bio.taxonomy::taxonomy.recode( from="spec", to="parsimonious", tolookup=2526 ),
-  len= c( 95, 200 )/10, #  mm -> cm ; indicators.db in cm
+  len= c( 95, 200 )/10, #  mm -> cm ; aegis_db in cm
   drop.groundfish.data=TRUE # esp from 1970 to 1999 measurement of invertebrates was sporatic .. zero-values are dropped as they are unreliable 
 )
 
@@ -213,7 +213,7 @@ p$selection=list(
   sex=0, # male
   mat=1, # do not use maturity status in groundfish data as it is suspect .. 
   spec_bio=bio.taxonomy::taxonomy.recode( from="spec", to="parsimonious", tolookup=2526 ),
-  len= c( 95, 200 )/10, #  mm -> cm ; indicators.db in cm
+  len= c( 95, 200 )/10, #  mm -> cm ; aegis_db in cm
   drop.groundfish.data=TRUE # esp from 1970 to 1999 measurement of invertebrates was sporatic .. zero-values are dropped as they are unreliable 
 )
 

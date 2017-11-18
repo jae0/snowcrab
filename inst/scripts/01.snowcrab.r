@@ -1,5 +1,5 @@
 
-require(emaf.base)
+require(aegis.env)
 
 if (!exists("year.assessment")) {
   year.assessment=lubridate::year(Sys.Date())      # year.assessment 
@@ -118,7 +118,7 @@ if (obtain.database.snapshot) {
 
 # -------------------------------------------------------------------------------------
 # update a database of simple transformation ranges, etc.. for plotting range, etc.
-  REPOS = emaf::recode.variable.initiate.db ( db="snowcrab" )
+  REPOS = aegis::recode.variable.initiate.db ( db="snowcrab" )
  
 # -------------------------------------------------------------------------------------
 # create some simple/crude timeseries

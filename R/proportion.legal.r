@@ -12,7 +12,7 @@
     i = which( odb$sex==male & odb$prodcd_id=="0" & odb$cw > 50 & odb$cw < 170 & odb$fishyr==year )
     j = which( odb$sex==male & odb$prodcd_id=="0" & odb$cw >= 95 & (odb$durometer >= 68 | odb$shell >=2) )
 
-    r = emaf::polygon_inside(x=odb, region=emaf::polygon_internal_code(region), planar=F)
+    r = aegis::polygon_inside(x=odb, region=aegis::polygon_internal_code(region), planar=F)
     total.n = intersect (r, i)
     total.com = intersect(total.n, j)
 

@@ -8,7 +8,7 @@ snowcrab_stm = function( ip=NULL, DS=NULL, p=NULL, voi=NULL, year=NULL, ret=NULL
    
 
   if (DS=="stm_inputs") {
-    # mostly based on indicators.db( DS="stm_inputs") 
+    # mostly based on aegis_db( DS="stm_inputs") 
     INP = snowcrab_stm(p=p, DS="input_data" )  # , voi=p$selection$name
     PS  = snowcrab_stm(p=p, DS="output_data"  ) # , voi=p$selection$name
     LOCS = bathymetry.db(p=p, DS="baseline")
@@ -19,7 +19,7 @@ snowcrab_stm = function( ip=NULL, DS=NULL, p=NULL, voi=NULL, year=NULL, ret=NULL
   # --------------------------
 
   if (DS %in% c("input_data") ) {
-    set = emaf::survey.db( p=p, DS="set.filter" ) # mature male > 95 mm 
+    set = aegis::survey.db( p=p, DS="set.filter" ) # mature male > 95 mm 
  
     if ( p$selection$type=="abundance") {
       # snowcrab survey data only
@@ -68,7 +68,7 @@ snowcrab_stm = function( ip=NULL, DS=NULL, p=NULL, voi=NULL, year=NULL, ret=NULL
 
     set = set[ which(set$yr %in% p$yrs ), ]
 
-    coast = emaf::coastline.db( p=p, DS="mapdata.coastPolygon" )
+    coast = aegis::coastline.db( p=p, DS="mapdata.coastPolygon" )
     coast = spTransform( coast, CRS("+proj=longlat +datum=WGS84") )
     setcoord = SpatialPoints( as.matrix( set[, c("lon", "lat")]),  proj4string=CRS("+proj=longlat +datum=WGS84") )
     inside = sp::over( setcoord, coast )
@@ -91,7 +91,7 @@ snowcrab_stm = function( ip=NULL, DS=NULL, p=NULL, voi=NULL, year=NULL, ret=NULL
 
     # spatial vars and climatologies 
     newvars = c("dZ", "ddZ", "log.substrate.grainsize", "tmean.climatology", "tsd.climatology", "b.range", "t.range" )
-    sn = indicators.lookup( p=p, DS="spatial", locsmap=locsmap, varnames=newvars )
+    sn = aegis_lookup( p=p, DS="spatial", locsmap=locsmap, varnames=newvars )
     set = cbind( set,  sn )
 
     oo = which( !is.finite(locsmap) )
@@ -100,13 +100,13 @@ snowcrab_stm = function( ip=NULL, DS=NULL, p=NULL, voi=NULL, year=NULL, ret=NULL
       locsmapsse = match( 
         stm::array_map( "xy->1", set[oo, c("plon","plat")], gridparams=psse$gridparams ), 
         stm::array_map( "xy->1", bathysse[,c("plon","plat")], gridparams=psse$gridparams ) )
-      sn = indicators.lookup( p=psse, DS="spatial", locsmap=locsmapsse, varnames=newvars )
+      sn = aegis_lookup( p=psse, DS="spatial", locsmap=locsmapsse, varnames=newvars )
       for (nv in newvars) set[oo,nv] = sn[,nv]
     }
 
     # for space-time(year-averages) 
     newvars = c( "tmean", "tsd", "amplitude" )
-    sn = indicators.lookup( p=p, DS="spatial.annual", locsmap=locsmap, timestamp=set[,"timestamp"], varnames=newvars )
+    sn = aegis_lookup( p=p, DS="spatial.annual", locsmap=locsmap, timestamp=set[,"timestamp"], varnames=newvars )
     colnames( sn  ) = newvars
     set = cbind( set,  sn )
     
@@ -116,22 +116,21 @@ snowcrab_stm = function( ip=NULL, DS=NULL, p=NULL, voi=NULL, year=NULL, ret=NULL
       locsmapsse = match( 
         stm::array_map( "xy->1", set[nn, c("plon","plat")], gridparams=psse$gridparams ), 
         stm::array_map( "xy->1", bathysse[,c("plon","plat")], gridparams=psse$gridparams ) )
-      sn = indicators.lookup( p=psse, DS="spatial.annual", locsmap=locsmapsse, timestamp=set[nn,"timestamp"], varnames=newvars )
+      sn = aegis_lookup( p=psse, DS="spatial.annual", locsmap=locsmapsse, timestamp=set[nn,"timestamp"], varnames=newvars )
       for (nv in newvars) set[nn,nv] = sn[,nv]
     }
 
     names(set)[ names(set)=="amplitude"] ="tamplitude"
 
-    # additional indicators.db variables
-    for (iv in names(p$indicators.variables)) {
-      p0 = emaf::indicators.parameters( p=p, DS="default", year.assessment=p$year.assessment )
-      p0 = emaf::indicators.parameters( p=p0, DS=iv  )
+    # additional aegis_db variables
+    for (iv in names(p$aegis_variables)) {
+      p0 = aegis::aegis.parameters( p=p, DS=iv, year.assessment=p$year.assessment )
       p0 = stm::spatial_parameters( p=p0, spatial.domain=p$spatial.domain ) # return to correct domain
-      vn = p0$indicators.variables[[iv]]
-      sn = indicators.lookup( p=p0, DS="spatial.annual", locsmap=locsmap, timestamp=set[,"timestamp"], 
-        varnames=vn, DB=indicators.db( p=p0, DS="baseline", varnames=vn ) )
+      vn = p0$aegis_variables[[iv]]
+      sn = aegis_lookup( p=p0, DS="spatial.annual", locsmap=locsmap, timestamp=set[,"timestamp"], 
+        varnames=vn, DB=aegis_db( p=p0, DS="baseline", varnames=vn ) )
       sn = as.data.frame(sn)
-      names( sn  ) = p$indicators.variables[[iv]]
+      names( sn  ) = p$aegis_variables[[iv]]
       set = cbind( set,  sn )
 
       mm = which( !is.finite(set[,vn[1]]) )
@@ -141,8 +140,8 @@ snowcrab_stm = function( ip=NULL, DS=NULL, p=NULL, voi=NULL, year=NULL, ret=NULL
         locsmapsse = match( 
           stm::array_map( "xy->1", set[mm, c("plon","plat")], gridparams=p0$gridparams ), 
           stm::array_map( "xy->1", bathysse[,c("plon","plat")], gridparams=p0$gridparams ) )
-        sn = indicators.lookup( p=p0, DS="spatial.annual", locsmap=locsmapsse, timestamp=set[mm,"timestamp"], 
-          varnames=vn, DB=indicators.db( p=p0, DS="baseline", varnames=vn ) )
+        sn = aegis_lookup( p=p0, DS="spatial.annual", locsmap=locsmapsse, timestamp=set[mm,"timestamp"], 
+          varnames=vn, DB=aegis_db( p=p0, DS="baseline", varnames=vn ) )
         for (nv in vn) set[mm,nv] = sn[,nv]
       }
     }
@@ -176,11 +175,11 @@ snowcrab_stm = function( ip=NULL, DS=NULL, p=NULL, voi=NULL, year=NULL, ret=NULL
 
 
   if (DS %in% c("output_data") ) {
-    PS = indicators.db( p=p, DS="prediction.surface" ) # a list object with static and annually varying variables  
+    PS = aegis_db( p=p, DS="prediction.surface" ) # a list object with static and annually varying variables  
     names(PS)[ names(PS)=="amplitude"] ="tamplitude" 
 
     # make years coherent for temperatures
-    p0 = emaf::indicators.parameters(p=p, year.assessment=p$year.assessment )
+    p0 = aegis::aegis.parameters(p=p, year.assessment=p$year.assessment )
     yr_index = match( p$yrs, p0$yrs )
     yg = which(is.finite(yr_index))
     ym = which(is.na(yr_index))
@@ -195,24 +194,23 @@ snowcrab_stm = function( ip=NULL, DS=NULL, p=NULL, voi=NULL, year=NULL, ret=NULL
       }
     }
 
-    # indicators.db variables 
-    for (iv in names(p$indicators.variables)) {
-      p0 = emaf::indicators.parameters( p=p, DS="default", year.assessment=p$year.assessment )
-      p0 = emaf::indicators.parameters( p=p0, DS=iv  )
+    # aegis_db variables 
+    for (iv in names(p$aegis_variables)) {
+      p0 = aegis::aegis.parameters( p=p, DS=iv, year.assessment=p$year.assessment  )
       p0 = stm::spatial_parameters( p=p0, spatial.domain=p$spatial.domain ) # return to correct domain
 
-      vn = p0$indicators.variables[[iv]]
-      sn = indicators.db( p=p0, DS="baseline", varnames=vn )
+      vn = p0$aegis_variables[[iv]]
+      sn = aegis_db( p=p0, DS="baseline", varnames=vn )
       yr_index = match( p$yrs, p0$yrs )
       yg = which(is.finite(yr_index))
       ym = which(is.na(yr_index))
       if (length(ym) > 0) {
-        for ( vv in p$indicators.variables[[iv]] ) {
+        for ( vv in p$aegis_variables[[iv]] ) {
           PS[[vv]][yg] = sn[[vv]][,yr_index[yg]]
           PS[[vv]][ym] = rowMeans( sn[[vv]][], na.rm=TRUE )
         }
       } else {
-        for ( vv in p$indicators.variables[[iv]] ) {
+        for ( vv in p$aegis_variables[[iv]] ) {
           PS[[vv]] = sn[[vv]][,yr_index]
         }
       }

@@ -111,10 +111,10 @@
       # try to determine via geographics:
         FF = QQ[ i.missing , c("lon", "lat")]
       # cfa 4X has a fishing season that spans two years recode "yr" to accomodate this
-        icfa4x = emaf::polygon_inside(FF, "cfa4x")
-        icfanorth = emaf::polygon_inside(FF, "cfanorth")
-        icfa23 = emaf::polygon_inside(FF, "cfa23")
-        icfa24 = emaf::polygon_inside(FF, "cfa24")
+        icfa4x = aegis::polygon_inside(FF, "cfa4x")
+        icfanorth = aegis::polygon_inside(FF, "cfanorth")
+        icfa23 = aegis::polygon_inside(FF, "cfa23")
+        icfa24 = aegis::polygon_inside(FF, "cfa24")
         
         G = rep( NA, length(i.missing) )
 

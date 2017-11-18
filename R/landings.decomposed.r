@@ -6,7 +6,7 @@
 
     sizes = mean.weights.by.category( p )  # use the previously saved file
 
-    catch.odb = observer.get.counts.by.class( p, odb[emaf::polygon_inside(odb,emaf::polygon_internal_code( REGION )) ,] )
+    catch.odb = observer.get.counts.by.class( p, odb[aegis::polygon_inside(odb,aegis::polygon_internal_code( REGION )) ,] )
     cl = make.classes(sex)
 
     # obtain landings

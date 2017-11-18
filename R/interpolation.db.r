@@ -15,7 +15,7 @@
       }
 
       
-      set = emaf::survey.db( p=p, DS="set.filter" ) # mature male > 95 mm 
+      set = aegis::survey.db( p=p, DS="set.filter" ) # mature male > 95 mm 
  
       ii = which( set$totmass > 0 )
       qs = quantile( set$totmass[ii], probs=p$stm_quantile_bounds, na.rm=TRUE )
@@ -157,7 +157,7 @@
       K = NULL
       nreg = length(p$regions)
       for (r in 1:nreg ){
-        aoi = emaf::polygon_inside(x=bs[ , c("plon", "plat")], region=p$regions[r], planar=T)
+        aoi = aegis::polygon_inside(x=bs[ , c("plon", "plat")], region=p$regions[r], planar=T)
         aoi = intersect( aoi, which( bs$plon > 250 ) )
         out = matrix( NA, nrow=p$ny, ncol=3) 
         
@@ -211,7 +211,7 @@
       K = NULL
       nreg = length(p$regions)
       for (r in 1:nreg ){
-        aoi = emaf::polygon_inside(x=bs[ , c("plon", "plat")], region=p$regions[r], planar=T)
+        aoi = aegis::polygon_inside(x=bs[ , c("plon", "plat")], region=p$regions[r], planar=T)
         aoi = intersect( aoi, which( bs$plon > 250 ) )
         out = matrix( NA, nrow=p$ny, ncol=2) 
         

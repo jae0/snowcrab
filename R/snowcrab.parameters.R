@@ -15,7 +15,7 @@ snowcrab.parameters = function( p=NULL, DS="default", year.assessment=NULL, varn
 
     p$libs = c( p$libs, suppressMessages( RLibrary( rlibs ) ) )
     p$libs = c( p$libs, suppressMessages( project.library (
-      "emaf.base", "bio.taxonomy", "stm", "emaf",  "netmensuration", 
+      "aegis.env", "bio.taxonomy", "stm", "aegis",  "netmensuration", 
       "bio.groundfish", 
       "bio.snowcrab" ) ) ) 
     p$libs = unique( p$libs )
@@ -43,7 +43,7 @@ snowcrab.parameters = function( p=NULL, DS="default", year.assessment=NULL, varn
     p$tres = 1/ p$nw # time resolution .. predictions are made with models that use seasonal components
     p$dyears = (c(1:p$nw)-1)  / p$nw # intervals of decimal years... fractional year breaks
     p$dyear_centre = p$dyears[ round(p$nw/2) ] + p$tres/2
-    # used for creating timeslices and predictions  .. needs to match the values in indicators.parameters()
+    # used for creating timeslices and predictions  .. needs to match the values in aegis.parameters()
     p$prediction.dyear = lubridate::decimal_date( lubridate::ymd("0000/Sep/01")) 
     # output timeslices for predictions in decimla years, yes all of them here
     p$prediction.ts = p$yrs + p$prediction.dyear 
@@ -67,8 +67,8 @@ snowcrab.parameters = function( p=NULL, DS="default", year.assessment=NULL, varn
     p$recode.data = TRUE
 
     if (!exists("clusters", p)) p$clusters = rep("localhost", detectCores() )
-    if (!exists("varstomodel", p))    p$varstomodel   = emaf::variable.list.expand("all.to.model")
-    if (!exists("vars.to.model", p))  p$vars.to.model = emaf::variable.list.expand("all.to.model") # not sure why we have vars.to.model and vartomodel ... clean this up :: TODO
+    if (!exists("varstomodel", p))    p$varstomodel   = aegis::variable.list.expand("all.to.model")
+    if (!exists("vars.to.model", p))  p$vars.to.model = aegis::variable.list.expand("all.to.model") # not sure why we have vars.to.model and vartomodel ... clean this up :: TODO
 
     p$habitat.threshold.quantile = 0.05 # quantile at which to consider zero-valued abundance
     p$threshold.distance = 5 # predict no farther than this distance km from survey stations
@@ -109,12 +109,12 @@ snowcrab.parameters = function( p=NULL, DS="default", year.assessment=NULL, varn
       COV = c("z", "dZ", "ddZ", "log.substrate.grainsize", "t", "tmean.climatology", "tsd.climatology", "ca1", "ca2", "mr", "Npred", "smr" ) )
     p$varnames = c( p$variables$LOCS, p$variables$COV ) 
  
-    # additional variable to extract from indicators.db for inputs
-    p$indicators.variables = list()
+    # additional variable to extract from aegis_db for inputs
+    p$aegis_variables = list()
     for (id in c("speciescomposition", "speciesarea", "sizespectrum", "condition", "metabolism", "biochem") ) {
-      pz = emaf::indicators.parameters( p=p, DS=id )
+      pz = aegis::aegis.parameters( p=p, DS=id )
       pz_vars = intersect( pz$varstomodel, p$variables$COV )
-      if (length(pz_vars) > 0) p$indicators.variables[[id]] = pz_vars 
+      if (length(pz_vars) > 0) p$aegis_variables[[id]] = pz_vars 
     }
 
     if (!exists("stm_variogram_method", p)) p$stm_variogram_method = "fast"

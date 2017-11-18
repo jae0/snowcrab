@@ -37,7 +37,7 @@
       nodelabel = p$nodelabels[iv] 
       yc = as.character(y)
       ic = filter.class( det, type=nodelabel )
-      ir = emaf::polygon_inside(det.locs, region=region)
+      ir = aegis::polygon_inside(det.locs, region=region)
       iy = which( det.years==y )
       i = sort( intersect( intersect(  ir, iy) , ic )  )
       if (length(i)<1) next

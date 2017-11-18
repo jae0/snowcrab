@@ -49,7 +49,7 @@ if(redo.base.data) {}
 
         filt.data = rbind(filt.data,oo1)
 
-        project.library( 'emaf')
+        project.library( 'aegis')
 
         xx = range(oo$lon)
         yy = range(oo$lat)

@@ -62,7 +62,7 @@ if(grepl('4x',tolower(areas))) years = 2004:p$year.assessment
 
       # ylim=c(0,400) # for 4X
       cols = c("gray40", "gray100" )
-        set0 = set[emaf::polygon_inside(set, areas),]
+        set0 = set[aegis::polygon_inside(set, areas),]
       for (a in 1:(ncols)) {
     if(a==1){ ylim=c(0,750); xlim=c(0,140)}
     if(a==2){ ylim=c(0,1800); xlim=c(10,84)}
