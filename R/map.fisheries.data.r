@@ -27,8 +27,8 @@ map.fisheries.data = function(p, outdir,  FUN, yrs, variable='effort',probs=c(0,
     
     p$pres=pres
     g= spatial_grid(p,"planar.coords")
-    xd$plon = grid.internal( xd$plon, g$plon )
-    xd$plat = grid.internal( xd$plat, g$plat )
+    xd$plon = grid_internal( xd$plon, g$plon )
+    xd$plat = grid_internal( xd$plat, g$plat )
     xyz[[i]] = aggregate(z~plon+plat,data=xd,FUN)
     names( xyz[[i]]) = c("plon", "plat", "z")
   }

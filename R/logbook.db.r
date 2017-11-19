@@ -279,8 +279,8 @@
 
       grid = spatial_grid(p=p, DS="planar.coords")
 
-      x$plon = grid.internal( x$plon, grid$plon )
-      x$plat = grid.internal( x$plat, grid$plat )
+      x$plon = grid_internal( x$plon, grid$plon )
+      x$plat = grid_internal( x$plat, grid$plat )
       yrs = c(T,F)
       message ("The following warnings are ok: JC ... just a few NA's created which will be removed..")
       for ( Y in yrs ) {
@@ -419,8 +419,8 @@
 
       grid = spatial_grid(p=p, DS="planar.coords")
 
-      logbook$plon = grid.internal( logbook$plon, grid$plon )
-      logbook$plat = grid.internal( logbook$plat, grid$plat )
+      logbook$plon = grid_internal( logbook$plon, grid$plon )
+      logbook$plat = grid_internal( logbook$plat, grid$plat )
 
 			logbook$timestamp = as.POSIXct( logbook$date.landed, tz="America/Halifax", origin=lubridate::origin  )  # required for temperature lookups
       logbook$timestamp = with_tz( logbook$timestamp, "UTC")

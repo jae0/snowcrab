@@ -743,8 +743,8 @@ snowcrab.db = function( DS, p=NULL, yrs=NULL) {
 
     message("probably do not need to grid any longer")
 
-    set$plon = grid.internal( set$plon, grid$plon )
-    set$plat = grid.internal( set$plat, grid$plat )
+    set$plon = grid_internal( set$plon, grid$plon )
+    set$plat = grid_internal( set$plat, grid$plat )
 
     # merge surfacearea from net mesnuration into the database
     set = clean.surface.area( set, qreject = c( 0, 1 ))
