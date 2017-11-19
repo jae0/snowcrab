@@ -118,7 +118,7 @@ if (obtain.database.snapshot) {
 
 # -------------------------------------------------------------------------------------
 # update a database of simple transformation ranges, etc.. for plotting range, etc.
-  REPOS = aegis::recode.variable.initiate.db ( db="snowcrab" )
+  REPOS = bio.snowcrab::recode.variable.initiate.db ( )
  
 # -------------------------------------------------------------------------------------
 # create some simple/crude timeseries

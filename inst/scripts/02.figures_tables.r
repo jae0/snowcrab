@@ -85,7 +85,7 @@
     # Means
     # variables that shouldn't be logged 
     set = snowcrab.db( DS="set.biologicals")
-    variables = aegis::variable.list.expand("all.data")
+    variables = bio.snowcrab::variable.list.expand("all.data")
     variables = intersect( variables, names(set) )
  
     nolog.variables = c("t","z","sexratio.all","sexratio.mat","sexratio.imm","julian",variables[grep("cw",variables)])

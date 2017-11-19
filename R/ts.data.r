@@ -7,7 +7,7 @@
     for (v in vars) {
       j = which(colnames(V)==v)
       u = recode.time( V, times, delta=delta )
-#      u = variable.recode( V, v, direction="forward", db="snowcrab"  )
+#      u = bio.snowcrab::variable.recode( V, v, direction="forward" )
       u = u[is.finite(u$yr) ,]
       for (i in sort(unique( as.numeric(as.character(u$yr ))))) {
         q = u[ which(u$yr==i), ]

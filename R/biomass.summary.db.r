@@ -200,10 +200,10 @@
 
       set = snowcrab.db( DS ="set.biologicals", p=p, yrs=1996:p$year.assessment )
       B = set[, c( v, "yr", "cfa" )]
-      B[,v] = variable.recode( B[,v], v, direction="forward", db="snowcrab" )
+      B[,v] = bio.snowcrab::variable.recode( B[,v], v, direction="forward" )
 
       Bg = aggregate( fm , data=B, FUN=mean, na.rm=T )
-      Bg[,v] = variable.recode( Bg[,v], v, direction="backward", db="snowcrab" )
+      Bg[,v] = bio.snowcrab::variable.recode( Bg[,v], v, direction="backward" )
 
       Bx = xtabs( fm, data=Bg )
 
@@ -232,10 +232,10 @@
 
       set = snowcrab.db( DS ="set.biologicals", p=p, yrs=1996:p$year.assessment )
       B = set[, c( v, "yr", "cfa" )]
-      B[,v] = variable.recode( B[,v], v, direction="forward", db="snowcrab" )
+      B[,v] = bio.snowcrab::variable.recode( B[,v], v, direction="forward" )
 
       Bg = aggregate( fm , data=B, FUN=mean, na.rm=T )
-      Bg[,v] = variable.recode( Bg[,v], v, direction="backward", db="snowcrab" )
+      Bg[,v] = bio.snowcrab::variable.recode( Bg[,v], v, direction="backward" )
 
       Bx = xtabs( fm, data=Bg )
 
@@ -261,10 +261,10 @@
 
       set = snowcrab.db( DS ="set.biologicals", p=p, yrs=1996:p$year.assessment )
       B = set[, c( v, "yr", "cfa" )]
-      B[,v] = variable.recode( B[,v], v, direction="forward", db="snowcrab" )
+      B[,v] = bio.snowcrab::variable.recode( B[,v], v, direction="forward" )
 
       Bg = aggregate( fm , data=B, FUN=sd, na.rm=T )
-      # Bg[,v] = variable.recode( Bg[,v], v, direction="backward", db="snowcrab" )
+      # Bg[,v] = bio.snowcrab::variable.recode( Bg[,v], v, direction="backward" )
 
       Bx = xtabs( fm, data=Bg )
 
@@ -290,10 +290,10 @@
 
       set = snowcrab.db( DS ="set.biologicals", p=p, yrs=1996:p$year.assessment )
       B = set[, c( v, "yr", "cfa" )]
-      B[,v] = variable.recode( B[,v], v, direction="forward", db="snowcrab" )
+      B[,v] = bio.snowcrab::variable.recode( B[,v], v, direction="forward" )
 
       Bg = aggregate( fm , data=B, FUN=sd, na.rm=T )
-      # Bg[,v] = variable.recode( Bg[,v], v, direction="backward", db="snowcrab" )
+      # Bg[,v] = bio.snowcrab::variable.recode( Bg[,v], v, direction="backward" )
 
       Bx = xtabs( fm, data=Bg )
 

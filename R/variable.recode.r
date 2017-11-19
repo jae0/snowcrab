@@ -1,11 +1,12 @@
 
-  variable.recode = function( x, variable, direction="forward", db="snowcrab", rm.na=F ) {
-    tl = lookup.datatransformation(db) 
+  variable.recode = function( x, variable, direction="forward", rm.na=F ) {
+    
+    tl = bio.snowcrab::lookup.datatransformation() 
 
     if (file.exists( tl$repository) ) {
       load (tl$repository)
     } else {
-      REPOS = recode.variable.initiate.db ( db )
+      REPOS = bio.snowcrab::recode.variable.initiate.db ()
     }
     
     ii = which( REPOS$varname == variable )

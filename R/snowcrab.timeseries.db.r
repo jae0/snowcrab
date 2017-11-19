@@ -34,7 +34,7 @@ snowcrab.timeseries.db = function( DS="default", p=NULL, regions=c( "cfa4x", "cf
       v = vn[vi]
       if ( !is.numeric( dat[,v] ) ) next()
       print( paste( vi, v) )
-      XX = aegis::variable.recode( dat[,v], v, direction="forward", db="snowcrab" ) # transform variables where necessary
+      XX = bio.snowcrab::variable.recode( dat[,v], v, direction="forward" ) # transform variables where necessary
       for (r in regions) {
         ri = which( dat[,r] == r)
         if (length(ri)==0) next()
@@ -44,18 +44,18 @@ snowcrab.timeseries.db = function( DS="default", p=NULL, regions=c( "cfa4x", "cf
         XXsd = tapply( XX[ri], INDEX=dat$year[ri], FUN=sd, na.rm=TRUE ) 
         tsi = which(tsdata$variable==v & tsdata$region==r)
 
-        tsdata[ tsi,"mean"] = aegis::variable.recode (XXmean[ tsdata[ tsi, "year"] ], v, direction="backward", db="snowcrab" )
+        tsdata[ tsi,"mean"] = bio.snowcrab::variable.recode (XXmean[ tsdata[ tsi, "year"] ], v, direction="backward" )
         tsdata[ tsi,"n"] = XXn[ tsdata[ tsi, "year"] ]
-        tsdata[ tsi,"se"] = aegis::variable.recode (XXse[ tsdata[ tsi, "year"] ], v, direction="backward", db="snowcrab" )
-        tsdata[ tsi,"sd"] = aegis::variable.recode (XXsd[ tsdata[ tsi, "year"] ], v, direction="backward", db="snowcrab" )
+        tsdata[ tsi,"se"] = bio.snowcrab::variable.recode (XXse[ tsdata[ tsi, "year"] ], v, direction="backward" )
+        tsdata[ tsi,"sd"] = bio.snowcrab::variable.recode (XXsd[ tsdata[ tsi, "year"] ], v, direction="backward" )
         XXlb = XXmean - XXse* 1.96
         XXub = XXmean + XXse* 1.96
         if(sdci){
           XXlb = XXmean - XXsd* 1.96
           XXub = XXmean + XXsd* 1.96
         }
-        tsdata[ tsi,"lb"] = aegis::variable.recode (XXlb[ tsdata[ tsi, "year"] ], v, direction="backward", db="snowcrab" )
-        tsdata[ tsi,"ub"] = aegis::variable.recode (XXub[ tsdata[ tsi, "year"] ], v, direction="backward", db="snowcrab" )
+        tsdata[ tsi,"lb"] = bio.snowcrab::variable.recode (XXlb[ tsdata[ tsi, "year"] ], v, direction="backward" )
+        tsdata[ tsi,"ub"] = bio.snowcrab::variable.recode (XXub[ tsdata[ tsi, "year"] ], v, direction="backward" )
       }
     }
     tsdata$year = as.numeric( tsdata$year)
@@ -104,7 +104,7 @@ snowcrab.timeseries.db = function( DS="default", p=NULL, regions=c( "cfa4x", "cf
       v = vn[vi]
       if ( !is.numeric( dat[,v] ) ) next()
       print( paste( vi, v) )
-      XX = aegis::variable.recode( dat[,v], v, direction="forward", db="snowcrab" ) # transform variables where necessary
+      XX = bio.snowcrab::variable.recode( dat[,v], v, direction="forward" ) # transform variables where necessary
       for (r in regions) {
         ri = which( dat[,r] == r)
         if (length(ri)==0) next()
@@ -114,18 +114,18 @@ snowcrab.timeseries.db = function( DS="default", p=NULL, regions=c( "cfa4x", "cf
         XXsd = tapply( XX[ri], INDEX=dat$year[ri], FUN=sd, na.rm=TRUE ) 
         tsi = which(tsdata$variable==v & tsdata$region==r)
 
-        tsdata[ tsi,"mean"] = aegis::variable.recode (XXmean[ tsdata[ tsi, "year"] ], v, direction="backward", db="snowcrab" )
+        tsdata[ tsi,"mean"] = bio.snowcrab::variable.recode (XXmean[ tsdata[ tsi, "year"] ], v, direction="backward" )
         tsdata[ tsi,"n"] = XXn[ tsdata[ tsi, "year"] ]
-        tsdata[ tsi,"se"] = aegis::variable.recode (XXse[ tsdata[ tsi, "year"] ], v, direction="backward", db="snowcrab" )
-        tsdata[ tsi,"sd"] = aegis::variable.recode (XXsd[ tsdata[ tsi, "year"] ], v, direction="backward", db="snowcrab" )
+        tsdata[ tsi,"se"] = bio.snowcrab::variable.recode (XXse[ tsdata[ tsi, "year"] ], v, direction="backward" )
+        tsdata[ tsi,"sd"] = bio.snowcrab::variable.recode (XXsd[ tsdata[ tsi, "year"] ], v, direction="backward" )
         XXlb = XXmean - XXse* 1.96
         XXub = XXmean + XXse* 1.96
         if(sdci){
           XXlb = XXmean - XXsd* 1.96 # confidence intervals for population instead of mean
           XXub = XXmean + XXsd* 1.96
         }
-        tsdata[ tsi,"lb"] = aegis::variable.recode (XXlb[ tsdata[ tsi, "year"] ], v, direction="backward", db="snowcrab" )
-        tsdata[ tsi,"ub"] = aegis::variable.recode (XXub[ tsdata[ tsi, "year"] ], v, direction="backward", db="snowcrab" )
+        tsdata[ tsi,"lb"] = bio.snowcrab::variable.recode (XXlb[ tsdata[ tsi, "year"] ], v, direction="backward" )
+        tsdata[ tsi,"ub"] = bio.snowcrab::variable.recode (XXub[ tsdata[ tsi, "year"] ], v, direction="backward" )
       }
     }
     tsdata$year = as.numeric( tsdata$year)
@@ -178,7 +178,7 @@ snowcrab.timeseries.db = function( DS="default", p=NULL, regions=c( "cfa4x", "cf
       v = vn[vi]
       if ( !is.numeric( dat[,v] ) ) next()
       print( paste( vi, v) )
-      XX = aegis::variable.recode( dat[,v], v, direction="forward", db="snowcrab" ) # transform variables where necessary
+      XX = bio.snowcrab::variable.recode( dat[,v], v, direction="forward" ) # transform variables where necessary
       for (r in regions) {
         ri = which( dat[,r] == r)
         if (length(ri)==0) next()
@@ -187,13 +187,13 @@ snowcrab.timeseries.db = function( DS="default", p=NULL, regions=c( "cfa4x", "cf
         XXse = tapply( XX[ri], INDEX=dat$year[ri], FUN=sd, na.rm=TRUE ) / XXn
         tsi = which(tsdata$variable==v & tsdata$region==r)
 
-        tsdata[ tsi,"mean"] = aegis::variable.recode (XXmean[ tsdata[ tsi, "year"] ], v, direction="backward", db="snowcrab" )
+        tsdata[ tsi,"mean"] = bio.snowcrab::variable.recode (XXmean[ tsdata[ tsi, "year"] ], v, direction="backward" )
         tsdata[ tsi,"n"] = XXn[ tsdata[ tsi, "year"] ]
-        tsdata[ tsi,"se"] = aegis::variable.recode (XXse[ tsdata[ tsi, "year"] ], v, direction="backward", db="snowcrab" )
+        tsdata[ tsi,"se"] = bio.snowcrab::variable.recode (XXse[ tsdata[ tsi, "year"] ], v, direction="backward" )
         XXlb = XXmean - XXse* 1.96
         XXub = XXmean + XXse* 1.96
-        tsdata[ tsi,"lb"] = aegis::variable.recode (XXlb[ tsdata[ tsi, "year"] ], v, direction="backward", db="snowcrab" )
-        tsdata[ tsi,"ub"] = aegis::variable.recode (XXub[ tsdata[ tsi, "year"] ], v, direction="backward", db="snowcrab" )
+        tsdata[ tsi,"lb"] = bio.snowcrab::variable.recode (XXlb[ tsdata[ tsi, "year"] ], v, direction="backward" )
+        tsdata[ tsi,"ub"] = bio.snowcrab::variable.recode (XXub[ tsdata[ tsi, "year"] ], v, direction="backward" )
       }
     }
     tsdata$year = as.numeric( tsdata$year)
@@ -243,7 +243,7 @@ snowcrab.timeseries.db = function( DS="default", p=NULL, regions=c( "cfa4x", "cf
       v = vn[vi]
       if ( !is.numeric( dat[,v] ) ) next()
       print( paste( vi, v) )
-      XX = aegis::variable.recode( dat[,v], v, direction="forward", db="snowcrab" ) # transform variables where necessary
+      XX = bio.snowcrab::variable.recode( dat[,v], v, direction="forward" ) # transform variables where necessary
       for (r in regions) {
         ri = which( dat[,r] == r)
         if (length(ri)==0) next()
@@ -252,13 +252,13 @@ snowcrab.timeseries.db = function( DS="default", p=NULL, regions=c( "cfa4x", "cf
         XXse = tapply( XX[ri], INDEX=dat$year[ri], FUN=sd, na.rm=TRUE ) / XXn
         tsi = which(tsdata$variable==v & tsdata$region==r)
 
-        tsdata[ tsi,"mean"] = aegis::variable.recode (XXmean[ tsdata[ tsi, "year"] ], v, direction="backward", db="snowcrab" )
+        tsdata[ tsi,"mean"] = bio.snowcrab::variable.recode (XXmean[ tsdata[ tsi, "year"] ], v, direction="backward" )
         tsdata[ tsi,"n"] = XXn[ tsdata[ tsi, "year"] ]
-        tsdata[ tsi,"se"] = aegis::variable.recode (XXse[ tsdata[ tsi, "year"] ], v, direction="backward", db="snowcrab" )
+        tsdata[ tsi,"se"] = bio.snowcrab::variable.recode (XXse[ tsdata[ tsi, "year"] ], v, direction="backward" )
         XXlb = XXmean - XXse* 1.96
         XXub = XXmean + XXse* 1.96
-        tsdata[ tsi,"lb"] = aegis::variable.recode (XXlb[ tsdata[ tsi, "year"] ], v, direction="backward", db="snowcrab" )
-        tsdata[ tsi,"ub"] = aegis::variable.recode (XXub[ tsdata[ tsi, "year"] ], v, direction="backward", db="snowcrab" )
+        tsdata[ tsi,"lb"] = bio.snowcrab::variable.recode (XXlb[ tsdata[ tsi, "year"] ], v, direction="backward" )
+        tsdata[ tsi,"ub"] = bio.snowcrab::variable.recode (XXub[ tsdata[ tsi, "year"] ], v, direction="backward" )
       }
     }
     tsdata$year = as.numeric( tsdata$year)

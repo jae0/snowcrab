@@ -67,8 +67,7 @@ snowcrab.parameters = function( p=NULL, DS="default", year.assessment=NULL, varn
     p$recode.data = TRUE
 
     if (!exists("clusters", p)) p$clusters = rep("localhost", detectCores() )
-    if (!exists("varstomodel", p))    p$varstomodel   = aegis::variable.list.expand("all.to.model")
-    if (!exists("vars.to.model", p))  p$vars.to.model = aegis::variable.list.expand("all.to.model") # not sure why we have vars.to.model and vartomodel ... clean this up :: TODO
+    if (!exists("vars.to.model", p))  p$vars.to.model = bio.snowcrab::variable.list.expand("all.to.model") # not sure why we have vars.to.model and vartomodel ... clean this up :: TODO
 
     p$habitat.threshold.quantile = 0.05 # quantile at which to consider zero-valued abundance
     p$threshold.distance = 5 # predict no farther than this distance km from survey stations
@@ -113,7 +112,7 @@ snowcrab.parameters = function( p=NULL, DS="default", year.assessment=NULL, varn
     p$aegis_variables = list()
     for (id in c("speciescomposition", "speciesarea", "sizespectrum", "condition", "metabolism", "biochem") ) {
       pz = aegis::aegis.parameters( p=p, DS=id )
-      pz_vars = intersect( pz$varstomodel, p$variables$COV )
+      pz_vars = intersect( pz$varstomodel, p$variables$COV )  # these are aegis vars to model
       if (length(pz_vars) > 0) p$aegis_variables[[id]] = pz_vars 
     }
 

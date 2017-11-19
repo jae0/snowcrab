@@ -18,9 +18,9 @@
 
     if(missing(variables)){
       variables =  c( 
-         aegis::variable.list.expand("all.to.model"), 
-         aegis::variable.list.expand("snowcrab.cw"), 
-         aegis::variable.list.expand("physical"),
+         bio.snowcrab::variable.list.expand("all.to.model"), 
+         bio.snowcrab::variable.list.expand("snowcrab.cw"), 
+         bio.snowcrab::variable.list.expand("physical"),
          'sexratio.mat','sexratio.imm','sexratio.all' 
       )
       variables = intersect( variables, unique(tdb$variable))
@@ -35,12 +35,12 @@
     tdb$region = factor(tdb$region, levels=areas, labels =regions)
 
     #  load transformation tables associated with a given variable
-    tl = aegis::lookup.datatransformation('snowcrab')
+    tl = bio.snowcrab::lookup.datatransformation()
 
     if (file.exists( tl$repository) ) {
       load (tl$repository)
     } else {
-      REPOS = aegis::recode.variable.initiate.db ( db )
+      REPOS = bio.snowcrab::recode.variable.initiate.db ( )
     }
     tvars = REPOS$varname[which(REPOS$transform=='log10')]
 
