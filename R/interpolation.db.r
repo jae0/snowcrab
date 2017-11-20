@@ -119,7 +119,7 @@
         y = p$yrs[iy]
         outfn = paste( "prediction.abundance.mean", y, sep=".")
         xyz = cbind( bs[, c("plon", "plat")], m[,iy] )
-        stm::stm_map( xyz=xyz, cfa.regions=T, depthcontours=T, pts=NULL, annot=y,
+        aegis::aegis_map( xyz=xyz, cfa.regions=T, depthcontours=T, pts=NULL, annot=y,
           annot.cex=annot.cex, corners=p$planar.corners, fn=outfn, loc=projectdir, at=datarange,
           col.regions=cols, rez=c(p$pres,p$pres) )
       }
@@ -133,7 +133,7 @@
         y = p$yrs[iy]
         outfn = paste( "prediction.abundance.sd", y, sep=".")
         xyz = cbind( bs[, c("plon", "plat")], s[,iy] )
-        stm::stm_map( xyz=xyz, cfa.regions=T, depthcontours=T, pts=NULL, annot=y,
+        aegis::aegis_map( xyz=xyz, cfa.regions=T, depthcontours=T, pts=NULL, annot=y,
           annot.cex=annot.cex, corners=p$planar.corners, fn=outfn, loc=projectdir, at=datarange,
           col.regions=cols, rez=c(p$pres,p$pres) )
       }

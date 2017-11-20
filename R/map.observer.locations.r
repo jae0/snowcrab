@@ -19,7 +19,7 @@
         annot = paste ("Observer locations", y)
         fn = paste("observer.locations", y, sep=".")
         print(fn)
-        stm::stm_map( xyz=toplot,  cfa.regions=T, depthcontours=T, annot=annot, fn=fn, loc=basedir, corners=corners )
+        aegis::aegis_map( xyz=toplot,  cfa.regions=T, depthcontours=T, annot=annot, fn=fn, loc=basedir, corners=corners )
 
       }
 

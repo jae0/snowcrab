@@ -16,7 +16,7 @@
         annot = paste ("Survey locations", y)
         fn = paste("survey.locations", y, sep=".")
         print(fn)
-        stm::stm_map( toplot, cfa.regions=T, depthcontours=T, annot=annot, fn=fn, loc=basedir, corners=corners )
+        aegis::aegis_map( toplot, cfa.regions=T, depthcontours=T, annot=annot, fn=fn, loc=basedir, corners=corners )
 
       }
     }

@@ -530,7 +530,7 @@ snowcrab_stm = function( ip=NULL, DS=NULL, p=NULL, voi=NULL, year=NULL, ret=NULL
       cols = color.code( "blue.black", datarange )
       annot = gsub( ".", " ", toupper(voi), fixed=TRUE )
       outfn = paste( voi, "mean", y, sep=".")
-      stm::stm_map( xyz=xyz, cfa.regions=FALSE, depthcontours=TRUE, pts=NULL, 
+      aegis::aegis_map( xyz=xyz, cfa.regions=FALSE, depthcontours=TRUE, pts=NULL, 
         loc=projectdir, fn=outfn, annot=annot, at=datarange , col.regions=cols,
         corners=p$corners, spatial.domain=p$spatial.domain ) 
 
@@ -550,7 +550,7 @@ snowcrab_stm = function( ip=NULL, DS=NULL, p=NULL, voi=NULL, year=NULL, ret=NULL
       annot = gsub( ".", " ", toupper(voi), fixed=TRUE )
       outfn = paste( voi, "sd", y, sep=".")
 
-      stm::stm_map( xyz=xyz, cfa.regions=FALSE, depthcontours=TRUE, pts=NULL, 
+      aegis::aegis_map( xyz=xyz, cfa.regions=FALSE, depthcontours=TRUE, pts=NULL, 
         loc=projectdir, fn=outfn, annot=annot, at=datarange , col.regions=cols,
         corners=p$corners, spatial.domain=p$spatial.domain ) 
       print( file.path( projectdir, outfn))
@@ -584,7 +584,7 @@ snowcrab_stm = function( ip=NULL, DS=NULL, p=NULL, voi=NULL, year=NULL, ret=NULL
       }
       cols = color.code( "blue.black", datarange )
       annot = gsub( ".", " ", toupper(vn), fixed=TRUE )
-      stm::stm_map( xyz=xyz, cfa.regions=FALSE, depthcontours=TRUE, pts=NULL, 
+      aegis::aegis_map( xyz=xyz, cfa.regions=FALSE, depthcontours=TRUE, pts=NULL, 
         loc=projectdir, fn=vn, annot=annot, at=datarange, col.regions=cols,
         corners=p$corners, spatial.domain=p$spatial.domain ) 
       print( file.path( projectdir, vn))
