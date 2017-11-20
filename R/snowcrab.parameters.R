@@ -43,7 +43,7 @@ snowcrab.parameters = function( p=NULL, DS="default", year.assessment=NULL, varn
     p$tres = 1/ p$nw # time resolution .. predictions are made with models that use seasonal components
     p$dyears = (c(1:p$nw)-1)  / p$nw # intervals of decimal years... fractional year breaks
     p$dyear_centre = p$dyears[ round(p$nw/2) ] + p$tres/2
-    # used for creating timeslices and predictions  .. needs to match the values in aegis.parameters()
+    # used for creating timeslices and predictions  .. needs to match the values in aegis_parameters()
     p$prediction.dyear = lubridate::decimal_date( lubridate::ymd("0000/Sep/01")) 
     # output timeslices for predictions in decimla years, yes all of them here
     p$prediction.ts = p$yrs + p$prediction.dyear 
@@ -111,7 +111,7 @@ snowcrab.parameters = function( p=NULL, DS="default", year.assessment=NULL, varn
     # additional variable to extract from aegis_db for inputs
     p$aegis_variables = list()
     for (id in c("speciescomposition", "speciesarea", "sizespectrum", "condition", "metabolism", "biochem") ) {
-      pz = aegis::aegis.parameters( p=p, DS=id )
+      pz = aegis::aegis_parameters( p=p, DS=id )
       pz_vars = intersect( pz$varstomodel, p$variables$COV )  # these are aegis vars to model
       if (length(pz_vars) > 0) p$aegis_variables[[id]] = pz_vars 
     }

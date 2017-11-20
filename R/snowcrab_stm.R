@@ -124,7 +124,7 @@ snowcrab_stm = function( ip=NULL, DS=NULL, p=NULL, voi=NULL, year=NULL, ret=NULL
 
     # additional aegis_db variables
     for (iv in names(p$aegis_variables)) {
-      p0 = aegis::aegis.parameters( p=p, DS=iv, year.assessment=p$year.assessment )
+      p0 = aegis::aegis_parameters( p=p, DS=iv, year.assessment=p$year.assessment )
       p0 = stm::spatial_parameters( p=p0, spatial.domain=p$spatial.domain ) # return to correct domain
       vn = p0$aegis_variables[[iv]]
       sn = aegis_lookup( p=p0, DS="spatial.annual", locsmap=locsmap, timestamp=set[,"timestamp"], 
@@ -179,7 +179,7 @@ snowcrab_stm = function( ip=NULL, DS=NULL, p=NULL, voi=NULL, year=NULL, ret=NULL
     names(PS)[ names(PS)=="amplitude"] ="tamplitude" 
 
     # make years coherent for temperatures
-    p0 = aegis::aegis.parameters(p=p, year.assessment=p$year.assessment )
+    p0 = aegis::aegis_parameters(p=p, year.assessment=p$year.assessment )
     yr_index = match( p$yrs, p0$yrs )
     yg = which(is.finite(yr_index))
     ym = which(is.na(yr_index))
@@ -196,7 +196,7 @@ snowcrab_stm = function( ip=NULL, DS=NULL, p=NULL, voi=NULL, year=NULL, ret=NULL
 
     # aegis_db variables 
     for (iv in names(p$aegis_variables)) {
-      p0 = aegis::aegis.parameters( p=p, DS=iv, year.assessment=p$year.assessment  )
+      p0 = aegis::aegis_parameters( p=p, DS=iv, year.assessment=p$year.assessment  )
       p0 = stm::spatial_parameters( p=p0, spatial.domain=p$spatial.domain ) # return to correct domain
 
       vn = p0$aegis_variables[[iv]]
