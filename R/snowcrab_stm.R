@@ -380,12 +380,13 @@ snowcrab_stm = function( ip=NULL, DS=NULL, p=NULL, voi=NULL, year=NULL, ret=NULL
 
         # climatology
         nL1 = nrow(L1)
-        PS = PSsd = matrix( NA, nrow=nL1, ncol=p$ny )
+        PS = PSlb = PSub = matrix( NA, nrow=nL1, ncol=p$ny )
         if (is.null(voi)) p1$variables$Y = voi # need to send this to get the correct results
         for (iy in 1:p$ny) {
           yr = p$yrs[iy]
           PS[,iy] = stm_db( p=p1, DS="stm.prediction", yr=yr, ret="mean")
-          PSsd[,iy] = stm_db( p=p1, DS="stm.prediction", yr=yr, ret="sd")
+          PSlb[,iy] = stm_db( p=p1, DS="stm.prediction", yr=yr, ret="lb")
+          PSub[,iy] = stm_db( p=p1, DS="stm.prediction", yr=yr, ret="ub")
         }
 
         # qPS = quantile( PS, probs=p$stm_quantile_bounds, na.rm=TRUE )
@@ -394,16 +395,24 @@ snowcrab_stm = function( ip=NULL, DS=NULL, p=NULL, voi=NULL, year=NULL, ret=NULL
         # v = which( PS > qPS[2])
         # if (length(v)>0) PS[v] = qPS[2]
         
-        # qPSsd = quantile( PSsd, probs=p$stm_quantile_bounds, na.rm=TRUE )
-        # u = which( PSsd < qPSsd[1])
-        # if (length(u)>0) PSsd[u] = qPSsd[1]
-        # v = which( PSsd > qPSsd[2])
-        # if (length(v)>0) PSsd[v] = qPSsd[2]
+        # qPSlb = quantile( PSlb, probs=p$stm_quantile_bounds, na.rm=TRUE )
+        # u = which( PSlb < qPSlb[1])
+        # if (length(u)>0) PSlb[u] = qPSlb[1]
+        # v = which( PSlb > qPSlb[2])
+        # if (length(v)>0) PSlb[v] = qPSlb[2]
       
-        CL = cbind( apply( PS, 1, mean, na.rm=TRUE ), apply( PSsd, 1, mean, na.rm=TRUE ) )
-        colnames(CL) = paste( voi, c("mean", "sd"), "climatology", sep=".")
+        # qPSub = quantile( PSub, probs=p$stm_quantile_bounds, na.rm=TRUE )
+        # u = which( PSub < qPSub[1])
+        # if (length(u)>0) PSub[u] = qPSub[1]
+        # v = which( PSub > qPSub[2])
+        # if (length(v)>0) PSub[v] = qPSub[2]
+      
+        CL = cbind( apply( PS, 1, mean, na.rm=TRUE ), 
+                    apply( PSlb, 1, mean, na.rm=TRUE ),
+                    apply( PSub, 1, mean, na.rm=TRUE ) )
+        colnames(CL) = paste( voi, c("mean", "lb", "ub"), "climatology", sep=".")
         IC = cbind( IC, CL )
-        PS = PSsd = NULL
+        PS = PSlb = PSub = NULL
 
         projectdir = file.path(p$data_root, "modelled", voi, p1$spatial.domain )
         dir.create( projectdir, recursive=T, showWarnings=F )
