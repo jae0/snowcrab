@@ -49,10 +49,10 @@ snowcrab.parameters = function( p=NULL, DS="default", year.assessment=NULL, varn
     p$prediction.ts = p$yrs + p$prediction.dyear 
 
 
-    p$data.sources = c("groundfish", "snowcrab")
-    p$spatial.domain = "snowcrab"
+    p = spatial_parameters( p=p, spatial.domain="snowcrab" )  # data are from this domain .. so far
+
     p$spatial.domain.subareas = NULL # add cfa's as subareas .. TODO
-    p = spatial_parameters( p=p )  # data are from this domain .. so far
+    p$data.sources = c("groundfish", "snowcrab")
 
     # output location for year-specific results
     p$annual.results = file.path( project.datadirectory("bio.snowcrab"), "assessments", p$year.assessment ) 
