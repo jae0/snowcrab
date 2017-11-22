@@ -337,7 +337,7 @@ observer.data.request.oracle = function () {
   "AND ca.speccd_id(+) != 2526",
   "AND ca.catch_id = fish.catch_id(+)",
   "GROUP BY trip.trip_id, trip.trip, trip.board_date, st.set_no, ca.speccd_id, ca.est_num_caught, ca.est_kept_wt, ca.est_discard_wt, fish.fish_no , fish.fish_length, fish.fish_weight",
-  "order by board_date, set_no, fish_no;"
+  "order by board_date, set_no, fish_no"
           ) )
    f=res[ which(res$SPECCD_ID==204) ,]
    save(f, file="winter.skate.rdata", compress=T)
