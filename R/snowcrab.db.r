@@ -491,7 +491,7 @@ snowcrab.db = function( DS, p=NULL, yrs=NULL) {
     # remove data where species codes are ambiguous, or missing or non-living items
     xx = which( !is.finite( cat$spec) )
     if (length(xx)>0) cat = cat[ -xx, ]
-    cat = cat[ taxonomy.filter.taxa( cat$spec, taxafilter="living.only", outtype="bio.groundfishcodes" ) , ]
+    cat = cat[ taxonomy.filter.taxa( cat$spec, taxafilter="living.only", outtype="rvsurveycodes" ) , ]
 
     # update catch biomass/numbers due to altering of species id's
 			cat = cat[,catvars]
@@ -945,13 +945,13 @@ snowcrab.db = function( DS, p=NULL, yrs=NULL) {
     # cat2015 = cat[grep("2015", cat$trip),]
     # print(head(cat2015))
 
-    cat0 = cat[ taxonomy.filter.taxa( cat$spec, taxafilter="snowcrab", outtype="bio.groundfishcodes"), c(factors, "totno")]
+    cat0 = cat[ taxonomy.filter.taxa( cat$spec, taxafilter="snowcrab", outtype="rvsurveycodes"), c(factors, "totno")]
     names(cat0) = c(factors, "totno.all")
     X = merge(x=X, y=cat0, by=factors, all.x=T )
     X$totno.all   = X$totno.all   / X$sa
     X$totno.all[!is.finite(X$totno.all)] = 0  # convert na's to zero
 
-    cat0 = cat[ taxonomy.filter.taxa( cat$spec, taxafilter="snowcrab", outtype="bio.groundfishcodes" ), c(factors, "totmass")]
+    cat0 = cat[ taxonomy.filter.taxa( cat$spec, taxafilter="snowcrab", outtype="rvsurveycodes" ), c(factors, "totmass")]
     names(cat0) = c(factors, "totmass.all")
     X = merge(x=X, y=cat0, by=factors, all.x=T )
     X$totmass.all = X$totmass.all / X$sa
