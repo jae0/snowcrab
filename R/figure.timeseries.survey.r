@@ -18,9 +18,9 @@
 
     if(missing(variables)){
       variables =  c( 
-         bio.snowcrab::variable.list.expand("all.to.model"), 
-         bio.snowcrab::variable.list.expand("snowcrab.cw"), 
-         bio.snowcrab::variable.list.expand("physical"),
+         bio.snowcrab::snowcrab.variablelist("all.to.model"), 
+         bio.snowcrab::snowcrab.variablelist("snowcrab.cw"), 
+         bio.snowcrab::snowcrab.variablelist("physical"),
          'sexratio.mat','sexratio.imm','sexratio.all' 
       )
       variables = intersect( variables, unique(tdb$variable))

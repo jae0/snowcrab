@@ -67,7 +67,7 @@ snowcrab.parameters = function( p=NULL, DS="default", year.assessment=NULL, varn
     p$recode.data = TRUE
 
     if (!exists("clusters", p)) p$clusters = rep("localhost", detectCores() )
-    if (!exists("vars.to.model", p))  p$vars.to.model = bio.snowcrab::variable.list.expand("all.to.model") # not sure why we have vars.to.model and vartomodel ... clean this up :: TODO
+    if (!exists("vars.to.model", p))  p$vars.to.model = bio.snowcrab::snowcrab.variablelist("all.to.model") # not sure why we have vars.to.model and vartomodel ... clean this up :: TODO
 
     p$habitat.threshold.quantile = 0.05 # quantile at which to consider zero-valued abundance
     p$threshold.distance = 5 # predict no farther than this distance km from survey stations
