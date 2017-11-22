@@ -278,8 +278,8 @@ snowcrab.timeseries.db = function( DS="default", p=NULL, regions=c( "cfa4x", "cf
       return(tsdata)
     }
     tsdata = data.frame(r=NA,yrs=NA,V3='t',meanval=NA,se=NA,n=NA,ub=NA,lb=NA)
-    h = groundfish.db('gshyd')
-    g = groundfish.db('gsinf')
+    h = groundfish.db( DS='gshyd')
+    g = groundfish.db(DS='gsinf')
     g = g[,c('id','sdate','lon','lat','bottom_temperature')]
     h = h[,c('id','temp')]
     names(h)[2] <- 'bottom_temperature'
@@ -292,7 +292,7 @@ snowcrab.timeseries.db = function( DS="default", p=NULL, regions=c( "cfa4x", "cf
     yy <- unique(f$yr)
     yy <- yy[order(yy)]
     for (r in ar) {
-      for (yrs in yy) {
+      for (yrs in yy) { 
         y = f[which(f$yr == yrs & f$cfa ==r & !is.na(f$bottom_temperature.x)),]
         if(nrow(y)>3) {
           ym <- min(y$bottom_temperature.x[y$bottom_temperature.x>0])

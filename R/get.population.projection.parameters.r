@@ -5,13 +5,11 @@
   get.population.projection.parameters = function( p ) {
     # parameters for fishable biomass calculations and projections
     
-    assessment.year = p$year.assessment
-    
     p$regions = c("cfanorth", "cfasouth", "cfa4x")
     p$regions.labels = c( "N-ENS", "S-ENS", "4X")
     p$nregions = length(p$regions)
-    p$fisheryyears = c(1998:assessment.year)
-    p$nodeyears = c( 1999:assessment.year )  # previous data seem strange
+    p$fisheryyears = c(1998:p$year.assessment)
+    p$nodeyears = c( 1999:p$year.assessment )  # previous data seem strange
     p$nyears = length(p$nodeyears)
     p$nfisheryyears = length(p$fisheryyears)
     p$nodes = c(

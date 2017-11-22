@@ -39,7 +39,6 @@ Imports:
   vegan, 
   aegis.env,
   aegis, 
-  bio.groundfish,
   netmensuration,
   stm
 Suggests:

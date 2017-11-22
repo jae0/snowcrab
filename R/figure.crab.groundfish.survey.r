@@ -44,7 +44,7 @@ figure.crab.groundfish.survey <- function(species , outdir=file.path(project.dat
       ou = NULL
       }
 
- gr.dir = file.path(project.datadirectory('bio.groundfish'),'analysis')
+ gr.dir = project.datadirectory('aegis','analysis')
  gr.list = list()
 
  for(i in 1:n.regions) {

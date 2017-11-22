@@ -15,9 +15,7 @@ snowcrab.parameters = function( p=NULL, DS="default", year.assessment=NULL, varn
 
     p$libs = c( p$libs, suppressMessages( RLibrary( rlibs ) ) )
     p$libs = c( p$libs, suppressMessages( project.library (
-      "aegis.env", "bio.taxonomy", "stm", "aegis",  "netmensuration", 
-      "bio.groundfish", 
-      "bio.snowcrab" ) ) ) 
+      "aegis.env", "bio.taxonomy", "stm", "aegis",  "netmensuration", "bio.snowcrab" ) ) ) 
     p$libs = unique( p$libs )
 
     if (is.null(year.assessment) ) {

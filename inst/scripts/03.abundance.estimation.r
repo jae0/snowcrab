@@ -10,23 +10,20 @@
 #Require the following:
 #snowcrab.db("complete.redo") 
 
-#Run bio.groundfish::(inst/scripts/01.groundfish.r), need to update year within or run next line
-  #system.file(package="bio.groundfish", "scripts", "01.groundfish.r")
+#Run aegis::(inst/scripts/11.surveys.r), need to update year within or run next line
+  #system.file(package="aegis", "scripts", "11.surveys.r")
 
-#Run bio.groundfish::(inst/scripts/temperature.r), need to update year within
-  #system.file(package="stm", "scripts", "01.temperature.R") or run next line
+#Run aegis::(inst/scripts/temperature.r), need to update year within
+  #system.file(package="aegis", "scripts", "07.temperature.R") or run next line
 
-#Substrate and bathymetry can be run (as per above) if suspect significant changes in one or both of these datasets
+#Substrate and bathymetry can be run (as below) if suspect significant changes in one or both of these datasets
 
 #BZ 2017 these lines below can directly run the indicators without goint to run individual scripts
-#  system.file(package="aegis", "scripts", "01.indicators.r")  
-#  system.file(package="aegis", "scripts", "02.biochem.r") 
-#  system.file(package="aegis", "scripts", "02.condition.r") 
-#  system.file(package="aegis", "scripts", "02.landings.r") 
-#  system.file(package="aegis", "scripts", "02.metabolism.r") 
-#  system.file(package="aegis", "scripts", "02.sizespectrum.r") 
-#  system.file(package="aegis", "scripts", "02.speciesarea.r")
-#  system.file(package="aegis", "scripts", "02.*.speciescomposition") 
+#  system.file(package="aegis", "scripts", "07.temperature.R")  
+#  system.file(package="aegis", "scripts", "10.lookuptables.r") 
+#  system.file(package="aegis", "scripts", "11.surveys.r") 
+#  system.file(package="aegis", "scripts", "16.speciescomposition.R")
+
 
 # 1. Define some additional starting parameters for debugging
 #    choose various over-rides: these are initially defined in parameters.r
