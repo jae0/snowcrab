@@ -1,7 +1,7 @@
 
 snowcrab.db = function( DS, p=NULL, yrs=NULL) {
 
-	# handles all basic data tables, etc. ... 
+	# handles all basic data tables, etc. ...
 
   # sex codes
   male = 0
@@ -99,7 +99,7 @@ snowcrab.db = function( DS, p=NULL, yrs=NULL) {
 		}
 
 		con=ROracle::dbConnect(DBI::dbDriver("Oracle"),dbname=oracle.snowcrab.server , username=oracle.snowcrab.user, password=oracle.snowcrab.password, believeNRows=F)
-		
+
 		for ( YR in yrs ) {
 			fny = file.path( fn.root, paste( YR,"rdata", sep="."))
 			SNTRAWLBYCATCH = NULL
@@ -336,11 +336,11 @@ snowcrab.db = function( DS, p=NULL, yrs=NULL) {
 
     #Identify morphology errors and print, save to CSV
     yr.e <- p$year.assessment
-    fn.e = file.path(project.datadirectory("bio.snowcrab"), "data", "trawl", "morphology.errors")
+    fn.e = file.path(project.datadirectory("bio.snowcrab"), "output", "morphology.errors")
     dir.create(fn.e, recursive=T, showWarnings=F)
     outfile.e =  file.path( fn.e, paste("morphologyerrors", yr.e, ".csv", sep=""))
     outfile.e2 =  file.path( fn.e, paste("morphologyerrors.allyears", yr.e, ".csv", sep=""))
-    
+
     #Sex.e: Unknown Sex
     sex.e <- det[which(det$sex==sex.unknown),]
     sex.e$error <- 'sex.e'
@@ -426,7 +426,7 @@ snowcrab.db = function( DS, p=NULL, yrs=NULL) {
     }
 
     errors.yearly <- errors[grep(yr.e, errors$trip),]
-    
+
     errors <<- errors
     message("check dataframe 'errors' for the errors")
     print(errors.yearly)
@@ -434,11 +434,11 @@ snowcrab.db = function( DS, p=NULL, yrs=NULL) {
     write.csv(errors.yearly, file=outfile.e)
     print("Current Year Morphology Errors saved to file")
     print(outfile.e)
-    
+
     write.csv(errors, file=outfile.e2)
     print("All Years Morphology Errors saved to file")
     print(outfile.e2)
-    
+
     cat("ERROR CODES\
     Mat.e: Unknown Maturity\
     Sex.e: Unknown Sex\
@@ -643,7 +643,7 @@ snowcrab.db = function( DS, p=NULL, yrs=NULL) {
     if (nrow(set) !=nI ) stop( "merge error with seabird0" )
 
     mlStats =  minilog.db( DS="stats" )
-    ids = paste(mlStats$trip, mlStats$set, sep=".") 
+    ids = paste(mlStats$trip, mlStats$set, sep=".")
     uu = which( duplicated( ids ) )
     if (length(uu)>0 ) {
       message( "Duplicated minilog data (mlStats) trip/set:" )
@@ -663,10 +663,10 @@ snowcrab.db = function( DS, p=NULL, yrs=NULL) {
 
     set = merge( set, set_sb, by=c("trip", "set" ), all.x=TRUE, all.y=FALSE, sort=FALSE )
     if (nrow(set) !=nI ) stop( "merge error with seabird" )
-    
+
     set = merge( set, set_ml, by=c("trip", "set" ), all.x=TRUE, all.y=FALSE, sort=FALSE, suffixes=c("", ".ml" ))
     if (nrow(set) !=nI ) stop( "merge error with minilogs" )
-    
+
     # use seabird data as the standard, replace with minilog data where missing
     ii = which(!is.finite( set$t0) )
     if (length(ii) > 0 )  set$t0[ ii] = set$t0.ml[ii]
@@ -738,7 +738,7 @@ snowcrab.db = function( DS, p=NULL, yrs=NULL) {
     set$lat[ilat] = set$slat[ilat]
 
     set = lonlat2planar(set, proj.type=p$internal.projection) # get planar projections of lon/lat in km
-    
+
     grid = spatial_grid(p=p, DS="planar.coords")
 
     message("probably do not need to grid any longer")
@@ -749,11 +749,11 @@ snowcrab.db = function( DS, p=NULL, yrs=NULL) {
     # merge surfacearea from net mesnuration into the database
     set = clean.surface.area( set, qreject = c( 0, 1 ))
 
-    zmod = glm( Zx ~ z - 1, data=set) 
+    zmod = glm( Zx ~ z - 1, data=set)
     zres = residuals( zmod)
     # hist(abs(zres), "fd")
     not.reliable = which( abs(zres) > 25 )
-    set$z[not.reliable] = NA  # force these to a default lookup from from bathymetry.db  
+    set$z[not.reliable] = NA  # force these to a default lookup from from bathymetry.db
 
     set$slon = NULL
     set$slat = NULL
@@ -822,7 +822,7 @@ snowcrab.db = function( DS, p=NULL, yrs=NULL) {
     }
 
     factors = c("trip", "set")
-    nsInit = nrow( snowcrab.db( DS="setInitial" )) 
+    nsInit = nrow( snowcrab.db( DS="setInitial" ))
 
     X = snowcrab.db( DS="set.clean" )
     if ( nrow(X) != nsInit) stop("Merge issues")
@@ -1031,8 +1031,8 @@ snowcrab.db = function( DS, p=NULL, yrs=NULL) {
       set$z[ii] = bathymetry.lookup( p=p, locs=set[ii,c("plon", "plat")], vnames="z" )
     }
     set$z = log( set$z )
-    # as of 2016, there are 11 locations where there are missing depths, because they are outside the area defined for snow crab ... they are all bad sets too (set_type=4) in NENS ... ignoring for now 
- 
+    # as of 2016, there are 11 locations where there are missing depths, because they are outside the area defined for snow crab ... they are all bad sets too (set_type=4) in NENS ... ignoring for now
+
     # bring in time varing features:: temperature
     ii = which(!is.finite(set$t))
     if (length(ii)>0){
@@ -1054,5 +1054,3 @@ snowcrab.db = function( DS, p=NULL, yrs=NULL) {
   }
 
 }  ## end snowcrab.db
-
-

@@ -14,12 +14,12 @@ p = bio.snowcrab::load.environment( year.assessment=year.assessment )
 if (obtain.database.snapshot) {
   # yrs = 1996:p$year.assessment  # to redo all years
   yrs = p$year.assessment # to update only the current year
-  snowcrab.db( DS="set.rawdata.redo", yrs=yrs ) # Copy over datadirectory ("bio.snowcrab"), "data", "trawl", "SNCRABSETS"
-  snowcrab.db( DS="det.rawdata.redo", yrs=yrs ) # Copy over datadirectory ("bio.snowcrab"), "data", "trawl", "SNCRABDETAILS"
-  snowcrab.db( DS="cat.rawdata.redo", yrs=yrs ) # Copy over datadirectory ("bio.snowcrab"), "data", "trawl", "SNTRAWLBYCATCH"
-  logbook.db(  DS="rawdata.logbook.redo", yrs=yrs ) #Copy over datadirectory ("bio.snowcrab"), "data", "logbook", "datadump"
-  logbook.db(  DS="rawdata.licence.redo" ) #Copy over datadirectory ("bio.snowcrab"), "data", "logbook", "lic.datadump.rdata"
-  logbook.db(  DS="rawdata.areas.redo" ) #Copy over datadirectory ("bio.snowcrab"), "data", "observer", "datadump"
+  snowcrab.db( DS="set.rawdata.redo", yrs=yrs ) #  datadirectory ("bio.snowcrab"), "data", "trawl", "SNCRABSETS"
+  snowcrab.db( DS="det.rawdata.redo", yrs=yrs ) #  datadirectory ("bio.snowcrab"), "data", "trawl", "SNCRABDETAILS"
+  snowcrab.db( DS="cat.rawdata.redo", yrs=yrs ) #  datadirectory ("bio.snowcrab"), "data", "trawl", "SNTRAWLBYCATCH"
+  logbook.db(  DS="rawdata.logbook.redo", yrs=yrs ) #  datadirectory ("bio.snowcrab"), "data", "logbook", "datadump"
+  logbook.db(  DS="rawdata.licence.redo" ) # datadirectory ("bio.snowcrab"), "data", "logbook", "lic.datadump.rdata"
+  logbook.db(  DS="rawdata.areas.redo" ) # datadirectory ("bio.snowcrab"), "data", "observer", "datadump"
   observer.db( DS="rawdata.redo", yrs=yrs )
 }
 
