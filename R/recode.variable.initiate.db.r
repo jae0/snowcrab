@@ -14,7 +14,9 @@
       if(varname %in% names(tl$logs)) x = tl$logs[, varname]
       if (varname %in% tl$log.transform) {
         transform="log10"
-        offset = offset.determine(x)
+        offset = 0
+        y = x[ is.finite(x) & x>0 ]
+        if( length(y) > 0) offset = min(y)    
       } else if (varname %in% tl$scaled.centered) {
         transform = "scaled+centered"
         y = scale( x )
