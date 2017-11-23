@@ -2,7 +2,7 @@
 require(aegis.env)
 
 if (!exists("year.assessment")) {
-  year.assessment=lubridate::year(Sys.Date())      # year.assessment 
+  year.assessment=lubridate::year(Sys.Date())      # year.assessment
   year.assessment=lubridate::year(Sys.Date()) -1   # or year previous to current
 }
 p = bio.snowcrab::load.environment( year.assessment=year.assessment )
@@ -12,13 +12,15 @@ p = bio.snowcrab::load.environment( year.assessment=year.assessment )
 #BZ 2017- Can now be run on a Linux machine. rawdata connection changed to ROracle
 # !!!!!! --------- these should be run on a windows machine: !!!!!!!!! <--------- READ THIS
 if (obtain.database.snapshot) {
-  snowcrab.db( DS="set.rawdata.redo", yrs=1996:p$year.assessment ) # Copy over datadirectory ("bio.snowcrab"), "data", "trawl", "SNCRABSETS"
-  snowcrab.db( DS="det.rawdata.redo", yrs=1996:p$year.assessment ) # Copy over datadirectory ("bio.snowcrab"), "data", "trawl", "SNCRABDETAILS"
-  snowcrab.db( DS="cat.rawdata.redo", yrs=1996:p$year.assessment ) # Copy over datadirectory ("bio.snowcrab"), "data", "trawl", "SNTRAWLBYCATCH"
-  logbook.db(  DS="rawdata.logbook.redo", yrs=1996:p$year.assessment ) #Copy over datadirectory ("bio.snowcrab"), "data", "logbook", "datadump"
+  # yrs = 1996:p$year.assessment  # to redo all years
+  yrs = p$year.assessment # to update only the current year
+  snowcrab.db( DS="set.rawdata.redo", yrs=yrs ) # Copy over datadirectory ("bio.snowcrab"), "data", "trawl", "SNCRABSETS"
+  snowcrab.db( DS="det.rawdata.redo", yrs=yrs ) # Copy over datadirectory ("bio.snowcrab"), "data", "trawl", "SNCRABDETAILS"
+  snowcrab.db( DS="cat.rawdata.redo", yrs=yrs ) # Copy over datadirectory ("bio.snowcrab"), "data", "trawl", "SNTRAWLBYCATCH"
+  logbook.db(  DS="rawdata.logbook.redo", yrs=yrs ) #Copy over datadirectory ("bio.snowcrab"), "data", "logbook", "datadump"
   logbook.db(  DS="rawdata.licence.redo" ) #Copy over datadirectory ("bio.snowcrab"), "data", "logbook", "lic.datadump.rdata"
   logbook.db(  DS="rawdata.areas.redo" ) #Copy over datadirectory ("bio.snowcrab"), "data", "observer", "datadump"
-  observer.db( DS="rawdata.redo", yrs=1996:p$year.assessment )
+  observer.db( DS="rawdata.redo", yrs=yrs )
 }
 
 # -------------------------------------------------------------------------------------
@@ -57,7 +59,7 @@ if (obtain.database.snapshot) {
                # fn="SurveyDataUpdate"
               #)
 
-  
+
 # -------------------------------------------------------------------------------------
 # process the net configuration and the temperatures from seabird, netmind, etc ..
 # if just updating a single year, run the following, else all years will be run by default
@@ -75,7 +77,7 @@ if (obtain.database.snapshot) {
 
   #JC note: 1998:2002 have about 60 files with no data, just a short header
 
-  #MG I'm not sure why these stats are not being written automatically, neet to set it in the code above to run these after data is loaded 
+  #MG I'm not sure why these stats are not being written automatically, neet to set it in the code above to run these after data is loaded
   ##-- JC: mostly as "stats" can fail and need to be re-run. No need to re-run "load" steps.
 
   p$netmensuration.problems = c( "add trouble id's here") # add troublesome id's here .. eventually move into their respective functions
@@ -88,7 +90,7 @@ if (obtain.database.snapshot) {
 # merge in netmind, minilog, seabird, esonar data and do some sanity checks
 # Can add any datachecks that might improve overall data quality
 # BZ for 2017- If errors repeat and are not actually a problem, create an override
-  
+
     problems = data.quality.check( type="minilog.mismatches", p=p )
     problems = data.quality.check( type="minilog.load", p=p)
     problems = data.quality.check( type="minilog.dateproblems", p=p) #track down why ~all sets are giving mismatches
@@ -103,10 +105,10 @@ if (obtain.database.snapshot) {
 
 
 # -------------------------------------------------------------------------------------
-# Finalize the data sets 
+# Finalize the data sets
 # MG det.initial.redo updates and processes morphology. This code now identifies morphology errors, which must be
 # checked with written logs, then sent to database and put in debugging here and re-run
-    
+
   snowcrab.db( DS="det.initial.redo", p=p )
   snowcrab.db( DS="det.georeferenced.redo", p=p )
   snowcrab.db( DS="cat.initial.redo", p=p )
@@ -114,12 +116,12 @@ if (obtain.database.snapshot) {
 
   snowcrab.db( DS="set.biologicals.redo", p=p )
   snowcrab.db( DS="set.complete.redo", p=p )
- 
+
 
 # -------------------------------------------------------------------------------------
 # update a database of simple transformation ranges, etc.. for plotting range, etc.
   REPOS = bio.snowcrab::recode.variable.initiate.db()
- 
+
 # -------------------------------------------------------------------------------------
 # create some simple/crude timeseries
   snowcrab.timeseries.db( DS="observer.redo", p=p )
@@ -128,6 +130,3 @@ if (obtain.database.snapshot) {
 
   # example: or to get a quick one for a few vars of interest, region of interest ... no saving to file
   snowcrab.timeseries.db( DS="biologicals.direct", p=p, regions='cfa4x', vn=c('R0.mass'), trim=0 )  # returns the data
-
-
-  

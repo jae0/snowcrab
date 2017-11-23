@@ -19,7 +19,7 @@
 			}
 
 			con=ROracle::dbConnect(DBI::dbDriver("Oracle"),dbname=oracle.snowcrab.server , username=oracle.snowcrab.user, password=oracle.snowcrab.password, believeNRows=F)
-      
+
 			for ( YR in yrs ) {
 				fny = file.path( fn.root, paste( YR,"rdata", sep="."))
 				query = paste(
@@ -102,10 +102,10 @@
 
       # additional constraint ..
       # remove data that are strange in location .. land
-  
+
       proj4strvalue=CRS("+proj=longlat +datum=WGS84")
       V = SpatialPoints( lgbk[,c("lon", "lat")], proj4strvalue )
-      
+
       coastlineSp =  aegis::coastline.db( p=p, DS="mapdata.coastPolygon", crs="+proj=longlat +datum=WGS84" )
 
       # coastline = maps::map( database="worldHires", regions=c("Canada", "US"), fill=TRUE, plot=FALSE )
@@ -115,19 +115,19 @@
 
       stopifnot( ncol(keep)==1 )
       coastlineSp = coastlineSp[drop(keep),]
-      land = which ( !is.na(over( V, coastlineSp ) )) 
+      land = which ( !is.na(over( V, coastlineSp ) ))
       lgbk = lgbk[ -land, ]
 
-      # filter by depth .. 
+      # filter by depth ..
       # use the match/map syntax in bathymetry and filter out shallow sets .. < 10 m? TODO
       # keep those in the domain and deeper than depth=10 m
-      z = bathymetry.db(p=p, DS="baseline", varnames=c("plon", "plat", "z")) 
+      z = bathymetry.db(p=p, DS="baseline", varnames=c("plon", "plat", "z"))
       aoi = which( z$z > 10 ) # negative = above land
-      pidz = stm::array_map( "xy->1", z[aoi,c("plon", "plat")], gridparams=p$gridparams ) 
+      pidz = stm::array_map( "xy->1", z[aoi,c("plon", "plat")], gridparams=p$gridparams )
       pidl = stm::array_map( "xy->1", lgbk[,c("plon", "plat")], gridparams=p$gridparams )
-      inaoi = which( is.finite( match( pidl, pidz ) )) 
+      inaoi = which( is.finite( match( pidl, pidz ) ))
       good = which(is.finite( inaoi))
-      lgbk = lgbk[ good,]    
+      lgbk = lgbk[ good,]
 
 
       # only accept "correctly" positioned data within each subarea ... in case miscoded data have a large effect
@@ -248,7 +248,7 @@
 
       x = lonlat2planar( x,  proj.type=p$internal.projection )
       logbook = x
- 
+
       save (logbook, file=filename, compress=T )  # this is for plotting maps, etc
 
       return( "Complete" )
@@ -318,7 +318,7 @@
         out$plat = as.numeric(tmp[,2])
         out$plon = as.numeric(tmp[,1])
         out$gridid = as.character( out$gridid )
- 
+
         if (Y) out$yr = as.numeric(tmp[,3])
 
         fg = out[ which(is.finite(out$plat+out$plon)), ]
@@ -506,5 +506,3 @@
 
 
   }
-
-
