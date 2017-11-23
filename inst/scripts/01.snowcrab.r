@@ -111,6 +111,7 @@ if (obtain.database.snapshot) {
 
   snowcrab.db( DS="det.initial.redo", p=p )
   snowcrab.db( DS="det.georeferenced.redo", p=p )
+
   snowcrab.db( DS="cat.initial.redo", p=p )
   snowcrab.db( DS="cat.georeferenced.redo", p=p )
 
