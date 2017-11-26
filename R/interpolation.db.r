@@ -204,7 +204,7 @@
     if (DS =="habitat.temperatures") {
 
       bm = interpolation.db( p=p, DS="biomass" )
-      ps = snowcrab_stm(p=p, DS="output_data", voi=p$selection$name )
+      ps = snowcrab_stm(p=p, DS="output_data" ) # , voi=p$selection$name
 
       temp = ps$t * bm$h
 

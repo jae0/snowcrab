@@ -58,7 +58,7 @@ p$stm_distance_statsgrid = 2 # resolution (km) of data aggregation (i.e. generat
 p$stm_distance_prediction = p$stm_distance_statsgrid * 0.75 # this is a half window km
 p$stm_distance_scale = 50
 
-p = bio.snowcrab::snowcrab.parameters( p=p, DS="stm", varname=p$selection$name  )
+p = snowcrab_stm( p=p, DS="parameters" )
 
 # o = snowcrab_stm(p=p, DS="stm_inputs" )  # create fields for 
 stm( p=p, DATA='snowcrab_stm( p=p, DS="stm_inputs" )', runmode="stage2" ) # 30 min
@@ -138,7 +138,7 @@ p$stm_distance_prediction = p$stm_distance_statsgrid * 0.75 # this is a half win
 p$stm_distance_scale = 50
 
 
-p = bio.snowcrab::snowcrab.parameters( p=p, DS="stm", varname=p$selection$name  )
+p = snowcrab_stm( p=p, DS="parameters" )
 
 # o = snowcrab_stm(p=p, DS="stm_inputs" )  # create fields for 
 DATA='snowcrab_stm( p=p, DS="stm_inputs" )'
@@ -214,7 +214,7 @@ p$selection=list(
   drop.groundfish.data=TRUE # esp from 1970 to 1999 measurement of invertebrates was sporatic .. zero-values are dropped as they are unreliable 
 )
 
-p = bio.snowcrab::snowcrab.parameters( p=p, DS="stm", varname=p$selection$name  )
+p = snowcrab_stm( p=p, DS="parameters" )
 
 interpolation.db( DS="biomass.redo", p=p  )
 interpolation.db( DS="biomass.map", p=p  )
