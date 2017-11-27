@@ -1,5 +1,5 @@
 
-snowcrab.parameters = function( p=NULL, year.assessment=NULL ) {
+snowcrab.parameters = function( p=NULL, year.assessment=NULL, ... ) {
 
   # ---------------------
   # deal with additional passed parameters
