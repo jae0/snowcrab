@@ -113,7 +113,8 @@ if(grepl('4x',tolower(areas))) years = 2004:p$year.assessment
      
   dev.off()
   #cmd( "convert   -trim -quality 9  -geometry 200% -frame 2% -mattecolor white -antialias ", paste(fn, "pdf", sep="."),  paste(fn, "png", sep=".") )
-   
+  print(fn)
+    
   return("Done")
   }
 
