@@ -1,5 +1,5 @@
 
-snowcrab_stm = function( ip=NULL, DS=NULL, p=NULL, year=NULL, ret=NULL, varnames=NULL, ... ) {
+snowcrab_stm = function( ip=NULL, DS=NULL, p=NULL, year=NULL, ret="mean", varnames=NULL, ... ) {
 
   # deal with additional passed parameters
   # ---------------------
@@ -355,7 +355,6 @@ snowcrab_stm = function( ip=NULL, DS=NULL, p=NULL, year=NULL, ret=NULL, varnames
 
     if (DS %in% c("predictions")) {
       P = V = W = NULL
-      if (is.null(ret)) ret="mean"
       fn = file.path( projectdir, paste("stm.prediction", ret,  year, "rdata", sep=".") )
       if (file.exists(fn) ) load(fn)
       if (ret=="mean") return (P)
@@ -645,7 +644,7 @@ snowcrab_stm = function( ip=NULL, DS=NULL, p=NULL, year=NULL, ret=NULL, varnames
         loc=projectdir, fn=outfn, annot=annot, at=datarange , col.regions=cols,
         corners=p$corners, spatial.domain=p$spatial.domain )
 
-      H = snowcrab_stm( p=p, DS="predictions", year=y, ret="sd" )
+      H = snowcrab_stm( p=p, DS="predictions", year=y, ret="lb" )
       if (is.null(H)) next ()
       xyz = cbind(loc, H)
       uu = which( is.finite(rowSums(xyz)))
@@ -659,11 +658,31 @@ snowcrab_stm = function( ip=NULL, DS=NULL, p=NULL, year=NULL, ret=NULL, varnames
       }
       cols = color.code( "blue.black", datarange )
       annot = gsub( ".", " ", toupper(voi), fixed=TRUE )
-      outfn = paste( voi, "sd", y, sep=".")
-
+      outfn = paste( voi, "lb", y, sep=".")
       aegis::aegis_map( xyz=xyz, cfa.regions=FALSE, depthcontours=TRUE, pts=NULL,
         loc=projectdir, fn=outfn, annot=annot, at=datarange , col.regions=cols,
         corners=p$corners, spatial.domain=p$spatial.domain )
+
+
+      H = snowcrab_stm( p=p, DS="predictions", year=y, ret="ub" )
+      if (is.null(H)) next ()
+      xyz = cbind(loc, H)
+      uu = which( is.finite(rowSums(xyz)))
+      if (length(uu) < 10) next()
+      xyz = xyz[uu,]
+      datarange = NULL
+      datarange = snowcrab.lookup.mapparams( DS="datarange", voi ) # hardcoded data ranges
+      if (is.null(datarange)) {
+        datarange=quantile(xyz[,3], probs=c(0.001,0.999), na.rm=TRUE)
+        datarange = seq( datarange[1], datarange[2], length.out=100 )
+      }
+      cols = color.code( "blue.black", datarange )
+      annot = gsub( ".", " ", toupper(voi), fixed=TRUE )
+      outfn = paste( voi, "ub", y, sep=".")
+      aegis::aegis_map( xyz=xyz, cfa.regions=FALSE, depthcontours=TRUE, pts=NULL,
+        loc=projectdir, fn=outfn, annot=annot, at=datarange , col.regions=cols,
+        corners=p$corners, spatial.domain=p$spatial.domain )
+
       print( file.path( projectdir, outfn))
     }
 
