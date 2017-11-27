@@ -128,6 +128,8 @@
 
   dev.off()
   #cmd( "convert   -trim -quality 9  -geometry 200% -frame 2% -mattecolor white -antialias ", paste(fn, "pdf", sep="."),  paste(fn, "png", sep=".") )
+  
+  print(fn)
    
       # females
   fn = file.path(  outdir, "female.pdf" )
@@ -196,6 +198,8 @@
     dev.off()
  #cmd( "convert   -trim -quality 9  -geometry 200% -frame 2% -mattecolor white -antialias ", paste(fn, "pdf", sep="."),  paste(fn, "png", sep=".") )
  
+  print(fn)
+  
   return("Done")
   }
 
