@@ -16,6 +16,8 @@
     a$year = a$yr
     a$lat = NA
     a$lon = NA
+    a$plon = NA
+    a$plat = NA
     a$depth = NA
     a$landings = a$landings.tons * 1000
     a$effort = a$effort.100traps * 100
