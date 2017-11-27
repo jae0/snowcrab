@@ -13,9 +13,9 @@ snowcrab_stm = function( ip=NULL, DS=NULL, p=NULL, year=NULL, ret=NULL, varnames
   # required:
   # over-ride default dependent variable name if it exists
   voi = NULL # variable of interest
-  if (is.null(voi)) if (exists("selection",p)) if (exists("name", p$selection)) voi=p$selection$name
+  if (exists("selection",p)) if (exists("name", p$selection)) voi=p$selection$name
   if (is.null(voi)) if (exists("variables",p)) if (exists("Y", p$variables))    voi=p$variables$Y
-  if (is.null(voi)) stop( "p$selection$name nor p$variable$Y needs to be specified" )
+  if (is.null(voi)) stop( "p$selection$name or p$variable$Y needs to be specified" )
 
   # ---------------------
   if (exists( "libs", p)) RLibrary( p$libs )
@@ -118,7 +118,6 @@ snowcrab_stm = function( ip=NULL, DS=NULL, p=NULL, year=NULL, ret=NULL, varnames
     }
     return(p)
   }
-
 
 
   # --------------------------
@@ -347,89 +346,35 @@ snowcrab_stm = function( ip=NULL, DS=NULL, p=NULL, year=NULL, ret=NULL, varnames
   # -----------------------------------
 
 
-    if ( DS %in% c("predictions", "predictions.redo" ) ) {
-      # NOTE: the primary interpolated data were already created by stm.
-      # This routine points to this data and also creates
-      # subsets of the data where required, determined by "spatial.domain.subareas"
+  if ( DS %in% c("predictions", "predictions.redo" ) ) {
+    # NOTE: the primary interpolated data were already created by stm.
+    # This routine points to this data and also creates
+    # subsets of the data where required, determined by "spatial.domain.subareas"
 
-      projectdir = file.path(p$data_root, "modelled", voi, p$spatial.domain )
+    projectdir = file.path(p$data_root, "modelled", voi, p$spatial.domain )
 
-      if (DS %in% c("predictions")) {
-        P = V = W = NULL
-        if (is.null(ret)) ret="mean"
-        fn = file.path( projectdir, paste("stm.prediction", ret,  year, "rdata", sep=".") )
-        if (file.exists(fn) ) load(fn)
-        if (ret=="mean") return (P)
-        if (ret=="lb") return( V)
-        if (ret=="ub") return( W)
-      }
-
-      if (exists( "libs", p)) RLibrary( p$libs )
-      if ( is.null(ip) ) ip = 1:p$nruns
-
-      # downscale and warp from p(0) -> p1
-
-      for ( r in ip ) {
-        # print (r)
-        year = p$runs[r, "yrs"]
-        # default domain
-        PP0 = stm_db( p=p, DS="stm.prediction", yr=year, ret="mean")
-        VV0 = stm_db( p=p, DS="stm.prediction", yr=year, ret="lb")
-        WW0 = stm_db( p=p, DS="stm.prediction", yr=year, ret="ub")
-        p0 = spatial_parameters( p=p ) # from
-        L0 = bathymetry.db( p=p0, DS="baseline" )
-        L0i = stm::array_map( "xy->2", L0[, c("plon", "plat")], gridparams=p0$gridparams )
-        sreg = setdiff( p$spatial.domain.subareas, p$spatial.domain )
-
-        for ( gr in sreg ) {
-          p1 = spatial_parameters( p=p, spatial.domain=gr ) # 'warping' from p -> p1
-          L1 = bathymetry.db( p=p1, DS="baseline" )
-          L1i = stm::array_map( "xy->2", L1[, c("plon", "plat")], gridparams=p1$gridparams )
-          L1 = planar2lonlat( L1, proj.type=p1$internal.crs )
-          L1$plon_1 = L1$plon # store original coords
-          L1$plat_1 = L1$plat
-          L1 = lonlat2planar( L1, proj.type=p0$internal.crs )
-          p1$wght = fields::setup.image.smooth( nrow=p1$nplons, ncol=p1$nplats, dx=p1$pres, dy=p1$pres, theta=p1$pres, xwidth=4*p1$pres, ywidth=4*p1$pres )
-          P = spatial_warp( PP0[], L0, L1, p0, p1, "fast", L0i, L1i )
-          V = spatial_warp( VV0[], L0, L1, p0, p1, "fast", L0i, L1i )
-          W = spatial_warp( WW0[], L0, L1, p0, p1, "fast", L0i, L1i )
-          projectdir_p1 = file.path(p$data_root, "modelled", voi, p1$spatial.domain )
-          dir.create( projectdir_p1, recursive=T, showWarnings=F )
-          fn1_sg = file.path( projectdir_p1, paste("stm.prediction.mean",  year, "rdata", sep=".") )
-          fn2_sg = file.path( projectdir_p1, paste("stm.prediction.lb",  year, "rdata", sep=".") )
-          fn3_sg = file.path( projectdir_p1, paste("stm.prediction.ub",  year, "rdata", sep=".") )
-          save( P, file=fn1_sg, compress=T )
-          save( V, file=fn2_sg, compress=T )
-          save( W, file=fn3_sg, compress=T )
-          print (fn1_sg)
-        }
-      }
-      return ("Completed")
-
-      if (0) {
-        levelplot( P ~ plon_1 + plat_1, L1, aspect="iso", labels=FALSE, pretty=TRUE, xlab=NULL,ylab=NULL,scales=list(draw=FALSE) )
-      }
-
+    if (DS %in% c("predictions")) {
+      P = V = W = NULL
+      if (is.null(ret)) ret="mean"
+      fn = file.path( projectdir, paste("stm.prediction", ret,  year, "rdata", sep=".") )
+      if (file.exists(fn) ) load(fn)
+      if (ret=="mean") return (P)
+      if (ret=="lb") return( V)
+      if (ret=="ub") return( W)
     }
 
+    if (exists( "libs", p)) RLibrary( p$libs )
+    if ( is.null(ip) ) ip = 1:p$nruns
 
-    #  -------------------------------
+    # downscale and warp from p(0) -> p1
 
-    if (DS %in% c(  "stm.stats", "stm.stats.redo" )){
-
-
-      if (DS %in% c("stm.stats")) {
-        stats = NULL
-        projectdir = file.path(p$data_root, "modelled", voi, p$spatial.domain )
-        fn = file.path( projectdir, paste( "stm.statistics", "rdata", sep=".") )
-        if (file.exists(fn) ) load(fn)
-        return( stats )
-      }
-
-      # downscale and warp from p(0) -> p1
+    for ( r in ip ) {
+      # print (r)
+      year = p$runs[r, "yrs"]
       # default domain
-      S0 = stm_db( p=p, DS="stats.to.prediction.grid" )
-      Snames = colnames(S0)
+      PP0 = stm_db( p=p, DS="stm.prediction", yr=year, ret="mean")
+      VV0 = stm_db( p=p, DS="stm.prediction", yr=year, ret="lb")
+      WW0 = stm_db( p=p, DS="stm.prediction", yr=year, ret="ub")
       p0 = spatial_parameters( p=p ) # from
       L0 = bathymetry.db( p=p0, DS="baseline" )
       L0i = stm::array_map( "xy->2", L0[, c("plon", "plat")], gridparams=p0$gridparams )
@@ -444,165 +389,210 @@ snowcrab_stm = function( ip=NULL, DS=NULL, p=NULL, year=NULL, ret=NULL, varnames
         L1$plat_1 = L1$plat
         L1 = lonlat2planar( L1, proj.type=p0$internal.crs )
         p1$wght = fields::setup.image.smooth( nrow=p1$nplons, ncol=p1$nplats, dx=p1$pres, dy=p1$pres, theta=p1$pres, xwidth=4*p1$pres, ywidth=4*p1$pres )
-        stats = matrix( NA, ncol=ncol(S0), nrow=nrow(L1) )
-        for ( i in 1:ncol(S0) ) {
-          stats[,i] = spatial_warp( S0[,i], L0, L1, p0, p1, "fast", L0i, L1i )
-        }
-        colnames(stats) = Snames
+        P = spatial_warp( PP0[], L0, L1, p0, p1, "fast", L0i, L1i )
+        V = spatial_warp( VV0[], L0, L1, p0, p1, "fast", L0i, L1i )
+        W = spatial_warp( WW0[], L0, L1, p0, p1, "fast", L0i, L1i )
         projectdir_p1 = file.path(p$data_root, "modelled", voi, p1$spatial.domain )
         dir.create( projectdir_p1, recursive=T, showWarnings=F )
-        fn1_sg = file.path( projectdir_p1, paste("stm.statistics", "rdata", sep=".") )
-        save( stats, file=fn1_sg, compress=T )
+        fn1_sg = file.path( projectdir_p1, paste("stm.prediction.mean",  year, "rdata", sep=".") )
+        fn2_sg = file.path( projectdir_p1, paste("stm.prediction.lb",  year, "rdata", sep=".") )
+        fn3_sg = file.path( projectdir_p1, paste("stm.prediction.ub",  year, "rdata", sep=".") )
+        save( P, file=fn1_sg, compress=T )
+        save( V, file=fn2_sg, compress=T )
+        save( W, file=fn3_sg, compress=T )
         print (fn1_sg)
       }
-      return ("Completed")
+    }
+    return ("Completed")
 
-      if (0) {
-        levelplot( stats[,1] ~ plon_1 + plat_1, L1, aspect="iso", labels=FALSE, pretty=TRUE, xlab=NULL,ylab=NULL,scales=list(draw=FALSE) )
+    if (0) {
+      levelplot( P ~ plon_1 + plat_1, L1, aspect="iso", labels=FALSE, pretty=TRUE, xlab=NULL,ylab=NULL,scales=list(draw=FALSE) )
+    }
+
+  }
+
+
+  #  -------------------------------
+
+  if (DS %in% c(  "stm.stats", "stm.stats.redo" )){
+
+
+    if (DS %in% c("stm.stats")) {
+      stats = NULL
+      projectdir = file.path(p$data_root, "modelled", voi, p$spatial.domain )
+      fn = file.path( projectdir, paste( "stm.statistics", "rdata", sep=".") )
+      if (file.exists(fn) ) load(fn)
+      return( stats )
+    }
+
+    # downscale and warp from p(0) -> p1
+    # default domain
+    S0 = stm_db( p=p, DS="stats.to.prediction.grid" )
+    Snames = colnames(S0)
+    p0 = spatial_parameters( p=p ) # from
+    L0 = bathymetry.db( p=p0, DS="baseline" )
+    L0i = stm::array_map( "xy->2", L0[, c("plon", "plat")], gridparams=p0$gridparams )
+    sreg = setdiff( p$spatial.domain.subareas, p$spatial.domain )
+
+    for ( gr in sreg ) {
+      p1 = spatial_parameters( p=p, spatial.domain=gr ) # 'warping' from p -> p1
+      L1 = bathymetry.db( p=p1, DS="baseline" )
+      L1i = stm::array_map( "xy->2", L1[, c("plon", "plat")], gridparams=p1$gridparams )
+      L1 = planar2lonlat( L1, proj.type=p1$internal.crs )
+      L1$plon_1 = L1$plon # store original coords
+      L1$plat_1 = L1$plat
+      L1 = lonlat2planar( L1, proj.type=p0$internal.crs )
+      p1$wght = fields::setup.image.smooth( nrow=p1$nplons, ncol=p1$nplats, dx=p1$pres, dy=p1$pres, theta=p1$pres, xwidth=4*p1$pres, ywidth=4*p1$pres )
+      stats = matrix( NA, ncol=ncol(S0), nrow=nrow(L1) )
+      for ( i in 1:ncol(S0) ) {
+        stats[,i] = spatial_warp( S0[,i], L0, L1, p0, p1, "fast", L0i, L1i )
+      }
+      colnames(stats) = Snames
+      projectdir_p1 = file.path(p$data_root, "modelled", voi, p1$spatial.domain )
+      dir.create( projectdir_p1, recursive=T, showWarnings=F )
+      fn1_sg = file.path( projectdir_p1, paste("stm.statistics", "rdata", sep=".") )
+      save( stats, file=fn1_sg, compress=T )
+      print (fn1_sg)
+    }
+    return ("Completed")
+
+    if (0) {
+      levelplot( stats[,1] ~ plon_1 + plat_1, L1, aspect="iso", labels=FALSE, pretty=TRUE, xlab=NULL,ylab=NULL,scales=list(draw=FALSE) )
+    }
+  }
+
+
+  #  -------------------------------
+
+
+  if (DS %in% c("complete", "complete.redo") ) {
+    # assemble data for a given project
+
+    if (DS=="complete") {
+      IC = NULL
+      projectdir = file.path(p$data_root, "modelled", voi, p$spatial.domain )
+      dir.create(projectdir, recursive=T, showWarnings=F)
+      outfile =  file.path( projectdir, paste( "snowcrab", "complete", p$spatial.domain, "rdata", sep= ".") )
+      if ( file.exists( outfile ) ) load( outfile )
+      Inames = names(IC)
+      if (is.null(varnames)) varnames=Inames
+      varnames = intersect( Inames, varnames )
+      if (length(varnames) == 0) varnames=Inames  # no match .. send all
+      IC = IC[ , varnames]
+      return(IC)
+    }
+
+    if (exists( "libs", p)) RLibrary( p$libs )
+
+    grids = unique( c(p$spatial.domain.subareas , p$spatial.domain ) ) # operate upon every domain
+
+    for (gr in grids ) {
+      print(gr)
+
+      p1 = spatial_parameters( p=p, spatial.domain=gr ) #target projection
+      L1 = bathymetry.db(p=p1, DS="baseline")
+
+      BS = snowcrab_stm( p=p1, DS="stm.stats" )
+      colnames(BS) = paste(voi, colnames(BS), sep=".")
+      IC = cbind( L1, BS )
+
+      # climatology
+      nL1 = nrow(L1)
+      PS = PSlb = PSub = matrix( NA, nrow=nL1, ncol=p$ny )
+      if (is.null(voi)) p1$variables$Y = voi # need to send this to get the correct results
+      for (iy in 1:p$ny) {
+        yr = p$yrs[iy]
+        PS[,iy] = stm_db( p=p1, DS="stm.prediction", yr=yr, ret="mean")
+        PSlb[,iy] = stm_db( p=p1, DS="stm.prediction", yr=yr, ret="lb")
+        PSub[,iy] = stm_db( p=p1, DS="stm.prediction", yr=yr, ret="ub")
       }
 
+      # qPS = quantile( PS, probs=p$stm_quantile_bounds, na.rm=TRUE )
+      # u = which( PS < qPS[1])
+      # if (length(u)>0) PS[u] = qPS[1]
+      # v = which( PS > qPS[2])
+      # if (length(v)>0) PS[v] = qPS[2]
+
+      # qPSlb = quantile( PSlb, probs=p$stm_quantile_bounds, na.rm=TRUE )
+      # u = which( PSlb < qPSlb[1])
+      # if (length(u)>0) PSlb[u] = qPSlb[1]
+      # v = which( PSlb > qPSlb[2])
+      # if (length(v)>0) PSlb[v] = qPSlb[2]
+
+      # qPSub = quantile( PSub, probs=p$stm_quantile_bounds, na.rm=TRUE )
+      # u = which( PSub < qPSub[1])
+      # if (length(u)>0) PSub[u] = qPSub[1]
+      # v = which( PSub > qPSub[2])
+      # if (length(v)>0) PSub[v] = qPSub[2]
+
+      CL = cbind( apply( PS, 1, mean, na.rm=TRUE ),
+                  apply( PSlb, 1, mean, na.rm=TRUE ),
+                  apply( PSub, 1, mean, na.rm=TRUE ) )
+      colnames(CL) = paste( voi, c("mean", "lb", "ub"), "climatology", sep=".")
+      IC = cbind( IC, CL )
+      PS = PSlb = PSub = NULL
+
+      projectdir = file.path(p$data_root, "modelled", voi, p1$spatial.domain )
+      dir.create( projectdir, recursive=T, showWarnings=F )
+      outfile =  file.path( projectdir, paste( "snowcrab", "complete", p1$spatial.domain, "rdata", sep= ".") )
+      save( IC, file=outfile, compress=T )
+      print( outfile )
 
     }
 
+    return( "Complete" )
+  }
 
-    #  -------------------------------
+  # -------------------
 
+  if (DS %in% c("baseline", "baseline.redo") ) {
 
-    if (DS %in% c("complete", "complete.redo") ) {
-      # assemble data for a given project
-
-      if (DS=="complete") {
-        IC = NULL
-        projectdir = file.path(p$data_root, "modelled", voi, p$spatial.domain )
-        dir.create(projectdir, recursive=T, showWarnings=F)
-        outfile =  file.path( projectdir, paste( "snowcrab", "complete", p$spatial.domain, "rdata", sep= ".") )
-        if ( file.exists( outfile ) ) load( outfile )
-        Inames = names(IC)
-        if (is.null(varnames)) varnames=Inames
-        varnames = intersect( Inames, varnames )
-        if (length(varnames) == 0) varnames=Inames  # no match .. send all
-        IC = IC[ , varnames]
-        return(IC)
+    if ( DS=="baseline" ) {
+      BL = list()
+      for (bvn in varnames ) {
+        projectdir = file.path(p$data_root, "modelled", bvn, p$spatial.domain )
+        outfile =  file.path( projectdir, paste( "snowcrab", "baseline", ret, p$spatial.domain, "rdata", sep= ".") )
+        TS = NULL
+        load( outfile)
+        BL[[bvn]] = TS
       }
-
-      if (exists( "libs", p)) RLibrary( p$libs )
-
-      grids = unique( c(p$spatial.domain.subareas , p$spatial.domain ) ) # operate upon every domain
-
-      for (gr in grids ) {
-        print(gr)
-
-        p1 = spatial_parameters( p=p, spatial.domain=gr ) #target projection
-        L1 = bathymetry.db(p=p1, DS="baseline")
-
-        BS = snowcrab_stm( p=p1, DS="stm.stats" )
-        colnames(BS) = paste(voi, colnames(BS), sep=".")
-        IC = cbind( L1, BS )
-
-        # climatology
-        nL1 = nrow(L1)
-        PS = PSlb = PSub = matrix( NA, nrow=nL1, ncol=p$ny )
-        if (is.null(voi)) p1$variables$Y = voi # need to send this to get the correct results
-        for (iy in 1:p$ny) {
-          yr = p$yrs[iy]
-          PS[,iy] = stm_db( p=p1, DS="stm.prediction", yr=yr, ret="mean")
-          PSlb[,iy] = stm_db( p=p1, DS="stm.prediction", yr=yr, ret="lb")
-          PSub[,iy] = stm_db( p=p1, DS="stm.prediction", yr=yr, ret="ub")
-        }
-
-        # qPS = quantile( PS, probs=p$stm_quantile_bounds, na.rm=TRUE )
-        # u = which( PS < qPS[1])
-        # if (length(u)>0) PS[u] = qPS[1]
-        # v = which( PS > qPS[2])
-        # if (length(v)>0) PS[v] = qPS[2]
-
-        # qPSlb = quantile( PSlb, probs=p$stm_quantile_bounds, na.rm=TRUE )
-        # u = which( PSlb < qPSlb[1])
-        # if (length(u)>0) PSlb[u] = qPSlb[1]
-        # v = which( PSlb > qPSlb[2])
-        # if (length(v)>0) PSlb[v] = qPSlb[2]
-
-        # qPSub = quantile( PSub, probs=p$stm_quantile_bounds, na.rm=TRUE )
-        # u = which( PSub < qPSub[1])
-        # if (length(u)>0) PSub[u] = qPSub[1]
-        # v = which( PSub > qPSub[2])
-        # if (length(v)>0) PSub[v] = qPSub[2]
-
-        CL = cbind( apply( PS, 1, mean, na.rm=TRUE ),
-                    apply( PSlb, 1, mean, na.rm=TRUE ),
-                    apply( PSub, 1, mean, na.rm=TRUE ) )
-        colnames(CL) = paste( voi, c("mean", "lb", "ub"), "climatology", sep=".")
-        IC = cbind( IC, CL )
-        PS = PSlb = PSub = NULL
-
-        projectdir = file.path(p$data_root, "modelled", voi, p1$spatial.domain )
-        dir.create( projectdir, recursive=T, showWarnings=F )
-        outfile =  file.path( projectdir, paste( "snowcrab", "complete", p1$spatial.domain, "rdata", sep= ".") )
-        save( IC, file=outfile, compress=T )
-        print( outfile )
-
-      }
-
-      return( "Complete" )
+      return (BL)
     }
 
-    # -------------------
+    if (exists( "libs", p)) RLibrary( p$libs )
+    if (is.null(ip)) ip = 1:p$nruns
 
-    if (DS %in% c("baseline", "baseline.redo") ) {
+    p$variables$Y = voi # need to send this to get the correct results
+    grids = unique( c(p$spatial.domain.subareas , p$spatial.domain ) ) # operate upon every domain
 
-      if ( DS=="baseline" ) {
-        BL = list()
-        for (bvn in varnames ) {
-          projectdir = file.path(p$data_root, "modelled", bvn, p$spatial.domain )
-          outfile =  file.path( projectdir, paste( "snowcrab", "baseline", ret, p$spatial.domain, "rdata", sep= ".") )
-          TS = NULL
-          load( outfile)
-          BL[[bvn]] = TS
-        }
-        return (BL)
+    for (gr in grids ) {
+      print(gr)
+      p1 = spatial_parameters( p=p, spatial.domain=gr ) #target projection
+      projectdir = file.path(p$data_root, "modelled", voi, p1$spatial.domain )
+      dir.create( projectdir, recursive=T, showWarnings=F )
+      L1 = bathymetry.db(p=p1, DS="baseline")
+      nL1 = nrow(L1)
+      TS = matrix( NA, nrow=nL1, ncol=p$ny )
+      for (i in 1:p$ny ) {
+        TS[,i] = stm_db( p=p1, DS="stm.prediction", yr=p$yrs[i], ret="mean")
       }
-
-      if (exists( "libs", p)) RLibrary( p$libs )
-      if (is.null(ip)) ip = 1:p$nruns
-
-      p$variables$Y = voi # need to send this to get the correct results
-      grids = unique( c(p$spatial.domain.subareas , p$spatial.domain ) ) # operate upon every domain
-
-      for (gr in grids ) {
-        print(gr)
-        p1 = spatial_parameters( p=p, spatial.domain=gr ) #target projection
-        projectdir = file.path(p$data_root, "modelled", voi, p1$spatial.domain )
-        dir.create( projectdir, recursive=T, showWarnings=F )
-
-        L1 = bathymetry.db(p=p1, DS="baseline")
-        nL1 = nrow(L1)
-
-        TS = matrix( NA, nrow=nL1, ncol=p$ny )
-
-        for (i in 1:p$ny ) {
-          yr = p$yrs[i]
-          TS[,i] = stm_db( p=p1, DS="stm.prediction", yr=yr, ret="mean")
-         }
-
-        outfile =  file.path( projectdir, paste( "snowcrab", "baseline", "mean", p1$spatial.domain, "rdata", sep= ".") )
-        save( TS, file=outfile, compress=T )
-
-        TS = matrix( NA, nrow=nL1, ncol=p$ny )
-        for (i in 1:p$ny ) {
-          yr = p$yrs[i]
-          TS[,i] = stm_db( p=p1, DS="stm.prediction", yr=yr, ret="sd")
-         }
-
-        outfile =  file.path( projectdir, paste( "snowcrab", "baseline", "sd", p1$spatial.domain, "rdata", sep= ".") )
-        save( TS, file=outfile, compress=T )
-
-        print( outfile )
-
+      outfile =  file.path( projectdir, paste( "snowcrab", "baseline", "mean", p1$spatial.domain, "rdata", sep= ".") )
+      save( TS, file=outfile, compress=T )
+      TS = TS[] * NA
+      for (i in 1:p$ny ) {
+        TS[,i] = stm_db( p=p1, DS="stm.prediction", yr=p$yrs[i], ret="lb")
       }
-
-      return( "Complete" )
-
+      outfile =  file.path( projectdir, paste( "snowcrab", "baseline", "lb", p1$spatial.domain, "rdata", sep= ".") )
+      save( TS, file=outfile, compress=T )
+      TS = TS[] * NA
+      for (i in 1:p$ny ) {
+        TS[,i] = stm_db( p=p1, DS="stm.prediction", yr=p$yrs[i], ret="ub")
+      }
+      outfile =  file.path( projectdir, paste( "snowcrab", "baseline", "ub", p1$spatial.domain, "rdata", sep= ".") )
+      save( TS, file=outfile, compress=T )
     }
+    return( "Complete" )
+  }
 
 
   # -----------------------
