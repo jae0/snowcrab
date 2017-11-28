@@ -1,12 +1,12 @@
 
-  variable.recode = function( x, variable, direction="forward", rm.na=F ) {
+  variable.recode = function( x, variable, direction="forward", rm.na=F, lookup.table=NULL ) {
 
-    REPOS = snowcrab.db( DS="data.transforms" )
+    if (is.null(lookup.table)) lookup.table = snowcrab.db( DS="data.transforms" )
 
-    ii = which( REPOS$varname == variable )
+    ii = which( lookup.table$varname == variable )
     if (length(ii) == 0 ) { # missing from list .. print error message and stop to figure out why
       print( paste("Recode:", variable, "is missing from database, assuming no transformation"))
-      # tmp = REPOS[1,]
+      # tmp = lookup.table[1,]
       # tmp[1,] = c(variable, "none", 0, 1 )
       return( x )
     } else if ( length(ii) > 1 ) {
@@ -14,7 +14,7 @@
       stop()
     }
 
-    TF = REPOS[ii ,]
+    TF = lookup.table[ii ,]
     if ( TF$transform %in% c("", "none") ) {
       B = x
     }

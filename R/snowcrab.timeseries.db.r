@@ -30,32 +30,34 @@ snowcrab.timeseries.db = function( DS="default", p=NULL, regions=c( "cfa4x", "cf
     tsdata$ub = NA
     tsdata$lb = NA
 
+    lookup.table = snowcrab.db( p=p, DS="data.transforms" )
+
     for (vi in 1:length(vn) ) {
       v = vn[vi]
       if ( !is.numeric( dat[,v] ) ) next()
       print( paste( vi, v) )
-      XX = bio.snowcrab::variable.recode( dat[,v], v, direction="forward" ) # transform variables where necessary
+      XX = bio.snowcrab::variable.recode( dat[,v], v, direction="forward", lookup.table=lookup.table ) # transform variables where necessary
       for (r in regions) {
         ri = which( dat[,r] == r)
         if (length(ri)==0) next()
         XXmean = tapply( XX[ri], INDEX=dat$year[ri], FUN=mean, na.rm=TRUE )
         XXn =  tapply( XX[ri], INDEX=dat$year[ri], FUN=function(x) length(which(is.finite(x))) )
         XXse = tapply( XX[ri], INDEX=dat$year[ri], FUN=sd, na.rm=TRUE ) / XXn
-        XXsd = tapply( XX[ri], INDEX=dat$year[ri], FUN=sd, na.rm=TRUE ) 
+        XXsd = tapply( XX[ri], INDEX=dat$year[ri], FUN=sd, na.rm=TRUE )
         tsi = which(tsdata$variable==v & tsdata$region==r)
 
-        tsdata[ tsi,"mean"] = bio.snowcrab::variable.recode (XXmean[ tsdata[ tsi, "year"] ], v, direction="backward" )
+        tsdata[ tsi,"mean"] = bio.snowcrab::variable.recode (XXmean[ tsdata[ tsi, "year"] ], v, direction="backward", lookup.table=lookup.table )
         tsdata[ tsi,"n"] = XXn[ tsdata[ tsi, "year"] ]
-        tsdata[ tsi,"se"] = bio.snowcrab::variable.recode (XXse[ tsdata[ tsi, "year"] ], v, direction="backward" )
-        tsdata[ tsi,"sd"] = bio.snowcrab::variable.recode (XXsd[ tsdata[ tsi, "year"] ], v, direction="backward" )
+        tsdata[ tsi,"se"] = bio.snowcrab::variable.recode (XXse[ tsdata[ tsi, "year"] ], v, direction="backward" , lookup.table=lookup.table)
+        tsdata[ tsi,"sd"] = bio.snowcrab::variable.recode (XXsd[ tsdata[ tsi, "year"] ], v, direction="backward" , lookup.table=lookup.table)
         XXlb = XXmean - XXse* 1.96
         XXub = XXmean + XXse* 1.96
         if(sdci){
           XXlb = XXmean - XXsd* 1.96
           XXub = XXmean + XXsd* 1.96
         }
-        tsdata[ tsi,"lb"] = bio.snowcrab::variable.recode (XXlb[ tsdata[ tsi, "year"] ], v, direction="backward" )
-        tsdata[ tsi,"ub"] = bio.snowcrab::variable.recode (XXub[ tsdata[ tsi, "year"] ], v, direction="backward" )
+        tsdata[ tsi,"lb"] = bio.snowcrab::variable.recode (XXlb[ tsdata[ tsi, "year"] ], v, direction="backward" , lookup.table=lookup.table)
+        tsdata[ tsi,"ub"] = bio.snowcrab::variable.recode (XXub[ tsdata[ tsi, "year"] ], v, direction="backward" , lookup.table=lookup.table)
       }
     }
     tsdata$year = as.numeric( tsdata$year)
@@ -87,7 +89,7 @@ snowcrab.timeseries.db = function( DS="default", p=NULL, regions=c( "cfa4x", "cf
     for (a in regions) {
       dat[,a] = NA
       ai = NULL
-      ai = aegis::polygon_inside(dat, a) 
+      ai = aegis::polygon_inside(dat, a)
       if (length(ai) > 0) dat[ai,a] = a
     }
 
@@ -100,32 +102,34 @@ snowcrab.timeseries.db = function( DS="default", p=NULL, regions=c( "cfa4x", "cf
     tsdata$ub = NA
     tsdata$lb = NA
 
+    lookup.table = snowcrab.db( p=p, DS="data.transforms" )
+
     for (vi in 1:length(vn) ) {
       v = vn[vi]
       if ( !is.numeric( dat[,v] ) ) next()
       print( paste( vi, v) )
-      XX = bio.snowcrab::variable.recode( dat[,v], v, direction="forward" ) # transform variables where necessary
+      XX = bio.snowcrab::variable.recode( dat[,v], v, direction="forward", lookup.table=lookup.table ) # transform variables where necessary
       for (r in regions) {
         ri = which( dat[,r] == r)
         if (length(ri)==0) next()
         XXmean = tapply( XX[ri], INDEX=dat$year[ri], FUN=mean, na.rm=TRUE )
         XXn =  tapply( XX[ri], INDEX=dat$year[ri], FUN=function(x) length(which(is.finite(x))) )
         XXse = tapply( XX[ri], INDEX=dat$year[ri], FUN=sd, na.rm=TRUE ) / XXn
-        XXsd = tapply( XX[ri], INDEX=dat$year[ri], FUN=sd, na.rm=TRUE ) 
+        XXsd = tapply( XX[ri], INDEX=dat$year[ri], FUN=sd, na.rm=TRUE )
         tsi = which(tsdata$variable==v & tsdata$region==r)
 
-        tsdata[ tsi,"mean"] = bio.snowcrab::variable.recode (XXmean[ tsdata[ tsi, "year"] ], v, direction="backward" )
+        tsdata[ tsi,"mean"] = bio.snowcrab::variable.recode (XXmean[ tsdata[ tsi, "year"] ], v, direction="backward", lookup.table=lookup.table )
         tsdata[ tsi,"n"] = XXn[ tsdata[ tsi, "year"] ]
-        tsdata[ tsi,"se"] = bio.snowcrab::variable.recode (XXse[ tsdata[ tsi, "year"] ], v, direction="backward" )
-        tsdata[ tsi,"sd"] = bio.snowcrab::variable.recode (XXsd[ tsdata[ tsi, "year"] ], v, direction="backward" )
+        tsdata[ tsi,"se"] = bio.snowcrab::variable.recode (XXse[ tsdata[ tsi, "year"] ], v, direction="backward" , lookup.table=lookup.table)
+        tsdata[ tsi,"sd"] = bio.snowcrab::variable.recode (XXsd[ tsdata[ tsi, "year"] ], v, direction="backward" , lookup.table=lookup.table)
         XXlb = XXmean - XXse* 1.96
         XXub = XXmean + XXse* 1.96
         if(sdci){
           XXlb = XXmean - XXsd* 1.96 # confidence intervals for population instead of mean
           XXub = XXmean + XXsd* 1.96
         }
-        tsdata[ tsi,"lb"] = bio.snowcrab::variable.recode (XXlb[ tsdata[ tsi, "year"] ], v, direction="backward" )
-        tsdata[ tsi,"ub"] = bio.snowcrab::variable.recode (XXub[ tsdata[ tsi, "year"] ], v, direction="backward" )
+        tsdata[ tsi,"lb"] = bio.snowcrab::variable.recode (XXlb[ tsdata[ tsi, "year"] ], v, direction="backward" , lookup.table=lookup.table)
+        tsdata[ tsi,"ub"] = bio.snowcrab::variable.recode (XXub[ tsdata[ tsi, "year"] ], v, direction="backward" , lookup.table=lookup.table)
       }
     }
     tsdata$year = as.numeric( tsdata$year)
@@ -173,12 +177,13 @@ snowcrab.timeseries.db = function( DS="default", p=NULL, regions=c( "cfa4x", "cf
     tsdata$n = NA
     tsdata$ub = NA
     tsdata$lb = NA
+    lookup.table = snowcrab.db( p=p, DS="data.transforms" )
 
     for (vi in 1:length(vn) ) {
       v = vn[vi]
       if ( !is.numeric( dat[,v] ) ) next()
       print( paste( vi, v) )
-      XX = bio.snowcrab::variable.recode( dat[,v], v, direction="forward" ) # transform variables where necessary
+      XX = bio.snowcrab::variable.recode( dat[,v], v, direction="forward", lookup.table=lookup.table ) # transform variables where necessary
       for (r in regions) {
         ri = which( dat[,r] == r)
         if (length(ri)==0) next()
@@ -187,13 +192,13 @@ snowcrab.timeseries.db = function( DS="default", p=NULL, regions=c( "cfa4x", "cf
         XXse = tapply( XX[ri], INDEX=dat$year[ri], FUN=sd, na.rm=TRUE ) / XXn
         tsi = which(tsdata$variable==v & tsdata$region==r)
 
-        tsdata[ tsi,"mean"] = bio.snowcrab::variable.recode (XXmean[ tsdata[ tsi, "year"] ], v, direction="backward" )
+        tsdata[ tsi,"mean"] = bio.snowcrab::variable.recode (XXmean[ tsdata[ tsi, "year"] ], v, direction="backward", lookup.table=lookup.table )
         tsdata[ tsi,"n"] = XXn[ tsdata[ tsi, "year"] ]
-        tsdata[ tsi,"se"] = bio.snowcrab::variable.recode (XXse[ tsdata[ tsi, "year"] ], v, direction="backward" )
+        tsdata[ tsi,"se"] = bio.snowcrab::variable.recode (XXse[ tsdata[ tsi, "year"] ], v, direction="backward" , lookup.table=lookup.table)
         XXlb = XXmean - XXse* 1.96
         XXub = XXmean + XXse* 1.96
-        tsdata[ tsi,"lb"] = bio.snowcrab::variable.recode (XXlb[ tsdata[ tsi, "year"] ], v, direction="backward" )
-        tsdata[ tsi,"ub"] = bio.snowcrab::variable.recode (XXub[ tsdata[ tsi, "year"] ], v, direction="backward" )
+        tsdata[ tsi,"lb"] = bio.snowcrab::variable.recode (XXlb[ tsdata[ tsi, "year"] ], v, direction="backward" , lookup.table=lookup.table)
+        tsdata[ tsi,"ub"] = bio.snowcrab::variable.recode (XXub[ tsdata[ tsi, "year"] ], v, direction="backward" , lookup.table=lookup.table)
       }
     }
     tsdata$year = as.numeric( tsdata$year)
@@ -238,12 +243,13 @@ snowcrab.timeseries.db = function( DS="default", p=NULL, regions=c( "cfa4x", "cf
     tsdata$ub = NA
     tsdata$lb = NA
     tsdata$year = as.character( tsdata$year)
+    lookup.table = snowcrab.db( p=p, DS="data.transforms" )
 
     for (vi in 1:length(vn) ) {
       v = vn[vi]
       if ( !is.numeric( dat[,v] ) ) next()
       print( paste( vi, v) )
-      XX = bio.snowcrab::variable.recode( dat[,v], v, direction="forward" ) # transform variables where necessary
+      XX = bio.snowcrab::variable.recode( dat[,v], v, direction="forward", lookup.table=lookup.table ) # transform variables where necessary
       for (r in regions) {
         ri = which( dat[,r] == r)
         if (length(ri)==0) next()
@@ -252,13 +258,13 @@ snowcrab.timeseries.db = function( DS="default", p=NULL, regions=c( "cfa4x", "cf
         XXse = tapply( XX[ri], INDEX=dat$year[ri], FUN=sd, na.rm=TRUE ) / XXn
         tsi = which(tsdata$variable==v & tsdata$region==r)
 
-        tsdata[ tsi,"mean"] = bio.snowcrab::variable.recode (XXmean[ tsdata[ tsi, "year"] ], v, direction="backward" )
+        tsdata[ tsi,"mean"] = bio.snowcrab::variable.recode (XXmean[ tsdata[ tsi, "year"] ], v, direction="backward" , lookup.table=lookup.table)
         tsdata[ tsi,"n"] = XXn[ tsdata[ tsi, "year"] ]
-        tsdata[ tsi,"se"] = bio.snowcrab::variable.recode (XXse[ tsdata[ tsi, "year"] ], v, direction="backward" )
+        tsdata[ tsi,"se"] = bio.snowcrab::variable.recode (XXse[ tsdata[ tsi, "year"] ], v, direction="backward" , lookup.table=lookup.table)
         XXlb = XXmean - XXse* 1.96
         XXub = XXmean + XXse* 1.96
-        tsdata[ tsi,"lb"] = bio.snowcrab::variable.recode (XXlb[ tsdata[ tsi, "year"] ], v, direction="backward" )
-        tsdata[ tsi,"ub"] = bio.snowcrab::variable.recode (XXub[ tsdata[ tsi, "year"] ], v, direction="backward" )
+        tsdata[ tsi,"lb"] = bio.snowcrab::variable.recode (XXlb[ tsdata[ tsi, "year"] ], v, direction="backward" , lookup.table=lookup.table)
+        tsdata[ tsi,"ub"] = bio.snowcrab::variable.recode (XXub[ tsdata[ tsi, "year"] ], v, direction="backward" , lookup.table=lookup.table)
       }
     }
     tsdata$year = as.numeric( tsdata$year)
@@ -292,7 +298,7 @@ snowcrab.timeseries.db = function( DS="default", p=NULL, regions=c( "cfa4x", "cf
     yy <- unique(f$yr)
     yy <- yy[order(yy)]
     for (r in ar) {
-      for (yrs in yy) { 
+      for (yrs in yy) {
         y = f[which(f$yr == yrs & f$cfa ==r & !is.na(f$bottom_temperature.x)),]
         if(nrow(y)>3) {
           ym <- min(y$bottom_temperature.x[y$bottom_temperature.x>0])
@@ -319,6 +325,3 @@ snowcrab.timeseries.db = function( DS="default", p=NULL, regions=c( "cfa4x", "cf
   }
 
 }
-
-
-

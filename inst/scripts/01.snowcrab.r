@@ -121,10 +121,10 @@ if (obtain.database.snapshot) {
 
 # -------------------------------------------------------------------------------------
 # update a database of simple transformation ranges, etc.. for plotting range, etc.
-  snowcrab.db( DS="data.transforms.redo", p=p) 
+  snowcrab.db( DS="data.transforms.redo", p=p)
 
 # -------------------------------------------------------------------------------------
-# create some simple/crude timeseries
+# create some simple/crude timeseries by each CFA
   snowcrab.timeseries.db( DS="observer.redo", p=p )
   snowcrab.timeseries.db( DS="biologicals.redo", p=p )  # approx 30 min in 2015, JC
   # snowcrab.timeseries.db( DS="biologicals.2014.redo" )  # reduced subset that matches 2014 station id's ..
