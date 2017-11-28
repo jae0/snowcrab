@@ -37,11 +37,12 @@
 
   # ------------------------------------------
   # Timeseries of all survey variables
-  figure.timeseries.survey(p=p, outdir=file.path(p$annual.results, "timeseries", "survey"), variables="R0.mass", plotyears=2001:p$year.assessment) # just R0 to see
+  figure.timeseries.survey(outdir=file.path(p$annual.results, "timeseries", "survey"), variables="R0.mass", plotyears=2001:p$year.assessment) # just R0 to see
   #figure.timeseries.survey(outdir=file.path(p$annual.results, "timeseries", "survey"),variables=c("sexratio.all","sexratio.mat","sexratio.imm"))
-  figure.timeseries.survey(p=p, outdir=file.path(p$annual.results, "timeseries", "survey"),plotyears=2001:p$year.assessment) # all variables
-  figure.timeseries.survey(p=p, outdir=file.path(p$annual.results, "timeseries", "observer"),plotyears=2001:p$year.assessment,type='observer')
-  figure.timeseries.survey(p=p, outdir=file.path(p$annual.results, "timeseries", "survey"),type='groundfish.t') # groundfish survey temperature
+  figure.timeseries.survey(outdir=file.path(p$annual.results, "timeseries", "survey"),plotyears=2001:p$year.assessment) # all variables
+  figure.timeseries.survey(outdir=file.path(p$annual.results, "timeseries", "observer"),plotyears=2001:p$year.assessment,type='observer')
+
+  # figure.timeseries.survey(outdir=file.path(p$annual.results, "timeseries", "survey"),type='groundfish.t') # groundfish survey temperature
   #-----------------------------------------------
 
   #Timeseries: geometric mean biomass of by-catch from snow crab survey
@@ -61,8 +62,8 @@
 
   #BZ TODO add a variable to p for mapyears
   # just for the roadshow
-    map.set.information( p, variables=c('totmass.male.com', 'totmass.female.mat'),mapyears=2014:p$year.assessment,outdir=outdir)
-    map.set.information( p, variables='t',mapyears=2014:p$year.assessment,outdir=outdir,log.variable=F,add.zeros=F,theta=100)
+    map.set.information( p=p, variables=c('totmass.male.com', 'totmass.female.mat'),mapyears=2014:p$year.assessment,outdir=outdir)
+    map.set.information( p=p, variables='t',mapyears=2014:p$year.assessment,outdir=outdir,log.variable=F,add.zeros=F,theta=100)
 
     # bycatch (geometric means)
     bc.vars = c(paste("ms.mass",species,sep='.'),paste("ms.no",species,sep='.'))
@@ -74,37 +75,37 @@
 
     # Means
     # variables that shouldn't be logged
-    set = snowcrab.db( DS="set.biologicals")
+    set = snowcrab.db( p=p, DS="set.biologicals")
     variables = bio.snowcrab::snowcrab.variablelist("all.data")
     variables = intersect( variables, names(set) )
 
     nolog.variables = c("t","z","sexratio.all","sexratio.mat","sexratio.imm","julian",variables[grep("cw",variables)])
-    map.set.information( p, variables=nolog.variables,outdir=outdir,log.variable=F,add.zeros=F,theta=100)
+    map.set.information( p=p, variables=nolog.variables,outdir=outdir,log.variable=F,add.zeros=F,theta=100)
     # logit transform for ratios
-    map.set.information( p, variables=c("sexratio.all","sexratio.mat","sexratio.imm"),outdir=outdir,log.variable=F,add.zeros=F,theta=100)
+    map.set.information( p=p, variables=c("sexratio.all","sexratio.mat","sexratio.imm"),outdir=outdir,log.variable=F,add.zeros=F,theta=100)
 
     # Geometric Means
     # all except variables that shouldn't be logged
     mass.vars = variables[!variables%in%nolog.variables][grep('mass',variables[!variables%in%nolog.variables])]
     no.vars = variables[!variables%in%nolog.variables][grep('no',variables[!variables%in%nolog.variables])]
-    map.set.information( p, variables= mass.vars,outdir=outdir)
-    map.set.information( p, variables= no.vars,outdir=outdir,probs=c(0,0.975))
+    map.set.information( p=p, variables= mass.vars,outdir=outdir)
+    map.set.information( p=p, variables= no.vars,outdir=outdir,probs=c(0,0.975))
 
 
 
   # ------------------------------------------
   # Map: Survey locations
 
-    map.survey.locations( p, basedir=file.path(p$project.outputdir, "maps", "survey.locations"),  newyear=F, map.method="lattice"  )
+    map.survey.locations( p=p, basedir=file.path(p$project.outputdir, "maps", "survey.locations"),  newyear=F, map.method="lattice"  )
   #  map.survey.locations( p, basedir=file.path(p$project.outputdir, "maps", "survey.locations"),  newyear=F, map.method="googleearth"  )
 
   # ------------------------------------------
   # Map: Observer locations
-    map.observer.locations( p, basedir=file.path(p$project.outputdir, "maps","observer.locations" ), newyear=F , map.method="lattice"  )
+    map.observer.locations( p=p, basedir=file.path(p$project.outputdir, "maps","observer.locations" ), newyear=F , map.method="lattice"  )
 
   # ------------------------------------------
   # Map: Logbook recorded locations
-    map.logbook.locations( p, basedir=file.path(p$project.outputdir, "maps","logbook.locations" ), newyear=F , map.method="lattice"  )
+    map.logbook.locations( p=p, basedir=file.path(p$project.outputdir, "maps","logbook.locations" ), newyear=F , map.method="lattice"  )
 
 
 
@@ -113,31 +114,31 @@
   outdir = file.path( p$project.outputdir, "maps", "logbook","snowcrab","annual" )
   p$corners = data.frame(plon=c(220, 990), plat=c(4750, 5270) )
 
-  map.fisheries.data( p, variable= 'effort', outdir=outdir, FUN=sum, probs=c(0,0.975))
-  map.fisheries.data( p, variable= 'cpue', outdir=outdir, FUN=mean, probs=c(0,0.975))
-  map.fisheries.data( p, variable= 'landings', outdir=outdir, FUN=sum, probs=c(0,0.975))
+  map.fisheries.data( p=p, variable= 'effort', outdir=outdir, FUN=sum, probs=c(0,0.975))
+  map.fisheries.data( p=p, variable= 'cpue', outdir=outdir, FUN=mean, probs=c(0,0.975))
+  map.fisheries.data( p=p, variable= 'landings', outdir=outdir, FUN=sum, probs=c(0,0.975))
 
 
 
   # ------------------------------------------
   # Map: Numerical density of by-catch species
    # p$do.parallel=F
-   map.cat.information( p, outdir=file.path( p$project.outputdir, "maps", "species" ) )
+   map.cat.information( p=p, outdir=file.path( p$project.outputdir, "maps", "species" ) )
 
 
   # ------------------------------------------
   # Map: Survey locations
 
-    map.survey.locations( p, basedir=file.path(p$project.outputdir, "maps", "survey.locations"),  newyear=F, map.method="lattice"  )
+    map.survey.locations( p=p, basedir=file.path(p$project.outputdir, "maps", "survey.locations"),  newyear=F, map.method="lattice"  )
    # map.survey.locations( p, basedir=file.path(p$project.outputdir, "maps", "survey.locations"),  newyear=F, map.method="googleearth"  )
 
   # ------------------------------------------
   # Map: Observer locations
-    map.observer.locations( p, basedir=file.path(p$project.outputdir, "maps","observer.locations" ), newyear=F , map.method="lattice"  )
+    map.observer.locations( p=p, basedir=file.path(p$project.outputdir, "maps","observer.locations" ), newyear=F , map.method="lattice"  )
 
   # ------------------------------------------
   # Map: Logbook recorded locations
-    map.logbook.locations( p, basedir=file.path(p$project.outputdir, "maps","logbook.locations" ), newyear=F , map.method="lattice"  )
+    map.logbook.locations( p=p, basedir=file.path(p$project.outputdir, "maps","logbook.locations" ), newyear=F , map.method="lattice"  )
 
   # ------------------------------------------
 
@@ -347,7 +348,7 @@
 # ---------------------------------------- USED
 #  Carapace condition from trawl data  >= 95mm CW  ... not kriged .. simple proportions
 
-    det0 = snowcrab.db( DS="det.georeferenced" )
+    det0 = snowcrab.db( p=p, DS="det.georeferenced" )
     det0$fishyr = det0$yr  ## the counting routine expectes this variable
 
     det = det0[ which( det0$cw >= 95 ) ,]  # commerical sized crab only
@@ -372,7 +373,7 @@
   # counts of stations in each area
 
     # check towquality .. this should always == 1
-    set = snowcrab.db("set.clean")
+    set = snowcrab.db(p=p, DS="set.clean")
     if (length( unique( set$towquality) ) != 1 ) print("error -- not good tows")
 
     out = data.frame(yr=sort( unique(set$yr )) )
@@ -439,7 +440,7 @@ abline(h=50)
 # ----------------------------------------   NOT USED ____________
 #  Carapace condition from trawl data  < 95mm CW  ... not kriged .. simple proportions
 
-    det0 = snowcrab.db( DS="det.georeferenced" )
+    det0 = snowcrab.db( p=p, DS="det.georeferenced" )
     det0$fishyr = det0$yr  ## the counting routine expectes this variable
 
     det = det0[ which( det0$cw < 95 ) ,]  # commerical sized crab only
@@ -511,7 +512,7 @@ abline(h=50)
 
   # ------------------------------------------
   # Map: Larval distributions from the Scotian Shelf Ichtyoplankton Program data
-    map.larvae( p, outdir=file.path(p$project.outputdir, "maps", "larvae"), conversions=conversions )
+    map.larvae( p=p, outdir=file.path(p$project.outputdir, "maps", "larvae"), conversions=conversions )
 
     # Map: Crab movement from mark-recapture data
     #MG I think Brent is primarily mapping this stuff now. Not sure the data has been updated in a while
