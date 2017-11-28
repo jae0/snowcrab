@@ -1,8 +1,8 @@
 
   # Figures and tables obtained after completion of data assimilation and processing up to the end of "01.snowcrab.r"
-  
+
   if (!exists("year.assessment")) {
-    year.assessment=lubridate::year(Sys.Date())      # year.assessment 
+    year.assessment=lubridate::year(Sys.Date())      # year.assessment
     year.assessment=lubridate::year(Sys.Date()) -1   # or year previous to current
   }
 
@@ -14,7 +14,7 @@
  #  p$do.parallel = FALSE  # mapping in parallel is broken .. must fix ::TODO
   p$do.parallel = TRUE  # mapping in parallel is broken .. must fix ::TODO  ... fixed? JC 2017
 
-# If parallel=T, below lines dtermine number of clusters to dedicate  
+# If parallel=T, below lines dtermine number of clusters to dedicate
   p$clusters = rep("localhost", 24 )
   p$clusters = rep("localhost", 3 )
 
@@ -47,19 +47,19 @@
 
   # ------------------------------------------
   # Timeseries of all survey variables
-  figure.timeseries.survey(outdir=file.path(p$annual.results, "timeseries", "survey"),variables="R0.mass",plotyears=2001:p$year.assessment) # just R0 to see
-  #figure.timeseries.survey(outdir=file.path(p$annual.results, "timeseries", "survey"),variables=c("sexratio.all","sexratio.mat","sexratio.imm")) 
-  figure.timeseries.survey(outdir=file.path(p$annual.results, "timeseries", "survey"),plotyears=2001:p$year.assessment) # all variables
-  figure.timeseries.survey(outdir=file.path(p$annual.results, "timeseries", "observer"),plotyears=2001:p$year.assessment,type='observer') 
-  figure.timeseries.survey(outdir=file.path(p$annual.results, "timeseries", "survey"),type='groundfish.t') # groundfish survey temperature
+  figure.timeseries.survey(p=p, outdir=file.path(p$annual.results, "timeseries", "survey"),variables="R0.mass",plotyears=2001:p$year.assessment) # just R0 to see
+  #figure.timeseries.survey(outdir=file.path(p$annual.results, "timeseries", "survey"),variables=c("sexratio.all","sexratio.mat","sexratio.imm"))
+  figure.timeseries.survey(p=p, outdir=file.path(p$annual.results, "timeseries", "survey"),plotyears=2001:p$year.assessment) # all variables
+  figure.timeseries.survey(p=p, outdir=file.path(p$annual.results, "timeseries", "observer"),plotyears=2001:p$year.assessment,type='observer')
+  figure.timeseries.survey(p=p, outdir=file.path(p$annual.results, "timeseries", "survey"),type='groundfish.t') # groundfish survey temperature
   #-----------------------------------------------
-  
+
   #Timeseries: geometric mean biomass of by-catch from snow crab survey
 
   # predators and competitors
     #cod, haddock, halibut, plaice, wolfish, thornyskate, smoothskate, winterskate, northernshrimp, jonahcrab, lessertoadcrab
   species = c(10, 11, 30, 40, 201, 50, 2521, 2511, 202, 204, 2211)
-  figure.timeseries.bycatch(species, plotyears=2004:p$year.assessment,outdir=file.path(p$annual.results, "timeseries", "survey")) 
+  figure.timeseries.bycatch(species, plotyears=2004:p$year.assessment,outdir=file.path(p$annual.results, "timeseries", "survey"))
 
 
   # ------------------------------------------
@@ -67,13 +67,13 @@
 #  p$do.parallel=F
   p$corners = data.frame(plon=c(220, 990), plat=c(4750, 5270) )
 
-  outdir = file.path( p$project.outputdir, "maps", "survey", "snowcrab","annual" ) 
+  outdir = file.path( p$project.outputdir, "maps", "survey", "snowcrab","annual" )
 
-  #BZ TODO add a variable to p for mapyears  
+  #BZ TODO add a variable to p for mapyears
   # just for the roadshow
-    map.set.information( p, variables=c('totmass.male.com', 'totmass.female.mat'),mapyears=2014:p$year.assessment,outdir=outdir)  
-    map.set.information( p, variables='t',mapyears=2014:p$year.assessment,outdir=outdir,log.variable=F,add.zeros=F,theta=100)   
-    
+    map.set.information( p, variables=c('totmass.male.com', 'totmass.female.mat'),mapyears=2014:p$year.assessment,outdir=outdir)
+    map.set.information( p, variables='t',mapyears=2014:p$year.assessment,outdir=outdir,log.variable=F,add.zeros=F,theta=100)
+
     # bycatch (geometric means)
     bc.vars = c(paste("ms.mass",species,sep='.'),paste("ms.no",species,sep='.'))
     map.set.information( p, variables=bc.vars, mapyears=2014:p$year.assessment, outdir=outdir,probs=c(0,0.975)) #
@@ -83,15 +83,15 @@
     #map.set.information( p, outdir=outdir) # takes a long time
 
     # Means
-    # variables that shouldn't be logged 
+    # variables that shouldn't be logged
     set = snowcrab.db( DS="set.biologicals")
     variables = bio.snowcrab::snowcrab.variablelist("all.data")
     variables = intersect( variables, names(set) )
- 
+
     nolog.variables = c("t","z","sexratio.all","sexratio.mat","sexratio.imm","julian",variables[grep("cw",variables)])
-    map.set.information( p, variables=nolog.variables,outdir=outdir,log.variable=F,add.zeros=F,theta=100)   
+    map.set.information( p, variables=nolog.variables,outdir=outdir,log.variable=F,add.zeros=F,theta=100)
     # logit transform for ratios
-    map.set.information( p, variables=c("sexratio.all","sexratio.mat","sexratio.imm"),outdir=outdir,log.variable=F,add.zeros=F,theta=100) 
+    map.set.information( p, variables=c("sexratio.all","sexratio.mat","sexratio.imm"),outdir=outdir,log.variable=F,add.zeros=F,theta=100)
 
     # Geometric Means
     # all except variables that shouldn't be logged
@@ -120,14 +120,14 @@
 
   # ------------------------------------------
   # Map: Logbook data
-  outdir = file.path( p$project.outputdir, "maps", "logbook","snowcrab","annual" ) 
+  outdir = file.path( p$project.outputdir, "maps", "logbook","snowcrab","annual" )
   p$corners = data.frame(plon=c(220, 990), plat=c(4750, 5270) )
-  
+
   map.fisheries.data( p, variable= 'effort', outdir=outdir, FUN=sum, probs=c(0,0.975))
   map.fisheries.data( p, variable= 'cpue', outdir=outdir, FUN=mean, probs=c(0,0.975))
   map.fisheries.data( p, variable= 'landings', outdir=outdir, FUN=sum, probs=c(0,0.975))
 
- 
+
 
   # ------------------------------------------
   # Map: Numerical density of by-catch species
@@ -150,7 +150,7 @@
     map.logbook.locations( p, basedir=file.path(p$project.outputdir, "maps","logbook.locations" ), newyear=F , map.method="lattice"  )
 
   # ------------------------------------------
-  
+
 
 
 
@@ -169,7 +169,7 @@
   outtabledir= file.path(project.datadirectory("bio.snowcrab"), "assessments", p$year.assessment, "tables", "logbook")
   if(!dir.exists(tabledir)) dir.create(tabledir, recursive =T)
   if(!dir.exists(outtabledir)) dir.create(outtabledir, recursive =T)
-  
+
   setwd(tabledir)
 
   NFS <- xtable(read.csv("NENS_FisherySummary.csv"))
@@ -526,18 +526,8 @@ abline(h=50)
     # Map: Crab movement from mark-recapture data
     #MG I think Brent is primarily mapping this stuff now. Not sure the data has been updated in a while
     # map.movement( p, outdir=file.path(p$project.outputdir, "maps", "mark.recapture") )
-    
+
     # ------------------------------------------
     # Map: Spatial representation of maturity patterns of snow crab
     #MG Not sure we use these maps either, check with Adam and Jae
     # map.maturity( p, outdir=file.path(p$project.outputdir, "maps", "maturity"), newyear=T )
-    
-
-
-
-
-
-
-
-
-

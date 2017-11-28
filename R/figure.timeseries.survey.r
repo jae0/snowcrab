@@ -1,5 +1,5 @@
 
-  figure.timeseries.survey = function(outdir, variables, plotyears,type="biologicals", all.areas=T, minN=10, u=NULL, graphic='pdf',...) {
+  figure.timeseries.survey = function( outdir, variables, plotyears,type="biologicals", all.areas=T, minN=10, u=NULL, graphic='pdf',...) {
 
 
     if (all.areas) {
@@ -17,11 +17,11 @@
     tdb = snowcrab.timeseries.db( DS=type )
 
     if(missing(variables)){
-      variables =  c( 
-         bio.snowcrab::snowcrab.variablelist("all.to.model"), 
-         bio.snowcrab::snowcrab.variablelist("snowcrab.cw"), 
+      variables =  c(
+         bio.snowcrab::snowcrab.variablelist("all.to.model"),
+         bio.snowcrab::snowcrab.variablelist("snowcrab.cw"),
          bio.snowcrab::snowcrab.variablelist("physical"),
-         'sexratio.mat','sexratio.imm','sexratio.all' 
+         'sexratio.mat','sexratio.imm','sexratio.all'
       )
       variables = intersect( variables, unique(tdb$variable))
     }
@@ -30,27 +30,23 @@
     tdb = snowcrab.timeseries.db( DS=type )
 
     if(missing(plotyears))plotyears = unique(tdb$year)
-    
+
     tdb = subset(tdb,variable%in%variables&year%in%plotyears)
     tdb$region = factor(tdb$region, levels=areas, labels =regions)
 
     #  load transformation tables associated with a given variable
-    tl = bio.snowcrab::lookup.datatransformation()
 
-    if (file.exists( tl$repository) ) {
-      load (tl$repository)
-    } else {
-      REPOS = bio.snowcrab::recode.variable.initiate.db ( )
-    }
+    REPOS = snowcrab.db( DS="data.transforms")
+
     tvars = REPOS$varname[which(REPOS$transform=='log10')]
 
     for ( v in variables ) {
-      td = tdb[ which( tdb$variable == v) ,] 
-      
+      td = tdb[ which( tdb$variable == v) ,]
+
       oo = which( td$mean > 0 | is.finite( td$mean ) )
       if (length(oo) < minN ) next()
 
-      if(is.null(u))u=NULL # for variable specific units, needs a lookup table 
+      if(is.null(u))u=NULL # for variable specific units, needs a lookup table
 
       ylim=c(0,max(c(td$ub,td$mean),na.rm=T))
       #browser()
@@ -96,7 +92,7 @@
               #xlim=xlim,
               ylim=ylim,
               scales=list(y=list(at=ylabels, labels=ylabels, cex=0.65), x=list(at=xlabels, labels=xlabels, rot=50, cex=0.65)),
-                main=main, xlab=xlab, ylab=ylab, 
+                main=main, xlab=xlab, ylab=ylab,
                 cex.axis=0.2,
                 cex.main = 1.4,
                 panel = function(x, y, subscripts, ub, lb, ...) {
@@ -112,5 +108,3 @@
     }
     return("Done")
   }
-
-

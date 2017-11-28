@@ -22,7 +22,7 @@ snowcrab.parameters = function( p=NULL, year.assessment=NULL, ... ) {
   p$project.name = "bio.snowcrab"
   p$data_root = file.path( project.datadirectory( p$project.name ) )
   p$project.outputdir = project.datadirectory( p$project.name, "output" ) #required for interpolations and mapping
-
+  p$transform_lookup = file.path( p$project.outputdir, "transform.lookup.rdata" ) # local storage of transforms for timeseries plots
 
   # ---------------------
   # define focal year. not required for pure spatial models but ignored by the spatial methods anyways

@@ -13,6 +13,7 @@ snowcrab.db = function( DS, p=NULL, yrs=NULL) {
   mature = 1
   mat.unknown = 2
 
+
 	if (DS %in% c("set.rawdata.redo", "set.rawdata") ) {
 
     fn.root =  file.path( project.datadirectory("bio.snowcrab"), "data", "trawl", "SNCRABSETS" )
@@ -1053,5 +1054,60 @@ snowcrab.db = function( DS, p=NULL, yrs=NULL) {
     save(set, file=fn, compress=T)
 
   }
+
+  # -------------------------------
+
+
+  if (DS %in% c("data.transforms", "data.transforms.redo") ) {
+    REPOS = NULL
+    if (is.null(p)) p = bio.snowcrab::snowcrab.parameters()
+
+    if (DS=="data.transforms") {
+      if (file.exists( p$transform_lookup ) ) load (p$transform_lookup)
+      return(REPOS)
+    }
+
+    log.transform = bio.snowcrab::snowcrab.variablelist("log.transform")
+    sn = bio.snowcrab::snowcrab.variablelist("all.data")
+    set = bio.snowcrab::snowcrab.db(DS="set.complete")
+    logs = bio.snowcrab::logbook.db(DS='logbook')
+    scaled.centered = bio.snowcrab::snowcrab.variablelist("scaled.centered")
+
+    dataset.names = unique( c(names(set), names(logs)) )
+
+    for (si in 1:length(sn)) {
+      transform = offset = scaling =NA
+      varname = sn[si]
+      if (! varname %in% dataset.names ) next()
+      if(varname %in% names(set))  x = set[, varname]
+      if(varname %in% names(logs)) x = logs[, varname]
+      if (varname %in% log.transform) {
+        transform="log10"
+        offset = 0
+        y = x[ is.finite(x) & x>0 ]
+        if( length(y) > 0) offset = min(y)
+      } else if (varname %in% scaled.centered) {
+        transform = "scaled+centered"
+        y = scale( x )
+        offset = attr(y,"scaled:center") # mean
+        scaling = attr(y,"scaled:scale") # RMS error  .. i.e. a Z-transform
+      } else {
+        transform = "none"
+        y = x
+        offset = 0
+        scaling = 1
+      }
+      # add more as needed
+      REPOS = rbind( REPOS,  cbind( varname, transform, offset, scaling  )
+      )
+    }
+    REPOS = data.frame( REPOS, stringsAsFactors=F )
+    REPOS$offset = as.numeric(REPOS$offset)
+    REPOS$scaling = as.numeric(REPOS$scaling)
+
+    save( REPOS, file=p$transform_lookup, compress=TRUE )
+    return( REPOS )
+  }
+
 
 }  ## end snowcrab.db

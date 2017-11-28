@@ -1,30 +1,24 @@
 
   variable.recode = function( x, variable, direction="forward", rm.na=F ) {
-    
-    tl = bio.snowcrab::lookup.datatransformation() 
 
-    if (file.exists( tl$repository) ) {
-      load (tl$repository)
-    } else {
-      REPOS = bio.snowcrab::recode.variable.initiate.db ()
-    }
-    
+    REPOS = snowcrab.db( DS="data.transforms" )
+
     ii = which( REPOS$varname == variable )
     if (length(ii) == 0 ) { # missing from list .. print error message and stop to figure out why
       print( paste("Recode:", variable, "is missing from database, assuming no transformation"))
       # tmp = REPOS[1,]
       # tmp[1,] = c(variable, "none", 0, 1 )
-      return( x ) 
-    } else if ( length(ii) > 1 ) { 
+      return( x )
+    } else if ( length(ii) > 1 ) {
       print(paste( "Error in recode:", variable, "has too many incidences in database"))
       stop()
-    } 
-    
-    TF = REPOS[ii ,] 
+    }
+
+    TF = REPOS[ii ,]
     if ( TF$transform %in% c("", "none") ) {
       B = x
     }
- 
+
     if ( TF$transform == "log10") {
       if (direction =="forward") {
         B = log10( x + TF$offset )
@@ -42,8 +36,6 @@
     }
 
     if (rm.na) B = B[which(is.finite(B))]
-    
+
     return (B)
   }
-
-

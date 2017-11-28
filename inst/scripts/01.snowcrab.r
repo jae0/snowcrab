@@ -121,7 +121,7 @@ if (obtain.database.snapshot) {
 
 # -------------------------------------------------------------------------------------
 # update a database of simple transformation ranges, etc.. for plotting range, etc.
-  REPOS = bio.snowcrab::recode.variable.initiate.db()
+  snowcrab.db( DS="data.transforms.redo", p=p) 
 
 # -------------------------------------------------------------------------------------
 # create some simple/crude timeseries
