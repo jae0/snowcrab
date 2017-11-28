@@ -82,9 +82,6 @@ snowcrab.timeseries.db = function( DS="default", p=NULL, regions=c( "cfa4x", "cf
     if (is.null(vn)) vn = setdiff( colnames(dat), c("trip", "set", "set_type", "station", "lon1", "lat1", "towquality", "lon", "lat", "plon", "plat", "seabird_uid", "minilog_uid", "netmind_uid" ) )
     yrs = sort(unique(dat$yr))
 
-    print( "This might take a bit of time... " )
-    print( paste( "There are", length(vn), "variables" ) )
-
     #area designations
     for (a in regions) {
       dat[,a] = NA

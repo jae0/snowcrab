@@ -5,7 +5,7 @@
 
     ii = which( lookup.table$varname == variable )
     if (length(ii) == 0 ) { # missing from list .. print error message and stop to figure out why
-      print( paste("Recode:", variable, "is missing from database, assuming no transformation"))
+      # print( paste("Recode:", variable, "is missing from database, assuming no transformation"))
       # tmp = lookup.table[1,]
       # tmp[1,] = c(variable, "none", 0, 1 )
       return( x )
