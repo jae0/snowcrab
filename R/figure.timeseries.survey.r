@@ -1,5 +1,5 @@
 
-  figure.timeseries.survey = function( outdir, variables, plotyears,type="biologicals", all.areas=T, minN=10, u=NULL, graphic='pdf',...) {
+  figure.timeseries.survey = function( outdir, variables, plotyears,type="biologicals", all.areas=T, minN=10, u=NULL, graphic='pdf', bg="white" ) {
 
 
     if (all.areas) {
@@ -77,8 +77,8 @@
         xlabels = seq(xlim[1], xlim[2], 2)
       }
       dline = ifelse(length(grep('ratio',v))==1,0.5,NA)
-      if(graphic=='png')Cairo( file=fn, type="png", bg="white",  units="in",dpi=350,... )
-      if(graphic=='pdf')pdf(file=fn, bg='white', ...)
+      if(graphic=='png')Cairo::Cairo( file=fn, type="png", bg=bg, units="in", dpi=350 )
+      if(graphic=='pdf')pdf(file=fn, bg=bg )
       if(graphic=='R')plot.new()
       setup.lattice.options()
       pl = xyplot( mean~year|region, data=td, ub=td$ub, lb=td$lb, dline=dline,
