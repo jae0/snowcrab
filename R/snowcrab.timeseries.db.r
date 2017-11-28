@@ -1,6 +1,8 @@
 
 snowcrab.timeseries.db = function( DS="default", p=NULL, regions=c( "cfa4x", "cfanorth", "cfasouth", "cfaall" ), trim=0, vn=NULL, sdci=F ) {
 
+  if (is.null(p)) p = bio.snowcrab::snowcrab.parameters()
+  
   tsoutdir = file.path( p$project.outputdir, "timeseries" )
   dir.create(tsoutdir, showWarnings=FALSE, recursive=TRUE)
 
@@ -222,8 +224,8 @@ snowcrab.timeseries.db = function( DS="default", p=NULL, regions=c( "cfa4x", "cf
     vn = c( "cw", "totmass", "abdomen", "chela", "shell", "durometer",  "cpue.kg.trap", "mass", "mat" )
     yrs = sort(unique(dat$yr))
 
-    print( "This will take a bit of time... " )
-    print( paste( "There are", length(vn), "variables" ) )
+    # print( "This will take a bit of time... " )
+    # print( paste( "There are", length(vn), "variables" ) )
 
     #area designations
     for (a in regions) {

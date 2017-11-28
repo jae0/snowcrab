@@ -7,17 +7,7 @@
   }
 
   p = bio.snowcrab::load.environment( year.assessment=year.assessment )
-
 # loadfunctions('bio.snowcrab')
-
-# below lines set parallel mapping / figures
- #  p$do.parallel = FALSE  # mapping in parallel is broken .. must fix ::TODO
-  p$do.parallel = TRUE  # mapping in parallel is broken .. must fix ::TODO  ... fixed? JC 2017
-
-# If parallel=T, below lines dtermine number of clusters to dedicate
-  p$clusters = rep("localhost", 24 )
-  p$clusters = rep("localhost", 3 )
-
 
 
   # --- FIGURES ----
