@@ -1,7 +1,10 @@
 
   # figures and tables related to fishery indices
-  
-  if (!exists("year.assessment")) year.assessment=lubridate::year(Sys.Date())
+
+  if (!exists("year.assessment")) {
+    year.assessment=lubridate::year(Sys.Date()) - 1
+    year.assessment=lubridate::year(Sys.Date())
+  }
   p = bio.snowcrab::load.environment( year.assessment=year.assessment )
 
 
@@ -164,6 +167,3 @@ figure.timeseries.snowcrab.habitat.temperatures( p=p)
   latex(Ms, file="", title="", label="table.stats.south.trawl", rowlabel="Year", cgroup="Various statistics", na.blank=T, caption="Various statistics for S-ENS from trawl surveys. The transition from a spring to a fall survey occurred in 2002/2003.")
 
   latex(Mx, file="", title="", label="table.stats.4x.trawl", rowlabel="Year", cgroup="Various statistics", na.blank=T, caption="Various statistics for CFA 4X from trawl surveys.")
-
-
-
