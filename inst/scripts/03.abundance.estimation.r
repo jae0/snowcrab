@@ -55,6 +55,7 @@ p = snowcrab_stm( p=p, DS="parameters",
     len= c( 95, 200 )/10, #  mm -> cm ; aegis_db in cm
     drop.groundfish.data=TRUE # esp from 1970 to 1999 measurement of invertebrates was sporatic .. zero-values are dropped as they are unreliable
   ),
+  DATA = 'snowcrab_stm( p=p, DS="stm_inputs" )',
   stm_global_family = gaussian(link=log),
   stm_local_modelengine = "twostep",
   stm_twostep_space = "krige",
@@ -64,7 +65,7 @@ p = snowcrab_stm( p=p, DS="parameters",
 )
 
 # o = snowcrab_stm(p=p, DS="stm_inputs" )  # create fields for
-stm( p=p, DATA='snowcrab_stm( p=p, DS="stm_inputs" )', runmode="stage2" ) # 30 min
+stm( p=p, runmode=c("initialize", "globalmodel", "stage1", "stage2", "save") ) # 30 min
 
 p = make.list( list( yrs=p$yrs), Y=p )
 parallel.run( snowcrab_stm, p=p, DS="predictions.redo" ) # warp predictions to other grids
@@ -133,6 +134,7 @@ p = snowcrab_stm( p=p, DS="parameters",
     len= c( 95, 200 )/10, #  mm -> cm ; aegis_db in cm
     drop.groundfish.data=TRUE # esp from 1970 to 1999 measurement of invertebrates was sporatic .. zero-values are dropped as they are unreliable
   ),
+  DATA = 'snowcrab_stm( p=p, DS="stm_inputs" )',
   stm_global_family = binomial(),
   stm_local_modelengine = "twostep",
   stm_twostep_space = "krige",
@@ -142,7 +144,7 @@ p = snowcrab_stm( p=p, DS="parameters",
 )
 
 # o = snowcrab_stm(p=p, DS="stm_inputs" )  # create fields for
-stm( p=p, DATA='snowcrab_stm( p=p, DS="stm_inputs" )', runmode="stage2"  )
+stm( p=p,  runmode=c("initialize", "globalmodel", "stage1", "stage2", "save")  )
 
 p = make.list( list( yrs=p$yrs), Y=p )
 parallel.run( snowcrab_stm, p=p, DS="predictions.redo" ) # warp predictions to other grids
