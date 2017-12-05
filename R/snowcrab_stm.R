@@ -48,7 +48,6 @@ snowcrab_stm = function( ip=NULL, DS=NULL, p=NULL, year=NULL, ret="mean", varnam
       LOCS = c("plon", "plat"),
       TIME = "tiyr",
       COV = c("z", "dZ", "ddZ", "log.substrate.grainsize", "t", "tmean.climatology", "tsd.climatology", "ca1", "ca2" ) )
-    p$varnames = c( p$variables$LOCS, p$variables$COV )
 
     # additional variable to extract from aegis_db for inputs
 
@@ -261,8 +260,8 @@ snowcrab_stm = function( ip=NULL, DS=NULL, p=NULL, year=NULL, ret="mean", varnam
       }
     }
 
-    set = set[, which(names(set) %in% c(p$varnames, p$variables$Y, p$variables$TIME, "dyear", "yr",  "wt") ) ]  # a data frame
-    oo = setdiff(p$varnames, names(set))
+    set = set[, which(names(set) %in% c( p$variables$LOCS, p$variables$COV, p$variables$Y, p$variables$TIME, "dyear", "yr",  "wt") ) ]  # a data frame
+    oo = setdiff( c( p$variables$LOCS, p$variables$COV ), names(set))
     if (length(oo) > 0 ) {
       print(oo )
       warning("Some variables are missing in the input data")
@@ -271,9 +270,7 @@ snowcrab_stm = function( ip=NULL, DS=NULL, p=NULL, year=NULL, ret="mean", varnam
 
     # cap quantiles of dependent vars
     dr = list()
-    ps_varnames = setdiff( p$varnames, p$variables$LOCS )
-
-    for (pvn in ps_varnames) {
+    for (pvn in p$variables$COV) {
       dr[[pvn]] = quantile( set[,pvn], probs=p$stm_quantile_bounds, na.rm=TRUE ) # use 95%CI
       il = which( set[,pvn] < dr[[pvn]][1] )
       if ( length(il) > 0 ) set[il,pvn] = dr[[pvn]][1]
@@ -331,15 +328,8 @@ snowcrab_stm = function( ip=NULL, DS=NULL, p=NULL, year=NULL, ret="mean", varnam
       }
     }
 
-    ps_varnames = setdiff( p$varnames, p$variables$LOCS )
+    PS = PS[ which(names(PS) %in% p$variables$COV ) ] # time vars, if they are part of the model will be created within stm
 
-    PS = PS[ which(names(PS) %in% ps_varnames ) ] # time vars, if they are part of the model will be created within stm
-
-    oo = setdiff(p$varnames, c(ps_varnames, p$variables$LOCS) )
-    if (length(oo) > 0 ) {
-      print(oo )
-      warning("Some variables are missing in the prediction surface, PS")
-    }
     return (PS)
   }
 
