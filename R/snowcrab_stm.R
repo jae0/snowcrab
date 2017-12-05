@@ -240,7 +240,7 @@ snowcrab_stm = function( ip=NULL, DS=NULL, p=NULL, year=NULL, ret="mean", varnam
     # additional aegis_db variables
     for (iv in names(p$aegis_variables)) {
       p0 = aegis::aegis_parameters( p=p, DS=iv, year.assessment=p$year.assessment )
-      p0 = stm::spatial_parameters( p=p0, spatial.domain=p$spatial.domain ) # return to correct domain
+      p0 = aegis::spatial_parameters( p=p0, spatial.domain=p$spatial.domain ) # return to correct domain
       vn = p0$aegis_variables[[iv]]
       sn = aegis_lookup( p=p0, DS="spatial.annual", locsmap=locsmap, timestamp=set[,"timestamp"],
         varnames=vn, DB=aegis_db( p=p0, DS="baseline", varnames=vn ) )
@@ -251,7 +251,7 @@ snowcrab_stm = function( ip=NULL, DS=NULL, p=NULL, year=NULL, ret="mean", varnam
       mm = which( !is.finite(set[,vn[1]]) )
       if (length(mm) > 0) {
         # catch stragglers from a larger domain
-        p0 = stm::spatial_parameters( p=p0, spatial.domain="SSE" )
+        p0 = aegis::spatial_parameters( p=p0, spatial.domain="SSE" )
         locsmapsse = match(
           stm::array_map( "xy->1", set[mm, c("plon","plat")], gridparams=p0$gridparams ),
           stm::array_map( "xy->1", bathysse[,c("plon","plat")], gridparams=p0$gridparams ) )
@@ -312,7 +312,7 @@ snowcrab_stm = function( ip=NULL, DS=NULL, p=NULL, year=NULL, ret="mean", varnam
     # aegis_db variables
     for (iv in names(p$aegis_variables)) {
       p0 = aegis::aegis_parameters( p=p, DS=iv, year.assessment=p$year.assessment  )
-      p0 = stm::spatial_parameters( p=p0, spatial.domain=p$spatial.domain ) # return to correct domain
+      p0 = aegis::spatial_parameters( p=p0, spatial.domain=p$spatial.domain ) # return to correct domain
 
       vn = p0$aegis_variables[[iv]]
       sn = aegis_db( p=p0, DS="baseline", varnames=vn )
