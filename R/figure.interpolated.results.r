@@ -50,7 +50,8 @@
 
     p$vars.to.model = varstoplot[,1]
     p$yrs = 1998:p$year.assessment
-    p = make.list( list(y=p$yrs, v=p$vars.to.model ), Y=p )
+    p$runindex = list(y=p$yrs, v=p$vars.to.model )
+    
     K = interpolation.db( DS="interpolation.simulation", p=p )
 
     year.assessment = p$year.assessment

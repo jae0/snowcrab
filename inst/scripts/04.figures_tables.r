@@ -80,7 +80,8 @@ figure.timeseries.snowcrab.habitat.temperatures( p=p)
   vv = c( "totno.male.com.CC1", "totno.male.com.CC2", "totno.male.com.CC3",
           "totno.male.com.CC4", "totno.male.com.CC5" )
 
-  p = make.list( list(y=yy, v=vv ), Y=p )
+  p$runindex = list(y=yy, v=vv ) 
+  
   L = interpolation.db( DS="interpolation.simulation", p=p )
 
   L$vars = as.character(L$vars)
@@ -128,7 +129,8 @@ figure.timeseries.snowcrab.habitat.temperatures( p=p)
   vv = c( "totmass.male.com", "R0.mass", "R0.no", "R1.no", "R2.no", "R3.no", "totno.male.imm", "totno.male.com.CC1to2", "totno.male.com.CC3to4",
           "totno.male.com.CC5" )
 
-  p = make.list( list(y=yy, v=vv ), Y=p )
+  p$runindex = list(y=yy, v=vv ) 
+
   L = interpolation.db( DS="interpolation.simulation", p=p )
   # L = K[K$yr %in% yy & K$vars %in% vv & K$region %in% rr, outvars]
   L$vars = as.character(L$vars)

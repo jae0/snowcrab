@@ -11,7 +11,7 @@ map.set.information = function(p, outdir, variables,mapyears, plot.method="level
 
       # define compact list of variable year combinations for parallel processing
       if(missing(mapyears))mapyears = sort( unique(set$yr) )
-      p = make.list( list(variables, mapyears ), Y=p )
+      p$runindex = list(variables, mapyears )
 
       #for (i in p$libs ) require( i )
 

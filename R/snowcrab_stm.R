@@ -1,5 +1,5 @@
 
-snowcrab_stm = function( ip=NULL, DS=NULL, p=NULL, year=NULL, ret="mean", varnames=NULL, ... ) {
+snowcrab_stm = function( DS=NULL, p=NULL, year=NULL, ret="mean", varnames=NULL, ... ) {
 
   # deal with additional passed parameters
   # ---------------------
@@ -352,46 +352,52 @@ snowcrab_stm = function( ip=NULL, DS=NULL, p=NULL, year=NULL, ret="mean", varnam
       if (ret=="ub") return( W)
     }
 
-    if (exists( "libs", p)) RLibrary( p$libs )
-    if ( is.null(ip) ) ip = 1:p$nruns
+    parallel_run(
+      p=p, 
+      voi=voi, 
+      runindex=list(yrs=p$yrs),
+      FUNC = function( ip=NULL, p, voi ) {
+        if (exists( "libs", p)) RLibrary( p$libs )
+        if (is.null(ip)) ip = 1:p$nruns
+        for ( ii in ip ) {
+          # downscale and warp from p(0) -> p1
+          year = p$runs[ii, "yrs"]
+          # print (year)
+          # default domain
+          PP0 = stm_db( p=p, DS="stm.prediction", yr=year, ret="mean")
+          VV0 = stm_db( p=p, DS="stm.prediction", yr=year, ret="lb")
+          WW0 = stm_db( p=p, DS="stm.prediction", yr=year, ret="ub")
+          p0 = spatial_parameters( p=p ) # from
+          L0 = bathymetry.db( p=p0, DS="baseline" )
+          L0i = stm::array_map( "xy->2", L0[, c("plon", "plat")], gridparams=p0$gridparams )
+          sreg = setdiff( p$spatial.domain.subareas, p$spatial.domain )
 
-    # downscale and warp from p(0) -> p1
-
-    for ( r in ip ) {
-      # print (r)
-      year = p$runs[r, "yrs"]
-      # default domain
-      PP0 = stm_db( p=p, DS="stm.prediction", yr=year, ret="mean")
-      VV0 = stm_db( p=p, DS="stm.prediction", yr=year, ret="lb")
-      WW0 = stm_db( p=p, DS="stm.prediction", yr=year, ret="ub")
-      p0 = spatial_parameters( p=p ) # from
-      L0 = bathymetry.db( p=p0, DS="baseline" )
-      L0i = stm::array_map( "xy->2", L0[, c("plon", "plat")], gridparams=p0$gridparams )
-      sreg = setdiff( p$spatial.domain.subareas, p$spatial.domain )
-
-      for ( gr in sreg ) {
-        p1 = spatial_parameters( p=p, spatial.domain=gr ) # 'warping' from p -> p1
-        L1 = bathymetry.db( p=p1, DS="baseline" )
-        L1i = stm::array_map( "xy->2", L1[, c("plon", "plat")], gridparams=p1$gridparams )
-        L1 = planar2lonlat( L1, proj.type=p1$internal.crs )
-        L1$plon_1 = L1$plon # store original coords
-        L1$plat_1 = L1$plat
-        L1 = lonlat2planar( L1, proj.type=p0$internal.crs )
-        p1$wght = fields::setup.image.smooth( nrow=p1$nplons, ncol=p1$nplats, dx=p1$pres, dy=p1$pres, theta=p1$pres, xwidth=4*p1$pres, ywidth=4*p1$pres )
-        P = spatial_warp( PP0[], L0, L1, p0, p1, "fast", L0i, L1i )
-        V = spatial_warp( VV0[], L0, L1, p0, p1, "fast", L0i, L1i )
-        W = spatial_warp( WW0[], L0, L1, p0, p1, "fast", L0i, L1i )
-        projectdir_p1 = file.path(p$data_root, "modelled", voi, p1$spatial.domain )
-        dir.create( projectdir_p1, recursive=T, showWarnings=F )
-        fn1_sg = file.path( projectdir_p1, paste("stm.prediction.mean",  year, "rdata", sep=".") )
-        fn2_sg = file.path( projectdir_p1, paste("stm.prediction.lb",  year, "rdata", sep=".") )
-        fn3_sg = file.path( projectdir_p1, paste("stm.prediction.ub",  year, "rdata", sep=".") )
-        save( P, file=fn1_sg, compress=T )
-        save( V, file=fn2_sg, compress=T )
-        save( W, file=fn3_sg, compress=T )
-        print (fn1_sg)
+          for ( gr in sreg ) {
+            p1 = spatial_parameters( p=p, spatial.domain=gr ) # 'warping' from p -> p1
+            L1 = bathymetry.db( p=p1, DS="baseline" )
+            L1i = stm::array_map( "xy->2", L1[, c("plon", "plat")], gridparams=p1$gridparams )
+            L1 = planar2lonlat( L1, proj.type=p1$internal.crs )
+            L1$plon_1 = L1$plon # store original coords
+            L1$plat_1 = L1$plat
+            L1 = lonlat2planar( L1, proj.type=p0$internal.crs )
+            p1$wght = fields::setup.image.smooth( nrow=p1$nplons, ncol=p1$nplats, dx=p1$pres, dy=p1$pres, theta=p1$pres, xwidth=4*p1$pres, ywidth=4*p1$pres )
+            P = spatial_warp( PP0[], L0, L1, p0, p1, "fast", L0i, L1i )
+            V = spatial_warp( VV0[], L0, L1, p0, p1, "fast", L0i, L1i )
+            W = spatial_warp( WW0[], L0, L1, p0, p1, "fast", L0i, L1i )
+            projectdir_p1 = file.path(p$data_root, "modelled", voi, p1$spatial.domain )
+            dir.create( projectdir_p1, recursive=T, showWarnings=F )
+            fn1_sg = file.path( projectdir_p1, paste("stm.prediction.mean",  year, "rdata", sep=".") )
+            fn2_sg = file.path( projectdir_p1, paste("stm.prediction.lb",  year, "rdata", sep=".") )
+            fn3_sg = file.path( projectdir_p1, paste("stm.prediction.ub",  year, "rdata", sep=".") )
+            save( P, file=fn1_sg, compress=T )
+            save( V, file=fn2_sg, compress=T )
+            save( W, file=fn3_sg, compress=T )
+            print (fn1_sg)
+          }
+        }
+        return(NULL)
       }
-    }
+    )
     return ("Completed")
 
     if (0) {
@@ -554,32 +560,45 @@ snowcrab_stm = function( ip=NULL, DS=NULL, p=NULL, year=NULL, ret="mean", varnam
     p$variables$Y = voi # need to send this to get the correct results
     grids = unique( c(p$spatial.domain.subareas , p$spatial.domain ) ) # operate upon every domain
 
-    for (gr in grids ) {
-      print(gr)
-      p1 = spatial_parameters( p=p, spatial.domain=gr ) #target projection
-      projectdir = file.path(p$data_root, "modelled", voi, p1$spatial.domain )
-      dir.create( projectdir, recursive=T, showWarnings=F )
-      L1 = bathymetry.db(p=p1, DS="baseline")
-      nL1 = nrow(L1)
-      TS = matrix( NA, nrow=nL1, ncol=p$ny )
-      for (i in 1:p$ny ) {
-        TS[,i] = stm_db( p=p1, DS="stm.prediction", yr=p$yrs[i], ret="mean")
+
+    parallel_run(
+      p=p, 
+      voi=voi, 
+      runindex=list(grids=grids),
+      FUNC = function( ip=NULL, p, voi ) {
+        if (exists( "libs", p)) RLibrary( p$libs )
+        if (is.null(ip)) ip = 1:p$nruns
+        
+        for (ii in ip ) {
+          gr = p$runs[ii,"grids"]
+          print(gr)
+          p1 = spatial_parameters( p=p, spatial.domain=gr ) #target projection
+          projectdir = file.path(p$data_root, "modelled", voi, p1$spatial.domain )
+          dir.create( projectdir, recursive=T, showWarnings=F )
+          L1 = bathymetry.db(p=p1, DS="baseline")
+          nL1 = nrow(L1)
+          TS = matrix( NA, nrow=nL1, ncol=p$ny )
+          for (i in 1:p$ny ) {
+            TS[,i] = stm_db( p=p1, DS="stm.prediction", yr=p$yrs[i], ret="mean")
+          }
+          outfile =  file.path( projectdir, paste( "snowcrab", "baseline", "mean", p1$spatial.domain, "rdata", sep= ".") )
+          save( TS, file=outfile, compress=T )
+          TS = TS[] * NA
+          for (i in 1:p$ny ) {
+            TS[,i] = stm_db( p=p1, DS="stm.prediction", yr=p$yrs[i], ret="lb")
+          }
+          outfile =  file.path( projectdir, paste( "snowcrab", "baseline", "lb", p1$spatial.domain, "rdata", sep= ".") )
+          save( TS, file=outfile, compress=T )
+          TS = TS[] * NA
+          for (i in 1:p$ny ) {
+            TS[,i] = stm_db( p=p1, DS="stm.prediction", yr=p$yrs[i], ret="ub")
+          }
+          outfile =  file.path( projectdir, paste( "snowcrab", "baseline", "ub", p1$spatial.domain, "rdata", sep= ".") )
+          save( TS, file=outfile, compress=T )
+        }
+        return(NULL)
       }
-      outfile =  file.path( projectdir, paste( "snowcrab", "baseline", "mean", p1$spatial.domain, "rdata", sep= ".") )
-      save( TS, file=outfile, compress=T )
-      TS = TS[] * NA
-      for (i in 1:p$ny ) {
-        TS[,i] = stm_db( p=p1, DS="stm.prediction", yr=p$yrs[i], ret="lb")
-      }
-      outfile =  file.path( projectdir, paste( "snowcrab", "baseline", "lb", p1$spatial.domain, "rdata", sep= ".") )
-      save( TS, file=outfile, compress=T )
-      TS = TS[] * NA
-      for (i in 1:p$ny ) {
-        TS[,i] = stm_db( p=p1, DS="stm.prediction", yr=p$yrs[i], ret="ub")
-      }
-      outfile =  file.path( projectdir, paste( "snowcrab", "baseline", "ub", p1$spatial.domain, "rdata", sep= ".") )
-      save( TS, file=outfile, compress=T )
-    }
+    )
     return( "Complete" )
   }
 
@@ -592,9 +611,8 @@ snowcrab_stm = function( ip=NULL, DS=NULL, p=NULL, year=NULL, ret="mean", varnam
     for ( gr in allgrids ) {
       print (gr)
       p1 = spatial_parameters(  p=p, spatial.domain= gr )
-      p1 = make.list( list( yrs=p1$yrs), Y=p1 )
-      snowcrab_stm( p=p1, DS="map.climatology" ) # no parallel option .. just a few
-      parallel.run( snowcrab_stm, p=p1, DS="map.annual", voi=voi )
+      snowcrab_stm( p=p1, DS="map.climatology", voi=voi ) # no parallel option .. just a few
+      snowcrab_stm( p=p1, DS="map.annual", voi=voi ) 
     }
 
   }
@@ -603,79 +621,83 @@ snowcrab_stm = function( ip=NULL, DS=NULL, p=NULL, year=NULL, ret="mean", varnam
 
 
   if ( DS %in% c("map.annual" ) ) {
-    projectdir = file.path(p$data_root, "maps", voi, p$spatial.domain, "annual" )
-    dir.create( projectdir, recursive=T, showWarnings=F )
 
-    if (is.null(ip)) ip = 1:p$nruns
-
-    # over-ride default dependent variable name if it exists
-
-    loc = bathymetry.db(p=p, DS="baseline" )
-
-    for (iy in ip ) {
-      y = p$runs[iy, "yrs"]
-      print(y)
-      H = snowcrab_stm( p=p, DS="predictions", year=y, ret="mean" )
-      if (is.null(H)) next ()
-      xyz = cbind(loc, H)
-      uu = which( is.finite(rowSums(xyz)))
-      if (length(uu) < 10) next()
-      xyz = xyz[uu,]
-      datarange = NULL
-      datarange = snowcrab.lookup.mapparams( DS="datarange", voi ) # hardcoded data ranges
-      if (is.null(datarange)) {
-        datarange=quantile(xyz[,3], probs=c(0.001,0.999), na.rm=TRUE)
-        datarange = seq( datarange[1], datarange[2], length.out=100 )
+    parallel_run(
+      p=p, 
+      voi=voi, 
+      runindex=list(yrs=p$yrs),
+      FUNC = function( ip=NULL, p, voi ) {
+        if (exists( "libs", p)) RLibrary( p$libs )
+        if (is.null(ip)) ip = 1:p$nruns
+        projectdir = file.path(p$data_root, "maps", voi, p$spatial.domain, "annual" )
+        dir.create( projectdir, recursive=T, showWarnings=F )
+        loc = bathymetry.db(p=p, DS="baseline" )
+        for ( ii in ip ) {
+          # downscale and warp from p(0) -> p1
+          year = p$runs[ii, "yrs"]
+          # print(year)
+          H = snowcrab_stm( p=p, DS="predictions", year=year, ret="mean" )
+          if (is.null(H)) next ()
+          xyz = cbind(loc, H)
+          uu = which( is.finite(rowSums(xyz)))
+          if (length(uu) < 10) next()
+          xyz = xyz[uu,]
+          datarange = NULL
+          datarange = snowcrab.lookup.mapparams( DS="datarange", voi ) # hardcoded data ranges
+          if (is.null(datarange)) {
+            datarange=quantile(xyz[,3], probs=c(0.001,0.999), na.rm=TRUE)
+            datarange = seq( datarange[1], datarange[2], length.out=100 )
+          }
+          cols = color.code( "blue.black", datarange )
+          annot = gsub( ".", " ", toupper(voi), fixed=TRUE )
+          outfn = paste( voi, "mean", year, sep=".")
+          aegis::aegis_map( xyz=xyz, cfa.regions=FALSE, depthcontours=TRUE, pts=NULL,
+            loc=projectdir, fn=outfn, annot=annot, at=datarange , col.regions=cols,
+            corners=p$corners, spatial.domain=p$spatial.domain )
+          H = snowcrab_stm( p=p, DS="predictions", year=year, ret="lb" )
+          if (is.null(H)) next ()
+          xyz = cbind(loc, H)
+          uu = which( is.finite(rowSums(xyz)))
+          if (length(uu) < 10) next()
+          xyz = xyz[uu,]
+          datarange = NULL
+          datarange = snowcrab.lookup.mapparams( DS="datarange", voi ) # hardcoded data ranges
+          if (is.null(datarange)) {
+            datarange=quantile(xyz[,3], probs=c(0.001,0.999), na.rm=TRUE)
+            datarange = seq( datarange[1], datarange[2], length.out=100 )
+          }
+          cols = color.code( "blue.black", datarange )
+          annot = gsub( ".", " ", toupper(voi), fixed=TRUE )
+          outfn = paste( voi, "lb", year, sep=".")
+          aegis::aegis_map( xyz=xyz, cfa.regions=FALSE, depthcontours=TRUE, pts=NULL,
+            loc=projectdir, fn=outfn, annot=annot, at=datarange , col.regions=cols,
+            corners=p$corners, spatial.domain=p$spatial.domain 
+          )
+          H = snowcrab_stm( p=p, DS="predictions", year=year, ret="ub" )
+          if (is.null(H)) next ()
+          xyz = cbind(loc, H)
+          uu = which( is.finite(rowSums(xyz)))
+          if (length(uu) < 10) next()
+          xyz = xyz[uu,]
+          datarange = NULL
+          datarange = snowcrab.lookup.mapparams( DS="datarange", voi ) # hardcoded data ranges
+          if (is.null(datarange)) {
+            datarange=quantile(xyz[,3], probs=c(0.001,0.999), na.rm=TRUE)
+            datarange = seq( datarange[1], datarange[2], length.out=100 )
+          }
+          cols = color.code( "blue.black", datarange )
+          annot = gsub( ".", " ", toupper(voi), fixed=TRUE )
+          outfn = paste( voi, "ub", year, sep=".")
+          aegis::aegis_map( xyz=xyz, cfa.regions=FALSE, depthcontours=TRUE, pts=NULL,
+            loc=projectdir, fn=outfn, annot=annot, at=datarange , col.regions=cols,
+            corners=p$corners, spatial.domain=p$spatial.domain 
+          )
+          print( file.path( projectdir, outfn))
+        }
+        return(NULL)
       }
-      cols = color.code( "blue.black", datarange )
-      annot = gsub( ".", " ", toupper(voi), fixed=TRUE )
-      outfn = paste( voi, "mean", y, sep=".")
-      aegis::aegis_map( xyz=xyz, cfa.regions=FALSE, depthcontours=TRUE, pts=NULL,
-        loc=projectdir, fn=outfn, annot=annot, at=datarange , col.regions=cols,
-        corners=p$corners, spatial.domain=p$spatial.domain )
-
-      H = snowcrab_stm( p=p, DS="predictions", year=y, ret="lb" )
-      if (is.null(H)) next ()
-      xyz = cbind(loc, H)
-      uu = which( is.finite(rowSums(xyz)))
-      if (length(uu) < 10) next()
-      xyz = xyz[uu,]
-      datarange = NULL
-      datarange = snowcrab.lookup.mapparams( DS="datarange", voi ) # hardcoded data ranges
-      if (is.null(datarange)) {
-        datarange=quantile(xyz[,3], probs=c(0.001,0.999), na.rm=TRUE)
-        datarange = seq( datarange[1], datarange[2], length.out=100 )
-      }
-      cols = color.code( "blue.black", datarange )
-      annot = gsub( ".", " ", toupper(voi), fixed=TRUE )
-      outfn = paste( voi, "lb", y, sep=".")
-      aegis::aegis_map( xyz=xyz, cfa.regions=FALSE, depthcontours=TRUE, pts=NULL,
-        loc=projectdir, fn=outfn, annot=annot, at=datarange , col.regions=cols,
-        corners=p$corners, spatial.domain=p$spatial.domain )
-
-
-      H = snowcrab_stm( p=p, DS="predictions", year=y, ret="ub" )
-      if (is.null(H)) next ()
-      xyz = cbind(loc, H)
-      uu = which( is.finite(rowSums(xyz)))
-      if (length(uu) < 10) next()
-      xyz = xyz[uu,]
-      datarange = NULL
-      datarange = snowcrab.lookup.mapparams( DS="datarange", voi ) # hardcoded data ranges
-      if (is.null(datarange)) {
-        datarange=quantile(xyz[,3], probs=c(0.001,0.999), na.rm=TRUE)
-        datarange = seq( datarange[1], datarange[2], length.out=100 )
-      }
-      cols = color.code( "blue.black", datarange )
-      annot = gsub( ".", " ", toupper(voi), fixed=TRUE )
-      outfn = paste( voi, "ub", y, sep=".")
-      aegis::aegis_map( xyz=xyz, cfa.regions=FALSE, depthcontours=TRUE, pts=NULL,
-        loc=projectdir, fn=outfn, annot=annot, at=datarange , col.regions=cols,
-        corners=p$corners, spatial.domain=p$spatial.domain )
-
-      print( file.path( projectdir, outfn))
-    }
-
+    )
+    return("Finished")
   }
 
 
@@ -683,34 +705,44 @@ snowcrab_stm = function( ip=NULL, DS=NULL, p=NULL, year=NULL, ret="mean", varnam
 
 
   if ( DS %in% c("map.climatology" ) ) {
-    projectdir = file.path(p$data_root, "maps", voi, p$spatial.domain, "climatology" )
-    dir.create( projectdir, recursive=T, showWarnings=F )
-
-    loc = bathymetry.db(p=p, DS="baseline" )
-
     H = snowcrab_stm( p=p, DS="complete" )
     vnames = setdiff( names(H), c("plon", "plat" ))
-
-    for (vn in vnames ) {
-      xyz = cbind(loc, H[,vn])
-      uu = which( is.finite(rowSums(xyz)))
-      if (length(uu) < 10) next()
-      xyz = xyz[uu,]
-      datarange= NULL
-      datarange = snowcrab.lookup.mapparams( DS="datarange", vn) # hardcoded data ranges
-      if (is.null(datarange)) {
-        datarange=quantile(xyz[,3], probs=c(0.005,0.995), na.rm=TRUE)
-        datarange = seq( datarange[1], datarange[2], length.out=100 )
+    H = NULL
+    
+    parallel_run(
+      p=p, 
+      voi=voi, 
+      runindex=list(vnames=vnames),
+      FUNC = function( ip=NULL, p, voi ) {
+        if (exists( "libs", p)) RLibrary( p$libs )
+        if (is.null(ip)) ip = 1:p$nruns
+        projectdir = file.path(p$data_root, "maps", voi, p$spatial.domain, "climatology" )
+        dir.create( projectdir, recursive=T, showWarnings=F )
+        loc = bathymetry.db(p=p, DS="baseline" )
+        H = snowcrab_stm( p=p, DS="complete" )
+        vnames = setdiff( names(H), c("plon", "plat" ))
+        for (ii in ip) {
+          vn = p$runs[ii, "vnames"]
+          xyz = cbind(loc, H[,vn])
+          uu = which( is.finite(rowSums(xyz)))
+          if (length(uu) < 10) next()
+          xyz = xyz[uu,]
+          datarange= NULL
+          datarange = snowcrab.lookup.mapparams( DS="datarange", vn) # hardcoded data ranges
+          if (is.null(datarange)) {
+            datarange=quantile(xyz[,3], probs=c(0.005,0.995), na.rm=TRUE)
+            datarange = seq( datarange[1], datarange[2], length.out=100 )
+          }
+          cols = color.code( "blue.black", datarange )
+          annot = gsub( ".", " ", toupper(vn), fixed=TRUE )
+          aegis::aegis_map( xyz=xyz, cfa.regions=FALSE, depthcontours=TRUE, pts=NULL,
+            loc=projectdir, fn=vn, annot=annot, at=datarange, col.regions=cols,
+            corners=p$corners, spatial.domain=p$spatial.domain )
+          print( file.path( projectdir, vn))
+        }
+        return(NULL)
       }
-      cols = color.code( "blue.black", datarange )
-      annot = gsub( ".", " ", toupper(vn), fixed=TRUE )
-      aegis::aegis_map( xyz=xyz, cfa.regions=FALSE, depthcontours=TRUE, pts=NULL,
-        loc=projectdir, fn=vn, annot=annot, at=datarange, col.regions=cols,
-        corners=p$corners, spatial.domain=p$spatial.domain )
-      print( file.path( projectdir, vn))
-    }
-
+    )
+    return( "Completed")
   }
-
-
 }

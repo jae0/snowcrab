@@ -66,15 +66,13 @@ p = snowcrab_stm( p=p, DS="parameters",
 
 # o = snowcrab_stm(p=p, DS="stm_inputs" )  # create fields for
 # stm( p=p, runmode=c("initialize", "globalmodel", "stage1", "stage2", "save") ) # 30 min
-stm( p=p, runmode=c("initialize"))
-stm( p=p, runmode=c("globalmodel") )
+stm( p=p, runmode=c("initialize", "globalmodel") ) # must do together
 # stm( p=p, runmode=c("debug" ))
 stm( p=p, runmode=c("stage1") )
 stm( p=p, runmode=c("stage2") )
 stm( p=p, runmode=c("save") )
 
-p = make.list( list( yrs=p$yrs), Y=p )
-parallel.run( snowcrab_stm, p=p, DS="predictions.redo" ) # warp predictions to other grids
+snowcrab_stm( p=p, DS="predictions.redo" ) # warp predictions to other grids
 snowcrab_stm( p=p, DS="stm.stats.redo" ) # warp stats to other grids
 snowcrab_stm( p=p, DS="complete.redo" )
 snowcrab_stm( p=p, DS="baseline.redo" )
@@ -152,8 +150,7 @@ p = snowcrab_stm( p=p, DS="parameters",
 # o = snowcrab_stm(p=p, DS="stm_inputs" )  # create fields for
 stm( p=p,  runmode=c("initialize", "globalmodel", "stage1", "stage2", "save")  )
 
-p = make.list( list( yrs=p$yrs), Y=p )
-parallel.run( snowcrab_stm, p=p, DS="predictions.redo" ) # warp predictions to other grids
+snowcrab_stm( p=p, DS="predictions.redo" ) # warp predictions to other grids
 snowcrab_stm( p=p, DS="stm.stats.redo" ) # warp stats to other grids
 snowcrab_stm( p=p, DS="complete.redo" )
 snowcrab_stm( p=p, DS="baseline.redo" )

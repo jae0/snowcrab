@@ -1,7 +1,8 @@
 
   figure.timeseries.interpolated = function( p, outdir ) {
     
-    p = make.list( list(y=p$yrs, v=p$vars.to.model ), Y=p )
+    p$runindex = list(y=p$yrs, v=p$vars.to.model ) 
+    
     K = interpolation.db( DS="interpolation.simulation", p=p  ) 
     
     for (v in p$vars.to.model) {

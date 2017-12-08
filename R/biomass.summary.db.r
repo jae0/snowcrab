@@ -146,8 +146,8 @@
 
       # biomass data: post-fishery biomass are determined by survey B)
         p$vars.to.model ="R0.mass"
-        p = make.list( list(y=p$yrs, v=p$vars.to.model ), Y=p )
-
+        p$runindex = list(y=p$yrs, v=p$vars.to.model )
+        
         K = interpolation.db( DS="interpolation.simulation", p=p )
         areas=c("cfanorth", "cfasouth", "cfa4x")
         td = K[ which( K$region %in% areas) ,]
@@ -172,7 +172,7 @@
 
       # biomass data: post-fishery biomass are determined by survey B)
         p$vars.to.model ="R0.mass"
-        p = make.list( list(y=p$yrs, v=p$vars.to.model ), Y=p )
+        p$runindex = list(y=p$yrs, v=p$vars.to.model )
 
         K = interpolation.db( DS="interpolation.simulation", p=p )
         areas=c("cfanorth", "cfasouth", "cfa4x")
@@ -314,7 +314,7 @@
       }
 
         p$vars.to.model = "R1.no"
-        p = make.list( list(y=p$yrs, v=p$vars.to.model ), Y=p )
+        p$runindex = list(y=p$yrs, v=p$vars.to.model )
 
         K = interpolation.db( DS="interpolation.simulation", p=p )
         areas=c("cfanorth", "cfasouth", "cfa4x")
@@ -345,8 +345,8 @@
 
       return(NULL)
         p$vars.to.model = "R1.no"
-        p = make.list( list(y=p$yrs, v=p$vars.to.model ), Y=p )
-
+        p$runindex = list(y=p$yrs, v=p$vars.to.model )
+        
         K = interpolation.db( DS="interpolation.simulation", p=p )
         areas=c("cfanorth", "cfasouth", "cfa4x")
         td = K[ which(K$vars==p$vars.to.model & K$region %in% areas) ,]
