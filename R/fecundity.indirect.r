@@ -25,7 +25,7 @@
 
     p$vars.to.model = c( "totno.female.primiparous", "totno.female.multiparous" )
     p$yrs = 1998:p$year.assessment
-    p$runindex = list(y=p$yrs, v=p$vars.to.model )
+    
     K = interpolation.db( DS="interpolation.simulation", p=p )
 
 #    K = K[ -which( K$yr <= 1998 ), ]

@@ -145,10 +145,8 @@
       }
 
       # biomass data: post-fishery biomass are determined by survey B)
-        p$vars.to.model ="R0.mass"
-        p$runindex = list(y=p$yrs, v=p$vars.to.model )
         
-        K = interpolation.db( DS="interpolation.simulation", p=p )
+        K = interpolation.db( DS="interpolation.simulation", p=p, varnames="R0.mass" )
         areas=c("cfanorth", "cfasouth", "cfa4x")
         td = K[ which( K$region %in% areas) ,]
 
@@ -169,15 +167,10 @@
         if (file.exists(fn)) load(fn)
         return(B)
       }
-
       # biomass data: post-fishery biomass are determined by survey B)
-        p$vars.to.model ="R0.mass"
-        p$runindex = list(y=p$yrs, v=p$vars.to.model )
-
         K = interpolation.db( DS="interpolation.simulation", p=p )
         areas=c("cfanorth", "cfasouth", "cfa4x")
         td = K[ which( K$region %in% areas) ,]
-
         B = tapply( td$total.sd.ln, INDEX=td[,c("yr", "region")], FUN=sum, na.rm=T )  # summation is really returning identity as there is only 1 element
         B = B[ , areas]
         B = as.data.frame(B)
@@ -313,23 +306,20 @@
         return(R)
       }
 
-        p$vars.to.model = "R1.no"
-        p$runindex = list(y=p$yrs, v=p$vars.to.model )
+      K = interpolation.db( DS="interpolation.simulation", p=p, varnames="R1.no" )
+      areas=c("cfanorth", "cfasouth", "cfa4x")
+      td = K[ which(K$vars=="R1.no" & K$region %in% areas) ,]
+      R = tapply( td$total, INDEX=td[,c("yr", "region")], FUN=sum, na.rm=T )  # summation is really returning identity as there is only 1 element
+      R = R /1000 # kt
+      R = R[ , areas]
 
-        K = interpolation.db( DS="interpolation.simulation", p=p )
-        areas=c("cfanorth", "cfasouth", "cfa4x")
-        td = K[ which(K$vars==p$vars.to.model & K$region %in% areas) ,]
-        R = tapply( td$total, INDEX=td[,c("yr", "region")], FUN=sum, na.rm=T )  # summation is really returning identity as there is only 1 element
-        R = R /1000 # kt
-        R = R[ , areas]
+    # assessments conducted in the spring 2001 and earlier ... they are pre-fishery biomasses ..
+    # fishery is modelled using a biomass (fishable biomass) estimate == pre-fishery biomass == landings + post-fishery biomass
 
-      # assessments conducted in the spring 2001 and earlier ... they are pre-fishery biomasses ..
-      # fishery is modelled using a biomass (fishable biomass) estimate == pre-fishery biomass == landings + post-fishery biomass
-
-        R = R[, areas]
-        R[ which( rownames(R) %in% c(1998:2001) ),"cfa4x"] = mean( R[ which( rownames(R) %in% c(2002:2005) ),"cfa4x"] )
-        save( R, file=fn, compress=T )
-        return (R)
+      R = R[, areas]
+      R[ which( rownames(R) %in% c(1998:2001) ),"cfa4x"] = mean( R[ which( rownames(R) %in% c(2002:2005) ),"cfa4x"] )
+      save( R, file=fn, compress=T )
+      return (R)
     }
 
 
@@ -343,24 +333,22 @@
       }
       message ("not available right now")
 
-      return(NULL)
-        p$vars.to.model = "R1.no"
-        p$runindex = list(y=p$yrs, v=p$vars.to.model )
-        
-        K = interpolation.db( DS="interpolation.simulation", p=p )
-        areas=c("cfanorth", "cfasouth", "cfa4x")
-        td = K[ which(K$vars==p$vars.to.model & K$region %in% areas) ,]
-        R = tapply( td$total.sd.ln, INDEX=td[,c("yr", "region")], FUN=sum, na.rm=T )  # summation is really returning identity as there is only 1 element
-        R = R[ , areas]
+      stop()
+      
+      K = interpolation.db( DS="interpolation.simulation", p=p, varnames="R1.no" )
+      areas=c("cfanorth", "cfasouth", "cfa4x")
+      td = K[ which(K$vars=="R1.no" & K$region %in% areas) ,]
+      R = tapply( td$total.sd.ln, INDEX=td[,c("yr", "region")], FUN=sum, na.rm=T )  # summation is really returning identity as there is only 1 element
+      R = R[ , areas]
 
-      # assessments conducted in the spring 2001 and earlier ... they are pre-fishery biomasses ..
-      # fishery is modelled using a biomass (fishable biomass) estimate == pre-fishery biomass == landings + post-fishery biomass
+    # assessments conducted in the spring 2001 and earlier ... they are pre-fishery biomasses ..
+    # fishery is modelled using a biomass (fishable biomass) estimate == pre-fishery biomass == landings + post-fishery biomass
 
-        R[ which( rownames(R) %in% c(1998:2001) ),"cfa4x"] = mean( R[ which( rownames(R) %in% c(2002:2005) ),"cfa4x"] )
-        R[ which( R < 0.001) ] = mean( R, na.rm=T )
+      R[ which( rownames(R) %in% c(1998:2001) ),"cfa4x"] = mean( R[ which( rownames(R) %in% c(2002:2005) ),"cfa4x"] )
+      R[ which( R < 0.001) ] = mean( R, na.rm=T )
 
-        save( R, file=fn, compress=T )
-        return (R)
+      save( R, file=fn, compress=T )
+      return (R)
     }
 
   }
