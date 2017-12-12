@@ -18,10 +18,10 @@
       set = aegis::survey.db( p=p, DS="set.filter" ) # mature male > 95 mm 
  
       ii = which( set$totmass > 0 )
-      qs = quantile( set$totmass[ii], probs=p$stm_quantile_bounds, na.rm=TRUE )
+      qs = quantile( set$totmass[ii], probs=p$stmv_quantile_bounds, na.rm=TRUE )
       qs = log(qs) # 
 
-      bm = snowcrab_stm( p=p, DS="baseline", ret="mean", varnames=varnames )
+      bm = snowcrab_stmv( p=p, DS="baseline", ret="mean", varnames=varnames )
       m = bm[[1]]  # biomass
       h = bm[[2]]  # habitat
       bm= NULL
@@ -43,11 +43,11 @@
       }
 
       # more range checks
-      s = snowcrab_stm( p=p, DS="baseline", ret="sd", varnames=varnames )
+      s = snowcrab_stmv( p=p, DS="baseline", ret="sd", varnames=varnames )
       # range checks
       s = log( exp(s[[1]]) * s[[2]] ) # s[[2]] is serving as weight/probabilities
       
-      sq = quantile(s, probs=p$stm_quantile_bounds[2], na.rm=TRUE ) 
+      sq = quantile(s, probs=p$stmv_quantile_bounds[2], na.rm=TRUE ) 
       # s[which(s > sq)] = sq  # cap upper bound of sd
 
       # mm = which(( m - 1.96*s ) < 0 )
@@ -204,7 +204,7 @@
     if (DS =="habitat.temperatures") {
 
       bm = interpolation.db( p=p, DS="biomass" )
-      ps = snowcrab_stm(p=p, DS="output_data" ) # , voi=p$selection$name
+      ps = snowcrab_stmv(p=p, DS="output_data" ) # , voi=p$selection$name
 
       temp = ps$t * bm$h
 

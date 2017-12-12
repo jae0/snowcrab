@@ -123,8 +123,8 @@
       # keep those in the domain and deeper than depth=10 m
       z = bathymetry.db(p=p, DS="baseline", varnames=c("plon", "plat", "z"))
       aoi = which( z$z > 10 ) # negative = above land
-      pidz = stm::array_map( "xy->1", z[aoi,c("plon", "plat")], gridparams=p$gridparams )
-      pidl = stm::array_map( "xy->1", lgbk[,c("plon", "plat")], gridparams=p$gridparams )
+      pidz = stmv::array_map( "xy->1", z[aoi,c("plon", "plat")], gridparams=p$gridparams )
+      pidl = stmv::array_map( "xy->1", lgbk[,c("plon", "plat")], gridparams=p$gridparams )
       inaoi = which( is.finite( match( pidl, pidz ) ))
       good = which(is.finite( inaoi))
       lgbk = lgbk[ good,]

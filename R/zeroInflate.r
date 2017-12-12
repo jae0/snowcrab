@@ -39,7 +39,7 @@ zeroInflate = function(xyz,blank.dist,scale=20,corners=NULL, aspr=1, type=2, eff
     }
     if(type==1)dims = c(round((ymax-ymin)/(mean(nndist(pts.ppp))*type.scaler)*aspr),round((xmax-xmin)/(mean(nndist(pts.ppp))*type.scaler)))
     if(type==2)dims = c(round((ymax-ymin)/(blank.dist*type.scaler)*aspr),round((xmax-xmin)/(blank.dist*type.scaler)))
-    blank.map = distmap(pts.ppp,dim=dims)
+    blank.map = distmvap(pts.ppp,dim=dims)
     blank.dat = data.frame(X=sort(rep(blank.map$xcol,blank.map$dim[1])),Y=rep(blank.map$yrow,blank.map$dim[2]),dist=as.vector(blank.map$v))
     blank.dat = subset(blank.dat,dist>blank.dist,c('X','Y'))
     xyz = merge(xyz,data.frame(blank.dat,Z=eff),all=T)

@@ -40,7 +40,7 @@ Imports:
   aegis.env,
   aegis, 
   netmensuration,
-  stm
+  stmv
 Suggests:
 License: MIT
 LazyData: true

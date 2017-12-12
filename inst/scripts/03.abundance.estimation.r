@@ -45,7 +45,7 @@
 p = bio.snowcrab::load.environment( year.assessment=year.assessment )
 
 # 11 hrs with these settings,
-p = snowcrab_stm( p=p, DS="parameters",
+p = snowcrab_stmv( p=p, DS="parameters",
   selection=list(
     name = "snowcrab.large.males_abundance",
     type = "abundance",
@@ -55,30 +55,30 @@ p = snowcrab_stm( p=p, DS="parameters",
     len= c( 95, 200 )/10, #  mm -> cm ; aegis_db in cm
     drop.groundfish.data=TRUE # esp from 1970 to 1999 measurement of invertebrates was sporatic .. zero-values are dropped as they are unreliable
   ),
-  DATA = 'snowcrab_stm( p=p, DS="stm_inputs" )',
-  stm_global_family = gaussian(link=log),
-  stm_local_modelengine = "twostep",
-  stm_twostep_space = "krige",
-  stm_gam_optimizer=c("outer", "bfgs") ,
-  stm_distance_statsgrid = 2, # resolution (km) of data aggregation (i.e. generation of the ** statistics ** )
-  stm_distance_scale = 50
+  DATA = 'snowcrab_stmv( p=p, DS="stmv_inputs" )',
+  stmv_global_family = gaussian(link=log),
+  stmv_local_modelengine = "twostep",
+  stmv_twostep_space = "krige",
+  stmv_gam_optimizer=c("outer", "bfgs") ,
+  stmv_distance_statsgrid = 2, # resolution (km) of data aggregation (i.e. generation of the ** statistics ** )
+  stmv_distance_scale = 50
 )
 
-# o = snowcrab_stm(p=p, DS="stm_inputs" )  # create fields for
-# stm( p=p, runmode=c("initialize", "globalmodel", "stage1", "stage2", "save") ) # 30 min
-stm( p=p, runmode=c("initialize", "globalmodel") ) # must do together
-# stm( p=p, runmode=c("debug" ))
-stm( p=p, runmode=c("stage1") )
-stm( p=p, runmode=c("stage2") )
-stm( p=p, runmode=c("save") )
+# o = snowcrab_stmv(p=p, DS="stmv_inputs" )  # create fields for
+# stmv( p=p, runmode=c("initialize", "globalmodel", "stage1", "stage2", "save") ) # 30 min
+stmv( p=p, runmode=c("initialize", "globalmodel") ) # must do together
+# stmv( p=p, runmode=c("debug" ))
+stmv( p=p, runmode=c("stage1") )
+stmv( p=p, runmode=c("stage2") )
+stmv( p=p, runmode=c("save") )
 
-snowcrab_stm( p=p, DS="predictions.redo" ) # warp predictions to other grids
-snowcrab_stm( p=p, DS="stm.stats.redo" ) # warp stats to other grids
-snowcrab_stm( p=p, DS="complete.redo" )
-snowcrab_stm( p=p, DS="baseline.redo" )
-snowcrab_stm( p=p, DS="map.all" )
+snowcrab_stmv( p=p, DS="predictions.redo" ) # warp predictions to other grids
+snowcrab_stmv( p=p, DS="stmv.stats.redo" ) # warp stats to other grids
+snowcrab_stmv( p=p, DS="complete.redo" )
+snowcrab_stmv( p=p, DS="baseline.redo" )
+snowcrab_stmv( p=p, DS="map.all" )
 
-global_model = stm_db( p=p, DS="global_model")
+global_model = stmv_db( p=p, DS="global_model")
 summary( global_model )
 plot(global_model)
 
@@ -128,7 +128,7 @@ GCV = 2.4006  Scale est. = 2.3943    n = 6853
 p = bio.snowcrab::load.environment( year.assessment=year.assessment )
 
 
-p = snowcrab_stm( p=p, DS="parameters",
+p = snowcrab_stmv( p=p, DS="parameters",
   selection=list(
     name = "snowcrab.large.males_presence_absence",
     type = "presence_absence",
@@ -138,25 +138,25 @@ p = snowcrab_stm( p=p, DS="parameters",
     len= c( 95, 200 )/10, #  mm -> cm ; aegis_db in cm
     drop.groundfish.data=TRUE # esp from 1970 to 1999 measurement of invertebrates was sporatic .. zero-values are dropped as they are unreliable
   ),
-  DATA = 'snowcrab_stm( p=p, DS="stm_inputs" )',
-  stm_global_family = binomial(),
-  stm_local_modelengine = "twostep",
-  stm_twostep_space = "krige",
-  stm_gam_optimizer=c("outer", "bfgs"),
-  stm_distance_statsgrid = 2, # resolution (km) of data aggregation (i.e. generation of the ** statistics ** ),
-  stm_distance_scale = 50
+  DATA = 'snowcrab_stmv( p=p, DS="stmv_inputs" )',
+  stmv_global_family = binomial(),
+  stmv_local_modelengine = "twostep",
+  stmv_twostep_space = "krige",
+  stmv_gam_optimizer=c("outer", "bfgs"),
+  stmv_distance_statsgrid = 2, # resolution (km) of data aggregation (i.e. generation of the ** statistics ** ),
+  stmv_distance_scale = 50
 )
 
-# o = snowcrab_stm(p=p, DS="stm_inputs" )  # create fields for
-stm( p=p,  runmode=c("initialize", "globalmodel", "stage1", "stage2", "save")  )
+# o = snowcrab_stmv(p=p, DS="stmv_inputs" )  # create fields for
+stmv( p=p,  runmode=c("initialize", "globalmodel", "stage1", "stage2", "save")  )
 
-snowcrab_stm( p=p, DS="predictions.redo" ) # warp predictions to other grids
-snowcrab_stm( p=p, DS="stm.stats.redo" ) # warp stats to other grids
-snowcrab_stm( p=p, DS="complete.redo" )
-snowcrab_stm( p=p, DS="baseline.redo" )
-snowcrab_stm( p=p, DS="map.all" )
+snowcrab_stmv( p=p, DS="predictions.redo" ) # warp predictions to other grids
+snowcrab_stmv( p=p, DS="stmv.stats.redo" ) # warp stats to other grids
+snowcrab_stmv( p=p, DS="complete.redo" )
+snowcrab_stmv( p=p, DS="baseline.redo" )
+snowcrab_stmv( p=p, DS="map.all" )
 
-global_model = stm_db( p=p, DS="global_model")
+global_model = stmv_db( p=p, DS="global_model")
 summary( global_model )
 plot(global_model)
 
@@ -213,7 +213,7 @@ p$selection=list(
   drop.groundfish.data=TRUE # esp from 1970 to 1999 measurement of invertebrates was sporatic .. zero-values are dropped as they are unreliable
 )
 
-p = snowcrab_stm( p=p, DS="parameters" )
+p = snowcrab_stmv( p=p, DS="parameters" )
 
 interpolation.db( DS="biomass.redo", p=p  )
 interpolation.db( DS="biomass.map", p=p  )
@@ -236,7 +236,7 @@ biomass.summary.db("complete.redo", p=p) #Uses the model results to create a hab
 
 
 ### --------- prediction success:
-set = snowcrab_stm(p=p, DS="input_data", voi=p$selection$name )
+set = snowcrab_stmv(p=p, DS="input_data", voi=p$selection$name )
 
 S = set[ , c("plon", "plat") ]
 
