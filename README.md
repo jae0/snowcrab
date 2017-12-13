@@ -4,7 +4,7 @@ Stock assessment of Canada's Maritimes Region snow crab (Chionoectes oplio) leve
 Installation:
 
 
-1. To install you need to bootstrap from aegis.env directly from github: 
+1. To install: 
 
 ```
   install.packages( "devtools", ask=F, dependencies=TRUE ) # to inter-operate with github   
