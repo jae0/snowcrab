@@ -1,30 +1,20 @@
-# bio.snowcrab 
+Stock assessment of Canada's Maritimes Region snow crab (Chionoectes oplio) leveraging aegis*, bio*, and stm* packages. 
 
-Utilities to help develop and/or use snowcrab assessment tools in the bio framework.
 
 Installation:
 
-```
-install.packages( "devtools", ask=F, dependencies=TRUE )   
-require ("devtools")
-install_github( "jae0/bio.snowcrab" )
-```
 
-Setup environment as indicated in: https://github.com/jae0/aegis.env
-
-
-
-NOTE to all:
-
-Stock assessment of Canada's Maritimes Region snow crab (Chionoectes oplio) leveraging aegis*, bio*, and stm* packages. 
-
-To install you need to bootstrap from https://github.com/jae0/aegis.env directly: 
+1. To install you need to bootstrap from aegis.env directly from github: 
 
 ```
-  devtools::install_github( "jae0/aegis.env" )
+  install.packages( "devtools", ask=F, dependencies=TRUE ) # to inter-operate with github   
+  devtools::install_github( "jae0/aegis.env" ) # to bootstrap by installing directly from github
+  aegis.env::project.libraryInstall(DS="snowcrab") # install bio.snowcrab and other required packages 
 ```
 
-Then, you need to have an Rprofile set up properly. An example can be seen in aegis.env/R/project.Rprofile.example.R, or use the following, being careful to define the required R-global variables:
+
+
+2. Then, you need to have an Rprofile set up properly. Use the following, being careful to define the required R-global variables (see also: https://github.com/jae0/aegis.env/blob/master/R/project.Rprofile.example.r):
 
 ```.
 libPaths("~/R")
@@ -41,12 +31,6 @@ if (file.exists(passwords)) source( passwords )
 require( aegis.env ) 
 ```
 
-
-Thereafter, you can used the bootstrapped environment to install the other basic tools: 
-
-```
-  aegis.env::project.libraryInstall(DS="snowcrab")
-```
 
 If you have a local git clone of the required packages, you can install with:
 
