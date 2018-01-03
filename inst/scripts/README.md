@@ -1,5 +1,6 @@
 Follow the numerical sequence in running the scripts:
-  0* are core assessment
-  1* are miscellaneous items
-  99* are things that are deprecated scripts.
+  0X.*   : core assessment
+  1X.*   : assessment presentations 
+  {2+}X.*  : miscellaneous to support routine but non-assessment latex docs, papers, etc.
+  99*  : deprecated scripts.
    
