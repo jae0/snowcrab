@@ -6,8 +6,8 @@ Authors@R: c(
   person("Brent", "Cameron", email = "Brent.Cameron@dfo-mpo.gc.ca", role = c("aut")),
   person("Brad", "Hubley", email = "Brad.Hubley@dfo-mpo.gc.ca", role = c("aut")),
   person("Michelle", "Greenlaw", email = "Michelle.Greenlaw@dfo-mpo.gc.ca", role = c("aut")),
-  person("Adam", "Cook", email = "Adam.Cook@dfo-mpo.gc.ca", role = c("aut,")) ) 
-  person("Ben", "Zisserson", email = "Ben.Zisserson@dfo-mpo.g.ca", role = c("aut"))
+  person("Adam", "Cook", email = "Adam.Cook@dfo-mpo.gc.ca", role = c("aut")) ,
+  person("Ben", "Zisserson", email = "Ben.Zisserson@dfo-mpo.g.ca", role = c("aut")))
 Description: The snow crab assessment suite used by Maritimes Region in Canada. It is  
   designed to be used as part of the em* project. 
 Depends: R (>= 3.0.0)
