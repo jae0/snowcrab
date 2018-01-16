@@ -22,7 +22,7 @@
 
       if (outvalue=="localtime") {
         lineloc = grep( "Local Time:", header, ignore.case=T  )
-        ndt = strsplit( header[lineloc], "[[:space:]]+" )
+        ndt = strsplit( header[lineloc], "[[:space:]]+" )[[1]]
         if ( length(ndt) != 7) stop ( paste("Local Time error:", header[lineloc], fnNetmind ) )
         dateobject = gsub( "[[:space:]]", "", paste( ndt[7], ndt[4], ndt[5], sep="-" ) )
         timeobject = gsub( "[[:space:]]", "", ndt[6] )
@@ -32,7 +32,7 @@
 
 
       if (outvalue=="linetime") {
-        rec = strsplit( header[linenumber], "[[:space:]]+" )
+        rec = strsplit( header[linenumber], "[[:space:]]+" )[[1]]
         recdate = paste(substring(rec[1],1,2), substring(rec[1],3,4), substring(rec[1],5,6), sep="-")
         recyr = (substring(rec[2],1,2))
         rectime = paste(recyr, substring(rec[2],3,4), substring(rec[2],5,6), sep=":")
