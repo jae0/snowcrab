@@ -1,7 +1,7 @@
 #TODO BC add functionality for pdf&kml outputs 
 
 map.set.information = function(p, outdir, variables, mapyears, interpolate.method='tps', theta=p$pres*25, 
-                               idp=2, log.variable=TRUE, add.zeros=TRUE, minN=10, probs=c(0.025, 0.975), offset) {
+                               idp=2, log.variable=TRUE, add.zeros=TRUE, minN=10, probs=c(0.025, 0.975) ) {
 
     set = snowcrab.db( DS="set.biologicals")
     if(missing(variables)){
@@ -21,27 +21,26 @@ map.set.information = function(p, outdir, variables, mapyears, interpolate.metho
       add.zeros=add.zeros,
       minN=minN,
       probs=probs,
-      offset=offset,
       runindex=list(vn=variables, myrs=mapyears ),
-      FUNC = function( ip=NULL, p, outdir, interpolate.method, idp, log.variable, add.zeros,  minN, probs, offset ) {
+      FUNC = function( ip=NULL, p, outdir, interpolate.method, idp, log.variable, add.zeros,  minN, probs ) {
         if (exists( "libs", p)) RLibrary( p$libs )
         if (is.null(ip)) ip = 1:p$nruns
         predlocs = bathymetry.db(p=p, DS="baseline")
         for ( i in ip ) {
-          v = p$runs[i,1]
-          y = p$runs[i,2]
-          ratio=F
+          v = p$runs[i,"vn"]
+          y = p$runs[i,"myrs"]
+          ratio=FALSE
           outfn = paste( v,y, sep=".")
           outloc = file.path( outdir,v)
           print(paste(p$runs[i,]))
-          if(grepl('ratio',v))ratio=T
+          if (grepl('ratio', v)) ratio=TRUE
 
           set_xyz = set[ which(set$yr==y), c("plon","plat",v) ]
           names( set_xyz) = c("plon", "plat", "z")
           set_xyz = na.omit(subset(set_xyz,!duplicated(paste(plon,plat))))
           if(nrow(set_xyz)<minN)next() #skip to next variable if not enough data
 
-          if(missing(offset))offset = empirical.ranges( db="snowcrab", v, remove.zeros=T , probs=0)  # offset fot log transformation
+          offset = empirical.ranges( db="snowcrab", v, remove.zeros=T , probs=0)  # offset fot log transformation
           er = empirical.ranges( db="snowcrab", v, remove.zeros=T , probs=probs)  # range of all years
           if(ratio)er=c(0,1)
           ler = er
@@ -105,8 +104,10 @@ map.set.information = function(p, outdir, variables, mapyears, interpolate.metho
             ckey=list(labels=list(at=log(labs+offset),labels=labs,cex=2))
           }
 
-         try( aegis::aegis_map( xyz, xyz.coords="planar", cfa.regions=T, depthcontours=T, pts=set_xyz[,c("plon","plat")], annot=y, fn=outfn, loc=outloc, at=datarange , col.regions=cols(length(datarange)+1), colpts=F, corners=p$corners, display=F,colorkey=ckey))
-        
+          aegis::aegis_map( xyz, xyz.coords="planar", cfa.regions=TRUE, depthcontours=TRUE, pts=set_xyz[,c("plon","plat")], 
+          annot=y, fn=outfn, loc=outloc, at=datarange , col.regions=cols(length(datarange)+1), colpts=FALSE, corners=p$corners, 
+          display=TRUE, colorkey=ckey )
+                  
         }
       }
     )

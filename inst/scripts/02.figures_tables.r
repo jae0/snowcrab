@@ -14,6 +14,8 @@
 
   # ------------------------------------------
    # Time-series: Fisheries landings
+  #BZ TODO get these to match the njanuary meetings script exactly as that lines up with Improptu reports
+  #for now, the plots produced are accurate.
    figure.landings.timeseries( yearmax=p$year.assessment, outdir=file.path( p$annual.results,  "timeseries","fishery"), outfile="landings.ts", outfile2="landings.ts.sm" )
 
   # ------------------------------------------
