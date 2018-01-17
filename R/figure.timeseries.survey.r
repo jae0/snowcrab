@@ -1,5 +1,5 @@
 
-  figure.timeseries.survey = function( outdir, variables, plotyears,type="biologicals", all.areas=T, minN=10, u=NULL, graphic='pdf', bg="white" ) {
+  figure.timeseries.survey = function( p, outdir, variables, plotyears,type="biologicals", all.areas=T, minN=10, u=NULL, graphic='pdf', bg="white" ) {
 
 
     if (all.areas) {
@@ -14,7 +14,7 @@
     n.areas = length(areas)
 
     # base data
-    tdb = snowcrab.timeseries.db( DS=type )
+    tdb = snowcrab.timeseries.db( DS=type, p=p )
 
     if(missing(variables)){
       variables =  c(
@@ -26,9 +26,7 @@
       variables = intersect( variables, unique(tdb$variable))
     }
 
-    # base data
-    tdb = snowcrab.timeseries.db( DS=type )
-
+  
     if(missing(plotyears))plotyears = unique(tdb$year)
 
     tdb = subset(tdb,variable%in%variables&year%in%plotyears)

@@ -479,7 +479,7 @@ m2 <- glm(totmass.male.com ~ as.factor(yr)-1, data = subset(d, nonzero == 1), fa
 m1 = glm(totmass.male.com~as.factor(yr),data=set, family="poisson")
 predict
   
-td = snowcrab.timeseries.db( DS="biologicals" )
+td = snowcrab.timeseries.db( DS="biologicals", p=p )
 td = td[order(td$year),]
 tdmm = td[which(td$region=='cfa4x'&td$variable=="totmass.male.com"),]
 tdim = td[which(td$region=='cfa4x'&td$variable=="totmass.male.ncom"),]
@@ -528,8 +528,8 @@ savePlot(file.path(outdir,paste('survey.trend.females','png',sep=".")),type='png
 
 
 
-  td = snowcrab.timeseries.db( DS="biologicals.2014" )
-  # td = snowcrab.timeseries.db( DS="biologicals.2014" )  # reduced subset due to incomplete survey in 2014
+  td = snowcrab.timeseries.db( DS="biologicals.2014" , p=p)
+  # td = snowcrab.timeseries.db( DS="biologicals.2014", p=p )  # reduced subset due to incomplete survey in 2014
 
 td = td[which(td$region=='cfa4x'&td$variable=="totmass.male.mat"),]
 td = td[order(td$year),]

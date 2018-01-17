@@ -37,12 +37,12 @@
 
   # ------------------------------------------
   # Timeseries of all survey variables
-  figure.timeseries.survey(outdir=file.path(p$annual.results, "timeseries", "survey"), variables="R0.mass", plotyears=2001:p$year.assessment) # just R0 to see
-  #figure.timeseries.survey(outdir=file.path(p$annual.results, "timeseries", "survey"),variables=c("sexratio.all","sexratio.mat","sexratio.imm"))
-  figure.timeseries.survey(outdir=file.path(p$annual.results, "timeseries", "survey"),plotyears=2001:p$year.assessment) # all variables
-  figure.timeseries.survey(outdir=file.path(p$annual.results, "timeseries", "observer"),plotyears=2001:p$year.assessment,type='observer')
+  figure.timeseries.survey(p=p, outdir=file.path(p$annual.results, "timeseries", "survey"), variables="R0.mass", plotyears=2001:p$year.assessment) # just R0 to see
+  figure.timeseries.survey(p=p, outdir=file.path(p$annual.results, "timeseries", "survey"),variables=c("sexratio.all","sexratio.mat","sexratio.imm"))
+  figure.timeseries.survey(p=p, outdir=file.path(p$annual.results, "timeseries", "survey"),plotyears=2001:p$year.assessment) # all variables
+  figure.timeseries.survey(p=p, outdir=file.path(p$annual.results, "timeseries", "observer"),plotyears=2001:p$year.assessment,type='observer')
 
-  # figure.timeseries.survey(outdir=file.path(p$annual.results, "timeseries", "survey"),type='groundfish.t') # groundfish survey temperature
+  # figure.timeseries.survey(p=p, outdir=file.path(p$annual.results, "timeseries", "survey"),type='groundfish.t') # groundfish survey temperature
   #-----------------------------------------------
 
   #Timeseries: geometric mean biomass of by-catch from snow crab survey
@@ -50,7 +50,7 @@
   # predators and competitors
     #cod, haddock, halibut, plaice, wolfish, thornyskate, smoothskate, winterskate, northernshrimp, jonahcrab, lessertoadcrab
   species = c(10, 11, 30, 40, 201, 50, 2521, 2511, 202, 204, 2211)
-  figure.timeseries.bycatch(species, plotyears=2004:p$year.assessment,outdir=file.path(p$annual.results, "timeseries", "survey"))
+  figure.timeseries.bycatch(p=p, species, plotyears=2004:p$year.assessment,outdir=file.path(p$annual.results, "timeseries", "survey"))
 
 
   # ------------------------------------------

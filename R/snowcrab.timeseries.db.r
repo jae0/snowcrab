@@ -6,7 +6,7 @@ snowcrab.timeseries.db = function( DS="default", p=NULL, regions=c( "cfa4x", "cf
   tsoutdir = file.path( p$project.outputdir, "timeseries" )
   dir.create(tsoutdir, showWarnings=FALSE, recursive=TRUE)
 
-  if (DS == "default") return( snowcrab.timeseries.db( DS="biologicals") )
+  if (DS == "default") return( snowcrab.timeseries.db( DS="biologicals", p=p) )
 
   if (DS == "biologicals.direct" ) {
     # \\ no saving .. just a direct one-off
