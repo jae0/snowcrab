@@ -1,5 +1,5 @@
 
-  habitat.usage = function( usevar, covariate, outdir ) {
+  habitat.usage = function( usevar, covariate, outdir, p ) {
 
     b = snowcrab.db("set.biologicals")
     logbook = logbook.db(DS="fisheries.complete")
@@ -18,45 +18,45 @@
     if (covariate=="depth") {
       # survey densities
       freq1 = errorbars( b=b, v=c("z", usevar), br=30, nfilter=10, lowess=0.25, trim=0.1,
-          xlab="Depth (m)", ylab=ylab)
+          xlab="Depth (m)", ylab=ylab, p=p)
       Pr(dev="png", dname=outdir, fname=paste("survey.depth", usevar, sep=".") )
 
       # dockside landings
       usevar = "landings"
       freq1 = errorbars( b=L, v= c("depth", usevar), br=50, nfilter=10, lowess=0.25,  trim=0.1,
-          xlab="Depth (m)", ylab="Landings (t)")
+          xlab="Depth (m)", ylab="Landings (t)", p=p)
       Pr(dev="png", dname=outdir, fname=paste("landings.depth", usevar, sep="."))
 
       # logbook cpue
       usevar = "cpue"
       freq1 = errorbars( b=L, v= c("depth", usevar), br=50, nfilter=10, lowess=0.25,  trim=0.1,
-          xlab="Depth (m)", ylab="CPUE (kg/trap haul)")
+          xlab="Depth (m)", ylab="CPUE (kg/trap haul)", p=p)
       Pr(dev="png", dname=outdir, fname=paste("cpue.depth", usevar, sep="."))
     }
 
     if (covariate=="temperature") {
       # survey densities
       freq1 = errorbars( b=b, v=c("t", usevar), br=50, nfilter=10, lowess=0.25, trim=0.1,
-          xlab="Temperature (C)", ylab=ylab )
+          xlab="Temperature (C)", ylab=ylab , p=p)
       Pr(dev="png", dname=outdir, fname=paste("survey.temperatures", usevar, sep=".") )
     }
 
     if (covariate=="bottom.slope") {
       # survey densities
       freq1 = errorbars( b=b, v=c("dZ", usevar), br=50, nfilter=10, lowess=0.25, trim=0.1,
-          xlab="ln (abs( Slope; m/m) )", ylab=ylab)
+          xlab="ln (abs( Slope; m/m) )", ylab=ylab, p=p)
       Pr(dev="png", dname=outdir, fname=paste("survey.slope", usevar, sep=".") )
 
       # dockside landings
       usevar = "landings"
       freq1 = errorbars( b=L, v= c("dZ", usevar), br=50, nfilter=10, lowess=0.25,  trim=0.1,
-          xlab="ln (abs( Slope; m/m) )", ylab="Landings (t)" )
+          xlab="ln (abs( Slope; m/m) )", ylab="Landings (t)", p=p )
       Pr(dev="png", dname=outdir, fname=paste("landings.slope", usevar, sep="."))
 
       # logbook cpue
       usevar = "cpue"
       freq1 = errorbars( b=L, v= c("dZ", usevar), br=50, nfilter=10, lowess=0.25,  trim=0.1,
-          xlab="ln (abs( Slope; m/m) )", ylab="CPUE (kg/trap haul)")
+          xlab="ln (abs( Slope; m/m) )", ylab="CPUE (kg/trap haul)", p=p)
       Pr(dev="png", dname=outdir, fname=paste("cpue.slope", usevar, sep="."))
     }
 
@@ -64,19 +64,19 @@
     if (covariate=="bottom.curvature") {
       # survey densities
       freq1 = errorbars( b=b, v=c("ddZ", usevar), br=50, nfilter=10, lowess=0.25, trim=0.1,
-          xlab="ln (abs ( Curvature; m/m2) ) )", ylab=ylab)
+          xlab="ln (abs ( Curvature; m/m2) ) )", ylab=ylab, p=p)
       Pr(dev="png", dname=outdir, fname=paste("survey.curvature", usevar, sep=".") )
 
       # dockside landings
       usevar = "landings"
       freq1 = errorbars( b=L, v= c("ddZ", usevar), br=50, nfilter=10, lowess=0.25,  trim=0.1,
-          xlab="ln (abs ( Curvature; m/m2) ) )", ylab="Landings (t)")
+          xlab="ln (abs ( Curvature; m/m2) ) )", ylab="Landings (t)", p=p)
       Pr(dev="png", dname=outdir, fname=paste("landings.curvature", usevar, sep="."))
 
       # logbook cpue
       usevar = "cpue"
       freq1 = errorbars( b=L, v= c("ddZ", usevar), br=30, nfilter=3, lowess=0.3,  trim=0.1,
-          xlab="ln (abs ( Curvature; m/m2) ) )", ylab="CPUE (kg/trap haul)")
+          xlab="ln (abs ( Curvature; m/m2) ) )", ylab="CPUE (kg/trap haul)", p=p)
       Pr(dev="png", dname=outdir, fname=paste("cpue.curvature", usevar, sep="."))
 
     }
@@ -84,19 +84,19 @@
     if (covariate=="substrate") {
       # survey densities
       freq1 = errorbars( b=b, v=c("log.substrate.grainsize", usevar), br=50, nfilter=10, lowess=0.25, trim=0.1,
-          xlab="ln ( substrate grainsize; mm )", ylab=ylab)
+          xlab="ln ( substrate grainsize; mm )", ylab=ylab, p=p)
       Pr(dev="png", dname=outdir, fname=paste("survey.curvature", usevar, sep=".") )
 
       # dockside landings
       usevar = "landings"
       freq1 = errorbars( b=L, v= c("log.substrate.grainsize", usevar), br=50, nfilter=10, lowess=0.25,  trim=0.1,
-          xlab="ln ( substrate grainsize; mm )", ylab="Landings (t)")
+          xlab="ln ( substrate grainsize; mm )", ylab="Landings (t)", p=p)
       Pr(dev="png", dname=outdir, fname=paste("landings.curvature", usevar, sep="."))
 
       # logbook cpue
       usevar = "cpue"
       freq1 = errorbars( b=L, v= c("log.substrate.grainsize", usevar), br=30, nfilter=3, lowess=0.3,  trim=0.1,
-          xlab="ln ( substrate grainsize; mm )", ylab="CPUE (kg/trap haul)")
+          xlab="ln ( substrate grainsize; mm )", ylab="CPUE (kg/trap haul)", p=p)
       Pr(dev="png", dname=outdir, fname=paste("cpue.curvature", usevar, sep="."))
 
 

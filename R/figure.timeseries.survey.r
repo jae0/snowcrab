@@ -34,7 +34,7 @@
 
     #  load transformation tables associated with a given variable
 
-    REPOS = snowcrab.db( DS="data.transforms")
+    REPOS = snowcrab.db( DS="data.transforms", p=p)
 
     tvars = REPOS$varname[which(REPOS$transform=='log10')]
 

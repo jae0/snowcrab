@@ -1,7 +1,7 @@
 
-  variable.recode = function( x, variable, direction="forward", rm.na=F, lookup.table=NULL ) {
+  variable.recode = function( x, variable, direction="forward", rm.na=F, lookup.table=NULL, p=NULL ) {
 
-    if (is.null(lookup.table)) lookup.table = snowcrab.db( DS="data.transforms" )
+    if (is.null(lookup.table)) lookup.table = snowcrab.db( DS="data.transforms", p=p)
 
     ii = which( lookup.table$varname == variable )
     if (length(ii) == 0 ) { # missing from list .. print error message and stop to figure out why

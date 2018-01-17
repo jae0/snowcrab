@@ -1,7 +1,9 @@
 
-  errorbars = function(b, v, br="Sturges", nfilter=0, lowess=0.4, trim=0, xlab, ylab, ...)  {
+  errorbars = function(b, v, br="Sturges", nfilter=0, lowess=0.4, trim=0, xlab, ylab, p, ...)  {
     # ... params to send to errbar (labels, lty, etc)
-    b[,v[2]] = bio.snowcrab::variable.recode( b[,v[2]], v[2], direction="forward" )
+    lookup.table = snowcrab.db( p=p, DS="data.transforms" )
+
+    b[,v[2]] = bio.snowcrab::variable.recode( b[,v[2]], v[2], direction="forward",  lookup.table=lookup.table )
 
     good = which(is.finite(rowSums(b[,v], na.rm=T)))
     x = b[good, v[1]]
@@ -22,9 +24,9 @@
     out = out[ out$n > nfilter ,]
     r = which (is.finite(out$mids+out$mean) )
 
-    yplus = bio.snowcrab::variable.recode( x=(out$mean+out$se), v[2],  direction="backward")
-    yminus = bio.snowcrab::variable.recode( x=(out$mean-out$se), v[2],  direction="backward" )
-    out$mean = bio.snowcrab::variable.recode( x=(out$mean), v[2],  direction="backward" )
+    yplus = bio.snowcrab::variable.recode( x=(out$mean+out$se), v[2],  direction="backward", lookup.table=lookup.table)
+    yminus = bio.snowcrab::variable.recode( x=(out$mean-out$se), v[2],  direction="backward", lookup.table=lookup.table )
+    out$mean = bio.snowcrab::variable.recode( x=(out$mean), v[2],  direction="backward", lookup.table=lookup.table )
 
     errbar( x=out$mids, y=out$mean, yplus=yplus, yminus=yminus,
             xlab=xlab, ylab=ylab, xlim=c(min(out$mids, na.rm=T)-delta, max(out$mids, na.rm=T)+delta),  axes=F )  # from Hmisc

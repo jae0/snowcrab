@@ -188,15 +188,17 @@
         return(Bx)
       }
 
+      lookup.table = snowcrab.db( p=p, DS="data.transforms" )
+
       v = "R1.no"
       fm = formula( paste(v, "~yr+cfa"))
 
       set = snowcrab.db( DS ="set.biologicals", p=p, yrs=1996:p$year.assessment )
       B = set[, c( v, "yr", "cfa" )]
-      B[,v] = bio.snowcrab::variable.recode( B[,v], v, direction="forward" )
+      B[,v] = bio.snowcrab::variable.recode( B[,v], v, direction="forward", lookup.table=lookup.table )
 
       Bg = aggregate( fm , data=B, FUN=mean, na.rm=T )
-      Bg[,v] = bio.snowcrab::variable.recode( Bg[,v], v, direction="backward" )
+      Bg[,v] = bio.snowcrab::variable.recode( Bg[,v], v, direction="backward", lookup.table=lookup.table )
 
       Bx = xtabs( fm, data=Bg )
 
@@ -219,16 +221,18 @@
         if (file.exists(fn)) load(fn)
         return(Bx)
       }
+      
+      lookup.table = snowcrab.db( p=p, DS="data.transforms" )
 
       v = "R0.mass"
       fm = formula( paste(v, "~yr+cfa"))
 
       set = snowcrab.db( DS ="set.biologicals", p=p, yrs=1996:p$year.assessment )
       B = set[, c( v, "yr", "cfa" )]
-      B[,v] = bio.snowcrab::variable.recode( B[,v], v, direction="forward" )
+      B[,v] = bio.snowcrab::variable.recode( B[,v], v, direction="forward", lookup.table=lookup.table )
 
       Bg = aggregate( fm , data=B, FUN=mean, na.rm=T )
-      Bg[,v] = bio.snowcrab::variable.recode( Bg[,v], v, direction="backward" )
+      Bg[,v] = bio.snowcrab::variable.recode( Bg[,v], v, direction="backward", lookup.table=lookup.table )
 
       Bx = xtabs( fm, data=Bg )
 
@@ -248,16 +252,18 @@
         if (file.exists(fn)) load(fn)
         return(Bx)
       }
+      
+      lookup.table = snowcrab.db( p=p, DS="data.transforms" )
 
       v = "R0.mass"
       fm = formula( paste(v, "~yr+cfa"))
 
       set = snowcrab.db( DS ="set.biologicals", p=p, yrs=1996:p$year.assessment )
       B = set[, c( v, "yr", "cfa" )]
-      B[,v] = bio.snowcrab::variable.recode( B[,v], v, direction="forward" )
+      B[,v] = bio.snowcrab::variable.recode( B[,v], v, direction="forward", lookup.table=lookup.table )
 
       Bg = aggregate( fm , data=B, FUN=sd, na.rm=T )
-      # Bg[,v] = bio.snowcrab::variable.recode( Bg[,v], v, direction="backward" )
+      # Bg[,v] = bio.snowcrab::variable.recode( Bg[,v], v, direction="backward", lookup.table=lookup.table )
 
       Bx = xtabs( fm, data=Bg )
 
@@ -277,16 +283,18 @@
         if (file.exists(fn)) load(fn)
         return(Bx)
       }
+     
+      lookup.table = snowcrab.db( p=p, DS="data.transforms" )
 
       v = "R1.no"
       fm = formula( paste(v, "~yr+cfa"))
 
       set = snowcrab.db( DS ="set.biologicals", p=p, yrs=1996:p$year.assessment )
       B = set[, c( v, "yr", "cfa" )]
-      B[,v] = bio.snowcrab::variable.recode( B[,v], v, direction="forward" )
+      B[,v] = bio.snowcrab::variable.recode( B[,v], v, direction="forward", lookup.table=lookup.table )
 
       Bg = aggregate( fm , data=B, FUN=sd, na.rm=T )
-      # Bg[,v] = bio.snowcrab::variable.recode( Bg[,v], v, direction="backward" )
+      # Bg[,v] = bio.snowcrab::variable.recode( Bg[,v], v, direction="backward", lookup.table=lookup.table )
 
       Bx = xtabs( fm, data=Bg )
 
