@@ -119,9 +119,14 @@
         y = p$yrs[iy]
         outfn = paste( "prediction.abundance.mean", y, sep=".")
         xyz = cbind( bs[, c("plon", "plat")], m[,iy] )
-        aegis::aegis_map( xyz=xyz, cfa.regions=T, depthcontours=T, pts=NULL, annot=y,
-          annot.cex=annot.cex, corners=p$planar.corners, fn=outfn, loc=projectdir, at=datarange,
+        dir.create (projectdir, showWarnings=FALSE, recursive =TRUE)
+        fn = file.path( projectdir, paste(outfn, "png", sep="." ) )
+        png( filename=fn, width=3072, height=2304, pointsize=40, res=300 )
+        lp = aegis::aegis_map( xyz=xyz, cfa.regions=T, depthcontours=T, pts=NULL, annot=y,
+          annot.cex=annot.cex, corners=p$planar.corners, at=datarange,
           col.regions=cols, rez=c(p$pres,p$pres) )
+        print(lp)
+        dev.off()
       }
 
       datarange = seq( 0, max(s,na.rm=TRUE), length.out=150)
@@ -133,9 +138,14 @@
         y = p$yrs[iy]
         outfn = paste( "prediction.abundance.sd", y, sep=".")
         xyz = cbind( bs[, c("plon", "plat")], s[,iy] )
-        aegis::aegis_map( xyz=xyz, cfa.regions=T, depthcontours=T, pts=NULL, annot=y,
-          annot.cex=annot.cex, corners=p$planar.corners, fn=outfn, loc=projectdir, at=datarange,
+        dir.create (projectdir, showWarnings=FALSE, recursive =TRUE)
+        fn = file.path( projectdir, paste(outfn, "png", sep="." ) )
+        png( filename=fn, width=3072, height=2304, pointsize=40, res=300 )
+        lp = aegis::aegis_map( xyz=xyz, cfa.regions=T, depthcontours=T, pts=NULL, annot=y,
+          annot.cex=annot.cex, corners=p$planar.corners, at=datarange,
           col.regions=cols, rez=c(p$pres,p$pres) )
+        print(lp)
+        dev.off()
       }
 
       return(fn)

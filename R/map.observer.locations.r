@@ -17,17 +17,17 @@
         if ( length(ii)  < 10 ) next()
         toplot = odb[ ii, c("lon", "lat")]
         annot = paste ("Observer locations", y)
-        fn = paste("observer.locations", y, sep=".")
-        print(fn)
-        aegis::aegis_map( xyz=toplot,  cfa.regions=T, depthcontours=T, annot=annot, fn=fn, loc=basedir, corners=corners )
-
+        outfn = paste("observer.locations", y, sep=".")
+        print(outfn)
+        dir.create (basedir, showWarnings=FALSE, recursive =TRUE)
+        fn = file.path( basedir, paste(outfn, "png", sep="." ) )
+        png( filename=fn, width=3072, height=2304, pointsize=40, res=300 )
+        lp = aegis::aegis_map( xyz=toplot,  cfa.regions=T, depthcontours=T, annot=annot, corners=corners )
+        print(lp)
+        dev.off()
       }
-
     }
-
     return ("Done" )
-
-
   }
 
 
