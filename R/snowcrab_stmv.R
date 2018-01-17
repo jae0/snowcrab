@@ -659,9 +659,17 @@ snowcrab_stmv = function( DS=NULL, p=NULL, year=NULL, ret="mean", varnames=NULL,
           cols = color.code( "blue.black", datarange )
           annot = gsub( ".", " ", toupper(voi), fixed=TRUE )
           outfn = paste( voi, "mean", year, sep=".")
-          aegis::aegis_map( xyz=xyz, cfa.regions=FALSE, depthcontours=TRUE, pts=NULL,
-            loc=projectdir, fn=outfn, annot=annot, at=datarange , col.regions=cols,
+          
+          dir.create (projectdir, showWarnings=FALSE, recursive =TRUE)
+          fn = file.path( projectdir, paste(outfn, "png", sep="." ) )
+          png( filename=fn, width=3072, height=2304, pointsize=40, res=300 )
+          lp = aegis::aegis_map( xyz=xyz, cfa.regions=FALSE, depthcontours=TRUE, pts=NULL,
+            annot=annot, at=datarange, col.regions=cols,
             corners=p$corners, spatial.domain=p$spatial.domain )
+          print(lp)
+          dev.off()
+
+          
           H = snowcrab_stmv( p=p, DS="predictions", year=year, ret="lb" )
           if (is.null(H)) next ()
           xyz = cbind(loc, H)
@@ -677,10 +685,16 @@ snowcrab_stmv = function( DS=NULL, p=NULL, year=NULL, ret="mean", varnames=NULL,
           cols = color.code( "blue.black", datarange )
           annot = gsub( ".", " ", toupper(voi), fixed=TRUE )
           outfn = paste( voi, "lb", year, sep=".")
-          aegis::aegis_map( xyz=xyz, cfa.regions=FALSE, depthcontours=TRUE, pts=NULL,
-            loc=projectdir, fn=outfn, annot=annot, at=datarange , col.regions=cols,
-            corners=p$corners, spatial.domain=p$spatial.domain 
-          )
+          
+          dir.create (projectdir, showWarnings=FALSE, recursive =TRUE)
+          fn = file.path( projectdir, paste(outfn, "png", sep="." ) )
+          png( filename=fn, width=3072, height=2304, pointsize=40, res=300 )
+          lp = aegis::aegis_map( xyz=xyz, cfa.regions=FALSE, depthcontours=TRUE, pts=NULL,
+            annot=annot, at=datarange, col.regions=cols,
+            corners=p$corners, spatial.domain=p$spatial.domain )
+          print(lp)
+          dev.off()
+
           H = snowcrab_stmv( p=p, DS="predictions", year=year, ret="ub" )
           if (is.null(H)) next ()
           xyz = cbind(loc, H)
@@ -696,10 +710,16 @@ snowcrab_stmv = function( DS=NULL, p=NULL, year=NULL, ret="mean", varnames=NULL,
           cols = color.code( "blue.black", datarange )
           annot = gsub( ".", " ", toupper(voi), fixed=TRUE )
           outfn = paste( voi, "ub", year, sep=".")
-          aegis::aegis_map( xyz=xyz, cfa.regions=FALSE, depthcontours=TRUE, pts=NULL,
-            loc=projectdir, fn=outfn, annot=annot, at=datarange , col.regions=cols,
-            corners=p$corners, spatial.domain=p$spatial.domain 
-          )
+          
+          dir.create (projectdir, showWarnings=FALSE, recursive =TRUE)
+          fn = file.path( projectdir, paste(outfn, "png", sep="." ) )
+          png( filename=fn, width=3072, height=2304, pointsize=40, res=300 )
+          lp = aegis::aegis_map( xyz=xyz, cfa.regions=FALSE, depthcontours=TRUE, pts=NULL,
+                annot=annot, at=datarange , col.regions=cols,
+                corners=p$corners, spatial.domain=p$spatial.domain )
+          print(lp)
+          dev.off()
+
           print( file.path( projectdir, outfn))
         }
         return(NULL)
@@ -743,9 +763,16 @@ snowcrab_stmv = function( DS=NULL, p=NULL, year=NULL, ret="mean", varnames=NULL,
           }
           cols = color.code( "blue.black", datarange )
           annot = gsub( ".", " ", toupper(vn), fixed=TRUE )
-          aegis::aegis_map( xyz=xyz, cfa.regions=FALSE, depthcontours=TRUE, pts=NULL,
-            loc=projectdir, fn=vn, annot=annot, at=datarange, col.regions=cols,
+
+          dir.create (projectdir, showWarnings=FALSE, recursive =TRUE)
+          fn = file.path( projectdir, paste(vn, "png", sep="." ) )
+          png( filename=fn, width=3072, height=2304, pointsize=40, res=300 )
+          lp = aegis::aegis_map( xyz=xyz, cfa.regions=FALSE, depthcontours=TRUE, pts=NULL,
+            annot=annot, at=datarange, col.regions=cols,
             corners=p$corners, spatial.domain=p$spatial.domain )
+          print(lp)
+          dev.off()
+
           print( file.path( projectdir, vn))
         }
         return(NULL)

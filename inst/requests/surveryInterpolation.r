@@ -32,19 +32,25 @@ if(do.interpolation) {
     fp        <- iwd(dp[,c('plon','plat','limm')],locs=spatial_grid(p=p, nm=c("x","y")) ,method='inv.dist.gstat',params=params,outfile='iminterp.dat')
 		er 				<- with(dp[dp$limm>0,],quantile(limm,probs=c(0.025,0.975)))
 		datarange 		<- c(0,seq( er[1], er[2], length.out=100))
-        corners 		<- data.frame(rbind( cbind( plon=c(220, 990), plat=c(4750, 5270) )))
-        cols 			<- colorRampPalette(c("darkblue","cyan","green", "yellow", "orange","darkred", "black"), space = "Lab")
-        names(fp)[1:3] 	<- c('plon','plat','z')
-        fo 				<- file.path("C:","~","bio","snowcrab","Adam","Emera","abundance maps","global average")
-        if(geo.mean) fo 				<- file.path("C:","~","bio","snowcrab","Adam","Emera","abundance maps","global average","geomean")
-        if(!geo.mean) fo 				<- file.path("C:","~","bio","snowcrab","Adam","Emera","abundance maps","global average","arithmean")
+    corners 		<- data.frame(rbind( cbind( plon=c(220, 990), plat=c(4750, 5270) )))
+    cols 			<- colorRampPalette(c("darkblue","cyan","green", "yellow", "orange","darkred", "black"), space = "Lab")
+    names(fp)[1:3] 	<- c('plon','plat','z')
+    fo 				<- file.path("C:","~","bio","snowcrab","Adam","Emera","abundance maps","global average")
+    if(geo.mean) fo 				<- file.path("C:","~","bio","snowcrab","Adam","Emera","abundance maps","global average","geomean")
+    if(!geo.mean) fo 				<- file.path("C:","~","bio","snowcrab","Adam","Emera","abundance maps","global average","arithmean")
 
-        dir.create(fo,recursive=T,showWarnings=F)
-        aegis::aegis_map( fp[,1:3], xyz.coords="planar", cfa.regions=T, depthcontours=T, fn=gps[i], loc=fo, at=datarange , col.regions=cols(length(datarange)+1), colpts=T, corners=p$planar.corners,annot=gps[i] )
+      outfn = gps[i]
+      dir.create (fo, showWarnings=FALSE, recursive =TRUE)
+      fn = file.path( fo, paste(outfn, "png", sep="." ) )
+      png( filename=fn, width=3072, height=2304, pointsize=40, res=300 )
+      lp = aegis::aegis_map( fp[,1:3], xyz.coords="planar", cfa.regions=T, depthcontours=T, 
+        at=datarange , col.regions=cols(length(datarange)+1), colpts=T, corners=p$planar.corners, annot=gps[i] )
+      print(lp)
+      dev.off()
 
-        ras 			<- rasterFromXYZ(fp[,c('plon','plat','z')],crs=lookup.projection.params(p$internal.projection))
+    ras 			<- rasterFromXYZ(fp[,c('plon','plat','z')],crs=lookup.projection.params(p$internal.projection))
 
-        writeRaster(ras,filename=file.path(fo,paste(gps[i],".asc",sep="")), format="ascii", overwrite=TRUE)
-        }
+    writeRaster(ras,filename=file.path(fo,paste(gps[i],".asc",sep="")), format="ascii", overwrite=TRUE)
+    }
 
 }

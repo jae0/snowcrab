@@ -104,10 +104,15 @@ map.set.information = function(p, outdir, variables, mapyears, interpolate.metho
             ckey=list(labels=list(at=log(labs+offset),labels=labs,cex=2))
           }
 
-          aegis::aegis_map( xyz, xyz.coords="planar", cfa.regions=TRUE, depthcontours=TRUE, pts=set_xyz[,c("plon","plat")], 
-          annot=y, fn=outfn, loc=outloc, at=datarange , col.regions=cols(length(datarange)+1), colpts=FALSE, corners=p$corners, 
-          display=TRUE, colorkey=ckey )
-                  
+          dir.create (outloc, showWarnings=FALSE, recursive =TRUE)
+          fn = file.path( outloc, paste(outfn, "png", sep="." ) )
+          png( filename=fn, width=3072, height=2304, pointsize=40, res=300 )
+          lp = aegis::aegis_map( xyz, xyz.coords="planar", cfa.regions=T, depthcontours=T, pts=set_xyz[,c("plon","plat")], 
+            annot=y, at=datarange , col.regions=cols(length(datarange)+1), 
+            colpts=F, corners=p$corners, display=F,colorkey=ckey)
+          print(lp)
+          dev.off()
+ 
         }
       }
     )
