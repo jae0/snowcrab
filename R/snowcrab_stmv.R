@@ -630,101 +630,92 @@ snowcrab_stmv = function( DS=NULL, p=NULL, year=NULL, ret="mean", varnames=NULL,
 
   if ( DS %in% c("map.annual" ) ) {
 
-    parallel_run(
-      p=p, 
-      voi=voi, 
-      runindex=list(yrs=p$yrs),
-      FUNC = function( ip=NULL, p, voi ) {
-        if (exists( "libs", p)) RLibrary( p$libs )
-        if (is.null(ip)) ip = 1:p$nruns
+    if (exists( "libs", p)) RLibrary( p$libs )
+
+    for ( year in p$yrs ) {
         projectdir = file.path(p$data_root, "maps", voi, p$spatial.domain, "annual" )
         dir.create( projectdir, recursive=T, showWarnings=F )
         loc = bathymetry.db(p=p, DS="baseline" )
-        for ( ii in ip ) {
-          # downscale and warp from p(0) -> p1
-          year = p$runs[ii, "yrs"]
-          # print(year)
-          H = snowcrab_stmv( p=p, DS="predictions", year=year, ret="mean" )
-          if (is.null(H)) next ()
-          xyz = cbind(loc, H)
-          uu = which( is.finite(rowSums(xyz)))
-          if (length(uu) < 10) next()
-          xyz = xyz[uu,]
-          datarange = NULL
-          datarange = snowcrab.lookup.mapparams( DS="datarange", voi ) # hardcoded data ranges
-          if (is.null(datarange)) {
-            datarange=quantile(xyz[,3], probs=c(0.001,0.999), na.rm=TRUE)
-            datarange = seq( datarange[1], datarange[2], length.out=100 )
-          }
-          cols = color.code( "blue.black", datarange )
-          annot = gsub( ".", " ", toupper(voi), fixed=TRUE )
-          outfn = paste( voi, "mean", year, sep=".")
-          
-          dir.create (projectdir, showWarnings=FALSE, recursive =TRUE)
-          fn = file.path( projectdir, paste(outfn, "png", sep="." ) )
-          png( filename=fn, width=3072, height=2304, pointsize=40, res=300 )
-          lp = aegis::aegis_map( xyz=xyz, cfa.regions=FALSE, depthcontours=TRUE, pts=NULL,
-            annot=annot, at=datarange, col.regions=cols,
-            corners=p$corners, spatial.domain=p$spatial.domain )
-          print(lp)
-          dev.off()
 
-          
-          H = snowcrab_stmv( p=p, DS="predictions", year=year, ret="lb" )
-          if (is.null(H)) next ()
-          xyz = cbind(loc, H)
-          uu = which( is.finite(rowSums(xyz)))
-          if (length(uu) < 10) next()
-          xyz = xyz[uu,]
-          datarange = NULL
-          datarange = snowcrab.lookup.mapparams( DS="datarange", voi ) # hardcoded data ranges
-          if (is.null(datarange)) {
-            datarange=quantile(xyz[,3], probs=c(0.001,0.999), na.rm=TRUE)
-            datarange = seq( datarange[1], datarange[2], length.out=100 )
-          }
-          cols = color.code( "blue.black", datarange )
-          annot = gsub( ".", " ", toupper(voi), fixed=TRUE )
-          outfn = paste( voi, "lb", year, sep=".")
-          
-          dir.create (projectdir, showWarnings=FALSE, recursive =TRUE)
-          fn = file.path( projectdir, paste(outfn, "png", sep="." ) )
-          png( filename=fn, width=3072, height=2304, pointsize=40, res=300 )
-          lp = aegis::aegis_map( xyz=xyz, cfa.regions=FALSE, depthcontours=TRUE, pts=NULL,
-            annot=annot, at=datarange, col.regions=cols,
-            corners=p$corners, spatial.domain=p$spatial.domain )
-          print(lp)
-          dev.off()
-
-          H = snowcrab_stmv( p=p, DS="predictions", year=year, ret="ub" )
-          if (is.null(H)) next ()
-          xyz = cbind(loc, H)
-          uu = which( is.finite(rowSums(xyz)))
-          if (length(uu) < 10) next()
-          xyz = xyz[uu,]
-          datarange = NULL
-          datarange = snowcrab.lookup.mapparams( DS="datarange", voi ) # hardcoded data ranges
-          if (is.null(datarange)) {
-            datarange=quantile(xyz[,3], probs=c(0.001,0.999), na.rm=TRUE)
-            datarange = seq( datarange[1], datarange[2], length.out=100 )
-          }
-          cols = color.code( "blue.black", datarange )
-          annot = gsub( ".", " ", toupper(voi), fixed=TRUE )
-          outfn = paste( voi, "ub", year, sep=".")
-          
-          dir.create (projectdir, showWarnings=FALSE, recursive =TRUE)
-          fn = file.path( projectdir, paste(outfn, "png", sep="." ) )
-          png( filename=fn, width=3072, height=2304, pointsize=40, res=300 )
-          lp = aegis::aegis_map( xyz=xyz, cfa.regions=FALSE, depthcontours=TRUE, pts=NULL,
-                annot=annot, at=datarange , col.regions=cols,
-                corners=p$corners, spatial.domain=p$spatial.domain )
-          print(lp)
-          dev.off()
-
-          print( file.path( projectdir, outfn))
+        # downscale and warp from p(0) -> p1
+        # print(year)
+        H = snowcrab_stmv( p=p, DS="predictions", year=year, ret="mean" )
+        if (is.null(H)) next ()
+        xyz = cbind(loc, H)
+        uu = which( is.finite(rowSums(xyz)))
+        if (length(uu) < 10) next()
+        xyz = xyz[uu,]
+        datarange = NULL
+        datarange = snowcrab.lookup.mapparams( DS="datarange", voi ) # hardcoded data ranges
+        if (is.null(datarange)) {
+          datarange=quantile(xyz[,3], probs=c(0.001,0.999), na.rm=TRUE)
+          datarange = seq( datarange[1], datarange[2], length.out=100 )
         }
-        return(NULL)
-      }
-    )
+        cols = color.code( "blue.black", datarange )
+        annot = gsub( ".", " ", toupper(voi), fixed=TRUE )
+        outfn = paste( voi, "mean", year, sep=".")
+        
+        dir.create (projectdir, showWarnings=FALSE, recursive =TRUE)
+        fn = file.path( projectdir, paste(outfn, "png", sep="." ) )
+        png( filename=fn, width=3072, height=2304, pointsize=40, res=300 )
+        lp = aegis::aegis_map( xyz=xyz, cfa.regions=FALSE, depthcontours=TRUE, pts=NULL,
+          annot=annot, at=datarange, col.regions=cols,
+          corners=p$corners, spatial.domain=p$spatial.domain )
+        print(lp)
+        dev.off()
+        
+        H = snowcrab_stmv( p=p, DS="predictions", year=year, ret="lb" )
+        if (is.null(H)) next ()
+        xyz = cbind(loc, H)
+        uu = which( is.finite(rowSums(xyz)))
+        if (length(uu) < 10) next()
+        xyz = xyz[uu,]
+        datarange = NULL
+        datarange = snowcrab.lookup.mapparams( DS="datarange", voi ) # hardcoded data ranges
+        if (is.null(datarange)) {
+          datarange=quantile(xyz[,3], probs=c(0.001,0.999), na.rm=TRUE)
+          datarange = seq( datarange[1], datarange[2], length.out=100 )
+        }
+        cols = color.code( "blue.black", datarange )
+        annot = gsub( ".", " ", toupper(voi), fixed=TRUE )
+        outfn = paste( voi, "lb", year, sep=".")
+        
+        dir.create (projectdir, showWarnings=FALSE, recursive =TRUE)
+        fn = file.path( projectdir, paste(outfn, "png", sep="." ) )
+        png( filename=fn, width=3072, height=2304, pointsize=40, res=300 )
+        lp = aegis::aegis_map( xyz=xyz, cfa.regions=FALSE, depthcontours=TRUE, pts=NULL,
+          annot=annot, at=datarange, col.regions=cols,
+          corners=p$corners, spatial.domain=p$spatial.domain )
+        print(lp)
+        dev.off()
+
+        H = snowcrab_stmv( p=p, DS="predictions", year=year, ret="ub" )
+        if (is.null(H)) next ()
+        xyz = cbind(loc, H)
+        uu = which( is.finite(rowSums(xyz)))
+        if (length(uu) < 10) next()
+        xyz = xyz[uu,]
+        datarange = NULL
+        datarange = snowcrab.lookup.mapparams( DS="datarange", voi ) # hardcoded data ranges
+        if (is.null(datarange)) {
+          datarange=quantile(xyz[,3], probs=c(0.001,0.999), na.rm=TRUE)
+          datarange = seq( datarange[1], datarange[2], length.out=100 )
+        }
+        cols = color.code( "blue.black", datarange )
+        annot = gsub( ".", " ", toupper(voi), fixed=TRUE )
+        outfn = paste( voi, "ub", year, sep=".")
+        
+        dir.create (projectdir, showWarnings=FALSE, recursive =TRUE)
+        fn = file.path( projectdir, paste(outfn, "png", sep="." ) )
+        png( filename=fn, width=3072, height=2304, pointsize=40, res=300 )
+        lp = aegis::aegis_map( xyz=xyz, cfa.regions=FALSE, depthcontours=TRUE, pts=NULL,
+              annot=annot, at=datarange , col.regions=cols,
+              corners=p$corners, spatial.domain=p$spatial.domain )
+        print(lp)
+        dev.off()
+
+        print( file.path( projectdir, outfn))
+    }
     return("Finished")
   }
 
@@ -733,51 +724,42 @@ snowcrab_stmv = function( DS=NULL, p=NULL, year=NULL, ret="mean", varnames=NULL,
 
 
   if ( DS %in% c("map.climatology" ) ) {
+    if (exists( "libs", p)) RLibrary( p$libs )
     H = snowcrab_stmv( p=p, DS="complete" )
     vnames = setdiff( names(H), c("plon", "plat" ))
     H = NULL
-    
-    parallel_run(
-      p=p, 
-      voi=voi, 
-      runindex=list(vnames=vnames),
-      FUNC = function( ip=NULL, p, voi ) {
-        if (exists( "libs", p)) RLibrary( p$libs )
-        if (is.null(ip)) ip = 1:p$nruns
+ 
+    for (vn in vnames) {
         projectdir = file.path(p$data_root, "maps", voi, p$spatial.domain, "climatology" )
         dir.create( projectdir, recursive=T, showWarnings=F )
         loc = bathymetry.db(p=p, DS="baseline" )
         H = snowcrab_stmv( p=p, DS="complete" )
         vnames = setdiff( names(H), c("plon", "plat" ))
-        for (ii in ip) {
-          vn = p$runs[ii, "vnames"]
-          xyz = cbind(loc, H[,vn])
-          uu = which( is.finite(rowSums(xyz)))
-          if (length(uu) < 10) next()
-          xyz = xyz[uu,]
-          datarange= NULL
-          datarange = snowcrab.lookup.mapparams( DS="datarange", vn) # hardcoded data ranges
-          if (is.null(datarange)) {
-            datarange=quantile(xyz[,3], probs=c(0.005,0.995), na.rm=TRUE)
-            datarange = seq( datarange[1], datarange[2], length.out=100 )
-          }
-          cols = color.code( "blue.black", datarange )
-          annot = gsub( ".", " ", toupper(vn), fixed=TRUE )
 
-          dir.create (projectdir, showWarnings=FALSE, recursive =TRUE)
-          fn = file.path( projectdir, paste(vn, "png", sep="." ) )
-          png( filename=fn, width=3072, height=2304, pointsize=40, res=300 )
-          lp = aegis::aegis_map( xyz=xyz, cfa.regions=FALSE, depthcontours=TRUE, pts=NULL,
-            annot=annot, at=datarange, col.regions=cols,
-            corners=p$corners, spatial.domain=p$spatial.domain )
-          print(lp)
-          dev.off()
-
-          print( file.path( projectdir, vn))
+        xyz = cbind(loc, H[,vn])
+        uu = which( is.finite(rowSums(xyz)))
+        if (length(uu) < 10) next()
+        xyz = xyz[uu,]
+        datarange= NULL
+        datarange = snowcrab.lookup.mapparams( DS="datarange", vn) # hardcoded data ranges
+        if (is.null(datarange)) {
+          datarange=quantile(xyz[,3], probs=c(0.005,0.995), na.rm=TRUE)
+          datarange = seq( datarange[1], datarange[2], length.out=100 )
         }
-        return(NULL)
-      }
-    )
+        cols = color.code( "blue.black", datarange )
+        annot = gsub( ".", " ", toupper(vn), fixed=TRUE )
+
+        dir.create (projectdir, showWarnings=FALSE, recursive =TRUE)
+        fn = file.path( projectdir, paste(vn, "png", sep="." ) )
+        png( filename=fn, width=3072, height=2304, pointsize=40, res=300 )
+        lp = aegis::aegis_map( xyz=xyz, cfa.regions=FALSE, depthcontours=TRUE, pts=NULL,
+          annot=annot, at=datarange, col.regions=cols,
+          corners=p$corners, spatial.domain=p$spatial.domain )
+        print(lp)
+        dev.off()
+
+        print( file.path( projectdir, vn))
+    }
     return( "Completed")
   }
 }

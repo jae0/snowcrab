@@ -10,29 +10,16 @@ map.set.information = function(p, outdir, variables, mapyears, interpolate.metho
     }
 
     # define compact list of variable year combinations for parallel processing
-    if(missing(mapyears)) mapyears = sort( unique(set$yr) )
+    if (missing(mapyears)) mapyears = sort( unique(set$yr) )
+    if (exists( "libs", p)) RLibrary( p$libs )
 
-    parallel_run(
-      p=p, 
-      outdir=outdir,
-      interpolate.method=interpolate.method,
-      idp=idp,
-      log.variable=log.variable,
-      add.zeros=add.zeros,
-      minN=minN,
-      probs=probs,
-      runindex=list(vn=variables, myrs=mapyears ),
-      FUNC = function( ip=NULL, p, outdir, interpolate.method, idp, log.variable, add.zeros,  minN, probs ) {
-        if (exists( "libs", p)) RLibrary( p$libs )
-        if (is.null(ip)) ip = 1:p$nruns
-        predlocs = bathymetry.db(p=p, DS="baseline")
-        for ( i in ip ) {
-          v = p$runs[i,"vn"]
-          y = p$runs[i,"myrs"]
+    for ( v in variables ) {
+      for ( y in mapyears ) {
+         predlocs = bathymetry.db(p=p, DS="baseline")
           ratio=FALSE
           outfn = paste( v,y, sep=".")
           outloc = file.path( outdir,v)
-          print(paste(p$runs[i,]))
+
           if (grepl('ratio', v)) ratio=TRUE
 
           set_xyz = set[ which(set$yr==y), c("plon","plat",v) ]
@@ -88,11 +75,9 @@ map.set.information = function(p, outdir, variables, mapyears, interpolate.metho
           xyz = res
           names( xyz) = c("plon", "plat", "z")
           #if(shift)xyz$z = xyz$z - abs(log(offset))
-         
           
           cols = colorRampPalette(c("darkblue","cyan","green", "yellow", "orange","darkred", "black"), space = "Lab")
 
-          
           xyz$z[xyz$z>ler[2]] = ler[2]
           if(ratio)xyz$z[xyz$z<ler[1]] = ler[1]
 
@@ -113,9 +98,9 @@ map.set.information = function(p, outdir, variables, mapyears, interpolate.metho
           print(lp)
           dev.off()
  
-        }
       }
-    )
+    }
+    
     return("Done")
   }
 
