@@ -480,23 +480,23 @@ abline(h=50)
 
   # ------------------------------------------
   # Habitat usage comparisons (bivariate) ... requires the full "set.rdata" database and "logbook.dZ.rdata" database
-   # habitat.usage( p=p, usevar="totno.all", covariate="depth", outdir = file.path(p$annual.results, "habitat.templates") )
+   # habitat.usage( usevar="totno.all", covariate="depth", outdir = file.path(p$annual.results, "habitat.templates") )
 
   # ------------------------------------------
   # Habitat usage comparisons (bivariate) ... requires the full "set.rdata" database and "logbook.dZ.rdata" database
-    #habitat.usage( p=p, usevar="totno.all", covariate="temperature", outdir = file.path(p$annual.results, "habitat.templates") )
+    #habitat.usage( usevar="totno.all", covariate="temperature", outdir = file.path(p$annual.results, "habitat.templates") )
 
   # ------------------------------------------
   # Habitat usage comparisons (bivariate) ... requires the full "set.rdata" database and "logbook.dZ.rdata" database
-   # habitat.usage( p=p, usevar="totno.all", covariate="bottom.slope", outdir = file.path(p$annual.results, "habitat.templates") )
+   # habitat.usage( usevar="totno.all", covariate="bottom.slope", outdir = file.path(p$annual.results, "habitat.templates") )
 
   # ------------------------------------------
   # Habitat usage comparisons (bivariate) ... requires the full "set.rdata" database and "logbook.dZ.rdata" database
-    #habitat.usage( p=p, usevar="totno.all", covariate="bottom.curvature", outdir = file.path(p$annual.results, "habitat.templates") )
+    #habitat.usage( usevar="totno.all", covariate="bottom.curvature", outdir = file.path(p$annual.results, "habitat.templates") )
 
   # ------------------------------------------
   # Habitat usage comparisons (bivariate) ... requires the full "set.rdata" database and "logbook.dZ.rdata" database
-    #habitat.usage( p=p, usevar="totno.all", covariate="substrate", outdir = file.path(p$annual.results, "habitat.templates") )
+    #habitat.usage( usevar="totno.all", covariate="substrate", outdir = file.path(p$annual.results, "habitat.templates") )
 
 
   # ------------------------------------------
