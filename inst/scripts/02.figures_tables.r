@@ -14,7 +14,7 @@
 
   # ------------------------------------------
    # Time-series: Fisheries landings
-  #BZ TODO get these to match the njanuary meetings script exactly as that lines up with Improptu reports
+  #BZ TODO get these to match the anuary meetings script exactly as that lines up with Improptu reports
   #for now, the plots produced are accurate.
    figure.landings.timeseries( yearmax=p$year.assessment, outdir=file.path( p$annual.results,  "timeseries","fishery"), outfile="landings.ts", outfile2="landings.ts.sm" )
 
@@ -52,7 +52,7 @@
   # predators and competitors
     #cod, haddock, halibut, plaice, wolfish, thornyskate, smoothskate, winterskate, northernshrimp, jonahcrab, lessertoadcrab
   species = c(10, 11, 30, 40, 201, 50, 2521, 2511, 202, 204, 2211)
-  figure.timeseries.bycatch(p=p, species, plotyears=2004:p$year.assessment,outdir=outdir, "timeseries", "survey"))
+  figure.timeseries.bycatch(p=p, species=species, plotyears=2004:p$year.assessment, outdir=file.path(p$annual.results,"timeseries", "survey"))
 
 
   # ------------------------------------------
@@ -64,7 +64,7 @@
 
   #BZ TODO add a variable to p for mapyears
   # just for the roadshow
-    map.set.information( p=p, variables=c('totmass.male.com', 'totmass.female.mat'),mapyears=2014:p$year.assessment,outdir=outdir)
+    map.set.information( p=p, outdir=outdir, variables=c('totmass.male.com', 'totmass.female.mat'),mapyears=2014:p$year.assessment)
     map.set.information( p=p, variables='t',mapyears=2014:p$year.assessment,outdir=outdir,log.variable=F,add.zeros=F,theta=100)
 
     # bycatch (geometric means)

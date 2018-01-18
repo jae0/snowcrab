@@ -83,6 +83,7 @@ if (obtain.database.snapshot) {
   netmind.db (DS="stats.redo", Y=p$netmind.yToload )
 
 
+  
 # -------------------------------------------------------------------------------------
 # merge in netmind, minilog, seabird, esonar data and do some sanity checks
 # Can add any datachecks that might improve overall data quality
