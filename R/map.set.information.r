@@ -93,7 +93,7 @@ map.set.information = function(p, outdir, variables, mapyears, interpolate.metho
           fn = file.path( outloc, paste(outfn, "png", sep="." ) )
           png( filename=fn, width=3072, height=2304, pointsize=40, res=300 )
           lp = aegis::aegis_map( xyz, xyz.coords="planar", cfa.regions=T, depthcontours=T, pts=set_xyz[,c("plon","plat")], 
-            annot=y, at=datarange , col.regions=cols(length(datarange)+1), 
+            annot=y, at=datarange , col.regions=cols(length(datarange)+1), loc=outloc, 
             colpts=F, corners=p$corners, display=F,colorkey=ckey)
           print(lp)
           dev.off()
