@@ -1,6 +1,6 @@
 #TODO BC add functionality for pdf&kml outputs 
 
-map.set.information = function(p, outdir, variables, mapyears, interpolate.method='tps', theta=p$pres*25, 
+map.set.information2 = function(p, outdir, variables, mapyears, interpolate.method='tps', theta=p$pres*25, 
                                idp=2, log.variable=TRUE, add.zeros=TRUE, minN=10, probs=c(0.025, 0.975) ) {
 
     set = snowcrab.db( DS="set.biologicals")
@@ -89,7 +89,7 @@ map.set.information = function(p, outdir, variables, mapyears, interpolate.metho
             ckey=list(labels=list(at=log(labs+offset),labels=labs,cex=2))
           }
 
-          dir.create (outloc, showWarnings=FALSE, recursive =TRUE)
+          #dir.create (outloc, showWarnings=FALSE, recursive =TRUE)
           fn = file.path( outloc, paste(outfn, "png", sep="." ) )
           png( filename=fn, width=3072, height=2304, pointsize=40, res=300 )
           lp = aegis::aegis_map( xyz, xyz.coords="planar", cfa.regions=T, depthcontours=T, pts=set_xyz[,c("plon","plat")], 
