@@ -65,7 +65,7 @@
   #BZ TODO add a variable to p for mapyears
   # just for the roadshow
     map.set.information( p=p, variables=c('totmass.male.com', 'totmass.female.mat'),mapyears=2014:p$year.assessment,outdir=outdir)
-    map.set.information( p=p, variables='t',mapyears=2014:p$year.assessment,outdir=file.path(outdir,"t"),log.variable=F,add.zeros=F,theta=100)
+    map.set.information( p=p, variables='t',mapyears=2014:p$year.assessment,outdir=outdir,log.variable=F,add.zeros=F,theta=100)
 
     # bycatch (geometric means)
     bc.vars = c(paste("ms.mass",species,sep='.'),paste("ms.no",species,sep='.'))
