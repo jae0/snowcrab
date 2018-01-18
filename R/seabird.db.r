@@ -1,7 +1,7 @@
 
 	# mostly a copy over of the MINILOG functions with variable nemaes being replaced
 
-  seabird.db = function( DS="", Y=NULL, plotdata=TRUE ){
+  seabird.db = function( DS="", Y=NULL, plotdata=FALSE ){
 
     sb.dir = project.datadirectory("bio.snowcrab", "data", "seabird" )
     seabird.rawdata.location = file.path( sb.dir, "archive" )
@@ -227,7 +227,7 @@
               plotfn = file.path( sb.dir, "figures", paste(id, "pdf", sep="." ) )
               print (plotfn)
               dev.flush()
-              dev.copy2pdf( file=plotfn )
+              #dev.copy2pdf( file=plotfn )
             }
           }
           sbStats = rbind( sbStats, cbind( seabird_uid=id, res ) )
