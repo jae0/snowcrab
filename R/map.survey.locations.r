@@ -16,7 +16,12 @@
         annot = paste ("Survey locations", y)
         fn = paste("survey.locations", y, sep=".")
         print(fn)
-        aegis::aegis_map( toplot, cfa.regions=T, depthcontours=T, annot=annot, fn=fn, loc=basedir, corners=corners )
+        
+dir.create (basedir, showWarnings=FALSE, recursive =TRUE)
+          png( filename=file.path(basedir, paste(fn, "png", sep=".")), width=3072, height=2304, pointsize=40, res=300 )
+          lp = aegis::aegis_map( toplot, cfa.regions=T, depthcontours=T, annot=annot, corners=corners)
+          print(lp)
+          dev.off()
 
       }
     }
