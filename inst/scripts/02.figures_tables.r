@@ -67,7 +67,7 @@
     map.set.information( p=p, outdir=outdir, variables=c('totmass.male.com', 'totmass.female.mat'),mapyears=2014:p$year.assessment)
     map.set.information( p=p, variables='t',mapyears=2014:p$year.assessment,outdir=outdir,log.variable=F,add.zeros=F,theta=100)
 
-    # bycatch (geometric means)
+    # bycatch (geometric means)e
     bc.vars = c(paste("ms.mass",species,sep='.'),paste("ms.no",species,sep='.'))
     outdir.bc= file.path( p$project.outputdir, "maps", "survey", "snowcrab","annual", "bycatch" )
     map.set.information( p, variables=bc.vars, mapyears=2014:p$year.assessment, outdir=outdir.bc,probs=c(0,0.975)) #
