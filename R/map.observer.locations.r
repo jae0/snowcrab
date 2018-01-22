@@ -1,4 +1,5 @@
 
+
   map.observer.locations = function(p, basedir, newyear=T , map.method="lattice" ) {
 
     odb = observer.db( DS="odb")
@@ -16,13 +17,13 @@
         ii =  which(odb$yr==y)
         if ( length(ii)  < 10 ) next()
         toplot = odb[ ii, c("lon", "lat")]
-        annot = paste ("Observer locations", y)
+        annot = paste ("Observer", y)
         outfn = paste("observer.locations", y, sep=".")
         print(outfn)
         dir.create (basedir, showWarnings=FALSE, recursive =TRUE)
         fn = file.path( basedir, paste(outfn, "png", sep="." ) )
         png( filename=fn, width=3072, height=2304, pointsize=40, res=300 )
-        lp = aegis::aegis_map( xyz=toplot,  cfa.regions=T, depthcontours=T, annot=annot, corners=corners )
+        lp = aegis::aegis_map( xyz=toplot,  cfa.regions=T, depthcontours=T, annot=annot, annot.cex=2.8, corners=corners )
         print(lp)
         dev.off()
       }

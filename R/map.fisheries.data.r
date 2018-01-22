@@ -50,7 +50,7 @@ map.fisheries.data = function(p, outdir,  FUN, yrs, variable='effort',probs=c(0,
     fn = file.path( outloc, paste(outfn, "png", sep="." ) )
     png( filename=fn, width=3072, height=2304, pointsize=40, res=300 )
     lp = aegis::aegis_map( xyz[[i]], xyz.coords="planar", cfa.regions=T, depthcontours=T, 
-      pts=NULL, annot=yrs[i], at=datarange,colorkey=NULL, 
+      pts=NULL, annot=yrs[i], annot.cex=4, at=datarange,colorkey=NULL, 
       col.regions=cols(length(datarange)+1), colpts=F, corners=p$corners, display=F,rez=c(pres,pres))
     print(lp)
     dev.off()

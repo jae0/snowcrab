@@ -69,7 +69,8 @@
 
     # bycatch (geometric means)
     bc.vars = c(paste("ms.mass",species,sep='.'),paste("ms.no",species,sep='.'))
-    map.set.information( p, variables=bc.vars, mapyears=2014:p$year.assessment, outdir=outdir,probs=c(0,0.975)) #
+    outdir.bc= file.path( p$project.outputdir, "maps", "survey", "snowcrab","annual", "bycatch" )
+    map.set.information( p, variables=bc.vars, mapyears=2014:p$year.assessment, outdir=outdir.bc,probs=c(0,0.975)) #
 
 
     # all variables (geometric means)
@@ -119,32 +120,6 @@
   map.fisheries.data( p=p, variable= 'effort', outdir=outdir, FUN=sum, probs=c(0,0.975))
   map.fisheries.data( p=p, variable= 'cpue', outdir=outdir, FUN=mean, probs=c(0,0.975))
   map.fisheries.data( p=p, variable= 'landings', outdir=outdir, FUN=sum, probs=c(0,0.975))
-
-
-
-  # ------------------------------------------
-  # Map: Numerical density of by-catch species
-   # p$do.parallel=F
-   map.cat.information( p=p, outdir=file.path( p$project.outputdir, "maps", "species" ) )
-
-
-  # ------------------------------------------
-  # Map: Survey locations
-
-    map.survey.locations( p=p, basedir=file.path(p$project.outputdir, "maps", "survey.locations"),  newyear=F, map.method="lattice"  )
-   # map.survey.locations( p, basedir=file.path(p$project.outputdir, "maps", "survey.locations"),  newyear=F, map.method="googleearth"  )
-
-  # ------------------------------------------
-  # Map: Observer locations
-    map.observer.locations( p=p, basedir=file.path(p$project.outputdir, "maps","observer.locations" ), newyear=F , map.method="lattice"  )
-
-  # ------------------------------------------
-  # Map: Logbook recorded locations
-    map.logbook.locations( p=p, basedir=file.path(p$project.outputdir, "maps","logbook.locations" ), newyear=F , map.method="lattice"  )
-
-  # ------------------------------------------
-
-
 
 
   # --- TABLES ----
@@ -500,12 +475,9 @@ abline(h=50)
   # Habitat usage comparisons (bivariate) ... requires the full "set.rdata" database and "logbook.dZ.rdata" database
     #habitat.usage( usevar="totno.all", covariate="substrate", outdir = file.path(p$annual.results, "habitat.templates") )
 
-
   # ------------------------------------------
   # Timeseries: Larval brachyura from the SSIP data
     ##figure.timeseries.larvae( outdir=file.path(p$project.outputdir, "timeseries", "larvae") )
-
-
 
   # ------------------------------------------
   # Growth as a a function of instar for Scotian Shelf snow crab
@@ -516,10 +488,7 @@ abline(h=50)
   # Map: Larval distributions from the Scotian Shelf Ichtyoplankton Program data
     map.larvae( p=p, outdir=file.path(p$project.outputdir, "maps", "larvae"), conversions=conversions )
 
-    # Map: Crab movement from mark-recapture data
-    #MG I think Brent is primarily mapping this stuff now. Not sure the data has been updated in a while
-    # map.movement( p, outdir=file.path(p$project.outputdir, "maps", "mark.recapture") )
-
+  
     # ------------------------------------------
     # Map: Spatial representation of maturity patterns of snow crab
     #MG Not sure we use these maps either, check with Adam and Jae

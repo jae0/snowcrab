@@ -1,4 +1,4 @@
- map.survey.locations2 = function(p, basedir, newyear=T, map.method="lattice" ) {
+ map.survey.locations = function(p, basedir, newyear=T, map.method="lattice" ) {
 
     set = snowcrab.db( DS="set.clean")
     years = sort( unique( set$yr ) )
@@ -12,13 +12,13 @@
 
       for (y in years) {
         toplot = set[ which(set$yr==y), c("plon", "plat")]
-        annot = paste ("Survey locations", y)
+        annot = paste (y)
         fn = paste("survey.locations", y, sep=".")
         print(fn)
         dir.create (basedir, showWarnings=FALSE, recursive =TRUE)
         png( filename=file.path(basedir, paste(fn, "png", sep=".")), width=3072, height=2304, pointsize=40, res=300 )
         print(
-          aegis::aegis_map( xyz=toplot, cfa.regions=TRUE, depthcontours=TRUE, annot=annot, annot.cex=1.25, corners=corners)
+          aegis::aegis_map( xyz=toplot, cfa.regions=TRUE, depthcontours=TRUE, annot=annot, annot.cex=2.8, corners=corners)
         )
         dev.off()
       }
