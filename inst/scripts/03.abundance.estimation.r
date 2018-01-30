@@ -66,11 +66,9 @@ p = snowcrab_stmv( p=p, DS="parameters",
 
 # o = snowcrab_stmv(p=p, DS="stmv_inputs" )  # create fields for
 # stmv( p=p, runmode=c("initialize", "globalmodel", "stage1", "stage2", "save") ) # 30 min
-stmv( p=p, runmode=c("initialize", "globalmodel") ) # must do together
-# stmv( p=p, runmode=c("debug" ))
-stmv( p=p, runmode=c("stage1") )
+stmv( p=p, runmode=c("globalmodel", "stage1"), continue_with_saved_state=FALSE )
 stmv( p=p, runmode=c("stage2") )
-stmv( p=p, runmode=c("save") )
+stmv( p=p, runmode=c("finish") )
 
 snowcrab_stmv( p=p, DS="predictions.redo" ) # warp predictions to other grids
 snowcrab_stmv( p=p, DS="stmv.stats.redo" ) # warp stats to other grids
@@ -148,7 +146,9 @@ p = snowcrab_stmv( p=p, DS="parameters",
 )
 
 # o = snowcrab_stmv(p=p, DS="stmv_inputs" )  # create fields for
-stmv( p=p,  runmode=c("initialize", "globalmodel", "stage1", "stage2", "save")  )
+stmv( p=p, runmode=c("globalmodel", "stage1"), continue_with_saved_state=FALSE )
+stmv( p=p, runmode=c("stage2") )
+stmv( p=p, runmode=c("finish") )
 
 snowcrab_stmv( p=p, DS="predictions.redo" ) # warp predictions to other grids
 snowcrab_stmv( p=p, DS="stmv.stats.redo" ) # warp stats to other grids
