@@ -95,12 +95,6 @@ p = snowcrab_stmv( p=p, DS="parameters",
     # if (really.finished) stmv_db( p=p, DS="cleanup.all" )
 
 
-    # stmv( p=p, runmode=c("debug") )
-    stmv( p=p, runmode=c("globalmodel", "stage1"), use_saved_state=FALSE )
-    stmv( p=p, runmode=c("stage2") )
-    stmv( p=p, runmode=c("finish") )
-
-
 
 snowcrab_stmv( p=p, DS="predictions.redo" ) # warp predictions to other grids
 snowcrab_stmv( p=p, DS="stmv.stats.redo" ) # warp stats to other grids
@@ -178,9 +172,35 @@ p = snowcrab_stmv( p=p, DS="parameters",
 )
 
 # o = snowcrab_stmv(p=p, DS="stmv_inputs" )  # create fields for
-stmv( p=p, runmode=c("globalmodel", "stage1"), use_saved_state=FALSE )
-stmv( p=p, runmode=c("stage2") )
-stmv( p=p, runmode=c("finish") )
+
+    p = stmv( p=p, runmode=c("initialize", "globalmodel" ), use_saved_state=FALSE ) # no global_model and force a clean restart
+
+    currentstatus = stmv_db( p=p, DS="statistics.status" )
+    p = parallel_run( stmv_interpolate, p=p, 
+      runindex=list( locs=currentstatus$todo[sample.int(length( currentstatus$todo ))] ) ) 
+    stmv_db( p=p, DS="save_current_state" ) # saved current state (internal format)
+    if (exists("cl", p)) stopCluster( p$cl )
+  
+    currentstatus = stmv_db(p=p, DS="statistics.status.reset" )
+    parallel_run( stmv_interpolate, p=p, 
+      runindex=list( locs=currentstatus$todo[sample.int(length( currentstatus$todo ))] ), 
+      stmv_distance_max=p$stmv_distance_max*mult, 
+      stmv_distance_scale=p$stmv_distance_scale*mult )
+    stmv_db( p=p, DS="save_current_state" ) # saved current state 
+    if (exists("cl", p)) stopCluster( p$cl )
+
+    # currentstatus = stmv_db( p=p, DS="statistics.status.reset" )
+    # p = parallel_run( stmv_interpolate, p=p, 
+    #   runindex=list( locs= currentstatus$todo[sample.int(length( currentstatus$todo ))] ), 
+    #   stmv_local_modelengine = "tps" ) 
+    # stmv_db( p=p, DS="save_current_state" )
+    # if (exists("cl", p)) stopCluster( p$cl )
+
+    stmv_db( p=p, DS="stmv.prediction.redo" ) # save to disk for use outside stmv*, returning to user scale
+    stmv_db( p=p, DS="stats.to.prediction.grid.redo") # save to disk for use outside stmv*
+  
+    # if (really.finished) stmv_db( p=p, DS="cleanup.all" )
+
 
 snowcrab_stmv( p=p, DS="predictions.redo" ) # warp predictions to other grids
 snowcrab_stmv( p=p, DS="stmv.stats.redo" ) # warp stats to other grids
