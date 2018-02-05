@@ -125,6 +125,7 @@ if (obtain.database.snapshot) {
 # create some simple/crude timeseries by each CFA
   snowcrab.timeseries.db( DS="observer.redo", p=p )
   snowcrab.timeseries.db( DS="biologicals.redo", p=p )  
+  snowcrab.timeseries.db(DS="groundfish.t.redo", p=p )
   # snowcrab.timeseries.db( DS="biologicals.2014.redo" )  # reduced subset that matches 2014 station id's ..
 
   # example: or to get a quick one for a few vars of interest, region of interest ... no saving to file
