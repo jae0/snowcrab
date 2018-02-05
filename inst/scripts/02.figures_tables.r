@@ -44,7 +44,7 @@
   figure.timeseries.survey(p=p, outdir=file.path(p$annual.results, "timeseries", "survey"),plotyears=2001:p$year.assessment) # all variables
   figure.timeseries.survey(p=p, outdir=file.path(p$annual.results, "timeseries", "observer"),plotyears=2001:p$year.assessment,type='observer')
 
-  # figure.timeseries.survey(p=p, outdir=file.path(p$annual.results, "timeseries", "survey"),type='groundfish.t') # groundfish survey temperature
+   figure.timeseries.survey(p=p, outdir=file.path(p$annual.results, "timeseries", "survey"),plotyears=2001:p$year.assessment,type='groundfish.t') # groundfish survey temperature
   #-----------------------------------------------
 
   #Timeseries: geometric mean biomass of by-catch from snow crab survey
@@ -123,7 +123,10 @@
 
 
   # --- TABLES ----
-
+  # TODO-BZ add functionality for tables to be saved as pdf 
+  # add tab.4.tex.r function
+  
+  require(gridExtra)
   library("xtable")
   library("R2HTML")
 
@@ -346,6 +349,8 @@
     for (i in cnames[-1]) res[,i] = as.numeric(as.character((res[,i])))
     (res)
 
+    HTML(res, file="table.CC.large.survey.html")
+    
   # ------------------
   # counts of stations in each area
 
