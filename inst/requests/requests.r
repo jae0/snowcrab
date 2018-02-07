@@ -1,7 +1,11 @@
+require(aegis.env)
 
+if (!exists("year.assessment")) {
+  year.assessment=lubridate::year(Sys.Date())      # year.assessment
+  year.assessment=lubridate::year(Sys.Date()) -1   # or year previous to current
+}
+p = bio.snowcrab::load.environment( year.assessment=year.assessment )
 
-
-p = bio.snowcrab::load.environment()
 
 
   # white hake
@@ -47,8 +51,19 @@ p = bio.snowcrab::load.environment()
  yiq=2017 #year in question 
   t = set[ which(set$yr==yiq), varstoextract]
 
-  write.table(t, file=paste("~/bio.data/bio.snowcrab/requests/", yiq, ".petipas.csv", sep=''), col.names = T, row.names=F, quote=F, sep=" ; ")
+  write.table(t, file=paste("~/bio.data/bio.snowcrab/requests/", yiq, ".pettipas.csv", sep=''), col.names = T, row.names=F, quote=F, sep=" ; ")
 
+  # ----------------------------------------------------------
+  # extract raw catch information for any species of bycatch
+  set = snowcrab.db( "set.biologicals" )
+  species="2211" #change to desired species code 
+  bc.vars = c(paste("ms.mass",species,sep='.'),paste("ms.no",species,sep='.'), paste("ms.size",species,sep='.'))
+  varstoextract = c("t0", "lon", "lat", "surfacearea", bc.vars)
+  #yiq=year.assessment #year in question
+  #yiq=c(2015:year.assessment) #or years in question
+  t = set[ which(set$yr %in% yiq), varstoextract]
+  
+  write.table(t, file=paste("~/bio.data/bio.snowcrab/requests/", year.assessment, ".speciesinfo.",species, ".csv", sep=''), col.names = T, row.names=F, quote=F, sep=",") 
 
   # ----------------------------------------------------------
   # Shrimp assessment uses this as a recruitment index of snow crab 
