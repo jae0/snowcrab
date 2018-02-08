@@ -3,7 +3,7 @@
 
 #TODO BC add functionality for pdf&kml outputs 
 
-map.set.information = function(p, outdir, variables, mapyears, interpolate.method='tps', theta=p$pres*25, ptheta=theta,  
+map.set.information = function(p, outdir, variables, mapyears, interpolate.method='tps', theta=p$pres*25, ptheta=theta/2.3,  
                                idp=2, log.variable=TRUE, add.zeros=TRUE, minN=10, probs=c(0.025, 0.975) ) {
 
     set = snowcrab.db( DS="set.biologicals")
