@@ -3,7 +3,7 @@
 
 #TODO BC add functionality for pdf&kml outputs 
 
-map.set.information = function(p, outdir, variables, mapyears, interpolate.method='tps', theta=p$pres*25, 
+map.set.information = function(p, outdir, variables, mapyears, interpolate.method='tps', theta=p$pres*25, ptheta=theta,  
                                idp=2, log.variable=TRUE, add.zeros=TRUE, minN=10, probs=c(0.025, 0.975) ) {
 
     set = snowcrab.db( DS="set.biologicals")
@@ -30,12 +30,19 @@ map.set.information = function(p, outdir, variables, mapyears, interpolate.metho
           names( set_xyz) = c("plon", "plat", "z")
           set_xyz = na.omit(subset(set_xyz,!duplicated(paste(plon,plat))))
           if(nrow(set_xyz)<minN)next() #skip to next variable if not enough data
+          
 
           offset = empirical.ranges( db="snowcrab", v, remove.zeros=T , probs=0)  # offset fot log transformation
           er = empirical.ranges( db="snowcrab", v, remove.zeros=T , probs=probs)  # range of all years
           if(ratio)er=c(0,1)
           ler = er
 
+          S = set_xyz[ which(set_xyz$z > 0), c("plon", "plat") ]
+
+          distances =  rdist( predlocs[,c("plon", "plat")], S)
+          distances[ which(distances < ptheta) ] = NA
+          ips = which( !is.finite( rowSums(distances) ) )
+          plocs=predlocs[ips,]
           if(log.variable){
             set_xyz$z = log(set_xyz$z+offset)
             ler=log(er+offset)
@@ -66,12 +73,12 @@ map.set.information = function(p, outdir, variables, mapyears, interpolate.metho
           if(interpolate.method=='tps'){
 
             u= fastTps(x=xyzi[,c("plon","plat")] , Y=xyzi[,'z'], theta=theta )
-            res = cbind( predlocs[,1:2], predict(u, xnew=predlocs[,1:2]))
+            res = cbind( plocs[,1:2], predict(u, xnew=plocs[,1:2]))
           }
           if(interpolate.method=='idw'){
             require(gstat)
             u = gstat(id = "z", formula = z ~ 1, locations = ~ plon + plat, data = xyzi, set = list(idp = idp))
-            res = predict(u, predlocs[,1:2])[,1:3]
+            res = predict(u, plocs[,1:2])[,1:3]
           }
           #print(summary(set_xyz))
           #print(summary(res))
