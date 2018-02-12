@@ -219,7 +219,7 @@ snowcrab_stmv = function( DS=NULL, p=NULL, year=NULL, ret="mean", varnames=NULL,
     }
 
     # for space-time(year-averages)
-    newvars = c( "tmean", "tsd", "tamplitude" )
+    newvars = c( "tmean", "tsd", "tamplitude" ) 
     sn = aegis_lookup( p=p, DS="spatial.annual", locsmap=locsmap, timestamp=set[,"timestamp"], varnames=newvars )
     colnames( sn  ) = newvars
     set = cbind( set,  sn )

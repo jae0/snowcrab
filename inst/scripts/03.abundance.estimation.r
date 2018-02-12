@@ -64,7 +64,7 @@ p = snowcrab_stmv( p=p, DS="parameters",
   stmv_distance_scale = 50
 )
 
-# o = snowcrab_stmv(p=p, DS="stmv_inputs" )  # create fields for
+# o = snowcrab_stmv(p=p, DS="stmv_inputs" )  # create fields for  
 
     p = stmv( p=p, runmode=c("globalmodel", "stage0" ), use_saved_state=FALSE ) # no global_model and force a clean restart
 
