@@ -66,38 +66,11 @@ p = snowcrab_stmv( p=p, DS="parameters",
 
 # o = snowcrab_stmv(p=p, DS="stmv_inputs" )  # create fields for  
 
-    p = stmv( p=p, runmode=c("globalmodel", "stage0" ), use_saved_state=FALSE ) # no global_model and force a clean restart
+stmv( p=p, runmode=c("globalmodel", "stage0" ), use_saved_state=FALSE ) # no global_model and force a clean restart
 
-    currentstatus = stmv_db( p=p, DS="statistics.status" )
-    parallel_run( stmv_interpolate, p=p, 
-      runindex=list( locs=currentstatus$todo[sample.int(length( currentstatus$todo ))] ),
-      local.n.complete=currentstatus["n.complete"]
-    ) 
-    stmv_db( p=p, DS="save_current_state" ) # saved current state (internal format)
-    if (exists("cl", p)) stopCluster( p$cl )
-  
-    currentstatus = stmv_db(p=p, DS="statistics.status.reset" )
-    parallel_run( stmv_interpolate, p=p, 
-      runindex=list( locs=currentstatus$todo[sample.int(length( currentstatus$todo ))] ),
-      local.n.complete=currentstatus["n.complete"], 
-      stmv_distance_max=p$stmv_distance_max*mult, 
-      stmv_distance_scale=p$stmv_distance_scale*mult 
-    )
-    stmv_db( p=p, DS="save_current_state" ) # saved current state 
-    if (exists("cl", p)) stopCluster( p$cl )
+stmv_db( p=p, DS="stmv.results" ) # save to disk for use outside stmv*, returning to user scale
 
-    # currentstatus = stmv_db( p=p, DS="statistics.status.reset" )
-    # parallel_run( stmv_interpolate, p=p, 
-    #   runindex=list( locs= currentstatus$todo[sample.int(length( currentstatus$todo ))] ),
-    #   local.n.complete=currentstatus["n.complete"], 
-    #   stmv_local_modelengine = "tps" ) 
-    # stmv_db( p=p, DS="save_current_state" )
-    # if (exists("cl", p)) stopCluster( p$cl )
-
-    stmv_db( p=p, DS="stmv.results" ) # save to disk for use outside stmv*, returning to user scale
-  
-    # if (really.finished) stmv_db( p=p, DS="cleanup.all" )
-
+# if (really.finished) stmv_db( p=p, DS="cleanup.all" )
 
 
 snowcrab_stmv( p=p, DS="predictions.redo" ) # warp predictions to other grids
@@ -111,43 +84,36 @@ summary( global_model )
 plot(global_model)
 
 #Below lines are just model outputs for comparison sake
-Family: gaussian
-Link function: identity
+Family: gaussian 
+Link function: log 
 
 Formula:
-snowcrab.large.males_abundance ~ s(t, k = 3, bs = "ts") + s(tmean.climatology,
-    k = 3, bs = "ts") + s(tsd.climatology, k = 3, bs = "ts") +
-    s(log(z), k = 3, bs = "ts") + s(log(dZ), k = 3, bs = "ts") +
-    s(log(ddZ), k = 3, bs = "ts") + s(log(mr), k = 3, bs = "ts") +
-    s(Npred, k = 3, bs = "ts") + s(smr, k = 3, bs = "ts") + s(log.substrate.grainsize,
-    k = 3, bs = "ts") + s(ca1, k = 3, bs = "ts") + s(ca2, k = 3,
+snowcrab.large.males_abundance ~ s(t, k = 3, bs = "ts") + s(tmean.climatology, 
+    k = 3, bs = "ts") + s(tsd.climatology, k = 3, bs = "ts") + 
+    s(log(z), k = 3, bs = "ts") + s(log(dZ), k = 3, bs = "ts") + 
+    s(log(ddZ), k = 3, bs = "ts") + s(log.substrate.grainsize, 
+    k = 3, bs = "ts") + s(pca1, k = 3, bs = "ts") + s(pca2, k = 3, 
     bs = "ts")
 
 Parametric coefficients:
             Estimate Std. Error t value Pr(>|t|)
-(Intercept)  5.58131    0.01869   298.6   <2e-16 ***
----
-Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+(Intercept)  1.64893    0.00403     409   <2e-16
 
 Approximate significance of smooth terms:
-                                 edf Ref.df       F  p-value
-s(t)                       1.461e+00      2  67.664  < 2e-16 ***
-s(tmean.climatology)       1.441e+00      2  19.462 6.04e-11 ***
-s(tsd.climatology)         1.951e+00      2  15.470 1.17e-07 ***
-s(log(z))                  1.548e+00      2 199.031  < 2e-16 ***
-s(log(dZ))                 8.326e-01      2   3.413  0.00213 **
-s(log(ddZ))                9.484e-01      2   5.210  0.00026 ***
-s(log(mr))                 1.507e+00      2 219.813  < 2e-16 ***
-s(Npred)                   1.360e-08      2   0.000  0.60121
-s(smr)                     1.734e+00      2  17.919 1.88e-09 ***
-s(log.substrate.grainsize) 1.898e+00      2 189.463  < 2e-16 ***
-s(ca1)                     1.947e+00      2  48.772  < 2e-16 ***
-s(ca2)                     1.901e+00      2 292.569  < 2e-16 ***
----
-Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+                            edf Ref.df      F p-value
+s(t)                       1.96      2  36.77 < 2e-16
+s(tmean.climatology)       1.77      2   3.18   0.026
+s(tsd.climatology)         1.97      2 188.49 < 2e-16
+s(log(z))                  1.50      2 139.08 < 2e-16
+s(log(dZ))                 1.94      2  10.87 1.2e-05
+s(log(ddZ))                1.09      2  14.94 7.5e-09
+s(log.substrate.grainsize) 2.00      2  58.94 < 2e-16
+s(pca1)                    2.00      2 148.82 < 2e-16
+s(pca2)                    1.96      2 140.11 < 2e-16
 
-R-sq.(adj) =  0.357   Deviance explained = 35.9%
-GCV = 2.4006  Scale est. = 2.3943    n = 6853
+R-sq.(adj) =  0.365   Deviance explained = 36.7%
+GCV = 0.01104  Scale est. = 0.011014  n = 7255
+ 
 
 # -------------------------------------------------
 # presence-absence
@@ -177,38 +143,11 @@ p = snowcrab_stmv( p=p, DS="parameters",
 
 # o = snowcrab_stmv(p=p, DS="stmv_inputs" )  # create fields for
 
-    p = stmv( p=p, runmode=c("initialize", "globalmodel" ), use_saved_state=FALSE ) # no global_model and force a clean restart
+stmv( p=p, runmode=c("globalmodel", "stage0" ), use_saved_state=FALSE ) # no global_model and force a clean restart
 
-    currentstatus = stmv_db( p=p, DS="statistics.status" )
-    parallel_run( stmv_interpolate, p=p, 
-      runindex=list( locs=currentstatus$todo[sample.int(length( currentstatus$todo ))] ),
-      local.n.complete=currentstatus["n.complete"]
-    ) 
-    stmv_db( p=p, DS="save_current_state" ) # saved current state (internal format)
-    if (exists("cl", p)) stopCluster( p$cl )
-  
-    currentstatus = stmv_db(p=p, DS="statistics.status.reset" )
-    parallel_run( stmv_interpolate, p=p, 
-      runindex=list( locs=currentstatus$todo[sample.int(length( currentstatus$todo ))] ),
-      local.n.complete=currentstatus["n.complete"], 
-      stmv_distance_max=p$stmv_distance_max*mult, 
-      stmv_distance_scale=p$stmv_distance_scale*mult 
-    )
-    stmv_db( p=p, DS="save_current_state" ) # saved current state 
-    if (exists("cl", p)) stopCluster( p$cl )
+stmv_db( p=p, DS="stmv.results" ) # save to disk for use outside stmv*, returning to user scale
 
-    # currentstatus = stmv_db( p=p, DS="statistics.status.reset" )
-    # parallel_run( stmv_interpolate, p=p, 
-    #   runindex=list( locs= currentstatus$todo[sample.int(length( currentstatus$todo ))] ),
-    #   local.n.complete=currentstatus["n.complete"], 
-    #   stmv_local_modelengine = "tps" 
-    # ) 
-    # stmv_db( p=p, DS="save_current_state" )
-    # if (exists("cl", p)) stopCluster( p$cl )
-
-    stmv_db( p=p, DS="stmv.results" ) # save to disk for use outside stmv*, returning to user scale
-  
-    # if (really.finished) stmv_db( p=p, DS="cleanup.all" )
+# if (really.finished) stmv_db( p=p, DS="cleanup.all" )
 
 
 snowcrab_stmv( p=p, DS="predictions.redo" ) # warp predictions to other grids
