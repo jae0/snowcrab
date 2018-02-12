@@ -219,7 +219,7 @@ snowcrab_stmv = function( DS=NULL, p=NULL, year=NULL, ret="mean", varnames=NULL,
     }
 
     # for space-time(year-averages)
-    newvars = c( "tmean", "tsd", "amplitude" )
+    newvars = c( "tmean", "tsd", "tamplitude" )
     sn = aegis_lookup( p=p, DS="spatial.annual", locsmap=locsmap, timestamp=set[,"timestamp"], varnames=newvars )
     colnames( sn  ) = newvars
     set = cbind( set,  sn )
@@ -234,7 +234,7 @@ snowcrab_stmv = function( DS=NULL, p=NULL, year=NULL, ret="mean", varnames=NULL,
       for (nv in newvars) set[nn,nv] = sn[,nv]
     }
 
-    names(set)[ names(set)=="amplitude"] ="tamplitude"
+    names(set)[ names(set)=="tamplitude"] ="tamplitude"
 
     # additional aegis_db variables
     for (iv in names(p$aegis_variables)) {
@@ -288,7 +288,7 @@ snowcrab_stmv = function( DS=NULL, p=NULL, year=NULL, ret="mean", varnames=NULL,
 
   if (DS %in% c("output_data") ) {
     PS = aegis_db( p=p, DS="prediction.surface" ) # a list object with static and annually varying variables
-    names(PS)[ names(PS)=="amplitude"] ="tamplitude"
+    names(PS)[ names(PS)=="tamplitude"] ="tamplitude"
 
     # make years coherent for temperatures
     p0 = aegis::aegis_parameters(p=p, DS="temperature", year.assessment=p$year.assessment )
@@ -430,7 +430,7 @@ snowcrab_stmv = function( DS=NULL, p=NULL, year=NULL, ret="mean", varnames=NULL,
         if (exists( "libs", p)) RLibrary( p$libs )
         if (is.null(ip)) ip = 1:p$nruns
           # downscale and warp from p(0) -> p1 .. default domain
-        S0 = stmv_db( p=p, DS="stats.to.prediction.grid" )
+        S0 = stmv_db( p=p, DS="stmv.stats" )
         Snames = colnames(S0) 
         p0 = spatial_parameters( p=p ) # from
         L0 = bathymetry.db( p=p0, DS="baseline" )
