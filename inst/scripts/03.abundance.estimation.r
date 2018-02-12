@@ -66,7 +66,7 @@ p = snowcrab_stmv( p=p, DS="parameters",
 
 # o = snowcrab_stmv(p=p, DS="stmv_inputs" )  # create fields for
 
-    p = stmv( p=p, runmode=c("initialize", "globalmodel" ), use_saved_state=FALSE ) # no global_model and force a clean restart
+    p = stmv( p=p, runmode=c("globalmodel", "stage0" ), use_saved_state=FALSE ) # no global_model and force a clean restart
 
     currentstatus = stmv_db( p=p, DS="statistics.status" )
     p = parallel_run( stmv_interpolate, p=p, 
