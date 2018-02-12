@@ -219,7 +219,7 @@ snowcrab_stmv = function( DS=NULL, p=NULL, year=NULL, ret="mean", varnames=NULL,
     }
 
     # for space-time(year-averages)
-    newvars = c( "tmean", "tsd", "tamplitude" ) 
+    newvars = c( "tmean", "tsd", "tamplitude" )
     sn = aegis_lookup( p=p, DS="spatial.annual", locsmap=locsmap, timestamp=set[,"timestamp"], varnames=newvars )
     colnames( sn  ) = newvars
     set = cbind( set,  sn )
@@ -344,12 +344,12 @@ snowcrab_stmv = function( DS=NULL, p=NULL, year=NULL, ret="mean", varnames=NULL,
     projectdir = file.path(p$data_root, "modelled", voi, p$spatial.domain )
 
     if (DS %in% c("predictions")) {
-      P = V = W = NULL
+      P = Pl = Pu = NULL
       fn = file.path( projectdir, paste("stmv.prediction", ret,  year, "rdata", sep=".") )
       if (file.exists(fn) ) load(fn)
       if (ret=="mean") return (P)
-      if (ret=="lb") return( V)
-      if (ret=="ub") return( W)
+      if (ret=="lb") return( Pl)
+      if (ret=="ub") return( Pu)
     }
 
     parallel_run(
@@ -382,16 +382,16 @@ snowcrab_stmv = function( DS=NULL, p=NULL, year=NULL, ret="mean", varnames=NULL,
             L1 = lonlat2planar( L1, proj.type=p0$internal.crs )
             p1$wght = fields::setup.image.smooth( nrow=p1$nplons, ncol=p1$nplats, dx=p1$pres, dy=p1$pres, theta=p1$pres, xwidth=4*p1$pres, ywidth=4*p1$pres )
             P = spatial_warp( PP0[], L0, L1, p0, p1, "fast", L0i, L1i )
-            V = spatial_warp( VV0[], L0, L1, p0, p1, "fast", L0i, L1i )
-            W = spatial_warp( WW0[], L0, L1, p0, p1, "fast", L0i, L1i )
+            Pl = spatial_warp( VV0[], L0, L1, p0, p1, "fast", L0i, L1i )
+            Pu = spatial_warp( WW0[], L0, L1, p0, p1, "fast", L0i, L1i )
             projectdir_p1 = file.path(p$data_root, "modelled", voi, p1$spatial.domain )
             dir.create( projectdir_p1, recursive=T, showWarnings=F )
             fn1_sg = file.path( projectdir_p1, paste("stmv.prediction.mean",  year, "rdata", sep=".") )
             fn2_sg = file.path( projectdir_p1, paste("stmv.prediction.lb",  year, "rdata", sep=".") )
             fn3_sg = file.path( projectdir_p1, paste("stmv.prediction.ub",  year, "rdata", sep=".") )
             save( P, file=fn1_sg, compress=T )
-            save( V, file=fn2_sg, compress=T )
-            save( W, file=fn3_sg, compress=T )
+            save( Pl, file=fn2_sg, compress=T )
+            save( Pu, file=fn3_sg, compress=T )
             print (fn1_sg)
           }
         }
@@ -430,7 +430,7 @@ snowcrab_stmv = function( DS=NULL, p=NULL, year=NULL, ret="mean", varnames=NULL,
         if (exists( "libs", p)) RLibrary( p$libs )
         if (is.null(ip)) ip = 1:p$nruns
           # downscale and warp from p(0) -> p1 .. default domain
-        S0 = stmv_db( p=p, DS="stats.to.prediction.grid" )
+        S0 = stmv_db( p=p, DS="stmv.stats" )
         Snames = colnames(S0) 
         p0 = spatial_parameters( p=p ) # from
         L0 = bathymetry.db( p=p0, DS="baseline" )

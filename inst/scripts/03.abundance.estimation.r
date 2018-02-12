@@ -69,28 +69,32 @@ p = snowcrab_stmv( p=p, DS="parameters",
     p = stmv( p=p, runmode=c("globalmodel", "stage0" ), use_saved_state=FALSE ) # no global_model and force a clean restart
 
     currentstatus = stmv_db( p=p, DS="statistics.status" )
-    p = parallel_run( stmv_interpolate, p=p, 
-      runindex=list( locs=currentstatus$todo[sample.int(length( currentstatus$todo ))] ) ) 
+    parallel_run( stmv_interpolate, p=p, 
+      runindex=list( locs=currentstatus$todo[sample.int(length( currentstatus$todo ))] ),
+      local.n.complete=currentstatus["n.complete"]
+    ) 
     stmv_db( p=p, DS="save_current_state" ) # saved current state (internal format)
     if (exists("cl", p)) stopCluster( p$cl )
   
     currentstatus = stmv_db(p=p, DS="statistics.status.reset" )
     parallel_run( stmv_interpolate, p=p, 
-      runindex=list( locs=currentstatus$todo[sample.int(length( currentstatus$todo ))] ), 
+      runindex=list( locs=currentstatus$todo[sample.int(length( currentstatus$todo ))] ),
+      local.n.complete=currentstatus["n.complete"], 
       stmv_distance_max=p$stmv_distance_max*mult, 
-      stmv_distance_scale=p$stmv_distance_scale*mult )
+      stmv_distance_scale=p$stmv_distance_scale*mult 
+    )
     stmv_db( p=p, DS="save_current_state" ) # saved current state 
     if (exists("cl", p)) stopCluster( p$cl )
 
     # currentstatus = stmv_db( p=p, DS="statistics.status.reset" )
-    # p = parallel_run( stmv_interpolate, p=p, 
-    #   runindex=list( locs= currentstatus$todo[sample.int(length( currentstatus$todo ))] ), 
+    # parallel_run( stmv_interpolate, p=p, 
+    #   runindex=list( locs= currentstatus$todo[sample.int(length( currentstatus$todo ))] ),
+    #   local.n.complete=currentstatus["n.complete"], 
     #   stmv_local_modelengine = "tps" ) 
     # stmv_db( p=p, DS="save_current_state" )
     # if (exists("cl", p)) stopCluster( p$cl )
 
-    stmv_db( p=p, DS="stmv.prediction.redo" ) # save to disk for use outside stmv*, returning to user scale
-    stmv_db( p=p, DS="stats.to.prediction.grid.redo") # save to disk for use outside stmv*
+    stmv_db( p=p, DS="stmv.results" ) # save to disk for use outside stmv*, returning to user scale
   
     # if (really.finished) stmv_db( p=p, DS="cleanup.all" )
 
@@ -176,28 +180,33 @@ p = snowcrab_stmv( p=p, DS="parameters",
     p = stmv( p=p, runmode=c("initialize", "globalmodel" ), use_saved_state=FALSE ) # no global_model and force a clean restart
 
     currentstatus = stmv_db( p=p, DS="statistics.status" )
-    p = parallel_run( stmv_interpolate, p=p, 
-      runindex=list( locs=currentstatus$todo[sample.int(length( currentstatus$todo ))] ) ) 
+    parallel_run( stmv_interpolate, p=p, 
+      runindex=list( locs=currentstatus$todo[sample.int(length( currentstatus$todo ))] ),
+      local.n.complete=currentstatus["n.complete"]
+    ) 
     stmv_db( p=p, DS="save_current_state" ) # saved current state (internal format)
     if (exists("cl", p)) stopCluster( p$cl )
   
     currentstatus = stmv_db(p=p, DS="statistics.status.reset" )
     parallel_run( stmv_interpolate, p=p, 
-      runindex=list( locs=currentstatus$todo[sample.int(length( currentstatus$todo ))] ), 
+      runindex=list( locs=currentstatus$todo[sample.int(length( currentstatus$todo ))] ),
+      local.n.complete=currentstatus["n.complete"], 
       stmv_distance_max=p$stmv_distance_max*mult, 
-      stmv_distance_scale=p$stmv_distance_scale*mult )
+      stmv_distance_scale=p$stmv_distance_scale*mult 
+    )
     stmv_db( p=p, DS="save_current_state" ) # saved current state 
     if (exists("cl", p)) stopCluster( p$cl )
 
     # currentstatus = stmv_db( p=p, DS="statistics.status.reset" )
-    # p = parallel_run( stmv_interpolate, p=p, 
-    #   runindex=list( locs= currentstatus$todo[sample.int(length( currentstatus$todo ))] ), 
-    #   stmv_local_modelengine = "tps" ) 
+    # parallel_run( stmv_interpolate, p=p, 
+    #   runindex=list( locs= currentstatus$todo[sample.int(length( currentstatus$todo ))] ),
+    #   local.n.complete=currentstatus["n.complete"], 
+    #   stmv_local_modelengine = "tps" 
+    # ) 
     # stmv_db( p=p, DS="save_current_state" )
     # if (exists("cl", p)) stopCluster( p$cl )
 
-    stmv_db( p=p, DS="stmv.prediction.redo" ) # save to disk for use outside stmv*, returning to user scale
-    stmv_db( p=p, DS="stats.to.prediction.grid.redo") # save to disk for use outside stmv*
+    stmv_db( p=p, DS="stmv.results" ) # save to disk for use outside stmv*, returning to user scale
   
     # if (really.finished) stmv_db( p=p, DS="cleanup.all" )
 
