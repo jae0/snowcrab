@@ -159,45 +159,36 @@ snowcrab_stmv( p=p, DS="map.all" )
 global_model = stmv_db( p=p, DS="global_model")
 summary( global_model )
 plot(global_model)
-
-Family: binomial
-Link function: logit
+Family: binomial 
+Link function: logit 
 
 Formula:
-snowcrab.large.males_presence_absence ~ s(t, k = 3, bs = "ts") +
-    s(tmean.climatology, k = 3, bs = "ts") + s(tsd.climatology,
-    k = 3, bs = "ts") + s(log(z), k = 3, bs = "ts") + s(log(dZ),
-    k = 3, bs = "ts") + s(log(ddZ), k = 3, bs = "ts") + s(log(mr),
-    k = 3, bs = "ts") + s(Npred, k = 3, bs = "ts") + s(smr, k = 3,
-    bs = "ts") + s(log.substrate.grainsize, k = 3, bs = "ts") +
-    s(ca1, k = 3, bs = "ts") + s(ca2, k = 3, bs = "ts")
+snowcrab.large.males_presence_absence ~ s(t, k = 3, bs = "ts") + 
+    s(tmean.climatology, k = 3, bs = "ts") + s(tsd.climatology, 
+    k = 3, bs = "ts") + s(log(z), k = 3, bs = "ts") + s(log(dZ), 
+    k = 3, bs = "ts") + s(log(ddZ), k = 3, bs = "ts") + s(log.substrate.grainsize, 
+    k = 3, bs = "ts") + s(pca1, k = 3, bs = "ts") + s(pca2, k = 3, 
+    bs = "ts")
 
 Parametric coefficients:
             Estimate Std. Error z value Pr(>|z|)
-(Intercept)  0.82108    0.03282   25.02   <2e-16 ***
----
-Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+(Intercept)    1.325      0.019    69.6   <2e-16
 
 Approximate significance of smooth terms:
-                                 edf Ref.df  Chi.sq  p-value
-s(t)                       1.769e+00      2 105.703  < 2e-16 ***
-s(tmean.climatology)       1.838e+00      2  68.113  < 2e-16 ***
-s(tsd.climatology)         1.910e+00      2  14.130 0.000585 ***
-s(log(z))                  1.569e+00      2 170.503  < 2e-16 ***
-s(log(dZ))                 6.303e-01      2   2.517 0.035988 *
-s(log(ddZ))                9.639e-01      2  12.371 6.30e-05 ***
-s(log(mr))                 1.855e+00      2 196.086  < 2e-16 ***
-s(Npred)                   7.202e-05      2   0.000 0.732550
-s(smr)                     9.897e-01      2  15.089 3.94e-05 ***
-s(log.substrate.grainsize) 1.752e+00      2 213.989  < 2e-16 ***
-s(ca1)                     1.849e+00      2  22.419 4.75e-06 ***
-s(ca2)                     1.857e+00      2 246.368  < 2e-16 ***
----
-Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+                            edf Ref.df  Chi.sq p-value
+s(t)                       2.00      2  410.59  <2e-16
+s(tmean.climatology)       1.98      2  181.92  <2e-16
+s(tsd.climatology)         2.00      2  436.52  <2e-16
+s(log(z))                  2.00      2 2891.37  <2e-16
+s(log(dZ))                 1.96      2    1.94   0.370
+s(log(ddZ))                1.85      2    9.84   0.005
+s(log.substrate.grainsize) 1.98      2  143.32  <2e-16
+s(pca1)                    2.00      2  512.02  <2e-16
+s(pca2)                    2.00      2  826.64  <2e-16
 
-R-sq.(adj) =  0.296   Deviance explained = 25.4%
-UBRE = -0.031615  Scale est. = 1         n = 6853
-
+R-sq.(adj) =  0.563   Deviance explained = 50.3%
+UBRE = -0.61879  Scale est. = 1         n = 64488
+ 
 
 
 # collect all predictions into a single file and return:
