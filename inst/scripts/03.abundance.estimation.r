@@ -41,7 +41,7 @@
 
 # -------------------------------------------------------------------------------------
 # abundance .. positive valued data .. vn = "snowcrab.large.males_abundance"
-
+# year.assessment = 2017
 p = bio.snowcrab::load.environment( year.assessment=year.assessment )
 
 # 11 hrs with these settings,
@@ -117,7 +117,7 @@ GCV = 0.01104  Scale est. = 0.011014  n = 7255
 
 # -------------------------------------------------
 # presence-absence
-# year.assessment = 2016
+# year.assessment = 2017
 
 p = bio.snowcrab::load.environment( year.assessment=year.assessment )
 
