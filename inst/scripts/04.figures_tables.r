@@ -13,6 +13,8 @@
 
 # ------------------------------------------
 # Time-series: all interpolated data estimated from interpolated analysis
+# BZ R0.mass is likely the only variable required
+  
   figure.interpolated.results( p, outdir=file.path( p$annual.results, "timeseries",  "interpolated" ), alt.zero.y=T )
 
 # ------------------------------------------
