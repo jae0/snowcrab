@@ -28,7 +28,7 @@
 
   # ------------------------------------------
   # Size frequency distributions, broken down by moult category from at-sea observed data
-  #BZ- TODO add n= to the individual histograms
+ 
     figure.observed.size.freq( regions = c("cfanorth", "cfasouth", "cfa4x"), years="all", outdir=file.path( p$annual.results, "figures", "size.freq", "observer")  )
 
   # ------------------------------------------
@@ -83,7 +83,7 @@
     variables = intersect( variables, names(set) )
 
     nolog.variables = c("t","z","sexratio.all","sexratio.mat","sexratio.imm","julian",variables[grep("cw",variables)])
-    map.set.information( p=p, variables=nolog.variables,outdir=outdir,log.variable=F,add.zeros=F,theta=100)
+    map.set.information( p=p, variables=nolog.variables,outdir=outdir,log.variable=F,add.zeros=F,theta=50)
     # logit transform for ratios
     map.set.information( p=p, variables=c("sexratio.all","sexratio.mat","sexratio.imm"),outdir=outdir,log.variable=F,add.zeros=F,theta=100)
 
