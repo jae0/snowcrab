@@ -37,7 +37,7 @@ map.set.information = function(p, outdir, variables, mapyears, interpolate.metho
           if(ratio)er=c(0,1)
           ler = er
           withdata=which(set_xyz$z > 0)
-          if (length(withdata) < 3) print("skipped",v, y, "<3 data points to create map", sep="."
+          if (length(withdata) < 3) print("skipped",v, y, "<3 data points to create map", sep=".")
           if (length(withdata) < 3) next()
           S = set_xyz[ withdata, c("plon", "plat") ]
 
