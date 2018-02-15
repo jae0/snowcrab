@@ -149,7 +149,6 @@ snowcrab_stmv = function( DS=NULL, p=NULL, year=NULL, ret="mean", varnames=NULL,
       lowestpossible = min( set$totmass[jj] , na.rm=TRUE)
       ii = which( set$totmass < lowestpossible )
       set$totmass[ii] = lowestpossible / 4
-      set$totmass = log( set$totmass)
       names(set)[ which( names(set) =="totmass")] = p$selection$name
       set$Y = NULL
       set$wt = set$sa
