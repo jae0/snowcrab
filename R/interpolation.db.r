@@ -1,6 +1,6 @@
 
   interpolation.db = function( ip=NULL, DS=NULL, p=NULL, 
-    varnames = c("snowcrab.large.males_abundance", "snowcrab.large.males_presence_absence", annot.cex=2) ) {
+    varnames = c("snowcrab.large.males_abundance", "snowcrab.large.males_presence_absence"), annot.cex=2 ) {
 
     if (DS %in% c( "biomass", "biomass.redo" )) {
     
@@ -43,11 +43,14 @@
       }
 
       # more range checks
-      s = snowcrab_stmv( p=p, DS="baseline", ret="sd", varnames=varnames )
-      # range checks
-      s = log( exp(s[[1]]) * s[[2]] ) # s[[2]] is serving as weight/probabilities
+      lb = snowcrab_stmv( p=p, DS="baseline", ret="lb", varnames=varnames )
+      ub = snowcrab_stmv( p=p, DS="baseline", ret="ub", varnames=varnames )
       
-      sq = quantile(s, probs=p$stmv_quantile_bounds[2], na.rm=TRUE ) 
+      # range checks
+      lb = log( exp(lb[[1]]) * lb[[2]] ) # x[[2]] is serving as weight/probabilities
+      ub = log( exp(ub[[1]]) * ub[[2]] ) # x[[2]] is serving as weight/probabilities
+      
+      # sq = quantile(s, probs=p$stmv_quantile_bounds[2], na.rm=TRUE ) 
       # s[which(s > sq)] = sq  # cap upper bound of sd
 
       # mm = which(( m - 1.96*s ) < 0 )
@@ -81,7 +84,8 @@
           boundary= non_convex_hull( o, alpha=p$threshold.distance*4, plot=FALSE )
           outside.polygon = which( point.in.polygon( bs[,1], bs[,2], boundary[,1], boundary[,2] ) == 0 )
           m[outside.polygon,iy] = NA
-          s[outside.polygon,iy] = NA
+          ub[outside.polygon,iy] = NA
+          lb[outside.polygon,iy] = NA
           h[outside.polygon,iy] = NA
         }
       }
@@ -103,11 +107,11 @@
       o = o[ !duplicated(o),]
       boundary= non_convex_hull( o, alpha=25, plot=FALSE )
       outside.polygon = which( point.in.polygon( bs[,1], bs[,2], boundary[,1], boundary[,2] ) == 0 )
-      m[outside.polygon,] = NA
-      s[outside.polygon,] = NA
+      ub[outside.polygon,] = NA
+      lb[outside.polygon,] = NA
       h[outside.polygon,] = NA
 
-      B = list( m=m, s=s, h=h )
+      B = list( m=m, lb=lb, ub=ub, h=h )
       save( B, file=fn, compress=TRUE )
       B = NULL
 
@@ -118,7 +122,7 @@
       for (iy in 1:p$ny) {
         y = p$yrs[iy]
         outfn = paste( "prediction.abundance.mean", y, sep=".")
-        xyz = cbind( bs[, c("plon", "plat")], m[,iy] )
+        xyz = cbind( bs[, c("plon", "plat")], log(m[,iy]) )
         dir.create (projectdir, showWarnings=FALSE, recursive =TRUE)
         fn = file.path( projectdir, paste(outfn, "png", sep="." ) )
         png( filename=fn, width=3072, height=2304, pointsize=40, res=300 )
@@ -129,15 +133,35 @@
         dev.off()
       }
 
-      datarange = seq( 0, max(s,na.rm=TRUE), length.out=150)
+      datarange = seq( 0, max(lb, na.rm=TRUE), length.out=150)
       cols = color.code( "seis", datarange )
-      s[which(!is.finite(s))] = 0.1
-      s[which(s < 0.1)] = 0.1
+      lb[which(!is.finite(lb))] = qs[1]
+      lb[which(lb < 0.1)] = qs[1]
       
       for (iy in 1:p$ny) {
         y = p$yrs[iy]
-        outfn = paste( "prediction.abundance.sd", y, sep=".")
-        xyz = cbind( bs[, c("plon", "plat")], s[,iy] )
+        outfn = paste( "prediction.abundance.lb", y, sep=".")
+        xyz = cbind( bs[, c("plon", "plat")], lb[,iy] )
+        dir.create (projectdir, showWarnings=FALSE, recursive =TRUE)
+        fn = file.path( projectdir, paste(outfn, "png", sep="." ) )
+        png( filename=fn, width=3072, height=2304, pointsize=40, res=300 )
+        lp = aegis::aegis_map( xyz=xyz, cfa.regions=T, depthcontours=T, pts=NULL, annot=y,
+          annot.cex=annot.cex, corners=p$planar.corners, at=datarange,
+          col.regions=cols, rez=c(p$pres,p$pres) )
+        print(lp)
+        dev.off()
+      }
+
+
+      datarange = seq( 0, max(qs[2]*1.15, na.rm=TRUE), length.out=150)
+      cols = color.code( "seis", datarange )
+      ub[which(!is.finite(ub))] = qs[2]
+      ub[which(ub > qs[2])] = qs[2]
+      
+      for (iy in 1:p$ny) {
+        y = p$yrs[iy]
+        outfn = paste( "prediction.abundance.ub", y, sep=".")
+        xyz = cbind( bs[, c("plon", "plat")], ub[,iy] )
         dir.create (projectdir, showWarnings=FALSE, recursive =TRUE)
         fn = file.path( projectdir, paste(outfn, "png", sep="." ) )
         png( filename=fn, width=3072, height=2304, pointsize=40, res=300 )
@@ -158,7 +182,8 @@
     if (DS=="timeseries") {
       bm = interpolation.db(p=p, DS="biomass")
       bm$m = exp(bm$m) / 10^3  # kg/km^2 to t/km^2  .. required for biomass.summary.db
-      bm$s = exp(bm$s) / 10^3  # kg/km^2 to t/km^2  .. required for biomass.summary.db
+      bm$lb = exp(bm$lb) / 10^3  # kg/km^2 to t/km^2  .. required for biomass.summary.db
+      bm$ub = exp(bm$ub) / 10^3  # kg/km^2 to t/km^2  .. required for biomass.summary.db
       
       bs = bathymetry.db( p=p, DS="baseline")
       
@@ -169,26 +194,26 @@
       for (r in 1:nreg ){
         aoi = aegis::polygon_inside(x=bs[ , c("plon", "plat")], region=p$regions[r], planar=T)
         aoi = intersect( aoi, which( bs$plon > 250 ) )
-        out = matrix( NA, nrow=p$ny, ncol=3) 
+        out = matrix( NA, nrow=p$ny, ncol=4) 
         
         for (y in 1:p$ny) {
           iHabitat = which( bm$h[,y] > p$habitat.threshold.quantile ) # any area with biomass > lowest threshold
           iHabitatRegion = intersect( aoi, iHabitat )
           out[ y, 1] = sum( bm$m[iHabitatRegion,y] , na.rm=TRUE ) # abundance weighted by Pr
-          out[ y, 2] = sqrt( sum( (bm$s[iHabitatRegion,y])^2 , na.rm=TRUE ) )
-          out[ y, 3] = sum( bm$h[iHabitatRegion,y] ) * (p$pres*p$pres)
+          out[ y, 2] = sum( bm$lb[iHabitatRegion,y] , na.rm=TRUE ) )
+          out[ y, 3] = sum( bm$ub[iHabitatRegion,y] , na.rm=TRUE ) )
+          out[ y, 4] = sum( bm$h[iHabitatRegion,y] ) * (p$pres*p$pres)
         }
         
         ok = as.data.frame( out )
-        names( ok) = c("total", "total.sd", "sa.region")
+        names( ok) = c("total", "total.lb", "total.lb", "sa.region")
         
         ok$log.total = log(ok$total)
-        ok$total.sd.ln = log(ok$total.sd) # as above
+        ok$log.total.lb = log( ok$total.lb) # as above
+        ok$log.total.ub = log( ok$total.ub) # as above
         ok$region = p$regions[r]
         ok$yr = p$yrs
 
-        ok$lbound = ok$total - ok$total.sd*1.96 # normal assumption 
-        ok$ubound = ok$total + ok$total.sd*1.96 
         K = rbind(K, ok)
       }
 

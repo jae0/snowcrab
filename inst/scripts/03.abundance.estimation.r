@@ -67,11 +67,8 @@ p = snowcrab_stmv( p=p, DS="parameters",
 # o = snowcrab_stmv(p=p, DS="stmv_inputs" )  # create fields for  
 
 stmv( p=p, runmode=c("globalmodel", "stage0" ), use_saved_state=FALSE ) # no global_model and force a clean restart
-
-stmv_db( p=p, DS="stmv.results" ) # save to disk for use outside stmv*, returning to user scale
-
+# stmv_db( p=p, DS="stmv.results" ) # save to disk for use outside stmv*, returning to user scale
 # if (really.finished) stmv_db( p=p, DS="cleanup.all" )
-
 
 snowcrab_stmv( p=p, DS="predictions.redo" ) # warp predictions to other grids
 snowcrab_stmv( p=p, DS="stmv.stats.redo" ) # warp stats to other grids
@@ -145,10 +142,8 @@ p = snowcrab_stmv( p=p, DS="parameters",
 
 stmv( p=p, runmode=c("globalmodel", "stage0" ), use_saved_state=FALSE ) # no global_model and force a clean restart
 
-stmv_db( p=p, DS="stmv.results" ) # save to disk for use outside stmv*, returning to user scale
-
+# stmv_db( p=p, DS="stmv.results" ) # save to disk for use outside stmv*, returning to user scale
 # if (really.finished) stmv_db( p=p, DS="cleanup.all" )
-
 
 snowcrab_stmv( p=p, DS="predictions.redo" ) # warp predictions to other grids
 snowcrab_stmv( p=p, DS="stmv.stats.redo" ) # warp stats to other grids
