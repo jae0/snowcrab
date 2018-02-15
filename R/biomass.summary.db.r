@@ -171,6 +171,7 @@
         K = interpolation.db( DS="interpolation.simulation", p=p )
         areas=c("cfanorth", "cfasouth", "cfa4x")
         td = K[ which( K$region %in% areas) ,]
+        td$total.sd.ln = abs(td$total.ub - td$total.lb)/(2*1.96) # assuming approx normal
         B = tapply( td$total.sd.ln, INDEX=td[,c("yr", "region")], FUN=sum, na.rm=T )  # summation is really returning identity as there is only 1 element
         B = B[ , areas]
         B = as.data.frame(B)
@@ -346,6 +347,7 @@
       K = interpolation.db( DS="interpolation.simulation", p=p, varnames="R1.no" )
       areas=c("cfanorth", "cfasouth", "cfa4x")
       td = K[ which(K$vars=="R1.no" & K$region %in% areas) ,]
+      td$total.sd.ln = abs(td$total.ub - td$total.lb)/(2*1.96) # assuming approx normal
       R = tapply( td$total.sd.ln, INDEX=td[,c("yr", "region")], FUN=sum, na.rm=T )  # summation is really returning identity as there is only 1 element
       R = R[ , areas]
 
