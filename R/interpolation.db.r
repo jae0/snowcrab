@@ -200,8 +200,8 @@
           iHabitat = which( bm$h[,y] > p$habitat.threshold.quantile ) # any area with biomass > lowest threshold
           iHabitatRegion = intersect( aoi, iHabitat )
           out[ y, 1] = sum( bm$m[iHabitatRegion,y] , na.rm=TRUE ) # abundance weighted by Pr
-          out[ y, 2] = sum( bm$lb[iHabitatRegion,y] , na.rm=TRUE ) )
-          out[ y, 3] = sum( bm$ub[iHabitatRegion,y] , na.rm=TRUE ) )
+          out[ y, 2] = sum( bm$lb[iHabitatRegion,y] , na.rm=TRUE ) 
+          out[ y, 3] = sum( bm$ub[iHabitatRegion,y] , na.rm=TRUE ) 
           out[ y, 4] = sum( bm$h[iHabitatRegion,y] ) * (p$pres*p$pres)
         }
         
