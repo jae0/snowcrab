@@ -53,7 +53,7 @@
     #cod, haddock, halibut, plaice, wolfish, thornyskate, smoothskate, winterskate, northernshrimp, jonahcrab, lessertoadcrab
   species = c(10, 11, 30, 40, 201, 50, 2521, 2511, 202, 204, 2211)
   figure.timeseries.bycatch(p=p, species=species, plotyears=2004:p$year.assessment, outdir=file.path(p$annual.results,"timeseries", "survey"))
-
+  
 
   # ------------------------------------------
   # Map:  Interpolated mean/geometric mean of various variables in the set data table
@@ -82,8 +82,8 @@
     variables = bio.snowcrab::snowcrab.variablelist("all.data")
     variables = intersect( variables, names(set) )
 
-    nolog.variables = c("t","z","sexratio.all","sexratio.mat","sexratio.imm","julian",variables[grep("cw",variables)])
-    map.set.information( p=p, variables=nolog.variables,outdir=outdir,log.variable=F,add.zeros=F,theta=50)
+    nolog.variables = c("t","z","sexratio.all","sexratio.mat","sexratio.imm","julian","julian.compressed", variables[grep("cw",variables)])
+    map.set.information( p=p, variables=nolog.variables,outdir=outdir,log.variable=F,add.zeros=F,theta=35)
     # logit transform for ratios
     map.set.information( p=p, variables=c("sexratio.all","sexratio.mat","sexratio.imm"),outdir=outdir,log.variable=F,add.zeros=F,theta=100)
 
