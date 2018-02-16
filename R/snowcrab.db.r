@@ -283,6 +283,7 @@ snowcrab.db = function( DS, p=NULL, yrs=NULL) {
     set$timestamp = with_tz( set$timestamp, "UTC")
 
     set$julian = lubridate::yday( set$timestamp )
+    set$julian.compressed=set$julian-227 #allows for informative mapping of survey timing. Days after Aug 15
     set$yr = lubridate::year( set$timestamp )
 
     save( set, file=fn, compress=TRUE )
