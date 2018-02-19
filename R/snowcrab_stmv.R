@@ -159,9 +159,7 @@ snowcrab_stmv = function( DS=NULL, p=NULL, year=NULL, ret="mean", varnames=NULL,
       if (p$selection$drop.groundfish.data) {
           todrop = which(set$data.source == "groundfish")
           if (length(todrop)> 0 ) set = set[ -todrop, ]
-            
       }
-      set = presence.absence( X=set, vname="zm", px=p$habitat.threshold.quantile )  # determine presence absence and weighting
 
       if ( grepl( "snowcrab.large.males", p$selection$name ) ) {
         # add commerical fishery data --
@@ -170,16 +168,15 @@ snowcrab_stmv = function( DS=NULL, p=NULL, year=NULL, ret="mean", varnames=NULL,
         lgbk = lgbk[ which( is.finite( lgbk$landings)), ]
         lgbk = lgbk[ which( lgbk$year > 2005), ]  # previous to this all sorts of traps were used
         lgbk = lgbk[ which( as.numeric(lgbk$soak.time) >= 12 & as.numeric(lgbk$soak.time) <= 48), ]   # avoid nonlinearity in catch with time
-        lgbk$relative.catchrate = lgbk$cpue / as.numeric(lgbk$soak.time)
+        lgbk$zm = lgbk$cpue / as.numeric(lgbk$soak.time)  # approx with realtive catch rate in time
         lgbk$totmass = NA # dummy to bring in mass as well
         lgbk$data.source = "logbooks"
-        lgbk = presence.absence( X=lgbk, vname="relative.catchrate", px=p$habitat.threshold.quantile )  # determine presence absence and weighting
         lgbk$z = exp( lgbk$z )
         nms = intersect( names(set) , names( lgbk) )
         set = rbind( set[, nms], lgbk[,nms] )
       }
 
-      set = set[ which(set$data.source %in% c("snowcrab", "groundfish", "logbooks") ), ]
+      set = presence.absence( X=set, vname="zm", px=p$habitat.threshold.quantile )  # determine presence absence and weighting
       names(set)[ which( names(set) =="Y")] = p$selection$name
       set$totmass = NULL
       set = set[ which(is.finite(set$plon + set$plat)),]
