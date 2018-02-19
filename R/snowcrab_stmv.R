@@ -503,6 +503,11 @@ snowcrab_stmv = function( DS=NULL, p=NULL, year=NULL, ret="mean", varnames=NULL,
 
     grids = unique( c(p$spatial.domain.subareas , p$spatial.domain ) ) # operate upon every domain
 
+    if ( p$selection$name=="snowcrab.large.males_abundance" ) {
+      INP = snowcrab_stmv(p=p, DS="input_data" )  # , voi=p$selection$name
+      qb = range(INP$snowcrab.large.males_abundance, na.rm=TRUE) # empirical range
+    }
+    
     for (gr in grids ) {
       print(gr)
 
@@ -524,23 +529,23 @@ snowcrab_stmv = function( DS=NULL, p=NULL, year=NULL, ret="mean", varnames=NULL,
         PSub[,iy] = stmv_db( p=p1, DS="stmv.prediction", yr=yr, ret="ub")
       }
 
-      # qPS = quantile( PS, probs=p$stmv_quantile_bounds, na.rm=TRUE )
-      # u = which( PS < qPS[1])
-      # if (length(u)>0) PS[u] = qPS[1]
-      # v = which( PS > qPS[2])
-      # if (length(v)>0) PS[v] = qPS[2]
+      if ( p$selection$name=="snowcrab.large.males_abundance" ) {
+        u = which( PS < qb[1])
+        if (length(u)>0) PS[u] = qb[1]
+        v = which( PS > qb[2])
+        if (length(v)>0) PS[v] = qb[2]
+  
+        u = which( PSlb < qb[1])
+        if (length(u)>0) PSlb[u] = qb[1]
+        v = which( PSlb > qb[2]  * 2)
+        if (length(v)>0) PSlb[v] = qb[2]
 
-      # qPSlb = quantile( PSlb, probs=p$stmv_quantile_bounds, na.rm=TRUE )
-      # u = which( PSlb < qPSlb[1])
-      # if (length(u)>0) PSlb[u] = qPSlb[1]
-      # v = which( PSlb > qPSlb[2])
-      # if (length(v)>0) PSlb[v] = qPSlb[2]
-
-      # qPSub = quantile( PSub, probs=p$stmv_quantile_bounds, na.rm=TRUE )
-      # u = which( PSub < qPSub[1])
-      # if (length(u)>0) PSub[u] = qPSub[1]
-      # v = which( PSub > qPSub[2])
-      # if (length(v)>0) PSub[v] = qPSub[2]
+        u = which( PSub < qb[1])
+        if (length(u)>0) PSub[u] = qb[1]
+        v = which( PSub > qb[2]  * 2)
+        if (length(v)>0) PSub[v] = qb[2]
+        
+      }
 
       CL = cbind( apply( PS, 1, mean, na.rm=TRUE ),
                   apply( PSlb, 1, mean, na.rm=TRUE ),

@@ -56,8 +56,15 @@ p = snowcrab_stmv( p=p, DS="parameters",
   stmv_twostep_space = "krige",
   stmv_gam_optimizer=c("outer", "bfgs") ,
   stmv_distance_statsgrid = 2, # resolution (km) of data aggregation (i.e. generation of the ** statistics ** )
-  stmv_distance_scale = 50
+  stmv_distance_scale = 50,
+  stmv_Y_transform =list(
+        transf = function(x) {x/6675} ,
+        invers = function(x) {x*6675}
+  ) # transform data to unit interval to stabilize variance and speed up convergence
 )
+
+# range( INP$snowcrab.large.males_abundance )
+# [1]   14.3 6675.0
 
 # o = snowcrab_stmv(p=p, DS="stmv_inputs" )  # create fields for  
 
@@ -156,23 +163,23 @@ snowcrab.large.males_presence_absence ~ s(t, k = 3, bs = "ts") +
 
 Parametric coefficients:
             Estimate Std. Error z value Pr(>|z|)
-(Intercept)    1.285      0.019    67.8   <2e-16
+(Intercept)   2.2456     0.0433    51.9   <2e-16
 
 Approximate significance of smooth terms:
                              edf Ref.df  Chi.sq p-value
-s(t)                       1.999      2  462.35 < 2e-16
-s(tmean.climatology)       1.996      2  165.19 < 2e-16
-s(tsd.climatology)         2.000      2  425.32 < 2e-16
-s(log(z))                  1.997      2 2908.73 < 2e-16
-s(log(dZ))                 0.565      2    1.28 0.12811
-s(log(ddZ))                1.831      2   13.02 0.00066
-s(log.substrate.grainsize) 1.993      2  164.91 < 2e-16
-s(pca1)                    1.998      2  490.67 < 2e-16
-s(pca2)                    1.999      2  919.08 < 2e-16
+s(t)                       1.993      2  359.98 < 2e-16
+s(tmean.climatology)       1.999      2   22.05 1.5e-05
+s(tsd.climatology)         1.999      2  537.87 < 2e-16
+s(log(z))                  1.931      2 1560.45 < 2e-16
+s(log(dZ))                 0.498      2    0.96    0.16
+s(log(ddZ))                1.955      2   44.55 6.3e-11
+s(log.substrate.grainsize) 1.831      2   80.98 < 2e-16
+s(pca1)                    1.997      2  205.31 < 2e-16
+s(pca2)                    1.997      2  574.22 < 2e-16
 
-R-sq.(adj) =  0.568   Deviance explained = 50.7%
-UBRE = -0.6189  Scale est. = 1         n = 64762
-
+R-sq.(adj) =  0.598   Deviance explained = 55.4%
+UBRE = -0.71562  Scale est. = 1         n = 25468
+ 
 
 
 # collect all predictions into a single file and return:
