@@ -4,10 +4,6 @@
     year.assessment=lubridate::year(Sys.Date())
   }
 
-  p = bio.snowcrab::load.environment( year.assessment=year.assessment )
-
-
-
 # --------------------------------------------------------------
 #  Ensure the following scripts complete without error:
 #  these external dependencies permit lookup of data, for this script
@@ -28,7 +24,6 @@
 #  system.file(package="aegis", "scripts", "11.surveys.r")
 #  system.file(package="aegis", "scripts", "16.speciescomposition.R")
 
-
 # 1. Define some additional starting parameters for debugging
 #    choose various over-rides: these are initially defined in parameters.r
 
@@ -42,7 +37,7 @@
 # -------------------------------------------------------------------------------------
 # abundance .. positive valued data .. vn = "snowcrab.large.males_abundance"
 # year.assessment = 2017
-p = bio.snowcrab::load.environment( year.assessment=year.assessment )
+p = bio.snowcrab::load.environment( year.assessment=year.assessment ) 
 
 # 11 hrs with these settings,
 p = snowcrab_stmv( p=p, DS="parameters",
@@ -66,12 +61,12 @@ p = snowcrab_stmv( p=p, DS="parameters",
 
 # o = snowcrab_stmv(p=p, DS="stmv_inputs" )  # create fields for  
 
-stmv( p=p, runmode=c("globalmodel", "interpolate" ), use_saved_state=FALSE ) # no global_model and force a clean restart
-# stmv_db( p=p, DS="stmv.results" ) # save to disk for use outside stmv*, returning to user scale
+stmv( p=p, runmode=c("globalmodel", "interpolate" )  ) # no global_model and force a clean restart
+
 # if (really.finished) stmv_db( p=p, DS="cleanup.all" )
 
-snowcrab_stmv( p=p, DS="predictions.redo" ) # warp predictions to other grids
-snowcrab_stmv( p=p, DS="stmv.stats.redo" ) # warp stats to other grids
+snowcrab_stmv( p=p, DS="predictions.redo" ) # warp predictions to other grids (if any)
+snowcrab_stmv( p=p, DS="stmv.stats.redo" ) # warp stats to other grids (if any)
 snowcrab_stmv( p=p, DS="complete.redo" )
 snowcrab_stmv( p=p, DS="baseline.redo" )
 snowcrab_stmv( p=p, DS="map.all" )
@@ -94,31 +89,28 @@ snowcrab.large.males_abundance ~ s(t, k = 3, bs = "ts") + s(tmean.climatology,
 
 Parametric coefficients:
             Estimate Std. Error t value Pr(>|t|)
-(Intercept)  1.64893    0.00403     409   <2e-16
+(Intercept)  1.64886    0.00403     409   <2e-16
 
 Approximate significance of smooth terms:
                             edf Ref.df      F p-value
-s(t)                       1.96      2  36.77 < 2e-16
-s(tmean.climatology)       1.77      2   3.18   0.026
-s(tsd.climatology)         1.97      2 188.49 < 2e-16
-s(log(z))                  1.50      2 139.08 < 2e-16
-s(log(dZ))                 1.94      2  10.87 1.2e-05
-s(log(ddZ))                1.09      2  14.94 7.5e-09
-s(log.substrate.grainsize) 2.00      2  58.94 < 2e-16
-s(pca1)                    2.00      2 148.82 < 2e-16
-s(pca2)                    1.96      2 140.11 < 2e-16
+s(t)                       1.97      2  39.02 < 2e-16
+s(tmean.climatology)       1.64      2   2.78 0.03376
+s(tsd.climatology)         1.97      2 191.60 < 2e-16
+s(log(z))                  1.54      2 146.66 < 2e-16
+s(log(dZ))                 1.99      2   7.77 0.00037
+s(log(ddZ))                1.08      2  13.14 5.9e-08
+s(log.substrate.grainsize) 2.00      2  56.62 < 2e-16
+s(pca1)                    2.00      2 147.26 < 2e-16
+s(pca2)                    1.96      2 135.94 < 2e-16
 
-R-sq.(adj) =  0.365   Deviance explained = 36.7%
-GCV = 0.01104  Scale est. = 0.011014  n = 7255
+R-sq.(adj) =  0.365   Deviance explained = 36.6%
+GCV = 0.011049  Scale est. = 0.011023  n = 7255
  
 
 # -------------------------------------------------
 # presence-absence
 # year.assessment = 2017
-
 p = bio.snowcrab::load.environment( year.assessment=year.assessment )
-
-
 p = snowcrab_stmv( p=p, DS="parameters",
   selection=list(
     name = "snowcrab.large.males_presence_absence",
@@ -137,10 +129,8 @@ p = snowcrab_stmv( p=p, DS="parameters",
   stmv_distance_statsgrid = 2, # resolution (km) of data aggregation (i.e. generation of the ** statistics ** ),
   stmv_distance_scale = 50
 )
-
 # o = snowcrab_stmv(p=p, DS="stmv_inputs" )  # create fields for
-
-stmv( p=p, runmode=c("globalmodel", "interpolate" ), use_saved_state=FALSE ) # no global_model and force a clean restart
+stmv( p=p, runmode=c("globalmodel", "interpolate" ) ) # no global_model and force a clean restart
 
 # stmv_db( p=p, DS="stmv.results" ) # save to disk for use outside stmv*, returning to user scale
 # if (really.finished) stmv_db( p=p, DS="cleanup.all" )
