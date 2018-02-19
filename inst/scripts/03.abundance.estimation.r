@@ -146,7 +146,6 @@ summary( global_model )
 plot(global_model)
 Family: binomial 
 Link function: logit 
-
 Formula:
 snowcrab.large.males_presence_absence ~ s(t, k = 3, bs = "ts") + 
     s(tmean.climatology, k = 3, bs = "ts") + s(tsd.climatology, 
@@ -157,23 +156,23 @@ snowcrab.large.males_presence_absence ~ s(t, k = 3, bs = "ts") +
 
 Parametric coefficients:
             Estimate Std. Error z value Pr(>|z|)
-(Intercept)    1.325      0.019    69.6   <2e-16
+(Intercept)    1.285      0.019    67.8   <2e-16
 
 Approximate significance of smooth terms:
-                            edf Ref.df  Chi.sq p-value
-s(t)                       2.00      2  410.59  <2e-16
-s(tmean.climatology)       1.98      2  181.92  <2e-16
-s(tsd.climatology)         2.00      2  436.52  <2e-16
-s(log(z))                  2.00      2 2891.37  <2e-16
-s(log(dZ))                 1.96      2    1.94   0.370
-s(log(ddZ))                1.85      2    9.84   0.005
-s(log.substrate.grainsize) 1.98      2  143.32  <2e-16
-s(pca1)                    2.00      2  512.02  <2e-16
-s(pca2)                    2.00      2  826.64  <2e-16
+                             edf Ref.df  Chi.sq p-value
+s(t)                       1.999      2  462.35 < 2e-16
+s(tmean.climatology)       1.996      2  165.19 < 2e-16
+s(tsd.climatology)         2.000      2  425.32 < 2e-16
+s(log(z))                  1.997      2 2908.73 < 2e-16
+s(log(dZ))                 0.565      2    1.28 0.12811
+s(log(ddZ))                1.831      2   13.02 0.00066
+s(log.substrate.grainsize) 1.993      2  164.91 < 2e-16
+s(pca1)                    1.998      2  490.67 < 2e-16
+s(pca2)                    1.999      2  919.08 < 2e-16
 
-R-sq.(adj) =  0.563   Deviance explained = 50.3%
-UBRE = -0.61879  Scale est. = 1         n = 64488
- 
+R-sq.(adj) =  0.568   Deviance explained = 50.7%
+UBRE = -0.6189  Scale est. = 1         n = 64762
+
 
 
 # collect all predictions into a single file and return:
