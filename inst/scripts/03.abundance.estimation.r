@@ -85,7 +85,7 @@ plot(global_model)
 
 #Below lines are just model outputs for comparison sake
 Family: gaussian 
-Link function: log 
+Link function: identity 
 
 Formula:
 snowcrab.large.males_abundance ~ s(t, k = 3, bs = "ts") + s(tmean.climatology, 
@@ -97,23 +97,54 @@ snowcrab.large.males_abundance ~ s(t, k = 3, bs = "ts") + s(tmean.climatology,
 
 Parametric coefficients:
             Estimate Std. Error t value Pr(>|t|)
-(Intercept)  -2.1317     0.0238   -89.4   <2e-16
+(Intercept)  -3.4506     0.0197    -175   <2e-16
 
 Approximate significance of smooth terms:
-                               edf Ref.df      F p-value
-s(t)                       0.00044      2   0.00   0.196
-s(tmean.climatology)       1.99802      2  27.33 8.8e-13
-s(tsd.climatology)         1.73172      2  92.23 < 2e-16
-s(log(z))                  1.49345      2 162.71 < 2e-16
-s(log(dZ))                 1.91637      2  53.49 < 2e-16
-s(log(ddZ))                0.72659      2   1.67   0.028
-s(log.substrate.grainsize) 1.95224      2  44.19 < 2e-16
-s(pca1)                    1.99998      2 102.12 < 2e-16
-s(pca2)                    2.00000      2 125.48 < 2e-16
+                             edf Ref.df      F p-value
+s(t)                       1.274      2  38.37 < 2e-16
+s(tmean.climatology)       0.829      2   2.94  0.0044
+s(tsd.climatology)         1.981      2 231.52 < 2e-16
+s(log(z))                  1.634      2 141.57 < 2e-16
+s(log(dZ))                 1.941      2  10.24 2.4e-05
+s(log(ddZ))                1.696      2  17.52 2.3e-09
+s(log.substrate.grainsize) 1.915      2  58.44 < 2e-16
+s(pca1)                    1.990      2 220.02 < 2e-16
+s(pca2)                    1.917      2 137.45 < 2e-16
 
-R-sq.(adj) =  0.231   Deviance explained = 23.3%
-GCV = 0.00014973  Scale est. = 0.00014942  n = 7255
+R-sq.(adj) =  0.365   Deviance explained = 36.7%
+GCV = 0.01104  Scale est. = 0.011016  n = 7255
  
+# variation 2:
+# Family: gaussian 
+# Link function: log 
+# 
+# Formula:
+# snowcrab.large.males_abundance ~ s(t, k = 3, bs = "ts") + s(tmean.climatology, 
+#     k = 3, bs = "ts") + s(tsd.climatology, k = 3, bs = "ts") + 
+#     s(log(z), k = 3, bs = "ts") + s(log(dZ), k = 3, bs = "ts") + 
+#     s(log(ddZ), k = 3, bs = "ts") + s(log.substrate.grainsize, 
+#     k = 3, bs = "ts") + s(pca1, k = 3, bs = "ts") + s(pca2, k = 3, 
+#     bs = "ts")
+# 
+# Parametric coefficients:
+#             Estimate Std. Error t value Pr(>|t|)
+# (Intercept)  -2.1317     0.0238   -89.4   <2e-16
+# 
+# Approximate significance of smooth terms:
+#                                edf Ref.df      F p-value
+# s(t)                       0.00044      2   0.00   0.196
+# s(tmean.climatology)       1.99802      2  27.33 8.8e-13
+# s(tsd.climatology)         1.73172      2  92.23 < 2e-16
+# s(log(z))                  1.49345      2 162.71 < 2e-16
+# s(log(dZ))                 1.91637      2  53.49 < 2e-16
+# s(log(ddZ))                0.72659      2   1.67   0.028
+# s(log.substrate.grainsize) 1.95224      2  44.19 < 2e-16
+# s(pca1)                    1.99998      2 102.12 < 2e-16
+# s(pca2)                    2.00000      2 125.48 < 2e-16
+# 
+# R-sq.(adj) =  0.231   Deviance explained = 23.3%
+# GCV = 0.00014973  Scale est. = 0.00014942  n = 7255
+# 
 
 
 # -------------------------------------------------
