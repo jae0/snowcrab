@@ -38,9 +38,9 @@ snowcrab_stmv = function( DS=NULL, p=NULL, year=NULL, ret="mean", varnames=NULL,
     if (!exists("stmv_distance_min", p)) p$stmv_distance_min = 2
     if (!exists("stmv_distance_max", p)) p$stmv_distance_max = 65
 
-    if (!exists("n.min", p)) p$n.min = 120 # n.min/n.max changes with resolution must be more than the number of knots/edf
+    if (!exists("n.min", p)) p$n.min = 100 # n.min/n.max changes with resolution must be more than the number of knots/edf
     # min number of data points req before attempting to model timeseries in a localized space
-    if (!exists("n.max", p)) p$n.max = 8000 # no real upper bound
+    if (!exists("n.max", p)) p$n.max = 6000 # actually can have a lot of data from logbooks ... this keeps things reasonable in terms of run-time
     p$sampling = c( 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.1, 1.25 )  #
 
     if (!exists("variables", p)) p$variables = list(
@@ -85,7 +85,7 @@ snowcrab_stmv = function( DS=NULL, p=NULL, year=NULL, ret="mean", varnames=NULL,
       # if (!exists("stmv_twostep_space", p))  p$stmv_twostep_space = "tps"
       if (!exists("stmv_gam_optimizer", p)) p$stmv_gam_optimizer=c("outer", "bfgs")
     }  else if (p$stmv_local_modelengine == "habitat") {
-      p$stmv_global_family = binomial( link=log )
+      p$stmv_global_family = binomial( link="log" )
       if (!exists("stmv_local_modelformula", p))  p$stmv_local_modelformula = formula( paste(
         p$selection$name, '~ s(yr, k=10, bs="ts") + s(cos.w, k=3, bs="ts") + s(sin.w, k=3, bs="ts") ',
           ' + s(cos.w, sin.w, yr, bs="ts", k=10)  ',
