@@ -166,8 +166,8 @@ figure.timeseries.snowcrab.habitat.temperatures( p=p)
 
 
 
-  latex(Mn, file="", title="", label="table.stats.north.trawl", rowlabel="Year", cgroup="Various statistics", na.blank=T, caption="Various statistics of crab for N-ENS from trawl surveys. The transition from a spring to a fall survey occurred in 2002/2003.")
+  latex(Mn, file="", title="", label="table.stats.north.trawl", rowlabel="Year", cgroup="Various statistics", na.blank=T, caption="Various statistics of crab for N-ENS from trawl surveys. ")
 
-  latex(Ms, file="", title="", label="table.stats.south.trawl", rowlabel="Year", cgroup="Various statistics", na.blank=T, caption="Various statistics for S-ENS from trawl surveys. The transition from a spring to a fall survey occurred in 2002/2003.")
+  latex(Ms, file="", title="", label="table.stats.south.trawl", rowlabel="Year", cgroup="Various statistics", na.blank=T, caption="Various statistics for S-ENS from trawl surveys. ")
 
   latex(Mx, file="", title="", label="table.stats.4x.trawl", rowlabel="Year", cgroup="Various statistics", na.blank=T, caption="Various statistics for CFA 4X from trawl surveys.")

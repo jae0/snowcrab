@@ -263,11 +263,10 @@
           polygon(x=c(Bmsy/2,Bmsy,Bmsy, Bmsy/2),y=c(-0.08,-0.1,FMSY[i],FMSY[i]),col='lightgoldenrod',border=NA)
           polygon(x=c(0,Bmsy/2,Bmsy/2, 0),y=c(-0.08,-0.1,FMSY[i],FMSY[i]),col='darksalmon',border=NA)
 
+#might need adjustment below to offset F vs B. Need to plot F against PREfishery biomass
           lines( B[hdat,i], F[hdat,i],  type="b", xlim=c(0, K[i] * 1.1 ),  
             ylim=ylims, col='blue', cex=0.8, lwd=2, xlab="", ylab="", pch=20 )
         
-
-
           abline (h=Fref, lty="solid", col="gray", lwd=2 )
     
           abline (h=F10, lty="dotted", col="gray")
@@ -297,9 +296,8 @@
           text( 0.05*K[i], Fref, "20% HR", pos=1 )
           text( 0.05*K[i], FMSY[i], "FMSY", pos=3, lwd=2, col="red" )
           text( B[1:(ndata-1),i], F[1:(ndata-1),i],  labels=yrs0[-ndata], pos=3, cex= 0.8 )
-          #BZ todo. Add a visual indicator of most recent year. Large font for year label? Arrow as well?
-          points( B[ndata,i], F[ndata,i],  pch=21, bg='darkorange', cex= 1.2 )
-          text( B[ndata,i], F[ndata,i],  labels=yrs0[ndata], pos=3, cex= 1.2, font=2 )
+          points( B[ndata,i], F[ndata,i],  pch=21, bg='darkorange', cex= 1.4 )
+          text( B[ndata,i], F[ndata,i],  labels=yrs0[ndata], pos=3, cex= 1.4, font=2 )
   
           text( 0, ylims[2]*0.9,  labels=labs[i], pos=3, cex= 0.85 )
 
