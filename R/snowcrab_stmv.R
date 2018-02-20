@@ -202,7 +202,7 @@ snowcrab_stmv = function( DS=NULL, p=NULL, year=NULL, ret="mean", varnames=NULL,
     psse = spatial_parameters( p=p, spatial.domain = "SSE" )  # data are from this domain .. so far
     bathysse = bathymetry.db(p=psse, DS="baseline")
 
-    # redo as set has changed
+    # redo as "set" has changed
     locsmap = match(
       stmv::array_map( "xy->1", set[,c("plon","plat")], gridparams=p$gridparams ),
       stmv::array_map( "xy->1", bathy[,c("plon","plat")], gridparams=p$gridparams ) )
@@ -344,6 +344,8 @@ snowcrab_stmv = function( DS=NULL, p=NULL, year=NULL, ret="mean", varnames=NULL,
     # NOTE: the primary interpolated data were already created by stmv.
     # This routine points to this data and also creates
     # subsets of the data where required, determined by "spatial.domain.subareas"
+    # not strictly required for snow crab data analysis as there are no sub-areas that are analysed 
+    # at present, but in case there are small-area analysis in future, this is a mechnanism
 
     projectdir = file.path(p$data_root, "modelled", voi, p$spatial.domain )
 
@@ -356,25 +358,14 @@ snowcrab_stmv = function( DS=NULL, p=NULL, year=NULL, ret="mean", varnames=NULL,
       if (ret=="ub") return( Pu)
     }
 
-    # parallel_run(
-    #   p=p, 
-    #   voi=voi, 
-    #   runindex=list(yrs=p$yrs),
-    #   FUNC = function( ip=NULL, p, voi ) {
-    #     if (exists( "libs", p)) RLibrary( p$libs )
-    #     if (is.null(ip)) ip = 1:p$nruns
-  #     for ( ii in ip ) {
-          # downscale and warp from p(0) -> p1
-  
-#          year = p$runs[ii, "yrs"]
-    p0 = spatial_parameters( p=p ) # from
-    L0 = bathymetry.db( p=p0, DS="baseline" )
-    L0i = stmv::array_map( "xy->2", L0[, c("plon", "plat")], gridparams=p0$gridparams )
-    sreg = setdiff( p$spatial.domain.subareas, p$spatial.domain )
-    
+    sreg = setdiff( p$spatial.domain.subareas, p$spatial.domain ) # see  note above
     if (is.null(sreg)) return
     if (length(sreg) < 1 ) return
 
+    p0 = spatial_parameters( p=p ) # make explicit
+    L0 = bathymetry.db( p=p0, DS="baseline" )
+    L0i = stmv::array_map( "xy->2", L0[, c("plon", "plat")], gridparams=p0$gridparams )
+    
     for ( year in p$yrs ) {
       # print (year)
       # default domain
@@ -419,7 +410,6 @@ snowcrab_stmv = function( DS=NULL, p=NULL, year=NULL, ret="mean", varnames=NULL,
 
   if (DS %in% c(  "stmv.stats", "stmv.stats.redo" )){
 
-
     if (DS %in% c("stmv.stats")) {
       stats = NULL
       projectdir = file.path(p$data_root, "modelled", voi, p$spatial.domain )
@@ -431,48 +421,33 @@ snowcrab_stmv = function( DS=NULL, p=NULL, year=NULL, ret="mean", varnames=NULL,
     sreg = setdiff( p$spatial.domain.subareas, p$spatial.domain )
     if (is.null(sreg)) return
     if (length(sreg) < 1 ) return
-    # parallel_run(
-    #   p=p, 
-    #   voi=voi, 
-    #   runindex=list(sreg=sreg),
-    #   FUNC = function( ip=NULL, p, voi ) {
-    #     if (exists( "libs", p)) RLibrary( p$libs )
-    #     if (is.null(ip)) ip = 1:p$nruns
-          # downscale and warp from p(0) -> p1 .. default domain
-      
-        S0 = stmv_db( p=p, DS="stmv.stats" )
-        Snames = colnames(S0) 
-        p0 = spatial_parameters( p=p ) # from
-        L0 = bathymetry.db( p=p0, DS="baseline" )
-        L0i = stmv::array_map( "xy->2", L0[, c("plon", "plat")], gridparams=p0$gridparams )
-
-        # for ( ii in ip ) {
-        #   gr = p$runs[ii,"sreg"]
-        
-        for ( gr in sreg ) {
-
-          p1 = spatial_parameters( p=p, spatial.domain=gr ) # 'warping' from p -> p1
-          L1 = bathymetry.db( p=p1, DS="baseline" )
-          L1i = stmv::array_map( "xy->2", L1[, c("plon", "plat")], gridparams=p1$gridparams )
-          L1 = planar2lonlat( L1, proj.type=p1$internal.crs )
-          L1$plon_1 = L1$plon # store original coords
-          L1$plat_1 = L1$plat
-          L1 = lonlat2planar( L1, proj.type=p0$internal.crs )
-          p1$wght = fields::setup.image.smooth( nrow=p1$nplons, ncol=p1$nplats, dx=p1$pres, dy=p1$pres, theta=p1$pres, xwidth=4*p1$pres, ywidth=4*p1$pres )
-          stats = matrix( NA, ncol=ncol(S0), nrow=nrow(L1) )
-          for ( i in 1:ncol(S0) ) {
-            stats[,i] = spatial_warp( S0[,i], L0, L1, p0, p1, "fast", L0i, L1i )
-          }
-          colnames(stats) = Snames
-          projectdir_p1 = file.path(p$data_root, "modelled", voi, p1$spatial.domain )
-          dir.create( projectdir_p1, recursive=T, showWarnings=F )
-          fn1_sg = file.path( projectdir_p1, paste("stmv.statistics", "rdata", sep=".") )
-          save( stats, file=fn1_sg, compress=T )
-          print (fn1_sg)
-        }
-    #   }
-    # )
   
+    S0 = stmv_db( p=p, DS="stmv.stats" )
+    Snames = colnames(S0) 
+    p0 = spatial_parameters( p=p ) # from
+    L0 = bathymetry.db( p=p0, DS="baseline" )
+    L0i = stmv::array_map( "xy->2", L0[, c("plon", "plat")], gridparams=p0$gridparams )
+    
+    for ( gr in sreg ) {
+      p1 = spatial_parameters( p=p, spatial.domain=gr ) # 'warping' from p -> p1
+      L1 = bathymetry.db( p=p1, DS="baseline" )
+      L1i = stmv::array_map( "xy->2", L1[, c("plon", "plat")], gridparams=p1$gridparams )
+      L1 = planar2lonlat( L1, proj.type=p1$internal.crs )
+      L1$plon_1 = L1$plon # store original coords
+      L1$plat_1 = L1$plat
+      L1 = lonlat2planar( L1, proj.type=p0$internal.crs )
+      p1$wght = fields::setup.image.smooth( nrow=p1$nplons, ncol=p1$nplats, dx=p1$pres, dy=p1$pres, theta=p1$pres, xwidth=4*p1$pres, ywidth=4*p1$pres )
+      stats = matrix( NA, ncol=ncol(S0), nrow=nrow(L1) )
+      for ( i in 1:ncol(S0) ) {
+        stats[,i] = spatial_warp( S0[,i], L0, L1, p0, p1, "fast", L0i, L1i )
+      }
+      colnames(stats) = Snames
+      projectdir_p1 = file.path(p$data_root, "modelled", voi, p1$spatial.domain )
+      dir.create( projectdir_p1, recursive=T, showWarnings=F )
+      fn1_sg = file.path( projectdir_p1, paste("stmv.statistics", "rdata", sep=".") )
+      save( stats, file=fn1_sg, compress=T )
+      print (fn1_sg)
+    }
     return ("Completed")
 
     if (0) {
@@ -483,8 +458,7 @@ snowcrab_stmv = function( DS=NULL, p=NULL, year=NULL, ret="mean", varnames=NULL,
   #  -------------------------------
 
   if (DS %in% c("complete", "complete.redo") ) {
-    # assemble data for a given project
-
+    # assemble data for use by other projects
     if (DS=="complete") {
       IC = NULL
       projectdir = file.path(p$data_root, "modelled", voi, p$spatial.domain )
@@ -499,18 +473,16 @@ snowcrab_stmv = function( DS=NULL, p=NULL, year=NULL, ret="mean", varnames=NULL,
       return(IC)
     }
 
-    if (exists( "libs", p)) RLibrary( p$libs )
-
     grids = unique( c(p$spatial.domain.subareas , p$spatial.domain ) ) # operate upon every domain
 
     if ( p$selection$name=="snowcrab.large.males_abundance" ) {
-      INP = snowcrab_stmv(p=p, DS="input_data" )  # , voi=p$selection$name
-      qb = range(INP$snowcrab.large.males_abundance, na.rm=TRUE) # empirical range
+      # copied from  snowcrab_stmv(p=p, DS="input_data" )  
+      set = set[ which(set$data.source == "snowcrab"), ]
+      qq = quantile( set$totmass, probs=0.975, na.rm=TRUE )
+      qb = c( 0, qq )   # emprical range limit (do not extrapolate)
     }
     
     for (gr in grids ) {
-      print(gr)
-
       p1 = spatial_parameters( p=p, spatial.domain=gr ) #target projection
       L1 = bathymetry.db(p=p1, DS="baseline")
 
@@ -544,7 +516,6 @@ snowcrab_stmv = function( DS=NULL, p=NULL, year=NULL, ret="mean", varnames=NULL,
         if (length(u)>0) PSub[u] = qb[1]
         v = which( PSub > qb[2]  * 2)
         if (length(v)>0) PSub[v] = qb[2]
-        
       }
 
       CL = cbind( apply( PS, 1, mean, na.rm=TRUE ),
@@ -581,23 +552,9 @@ snowcrab_stmv = function( DS=NULL, p=NULL, year=NULL, ret="mean", varnames=NULL,
       return (BL)
     }
 
-    # if (exists( "libs", p)) RLibrary( p$libs )
-    # if (is.null(ip)) ip = 1:p$nruns
-
     p$variables$Y = voi # need to send this to get the correct results
     grids = unique( c(p$spatial.domain.subareas , p$spatial.domain ) ) # operate upon every domain
 
-
-    # parallel_run(
-    #   p=p, 
-    #   voi=voi, 
-    #   runindex=list(grids=grids),
-    #   FUNC = function( ip=NULL, p, voi ) {
-    #     if (exists( "libs", p)) RLibrary( p$libs )
-    #     if (is.null(ip)) ip = 1:p$nruns
-        
-        # for (ii in ip ) {
-          # gr = p$runs[ii,"grids"]
     for (gr in grids) {
         print(gr)
         p1 = spatial_parameters( p=p, spatial.domain=gr ) #target projection
@@ -624,9 +581,6 @@ snowcrab_stmv = function( DS=NULL, p=NULL, year=NULL, ret="mean", varnames=NULL,
         outfile =  file.path( projectdir, paste( "snowcrab", "baseline", "ub", p1$spatial.domain, "rdata", sep= ".") )
         save( TS, file=outfile, compress=T )
       }
-    #     return(NULL)
-    #   }
-    # )
     return( "Complete" )
   }
 
