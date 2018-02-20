@@ -63,7 +63,7 @@ snowcrab_stmv = function( DS=NULL, p=NULL, year=NULL, ret="mean", varnames=NULL,
     if (!exists("stmv_variogram_method", p)) p$stmv_variogram_method = "fast"
     if (!exists("stmv_local_modelengine", p)) p$stmv_local_modelengine ="gam"
     if (!exists("stmv_global_modelengine", p)) p$stmv_global_modelengine ="gam"
-    if (!exists("stmv_global_family", p)) p$stmv_global_family = gaussian(link=log)
+    if (!exists("stmv_global_family", p)) p$stmv_global_family = gaussian(link="log")
 
     # using covariates as a first pass essentially makes it ~ kriging with external drift .. no time or space here
     if (!exists("stmv_global_modelformula", p)) p$stmv_global_modelformula = formula( paste(
@@ -650,7 +650,7 @@ snowcrab_stmv = function( DS=NULL, p=NULL, year=NULL, ret="mean", varnames=NULL,
 
   if ( DS %in% c("map.annual" ) ) {
 
-    annot.cex=0.8
+    annot.cex=0.65
     eps = 0.001
     
     for ( year in p$yrs ) {
@@ -688,7 +688,7 @@ snowcrab_stmv = function( DS=NULL, p=NULL, year=NULL, ret="mean", varnames=NULL,
         
         H = snowcrab_stmv( p=p, DS="predictions", year=year, ret="lb" )
         if (is.null(H)) next ()
-        H = log(H)
+        # H = log(H)
         xyz = cbind(loc, H)
         uu = which( is.finite(rowSums(xyz)))
         if (length(uu) < 10) next()
@@ -715,7 +715,7 @@ snowcrab_stmv = function( DS=NULL, p=NULL, year=NULL, ret="mean", varnames=NULL,
 
         H = snowcrab_stmv( p=p, DS="predictions", year=year, ret="ub" )
         if (is.null(H)) next ()
-        H = log(H)
+        # H = log(H)
         xyz = cbind(loc, H)
         uu = which( is.finite(rowSums(xyz)))
         if (length(uu) < 10) next()
@@ -750,7 +750,7 @@ snowcrab_stmv = function( DS=NULL, p=NULL, year=NULL, ret="mean", varnames=NULL,
 
   if ( DS %in% c("map.climatology" ) ) {
 
-    annot.cex=0.8
+    annot.cex=0.75
     eps = 0.001
     
     H = snowcrab_stmv( p=p, DS="complete" )
@@ -765,7 +765,7 @@ snowcrab_stmv = function( DS=NULL, p=NULL, year=NULL, ret="mean", varnames=NULL,
         vnames = setdiff( names(H), c("plon", "plat" ))
 
         xyz = cbind(loc, H[,vn])
-        if (grepl("abundance", vn)) xyz[,3] = log(xyz[,3])
+        # if (grepl("abundance", vn)) xyz[,3] = log(xyz[,3])
         uu = which( is.finite(rowSums(xyz)))
         if (length(uu) < 10) next()
         xyz = xyz[uu,]

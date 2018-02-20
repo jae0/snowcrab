@@ -57,9 +57,10 @@ p = snowcrab_stmv( p=p, DS="parameters",
   stmv_gam_optimizer=c("outer", "bfgs") ,
   stmv_distance_statsgrid = 2, # resolution (km) of data aggregation (i.e. generation of the ** statistics ** )
   stmv_distance_scale = 50,
+  stmv_global_family = gaussian(link="identity"),
   stmv_Y_transform =list(
-        transf = function(x) {x/6675} ,
-        invers = function(x) {x*6675}
+        transf = function(x) {log(x/6675)} ,
+        invers = function(x) {exp(x)*6675}
   ) # transform data to unit interval to stabilize variance and speed up convergence
 )
 
@@ -96,23 +97,24 @@ snowcrab.large.males_abundance ~ s(t, k = 3, bs = "ts") + s(tmean.climatology,
 
 Parametric coefficients:
             Estimate Std. Error t value Pr(>|t|)
-(Intercept)  1.64886    0.00403     409   <2e-16
+(Intercept)  -2.1317     0.0238   -89.4   <2e-16
 
 Approximate significance of smooth terms:
-                            edf Ref.df      F p-value
-s(t)                       1.97      2  39.02 < 2e-16
-s(tmean.climatology)       1.64      2   2.78 0.03376
-s(tsd.climatology)         1.97      2 191.60 < 2e-16
-s(log(z))                  1.54      2 146.66 < 2e-16
-s(log(dZ))                 1.99      2   7.77 0.00037
-s(log(ddZ))                1.08      2  13.14 5.9e-08
-s(log.substrate.grainsize) 2.00      2  56.62 < 2e-16
-s(pca1)                    2.00      2 147.26 < 2e-16
-s(pca2)                    1.96      2 135.94 < 2e-16
+                               edf Ref.df      F p-value
+s(t)                       0.00044      2   0.00   0.196
+s(tmean.climatology)       1.99802      2  27.33 8.8e-13
+s(tsd.climatology)         1.73172      2  92.23 < 2e-16
+s(log(z))                  1.49345      2 162.71 < 2e-16
+s(log(dZ))                 1.91637      2  53.49 < 2e-16
+s(log(ddZ))                0.72659      2   1.67   0.028
+s(log.substrate.grainsize) 1.95224      2  44.19 < 2e-16
+s(pca1)                    1.99998      2 102.12 < 2e-16
+s(pca2)                    2.00000      2 125.48 < 2e-16
 
-R-sq.(adj) =  0.365   Deviance explained = 36.6%
-GCV = 0.011049  Scale est. = 0.011023  n = 7255
+R-sq.(adj) =  0.231   Deviance explained = 23.3%
+GCV = 0.00014973  Scale est. = 0.00014942  n = 7255
  
+
 
 # -------------------------------------------------
 # presence-absence
