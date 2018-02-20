@@ -475,12 +475,12 @@ snowcrab_stmv = function( DS=NULL, p=NULL, year=NULL, ret="mean", varnames=NULL,
 
     grids = unique( c(p$spatial.domain.subareas , p$spatial.domain ) ) # operate upon every domain
 
-    if ( p$selection$name=="snowcrab.large.males_abundance" ) {
-      # copied from  snowcrab_stmv(p=p, DS="input_data" )  
-      set = set[ which(set$data.source == "snowcrab"), ]
-      qq = quantile( set$totmass, probs=0.975, na.rm=TRUE )
-      qb = c( 0, qq )   # emprical range limit (do not extrapolate)
-    }
+    # if ( p$selection$name=="snowcrab.large.males_abundance" ) {
+    #   # copied from  snowcrab_stmv(p=p, DS="input_data" )  
+    #   set = set[ which(set$data.source == "snowcrab"), ]
+    #   qq = quantile( set$totmass, probs=0.975, na.rm=TRUE )
+    #   qb = c( 0, qq )   # emprical range limit (do not extrapolate)
+    # }
     
     for (gr in grids ) {
       p1 = spatial_parameters( p=p, spatial.domain=gr ) #target projection
@@ -501,22 +501,22 @@ snowcrab_stmv = function( DS=NULL, p=NULL, year=NULL, ret="mean", varnames=NULL,
         PSub[,iy] = stmv_db( p=p1, DS="stmv.prediction", yr=yr, ret="ub")
       }
 
-      if ( p$selection$name=="snowcrab.large.males_abundance" ) {
-        u = which( PS < qb[1])
-        if (length(u)>0) PS[u] = qb[1]
-        v = which( PS > qb[2])
-        if (length(v)>0) PS[v] = qb[2]
-  
-        u = which( PSlb < qb[1])
-        if (length(u)>0) PSlb[u] = qb[1]
-        v = which( PSlb > qb[2]  * 2)
-        if (length(v)>0) PSlb[v] = qb[2]
-
-        u = which( PSub < qb[1])
-        if (length(u)>0) PSub[u] = qb[1]
-        v = which( PSub > qb[2]  * 2)
-        if (length(v)>0) PSub[v] = qb[2]
-      }
+      # if ( p$selection$name=="snowcrab.large.males_abundance" ) {
+      #   u = which( PS < qb[1])
+      #   if (length(u)>0) PS[u] = qb[1]
+      #   v = which( PS > qb[2])
+      #   if (length(v)>0) PS[v] = qb[2]
+      # 
+      #   u = which( PSlb < qb[1])
+      #   if (length(u)>0) PSlb[u] = qb[1]
+      #   v = which( PSlb > qb[2]  * 2)
+      #   if (length(v)>0) PSlb[v] = qb[2]
+      # 
+      #   u = which( PSub < qb[1])
+      #   if (length(u)>0) PSub[u] = qb[1]
+      #   v = which( PSub > qb[2]  * 2)
+      #   if (length(v)>0) PSub[v] = qb[2]
+      # }
 
       CL = cbind( apply( PS, 1, mean, na.rm=TRUE ),
                   apply( PSlb, 1, mean, na.rm=TRUE ),
