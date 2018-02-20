@@ -187,14 +187,14 @@
           Bq =  apply( y$B[,,i], 2, quantile, probs=prs, na.rm=T  )
 
           yran = range(c(0, Bq, sb$IOA[,i] ), na.rm=T )*1.01
-          plot( yrs, Bq[1,], type="n", ylim=yran, xlab="", ylab=""  )
+          plot( yrs, Bq[1,], type="n", ylim=yran, xlim=yrs0, xlab="", ylab=""  ) #change xlim to yrs0 to remove 3 yr projection
           cols = gray.colors( floor(length( prs)/2) )
           cols2 = c(cols[length(cols):1], cols )
           for ( j in 1:length(prs) ) {
             lines ( yrs, Bq[j,], lwd=4, col=cols2[j] )
           }
           # lines( yrs, B, lwd=3, col="darkgreen" )
-          abline (v=yrs.last , lwd=2, lty="dashed" )
+          #abline (v=yrs.last , lwd=2, lty="dashed" ) #can comment out this line if not providing forward projection
           if (i==2) title( ylab="Fishable biomass (kt)" ) 
           if (i==3) title( xlab="Year" ) 
           points( yrs0, qIOA, pch=20, col="darkgreen" )
