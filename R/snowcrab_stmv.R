@@ -662,7 +662,7 @@ snowcrab_stmv = function( DS=NULL, p=NULL, year=NULL, ret="mean", varnames=NULL,
         # print(year)
         H = snowcrab_stmv( p=p, DS="predictions", year=year, ret="mean" )
         if (is.null(H)) next ()
-        H = log(H)
+        # H = log(H)
         xyz = cbind(loc, H)
         uu = which( is.finite(rowSums(xyz)))
         if (length(uu) < 10) next()
