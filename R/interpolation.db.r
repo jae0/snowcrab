@@ -241,6 +241,7 @@
 
       bm = interpolation.db( p=p, DS="biomass" )
       ps = snowcrab_stmv(p=p, DS="output_data" ) # , voi=p$selection$name
+      bs = bathymetry.db( p=p, DS="baseline")
 
       temp = ps$t * bm$h
 

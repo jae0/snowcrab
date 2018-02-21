@@ -16,7 +16,7 @@
     fn = file.path( p$annual.results, "timeseries",  "interpolated", "snowcrab.habitat.sa" )
     outdir = dirname( fn ) 
     dir.create( outdir, recursive=T, showWarnings=F )
-    Cairo( file=paste(fn, "svg", sep="."), type="svg", bg="white", units="in", width=6, height=8, dpi=75)
+    png( filename=paste(fn, "png", sep="."), width=3072, height=2304, pointsize=40, res=300 )
 
     setup.lattice.options()
     pl = xyplot( sa~yr|region, data=td, 
@@ -30,7 +30,6 @@
     )
     print(pl)
     dev.off()
-    cmd( "convert   -trim -quality 9  -geometry 100% -frame 2% -mattecolor white -antialias ", paste(fn, "svg", sep="."),  paste(fn, "png", sep=".") )
  
     means = tapply(td$sa, td$region, mean, na.rm=T)
 
