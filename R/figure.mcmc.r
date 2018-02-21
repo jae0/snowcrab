@@ -70,7 +70,8 @@
           plot.freq.distribution.prior.posterior( prior=prr, posterior=pdat, ... )
           
           legend( "topright", bty="n", legend=paste( labs[i], "\n", vname, " = ", qs[2,i], " {", qs[1,i], ", ",  qs[3,i], "}  ", sep="" ))
-      }}
+      }
+    }
 
       if ( vname=="r" ) {
         qs = apply( y$r, 2, quantile, probs=c(0.025, 0.5, 0.975) )
@@ -176,7 +177,13 @@
     # --------------
 
     if ( type=="timeseries" ) {
-      
+
+
+
+    plot.new()
+    layout( matrix(c(1,2,3), 3, 1 ))
+    par(mar = c(4.4, 4.4, 0.65, 0.75))
+         
       if (vname=="biomass") { 
 
         SI =  apply( y$q, 2, median, na.rm=T  )
@@ -190,7 +197,7 @@
           Bq =  apply( y$B[,,i], 2, quantile, probs=prs, na.rm=T  )
 
           yran = range(c(0, Bq, sb$IOA[,i] ), na.rm=T )*1.01
-          plot( yrs, Bq[1,], type="n", ylim=yran, xlim=yrs0, xlab="", ylab=""  ) #change xlim to yrs0 to remove 3 yr projection
+          plot( yrs, Bq[1,], type="n", ylim=yran, xlim=range(yrs0), xlab="", ylab=""  ) #change xlim to yrs0 to remove 3 yr projection
           cols = gray.colors( floor(length( prs)/2) )
           cols2 = c(cols[length(cols):1], cols )
           for ( j in 1:length(prs) ) {
@@ -206,9 +213,10 @@
           points( yrs0, IOA, pch=20, col="darkred" )
           lines( yrs0, IOA, lwd=3, lty="dashed", col="red" )
           legend( "topright", bty="n", legend=labs[i])
-      }}
+      }
+    }
 
-      if (vname=="fishingmortality") { 
+    if (vname=="fishingmortality") { 
         Fmsy = apply( y$FMSY, 2, mean, na.rm=T ) 
         for (i in 1:3) {
           prs = seq( from=0.025, to=0.975, length.out=600)
