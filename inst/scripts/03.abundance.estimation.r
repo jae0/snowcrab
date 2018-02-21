@@ -35,7 +35,9 @@
 #snowcrab.db( DS ="set.complete.redo", p=p )
 
 # -------------------------------------------------------------------------------------
-# abundance .. positive valued data .. vn = "snowcrab.large.males_abundance"
+# abundance .. positive valued data .. 
+# takes about 5 hrs .. ~1 GB / process
+# vn = "snowcrab.large.males_abundance"
 # year.assessment = 2017
 p = bio.snowcrab::load.environment( year.assessment=year.assessment ) 
 
@@ -149,6 +151,7 @@ GCV = 0.01104  Scale est. = 0.011016  n = 7255
 
 # -------------------------------------------------
 # presence-absence
+# this takes about 40 hrs ... and 5-6 GB /process 
 # year.assessment = 2017
 p = bio.snowcrab::load.environment( year.assessment=year.assessment )
 p = snowcrab_stmv( p=p, DS="parameters",
