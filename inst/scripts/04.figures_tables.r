@@ -2,8 +2,8 @@
   # figures and tables related to fishery indices
 
   if (!exists("year.assessment")) {
-    year.assessment=lubridate::year(Sys.Date()) - 1
     year.assessment=lubridate::year(Sys.Date())
+    year.assessment=lubridate::year(Sys.Date()) - 1
   }
   p = bio.snowcrab::load.environment( year.assessment=year.assessment )
 

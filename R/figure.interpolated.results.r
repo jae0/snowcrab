@@ -149,47 +149,30 @@
 
       setup.lattice.options()
      
-      if (alt.zero.y) {
+      scales=list()
+      if (alt.zero.y) { 
+        scales = list(y = list(relation="free", limits=limits  ))
+      }
 
-        pl = xyplot( total~yr|region, data=td, ub=td$ubound, lb=td$lbound,
-          layout=c(1,n.regions), xlim=xlim, scales = list(y = list(relation="free", limits=limits  )),
-          par.strip.text = list(cex=1),
-          par.settings=list(  
-            axis.text=list(cex=1.5), 
-            par.main.text = list(cex=1),
-            layout.heights=list(strip=0.5, panel=1, main=0.5 ) 
-          ),
-              main=list(label=tt), xlab=list(label="Survey year", cex=2), ylab=list(label=yy, cex=2), 
-              panel = function(x, y, subscripts, ub, lb, ...) {
-              larrows(x, lb[subscripts],
-                      x, ub[subscripts],
-                     angle = 90, code = 3, length=0.02, lwd=4)
-              panel.xyplot(x, y, type="b", lty=1, lwd=4, pch=19, col="black", cex=1.2, ...)
-              panel.abline(v=2001.5, col="gray", lty=5, lwd=4, ...)
-              panel.abline(h=0, col="gray", lty=1, lwd=4, ...)
-              }
-            )
-      } else {
-        pl = xyplot( total~yr|region, data=td, ub=td$ubound, lb=td$lbound,
-          layout=c(1,n.regions), 
-          par.strip.text = list(cex=1),
-          par.settings=list(  
-            axis.text=list(cex=2.5), 
-            par.main.text = list(cex=4),
-            layout.heights=list(strip=0.2, panel=1, main=0.5 ) 
-          ),
-          xlim=xlim, scales = list(y = list(relation="free") ),
-              main=tt, xlab="Survey year", ylab=list(yy, cex=3), 
-              panel = function(x, y, subscripts, ub, lb, ...) {
-              larrows(x, lb[subscripts],
-                      x, ub[subscripts],
-                     angle = 90, code = 3, length=0.05)
-              panel.xyplot(x, y, type="b", lty=1, lwd=6, pch=30, col="black", ...)
-              panel.abline(v=2001.5, col="black", lty=3, lwd=5, ...)
-              panel.abline(h=0, col="black", lty=1, lwd=5, ...)
-              }
-            )
-      } 
+      pl = xyplot( total~yr|region, data=td, ub=td$ubound, lb=td$lbound,
+        layout=c(1,n.regions), xlim=xlim, scales=scales,
+        par.strip.text = list(cex=1),
+        par.settings=list(  
+          axis.text=list(cex=1.5), 
+          par.main.text = list(cex=1.5),
+          layout.heights=list(strip=1, panel=1, main=0.5 ) 
+        ),
+        main=list(label=tt), xlab=list(label="Survey year", cex=2), ylab=list(label=yy, cex=2), 
+        panel = function(x, y, subscripts, ub, lb, ...) {
+          larrows(x, lb[subscripts],
+                  x, ub[subscripts],
+                 angle = 90, code = 3, length=0.02, lwd=4)
+          panel.xyplot(x, y, type="b", lty=1, lwd=4, pch=19, col="black", cex=1.2, ...)
+          panel.abline(v=2001.5, col="gray", lty=5, lwd=4, ...)
+          panel.abline(h=0, col="gray", lty=1, lwd=4, ...)
+          panel.abline(h=mean(y,na.rm=TRUE), col="gray", lty=2, lwd=3, ...)
+       }
+     )
      
      print(pl)
      dev.off()
