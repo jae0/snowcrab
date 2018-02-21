@@ -273,10 +273,31 @@ it = match( set$yr, p$yrs )
 bm = interpolation.db( DS="biomass", p=p  )
 spred = bm$m[cbind(im, it)]  # approximate match (ignoring seasonality)
 
-summary ( lm(spred~snowcrab.large.males_abundance, data=set, na.actio="na.omit" ) )
-plot(spred~snowcrab.large.males_abundance, data=set )
-cor(spred,set$snowcrab.large.males_abundance, use="complete.obs")
+summary ( lm(log(spred)~log(snowcrab.large.males_abundance), data=set, na.actio="na.omit" ) )
+plot(log(spred)~log(snowcrab.large.males_abundance), data=set )
+cor(log(spred),log(set$snowcrab.large.males_abundance), use="complete.obs")
 
+Call:
+lm(formula = log(spred) ~ log(snowcrab.large.males_abundance), 
+    data = set, na.action = "na.omit")
+
+Residuals:
+    Min      1Q  Median      3Q     Max 
+-2.3039 -0.5507  0.0589  0.6056  2.1379 
+
+Coefficients:
+                                    Estimate Std. Error t value Pr(>|t|)
+(Intercept)                          5.17806    0.03824   135.4   <2e-16
+log(snowcrab.large.males_abundance)  0.19035    0.00599    31.8   <2e-16
+
+Residual standard error: 0.795 on 5030 degrees of freedom
+  (2223 observations deleted due to missingness)
+Multiple R-squared:  0.167,	Adjusted R-squared:  0.167 
+F-statistic: 1.01e+03 on 1 and 5030 DF,  p-value: <2e-16
+
+R> plot(log(spred)~log(snowcrab.large.males_abundance), data=set )
+R> cor(log(spred),log(set$snowcrab.large.males_abundance), use="complete.obs")
+[1] 0.409
 
 # determine presence absence(Y) and weighting(wt)
 #      set$weekno = floor(set$julian / 365 * 52) + 1
