@@ -4,9 +4,9 @@ fishery_model = function(  p, DS="stan", plotresults=TRUE ) {
   if (0) {
     
     year.assessment=2016
-    p = bio.snowcrab::load.environment( year.assessment=year.assessent)
+    p = bio.snowcrab::load.environment( year.assessment=year.assessment)
     p$fishery_model = list()
-    p$fishery_model$outdir = file.path(project.datadirectory('bio.snowcrab'), " "essments", p$year.assessment )
+    p$fishery_model$outdir = file.path(project.datadirectory('bio.snowcrab'), "assessments", p$year.assessment )
 
   }
 
@@ -27,8 +27,10 @@ fishery_model = function(  p, DS="stan", plotresults=TRUE ) {
     # these are already on log-scale
     sb$Kmu =  exp(sb$Kmu)
     sb$Ksd =  c(0.25, 0.25, 0.25) * sb$Kmu
+
     sb$rsd =  c(0.25, 0.25, 0.25) * sb$rmu 
     sb$qsd =  c(0.25, 0.25, 0.25) * sb$qmu
+
     sb$missing = ifelse(is.finite(sb$IOA),0,1)
     sb$missing_n = colSums(sb$missing)
     sb$missing_ntot = sum(sb$missing_n)
@@ -194,53 +196,53 @@ fishery_model = function(  p, DS="stan", plotresults=TRUE ) {
       }
 
       generated quantities {
-        // matrix[MN,U] pd;
-        // vector[U] MSY;
-        // vector[U] BMSY;
+        matrix[MN,U] pd;
+        vector[U] MSY;
+        vector[U] BMSY;
         vector[U] FMSY;
-        // matrix[MN,U] B;
-        // matrix[MN,U] P;
-        // matrix[MN,U] C;
+        matrix[MN,U] B;
+        matrix[MN,U] P;
+        matrix[MN,U] C;
         
-        // matrix[MN,U] F;
-        // matrix[M,U] TAC;
+        matrix[MN,U] F;
+        matrix[M,U] TAC;
 
 
         // -------------------  
         // annual production
-        // for(j in 1:U) {
-        //   pd[1,j] = bm[2,j]- bm[1,j] + rem[1,j] ; // approximation
-        //   for (i in 2:N ){
-        //     pd[i,j] = (bm[i+1,j]- bm[i-1,j])/2 + rem[i,j] ; // linear interpolation cancels out the bm[i,j] term
-        //   }
-        //   for(i in N1:(MN-1)) {
-        //     pd[i,j] = (bm[i+1,j]- bm[i-1,j])/2 + er * bm[i-1,j] ;  // linear interpolation cancels out the bm[i,j] term
-        //   }
-        //   pd[MN,j] = (bm[MN,j]- bm[(MN-1),j]) + er * bm[(MN-1),j]  ; // approximation
-        // }
+         for(j in 1:U) {
+           pd[1,j] = bm[2,j]- bm[1,j] + rem[1,j] ; // approximation
+           for (i in 2:N ){
+             pd[i,j] = (bm[i+1,j]- bm[i-1,j])/2 + rem[i,j] ; // linear interpolation cancels out the bm[i,j] term
+           }
+           for(i in N1:(MN-1)) {
+             pd[i,j] = (bm[i+1,j]- bm[i-1,j])/2 + er * bm[i-1,j] ;  // linear interpolation cancels out the bm[i,j] term
+           }
+           pd[MN,j] = (bm[MN,j]- bm[(MN-1),j]) + er * bm[(MN-1),j]  ; // approximation
+         }
 
         // -------------------  
         // fishing mortality
         // force first year estimate assuming catches in year 0 to be similar to year 1 
 
-        // for (j in 1:U) {
-        //   F[1,j] =  1.0 - rem[1,j] / bm[1,j] ;
-        //   for (i in 2:MN) {
-        //     F[i,j] =  1.0 - er * bm[i-1,j] / bm[i,j]  ;
-        //   }
-        // }
-        // for (j in 1:U) {
-        //   for (i in 1:MN) {
-        //     F[i,j] =  -log( fmax( F[i,j], eps) )  ;
-        //   }
-        // }
+         for (j in 1:U) {
+           F[1,j] =  1.0 - rem[1,j] / bm[1,j] ;
+           for (i in 2:MN) {
+             F[i,j] =  1.0 - er * bm[i-1,j] / bm[i,j]  ;
+           }
+         }
+         for (j in 1:U) {
+           for (i in 1:MN) {
+             F[i,j] =  -log( fmax( F[i,j], eps) )  ;
+           }
+         }
      
         // -------------------  
         // parameter estimates for output
         
         for(j in 1:U) {
-        //   MSY[j]    = r[j]* exp(K[j]) / 4 ; // maximum height of of the latent productivity (yield)
-        //   BMSY[j]   = exp(K[j])/2 ; // biomass at MSY
+           MSY[j]    = r[j]* exp(K[j]) / 4 ; // maximum height of of the latent productivity (yield)
+           BMSY[j]   = exp(K[j])/2 ; // biomass at MSY
            FMSY[j]   = 2.0 * MSY[j] / exp(K[j]) ; // fishing mortality at MSY
       //    BX2MSY[j] = 1.0 - step( bm[N1,j]-0.25 ) ; // test if bm >= 1/2 bmY
       //    Bdrop[j]  = 1.0 - step( bm[N1,j]-bm[N,j] ) ; // test if bm(t) >= bm(t-1) 
@@ -248,16 +250,16 @@ fishery_model = function(  p, DS="stan", plotresults=TRUE ) {
         }
 
         // recaled estimates
-        // for(j in 1:U) {
-        //   for(i in 1:MN) {
-        //     B[i,j] = (bm[i,j] - rem[i,j]) * K[j] ;
-        //     P[i,j] = pd[i,j]*K[j] ;
-        //     C[i,j] = rem[i,j]*K[j] ;
-        //   }
-        //   for(i in 1:M) {
-        //     TAC[i,j] = rem[N+i,j]*K[j] ;
-        //   }
-        // }
+         for(j in 1:U) {
+           for(i in 1:MN) {
+             B[i,j] = (bm[i,j] - rem[i,j]) * K[j] ;
+             P[i,j] = pd[i,j]*K[j] ;
+             C[i,j] = rem[i,j]*K[j] ;
+           }
+           for(i in 1:M) {
+             TAC[i,j] = rem[N+i,j]*K[j] ;
+           }
+         }
 
       }
 
@@ -266,7 +268,7 @@ fishery_model = function(  p, DS="stan", plotresults=TRUE ) {
 
     stanmodel = rstan::stan_model( model_code=surplus.stan )
 
-    f = sampling(stanmodel, data=sb, chains=4, iter=20000, warmup=4000,
+    f = sampling(stanmodel, data=sb, chains=5, iter=8000, warmup=3000, refresh = 1000,
       control = list(adapt_delta = 0.9, max_treedepth=15) )
           # warmup = 200,          # number of warmup iterations per chain
           # control = list(adapt_delta = 0.9),
@@ -323,7 +325,9 @@ fishery_model = function(  p, DS="stan", plotresults=TRUE ) {
     n.iter.total = p$fishery_model$n.iter * p$fishery_model$n.thin
 
     sb = biomass.summary.db(p=p, DS="surplusproduction" )
-    sb$tomonitor = c( "r", "K", "q", "qs", "rmu", "rsd", "b","bpsd", "bosd","b0", "b0sd", "rem", "remsd", "remmu","REM", "MSY", "BMSY", "FMSY", "Fcrash", "Bdrop", "BX2MSY", "F", "TAC", "C", "P", "B" )
+
+    sb$tomonitor = c( "r", "K", "q", "qs", "rmu", "rsd", "b","bpsd", "bosd","b0", "b0sd", "rem", "remsd", "remmu","REM", "MSY", "BMSY", "FMSY", "Fcrash", "Bdrop", "BX2MSY", "F", "TAC", 
+      "C", "P", "B" )
 
     sb$jagsmodelname = "biomassdynamic_nonhyper_2016.bugs"
     sb$jagsmodel = 
@@ -347,7 +351,10 @@ model {
 
 
   for (j in 1:U) {
+    #qmu[j]  ~ dunif( qmin, qmax ) 
+    #qsd[j]  ~ dunif( qmu[j] * cvnormalmin, qmu[j] *cvnormalmax )  # catchability coefficient (normal scale)
     q[j] ~ dnorm( qmu[j], pow( qsd[j], -2 ) )  T(qmin, qmax)
+    #q[j] ~ dunif( qmin[j] , qmax[j] )
   }
 
 
@@ -378,23 +385,23 @@ model {
   #     |...(t-2)...|.Ss..(t-1)...|...(t=2004)..Sf.|...(t+1).Sf..|...(t+2)..Sf.|...
 
     for (j in 1:(U)) {
-      #bo.tau[j] ~ dunif( pow( log( 1 + pow( cvlognormalmax, 2) ), -1 ), pow( log( 1 + pow( cvlognormalmin, 2) ), -1 ) )  # min/max inverted because it is an inverse scale
+      #botau[j] ~ dunif( pow( log( 1 + pow( cvlognormalmax, 2) ), -1 ), pow( log( 1 + pow( cvlognormalmin, 2) ), -1 ) )  # min/max inverted because it is an inverse scale
       #bosd[j] ~ dunif( bomin[j], bomax[j] )  
-      bosd[j] ~ dlnorm(bo.mup[j],pow(bosdp[j],-1))
-      bo.tau[j]  <- pow( bosd[j], -2 )
+      bosd[j] ~ dlnorm(bomup[j],pow(bosdp[j],-1))
+      botau[j]  <- pow( bosd[j], -2 )
     }
 
     for (j in 1:(U-1)) {
       # spring surveys from 1998 to 2003
-      IOA[1,j] ~ dlnorm( log( max( q[j] * K[j] * (bm[1,j] - rem[1,j]) , eps)), bo.tau[j] )  # approximation
+      IOA[1,j] ~ dlnorm( log( max( q[j] * K[j] * (bm[1,j] - rem[1,j]) , eps)), botau[j] )  # approximation
       for (i in 2:(ty-1)) { 
-        IOA[i,j] ~ dlnorm( log( max( q[j] * K[j] * (bm[i,j]- rem[(i-1),j]), eps)), bo.tau[j] )  ;
+        IOA[i,j] ~ dlnorm( log( max( q[j] * K[j] * (bm[i,j]- rem[(i-1),j]), eps)), botau[j] )  ;
       }
       # transition year
-      IOA[ty,j] ~ dlnorm( log( max( q[j] * K[j] * (bm[ty,j] - (rem[(ty-1),j] + rem[ty,j] )/2 ), eps)), bo.tau[j] ) ;  # approximation
+      IOA[ty,j] ~ dlnorm( log( max( q[j] * K[j] * (bm[ty,j] - (rem[(ty-1),j] + rem[ty,j] )/2 ), eps)), botau[j] ) ;  # approximation
       # fall surveys    
       for (i in (ty+1):N) {
-        IOA[i,j] ~ dlnorm( log( max( q[j] * K[j] * (bm[i,j] - rem[i,j]), eps)), bo.tau[j] ) ;
+        IOA[i,j] ~ dlnorm( log( max( q[j] * K[j] * (bm[i,j] - rem[i,j]), eps)), botau[j] ) ;
       }
     }
 
@@ -403,9 +410,9 @@ model {
     #    Btot(t) = Bsurveyed(t)+ removals(t-1)
     #    NOTE: year designation in 4X is for the terminal year: ie. 2001-2002 => 2002
     
-    IOA[1,cfa4x] ~ dlnorm( log( max( q[cfa4x] * K[cfa4x] * (bm[1,cfa4x] - rem[1,cfa4x]), eps)), bo.tau[cfa4x] ) ;  # approximation
+    IOA[1,cfa4x] ~ dlnorm( log( max( q[cfa4x] * K[cfa4x] * (bm[1,cfa4x] - rem[1,cfa4x]), eps)), botau[cfa4x] ) ;  # approximation
     for (i in 2:N) { 
-      IOA[i,cfa4x] ~ dlnorm( log( max( q[cfa4x] * K[cfa4x] * (bm[i,cfa4x]- rem[(i-1),cfa4x]), eps)), bo.tau[cfa4x] ) ;
+      IOA[i,cfa4x] ~ dlnorm( log( max( q[cfa4x] * K[cfa4x] * (bm[i,cfa4x]- rem[(i-1),cfa4x]), eps)), botau[cfa4x] ) ;
     }
 
 
@@ -414,15 +421,16 @@ model {
   # biomass process model 
         
     for (j in 1:U) {
+      #bptau[j] ~ dunif( pow( log( 1 + pow( cvlognormalmax, 2) ), -1 ), pow( log( 1 + pow( cvlognormalmin, 2) ), -1 ) )  
       bpsd[j] ~ dunif( bpmin[j], bpmax[j] )  
-      bp.tau[j]  <- pow( bpsd[j], -2 )
+      bptau[j]  <- pow( bpsd[j], -2 )
     }
 
     for(j in 1:U) {
       b0[j] ~ dunif( b0min[j], b0max[j] ) # starting b prior to first catch event 
-      bm[1,j] ~ dlnorm( log( max( b0[j], eps)), bp.tau[j] ) T(bmin, bmax ) ;  # biomass at first year   
+      bm[1,j] ~ dlnorm( log( max( b0[j], eps)), bptau[j] ) T(bmin, bmax ) ;  # biomass at first year   
       for(i in 2:(N+M)) {
-        bm[i,j] ~ dlnorm( log( max(bm[i-1,j]*( 1 + r[j]*(1-bm[i-1,j])) - rem[i-1,j] , eps)), bp.tau[j] ) T(bmin, bmax) ;
+        bm[i,j] ~ dlnorm( log( max(bm[i-1,j]*( 1 + r[j]*(1-bm[i-1,j])) - rem[i-1,j] , eps)), bptau[j] ) T(bmin, bmax) ;
       }
       
       # forecasts
