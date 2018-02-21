@@ -76,7 +76,7 @@ p = snowcrab_stmv( p=p, DS="parameters",
 
 # o = snowcrab_stmv(p=p, DS="stmv_inputs" )  # create fields for  
 
-stmv( p=p, runmode=c("globalmodel", "interpolate" )  ) # no global_model and force a clean restart
+stmv( p=p, runmode=c("globalmodel", "interpolate" ), use_saved_state=TRUE ) # no global_model and force a clean restart
 
 # if (really.finished) stmv_db( p=p, DS="cleanup.all" )
 
