@@ -59,11 +59,16 @@ p = snowcrab_stmv( p=p, DS="parameters",
   stmv_gam_optimizer=c("outer", "bfgs") ,
   stmv_distance_statsgrid = 2, # resolution (km) of data aggregation (i.e. generation of the ** statistics ** )
   stmv_distance_scale = 50,
-  stmv_global_family = gaussian(link="identity"),
+  stmv_global_family = gaussian(link="log"),
   stmv_Y_transform =list(
-        transf = function(x) {log(x/6675)} ,
-        invers = function(x) {exp(x)*6675}
+        transf = function(x) {x/6675} ,
+        invers = function(x) {x*6675}
   ) # transform data to unit interval to stabilize variance and speed up convergence
+  # stmv_global_family = gaussian(link="identity"),
+  # stmv_Y_transform =list(
+  #       transf = function(x) {log(x/6675)} ,
+  #       invers = function(x) {exp(x)*6675}
+  # ) # transform data to unit interval to stabilize variance and speed up convergence
 )
 
 # range( INP$snowcrab.large.males_abundance )
