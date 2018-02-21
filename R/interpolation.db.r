@@ -207,7 +207,7 @@
         }
         
         ok = as.data.frame( out )
-        names( ok) = c("total", "total.lb", "total.lb", "sa.region")
+        names( ok) = c("total", "total.lb", "total.ub", "sa.region")
         
         ok$log.total = log(ok$total)
         ok$log.total.lb = log( ok$total.lb) # as above
