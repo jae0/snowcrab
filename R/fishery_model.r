@@ -268,7 +268,7 @@ fishery_model = function(  p, DS="stan", plotresults=TRUE ) {
 
     stanmodel = rstan::stan_model( model_code=surplus.stan )
 
-    f = sampling(stanmodel, data=sb, chains=5, iter=8000, warmup=3000, refresh = 1000,
+    f = sampling(stanmodel, data=sb, chains=4, iter=8000, warmup=3000, refresh = 1000,
       control = list(adapt_delta = 0.9, max_treedepth=15) )
           # warmup = 200,          # number of warmup iterations per chain
           # control = list(adapt_delta = 0.9),
