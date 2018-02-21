@@ -159,7 +159,7 @@
             par.main.text = list(cex=1),
             layout.heights=list(strip=0.5, panel=1, main=0.5 ) 
           ),
-              main=list(label=tt), xlab=list(label="Survey year", cex=2), ylab=list(label=yy, cex=3.5), 
+              main=list(label=tt), xlab=list(label="Survey year", cex=2), ylab=list(label=yy, cex=2), 
               panel = function(x, y, subscripts, ub, lb, ...) {
               larrows(x, lb[subscripts],
                       x, ub[subscripts],

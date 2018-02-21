@@ -4,9 +4,9 @@ fishery_model = function(  p, DS="stan", plotresults=TRUE ) {
   if (0) {
     
     year.assessment=2016
-    p = bio.snowcrab::load.environment( year.assessment=year.assessment)
-    p$fishery_model = list()
-    p$fishery_model$outdir = file.path(project.datadirectory('bio.snowcrab'), "assessments", p$year.assessment )
+    p = bio.snowcrab::load.environment( year.assessment=year.assessent)
+    p$ishery_model = list()
+    p$fishery_model$outdir = file.path(project.datadirectory('bio.snowcrab'), " "essments", p$year.assessment )
 
   }
 
@@ -25,15 +25,10 @@ fishery_model = function(  p, DS="stan", plotresults=TRUE ) {
 
     # ----------------------------------
     # these are already on log-scale
-    sb$Kmu =  exp(sb$K.mu)
+    sb$Kmu =  exp(sb$Kmu)
     sb$Ksd =  c(0.25, 0.25, 0.25) * sb$Kmu
-
-    sb$rmu =  sb$r.mu
     sb$rsd =  c(0.25, 0.25, 0.25) * sb$rmu 
-
-    sb$qmu =  sb$q.mu
-    sb$qsd =  c(0.25, 0.25, 0.25) * sb$q.mu
-
+    sb$qsd =  c(0.25, 0.25, 0.25) * sb$qmu
     sb$missing = ifelse(is.finite(sb$IOA),0,1)
     sb$missing_n = colSums(sb$missing)
     sb$missing_ntot = sum(sb$missing_n)
@@ -202,7 +197,7 @@ fishery_model = function(  p, DS="stan", plotresults=TRUE ) {
         // matrix[MN,U] pd;
         // vector[U] MSY;
         // vector[U] BMSY;
-        // vector[U] FMSY;
+        vector[U] FMSY;
         // matrix[MN,U] B;
         // matrix[MN,U] P;
         // matrix[MN,U] C;
@@ -242,14 +237,15 @@ fishery_model = function(  p, DS="stan", plotresults=TRUE ) {
      
         // -------------------  
         // parameter estimates for output
-        // for(j in 1:U) {
+        
+        for(j in 1:U) {
         //   MSY[j]    = r[j]* exp(K[j]) / 4 ; // maximum height of of the latent productivity (yield)
         //   BMSY[j]   = exp(K[j])/2 ; // biomass at MSY
-        //   FMSY[j]   = 2.0 * MSY[j] / exp(K[j]) ; // fishing mortality at MSY
+           FMSY[j]   = 2.0 * MSY[j] / exp(K[j]) ; // fishing mortality at MSY
       //    BX2MSY[j] = 1.0 - step( bm[N1,j]-0.25 ) ; // test if bm >= 1/2 bmY
       //    Bdrop[j]  = 1.0 - step( bm[N1,j]-bm[N,j] ) ; // test if bm(t) >= bm(t-1) 
       //    Fcrash[j] = 4.0 * MSY[j] / exp(K[j]) ; // fishing mortality at which the stock will crash
-        // }
+        }
 
         // recaled estimates
         // for(j in 1:U) {
@@ -327,8 +323,7 @@ fishery_model = function(  p, DS="stan", plotresults=TRUE ) {
     n.iter.total = p$fishery_model$n.iter * p$fishery_model$n.thin
 
     sb = biomass.summary.db(p=p, DS="surplusproduction" )
-
-    sb$tomonitor = c( "r", "K", "q", "qs", "r.mu", "r.sd", "b","bp.sd", "bo.sd","b0", "b0.sd", "rem", "rem.sd", "rem.mu","REM", "MSY", "BMSY", "FMSY", "Fcrash", "Bdrop", "BX2MSY", "F", "TAC",  "C", "P", "B" )
+    sb$tomonitor = c( "r", "K", "q", "qs", "rmu", "rsd", "b","bpsd", "bosd","b0", "b0sd", "rem", "remsd", "remmu","REM", "MSY", "BMSY", "FMSY", "Fcrash", "Bdrop", "BX2MSY", "F", "TAC", "C", "P", "B" )
 
     sb$jagsmodelname = "biomassdynamic_nonhyper_2016.bugs"
     sb$jagsmodel = 
@@ -347,20 +342,17 @@ model {
 
 
   for (j in 1:U) {
-    r[j] ~ dnorm( r.mu[j], pow( r.sd[j], -2 ) ) 
+    r[j] ~ dnorm( rmu[j], pow( rsd[j], -2 ) ) 
   }
 
 
   for (j in 1:U) {
-    #q.mu[j]  ~ dunif( q.min, q.max ) 
-    #q.sd[j]  ~ dunif( q.mu[j] * cv.normal.min, q.mu[j] *cv.normal.max )  # catchability coefficient (normal scale)
-    q[j] ~ dnorm( q.mu[j], pow( q.sd[j], -2 ) )  T(q.min, q.max)
-    #q[j] ~ dunif( q.min[j] , q.max[j] )
+    q[j] ~ dnorm( qmu[j], pow( qsd[j], -2 ) )  T(qmin, qmax)
   }
 
 
   for (j in 1:U) {
-    K[j] ~ dlnorm( K.mu[j], pow( K.sd[j], -1 )) # T(K.min[j], K.max[j] )
+    K[j] ~ dlnorm( Kmu[j], pow( Ksd[j], -1 )) # T(Kmin[j], Kmax[j] )
   }
 
 
@@ -386,10 +378,10 @@ model {
   #     |...(t-2)...|.Ss..(t-1)...|...(t=2004)..Sf.|...(t+1).Sf..|...(t+2)..Sf.|...
 
     for (j in 1:(U)) {
-      #bo.tau[j] ~ dunif( pow( log( 1 + pow( cv.lognormal.max, 2) ), -1 ), pow( log( 1 + pow( cv.lognormal.min, 2) ), -1 ) )  # min/max inverted because it is an inverse scale
-      #bo.sd[j] ~ dunif( bo.min[j], bo.max[j] )  
-      bo.sd[j] ~ dlnorm(bo.mup[j],pow(bo.sdp[j],-1))
-      bo.tau[j]  <- pow( bo.sd[j], -2 )
+      #bo.tau[j] ~ dunif( pow( log( 1 + pow( cvlognormalmax, 2) ), -1 ), pow( log( 1 + pow( cvlognormalmin, 2) ), -1 ) )  # min/max inverted because it is an inverse scale
+      #bosd[j] ~ dunif( bomin[j], bomax[j] )  
+      bosd[j] ~ dlnorm(bo.mup[j],pow(bosdp[j],-1))
+      bo.tau[j]  <- pow( bosd[j], -2 )
     }
 
     for (j in 1:(U-1)) {
@@ -422,18 +414,15 @@ model {
   # biomass process model 
         
     for (j in 1:U) {
-      #bp.tau[j] ~ dunif( pow( log( 1 + pow( cv.lognormal.max, 2) ), -1 ), pow( log( 1 + pow( cv.lognormal.min, 2) ), -1 ) )  
-      bp.sd[j] ~ dunif( bp.min[j], bp.max[j] )  
-      #bp.sd[j]  <- pow( sqrt(bp.tau[j]), -1 )
-      # bp.sd[j] ~ dlnorm(bp.mup[j],pow(bp.sdp[j],-1))
-      bp.tau[j]  <- pow( bp.sd[j], -2 )
+      bpsd[j] ~ dunif( bpmin[j], bpmax[j] )  
+      bp.tau[j]  <- pow( bpsd[j], -2 )
     }
 
     for(j in 1:U) {
-      b0[j] ~ dunif( b0.min[j], b0.max[j] ) # starting b prior to first catch event 
-      bm[1,j] ~ dlnorm( log( max( b0[j], eps)), bp.tau[j] ) T(b.min, b.max ) ;  # biomass at first year   
+      b0[j] ~ dunif( b0min[j], b0max[j] ) # starting b prior to first catch event 
+      bm[1,j] ~ dlnorm( log( max( b0[j], eps)), bp.tau[j] ) T(bmin, bmax ) ;  # biomass at first year   
       for(i in 2:(N+M)) {
-        bm[i,j] ~ dlnorm( log( max(bm[i-1,j]*( 1 + r[j]*(1-bm[i-1,j])) - rem[i-1,j] , eps)), bp.tau[j] ) T(b.min, b.max) ;
+        bm[i,j] ~ dlnorm( log( max(bm[i-1,j]*( 1 + r[j]*(1-bm[i-1,j])) - rem[i-1,j] , eps)), bp.tau[j] ) T(bmin, bmax) ;
       }
       
       # forecasts
@@ -535,7 +524,7 @@ model {
         dic.samples(m, n.iter=p$fishery_model$n.iter ) # pDIC
 
         graphics.off() ; plot.new(); layout( matrix(c(1,2,3), 3, 1 )); par(mar = c(5, 4, 0, 2))
-        for( i in 1:3) hist(y$cv.r[i,,], "fd")
+        for( i in 1:3) hist(y$cvr[i,,], "fd")
 
         # convergence testing -- by 1000 to 1500 convergence observed by Gelman shrink factor diagnostic
         y = jags.samples(m, variable.names=tomonitor, n.iter=6000, thin=1 )
@@ -543,9 +532,9 @@ model {
         gelman.plot(y[["r"]])
         gelman.plot(y[["K"]])
         gelman.plot(y[["q"]])  # about 6-8000 runs required to converge
-        gelman.plot(y[["r.sd"]])
-        gelman.plot(y[["K.sd"]])
-        gelman.plot(y[["bo.sd"]])
+        gelman.plot(y[["rsd"]])
+        gelman.plot(y[["Ksd"]])
+        gelman.plot(y[["bosd"]])
         gelman.plot(y[["bp.p"]])
         geweke.plot(y[["r"]])
 
@@ -589,10 +578,10 @@ model {
         par(mar = c(5, 4, 0, 2))
 
         for( i in 1:3) hist(y$r[i,,], "fd")
-        for( i in 1:3) hist(y$q.sd[i,,], "fd")
-        for( i in 1:3) hist(y$K.sd[i,,], "fd")
-        for( i in 1:3) hist(y$b0.sd[i,,], "fd")
-        for( i in 1:3) hist(y$r.sd[i,,], "fd")
+        for( i in 1:3) hist(y$qsd[i,,], "fd")
+        for( i in 1:3) hist(y$Ksd[i,,], "fd")
+        for( i in 1:3) hist(y$b0sd[i,,], "fd")
+        for( i in 1:3) hist(y$rsd[i,,], "fd")
         for( i in 1:3) hist(y$b0[i,,], "fd")
 
       }
@@ -1052,16 +1041,16 @@ model {
     # Report estimates and standard errors
     rep <- sdreport(obj)
 
-    MLE <- list(year=1:data$N,B=rep$value[1:data$N], B.sd=rep$sd[1:data$N],predI=rep$value[1:data$N+data$N], predI.sd=rep$sd[1:data$N+data$N], K=rep$value[data$N*2+1], K.sd=rep$sd[data$N*2+1], r=rep$value[data$N*2+2],r.sd=rep$sd[data$N*2+2],Q=rep$value[data$N*2+3],Q.sd=rep$sd[data$N*2+3],sigma=rep$value[data$N*2+4],sigma.sd=rep$sd[data$N*2+4],tau=rep$value[data$N*2+5],tau.sd=rep$sd[data$N*2+5],nll=rep$value[data$N*2+6],nll.sd=rep$sd[data$N*2+6])
+    MLE <- list(year=1:data$N,B=rep$value[1:data$N], Bsd=rep$sd[1:data$N],predI=rep$value[1:data$N+data$N], predIsd=rep$sd[1:data$N+data$N], K=rep$value[data$N*2+1], Ksd=rep$sd[data$N*2+1], r=rep$value[data$N*2+2],rsd=rep$sd[data$N*2+2],Q=rep$value[data$N*2+3],Qsd=rep$sd[data$N*2+3],sigma=rep$value[data$N*2+4],sigmasd=rep$sd[data$N*2+4],tau=rep$value[data$N*2+5],tausd=rep$sd[data$N*2+5],nll=rep$value[data$N*2+6],nllsd=rep$sd[data$N*2+6])
       
       
     ###########################################################################
     # Results plots
     ###########################################################################
-    plot(data$IOA,ylim=c(0,max(MLE$predI+MLE$predI.sd)),pch=16,col='red')
+    plot(data$IOA,ylim=c(0,max(MLE$predI+MLE$predIsd)),pch=16,col='red')
     with(MLE,lines(year,predI))
-    with(MLE,lines(year,predI+predI.sd,lty=2))
-    with(MLE,lines(year,predI-predI.sd,lty=2))
+    with(MLE,lines(year,predI+predIsd,lty=2))
+    with(MLE,lines(year,predI-predIsd,lty=2))
 
   }
 
@@ -1098,9 +1087,9 @@ model {
       cv = 0.5, # ...
       er = 0.2,  # target exploitation rate
       MFB = 0.8, # prior estimate of natural mortality for FB
-      MFB.sd = 0.8, # prior estimate of SD in natural mortality for FB
+      MFBsd = 0.8, # prior estimate of SD in natural mortality for FB
       MREC = 0.8, # prior estimate of natural mortality for FB
-      MREC.sd = 0.8, # prior estimate of SD in natural mortality for FB
+      MRECsd = 0.8, # prior estimate of SD in natural mortality for FB
       brodycoef = 2,  # proportional increase in weight with each age
       brodysd0 = 0.2,  # proportional increase in weight with each age
       N = nrow( res$B) , # no years with data
@@ -1122,7 +1111,7 @@ model {
       ## model 1 --- simple delay difference with observation and process error
       m = jags.model( file=fishery.model.jags ( DS="delay.difference" ), data=sb, n.chains=n.chains, n.adapt=n.adapt )
       coef(m)
-      tomonitor = c("FB","K", "REC", "Znat", "Ztot", "q.biomass", "qREC", "Catch", "Cr" )
+      tomonitor = c("FB","K", "REC", "Znat", "Ztot", "qbiomass", "qREC", "Catch", "Cr" )
       dic.samples(m, n.iter=n.iter ) # pDIC
       fnres = file.path( project.datadirectory("bio.snowcrab"), "output", "delaydifference.mcmc.simple.rdata" )
 
@@ -1133,7 +1122,7 @@ model {
       ## model 2 --- simple delay difference with observation and process error and illegal landings
       m = jags.model( file=fishery.model.jags ( DS="delay.difference.illegal" ), data=sb, n.chains=n.chains, n.adapt=n.adapt )
       coef(m)
-      tomonitor =  c("FB","K", "REC", "Znat", "Ztot", "q.biomass", "qREC", "Catch", "Cr" )
+      tomonitor =  c("FB","K", "REC", "Znat", "Ztot", "qbiomass", "qREC", "Catch", "Cr" )
       dic.samples(m, n.iter=n.iter ) # pDIC
       fnres = file.path( project.datadirectory("bio.snowcrab"), "output", "delaydifference.mcmc.simple.illegal.rdata" )
 
@@ -1149,11 +1138,11 @@ model {
       y = jags.samples(m, variable.names=tomonitor, n.iter=10000, thin=10)
       gelman.plot(y[["Ztot"]])
       gelman.plot(y[["K"]])
-      gelman.plot(y[["q.biomass"]])
+      gelman.plot(y[["qbiomass"]])
       gelman.plot(y[["qREC"]])
-      gelman.plot(y[["sd.K"]])
-      gelman.plot(y[["sd.o"]])
-      gelman.plot(y[["sd.p"]])
+      gelman.plot(y[["sdK"]])
+      gelman.plot(y[["sdo"]])
+      gelman.plot(y[["sdp"]])
       geweke.plot(y[["r"]])
     }
 
@@ -1187,7 +1176,7 @@ model {
       # frequency density of key parameters
       figure.bugs( "K", y=y, fn=file.path(dir.output, "K.density.png" ) )
       figure.bugs( "r", y=y, fn=file.path(dir.output, "r.density.png" ) )
-      figure.bugs( "q", y=y, fn=file.path(dir.output, "q.density.png" ) )
+      figure.bugs( "q", y=y, fn=file.path(dir.output, "qdensity.png" ) )
       figure.bugs( "BMSY", y=y, fn=file.path(dir.output, "BMSY.density.png" ) )
 
       # timeseries

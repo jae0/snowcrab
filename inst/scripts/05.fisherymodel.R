@@ -26,8 +26,8 @@ figure.mcmc( "K", res=res, fn=file.path(p$fishery_model$outdir, "K.density.png" 
 figure.mcmc( "r", res=res, fn=file.path(p$fishery_model$outdir, "r.density.png" ) )
 figure.mcmc( "q", res=res, fn=file.path(p$fishery_model$outdir, "q.density.png" ) ,xrange=c(0,2))
 figure.mcmc( "FMSY", res=res, fn=file.path(p$fishery_model$outdir, "FMSY.density.png" ) )
-figure.mcmc( "bo.sd", res=res, fn=file.path(p$fishery_model$outdir, "bo.sd.density.png" ) )
-figure.mcmc( "bp.sd", res=res, fn=file.path(p$fishery_model$outdir, "bp.sd.density.png" ) )
+figure.mcmc( "bosd", res=res, fn=file.path(p$fishery_model$outdir, "bosd.density.png" ) )
+figure.mcmc( "bpsd", res=res, fn=file.path(p$fishery_model$outdir, "bpsd.density.png" ) )
 
 # timeseries
 figure.mcmc( type="timeseries", vname="biomass", res=res, fn=file.path(p$fishery_model$outdir, "biomass.timeseries.png" ), save.plot=T )

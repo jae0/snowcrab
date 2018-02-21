@@ -65,8 +65,8 @@
           # SD(X) = sqrt( exp(2*mu + sigma^2)*(exp(sigma^2) - 1) )
           #  or   = CV * E(X) 
 
-           prr$meanlog= sb$K.mu[i]
-           prr$sdlog = sqrt(sb$K.sd[i])
+           prr$meanlog= sb$Kmu[i]
+           prr$sdlog = sqrt(sb$Ksd[i])
           plot.freq.distribution.prior.posterior( prior=prr, posterior=pdat, ... )
           
           legend( "topright", bty="n", legend=paste( labs[i], "\n", vname, " = ", qs[2,i], " {", qs[1,i], ", ",  qs[3,i], "}  ", sep="" ))
@@ -78,8 +78,8 @@
         for (i in 1:3) {    prr=NULL
           prr=NULL
           prr$class='normal'
-          prr$mean=sb$r.mu[i]
-          prr$sd=sqrt(sb$r.sd[i])
+          prr$mean=sb$rmu[i]
+          prr$sd=sqrt(sb$rsd[i])
           pdat = as.vector(y$r[,i])
           plot.freq.distribution.prior.posterior( prior=prr, posterior=pdat, ...  )
           legend( "topright", bty="n", legend=paste( labs[i], "\n", vname, " = ", qs[2,i], " {", qs[1,i], ", ",  qs[3,i], "}  ", sep="" ) )   
@@ -94,8 +94,8 @@
           pdat = as.vector(y$q[,i])
           prr=NULL
           prr$class="normal"
-          prr$mean=sb$q.mu[i]
-          prr$sd=sb$q.sd[i]
+          prr$mean=sb$qmu[i]
+          prr$sd=sb$qsd[i]
           plot.freq.distribution.prior.posterior( prior=prr, posterior=pdat, ...  )
           legend( "topright", bty="n", legend=paste( labs[i], "\n", vname, " = ", qs[2,i], " {", qs[1,i], ", ",  qs[3,i], "}  ", sep="" )   
       )}}
@@ -137,31 +137,34 @@
           legend( "topright", bty="n",
             legend=paste( labs[i], " ", vname, " = ", qs[2,i], " {", qs[1,i], ", ",  qs[3,i], "}", sep="" )   
       )}}
-	if ( vname=="bo.sd" ) {
-        qs = apply( y$bo.sd, 2, quantile, probs=c(0.025, 0.5, 0.975) )
+	
+  
+      if ( vname=="bosd" ) {
+        qs = apply( y$bosd, 2, quantile, probs=c(0.025, 0.5, 0.975) )
         qs = signif( qs, 3 )
         for (i in 1:3) {
-          pdat = as.vector(y$bo.sd[,i])
+          pdat = as.vector(y$bosd[,i])
           prr=NULL
           prr$class="lognormal"
-          prr$meanlog=sb$bo.mup
-          prr$sdlog=sqrt(sb$bo.sdp)
+          prr$meanlog=sb$bomup
+          prr$sdlog=sqrt(sb$bosdp)
           plot.freq.distribution.prior.posterior( prior=prr, posterior=pdat, ...  )
           legend( "topright", bty="n",
             legend=paste( labs[i], " ", vname, " = ", qs[2,i], " {", qs[1,i], ", ",  qs[3,i], "}", sep="" )   
       )}}
-          if ( vname=="bp.sd" ) {
-        qs = apply( y$bp.sd, 2, quantile, probs=c(0.025, 0.5, 0.975) )
+          
+      if ( vname=="bpsd" ) {
+        qs = apply( y$bpsd, 2, quantile, probs=c(0.025, 0.5, 0.975) )
         qs = signif( qs, 3 )
         for (i in 1:3) {
-          pdat = as.vector(y$bp.sd[,i])
+          pdat = as.vector(y$bpsd[,i])
           prr=NULL
           prr$class='uniform'
           prr$max=3
           prr$min=0
           #prr$class="lognormal"
-          #prr$meanlog=sb$bp.mup
-          #prr$sdlog=sqrt(sb$bp.sdp)
+          #prr$meanlog=sb$bpmup
+          #prr$sdlog=sqrt(sb$bpsdp)
           plot.freq.distribution.prior.posterior( prior=prr, posterior=pdat, ...  )
           legend( "topright", bty="n",
             legend=paste( labs[i], " ", vname, " = ", qs[2,i], " {", qs[1,i], ", ",  qs[3,i], "}", sep="" )   
@@ -485,8 +488,8 @@
       par(mar = c(5, 4, 0, 2))
       require(car)
       
-      eP = y$bp.sd
-      eO = y$bo.sd
+      eP = y$bpsd
+      eO = y$bosd
       for (i in 1:3 ) {
           plot( eP[,,i], eO[,,i],  type="p", pch=22 ) 
           if (i==2) title( ylab="Process error (SD)" ) 

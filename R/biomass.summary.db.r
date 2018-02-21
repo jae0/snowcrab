@@ -7,39 +7,39 @@
     if (DS=="surplusproduction" ){
       res =  biomass.summary.db(p=p, DS="complete")
       sb = list(
-        b.min = 0.001, # scaled to 1 but allow overshooting
-        b.max = 1.1, # scaled to 1 but allow overshooting
-        q.min = 0.001,
-        q.max = 2,
-        q.mu = rep(1,3),
-        q.sd = rep(0.3,3),
-        bo.mup=rep(-2.5579,3),
-        bo.sdp=rep(0.47726,3),
-        bp.mup=rep(-2.5579,3),
-        bp.sdp=rep(0.47726,3),
-        bo.min=rep(0,3),
-        bo.max=rep(5,3),
-        bp.min=rep(0,3),
-        bp.max=rep(5,3),
-        rec.max= c( 10^3, 10^4, 10^2 ),
-        K.mu = c( 1.831139,4.170013,0.784308), #for ln
-        K.sd = c(0.06,0.06,0.04), #for ln
-        r.mu = rep(0.96,3),
-        r.sd = rep(0.01041271,3),
-        b0.min = c(0.5, 0.5, 0.2),  # prior: mean value possible in  N,S,4X
-        b0.max = c(0.8, 0.8, 0.6),  # prior: mean value possible in  N,S,4X
-        cv.normal.min = 0.05, # upper limit of CV for normally distributed variables ~ 0.5 covers a reasonably large range, try:   curve( dnorm(x, mean=1, sd=0.5), from=0.1, to=4  )
-        cv.normal.max = 0.4, # upper limit of CV for normally distributed variables ~ 0.5 covers a reasonably large range, try:   curve( dnorm(x, mean=1, sd=0.5), from=0.1, to=4  )
-        cv.lognormal.min = 0.05, #  curve( dlnorm(x, meanlog=log(1), sdlog=0.25), from=0.01, to=2 )
-        cv.lognormal.max = 0.4, #  curve( dlnorm(x, meanlog=log(1), sdlog=0.25), from=0.01, to=2 )
+        bmin = 0.001, # scaled to 1 but allow overshooting
+        bmax = 1.1, # scaled to 1 but allow overshooting
+        qmin = 0.001,
+        qmax = 2,
+        qmu = rep(1,3),
+        qsd = rep(0.3,3),
+        bomup=rep(-2.5579,3),
+        bosdp=rep(0.47726,3),
+        bpmup=rep(-2.5579,3),
+        bpsdp=rep(0.47726,3),
+        bomin=rep(0,3),
+        bomax=rep(5,3),
+        bpmin=rep(0,3),
+        bpmax=rep(5,3),
+        recmax= c( 10^3, 10^4, 10^2 ),
+        Kmu = c( 1.831139,4.170013,0.784308), #for ln
+        Ksd = c(0.06,0.06,0.04), #for ln
+        rmu = rep(0.96,3),
+        rsd = rep(0.01041271,3),
+        b0min = c(0.5, 0.5, 0.2),  # prior: mean value possible in  N,S,4X
+        b0max = c(0.8, 0.8, 0.6),  # prior: mean value possible in  N,S,4X
+        cvnormalmin = 0.05, # upper limit of CV for normally distributed variables ~ 0.5 covers a reasonably large range, try:   curve( dnorm(x, mean=1, sd=0.5), from=0.1, to=4  )
+        cvnormalmax = 0.4, # upper limit of CV for normally distributed variables ~ 0.5 covers a reasonably large range, try:   curve( dnorm(x, mean=1, sd=0.5), from=0.1, to=4  )
+        cvlognormalmin = 0.05, #  curve( dlnorm(x, meanlog=log(1), sdlog=0.25), from=0.01, to=2 )
+        cvlognormalmax = 0.4, #  curve( dlnorm(x, meanlog=log(1), sdlog=0.25), from=0.01, to=2 )
       # for lognormal: cv = sqrt(exp(sigma^2) - 1); or sigma = sqrt(log(cv^2+ 1) ) ==> sigma = sqrt( log(0.25^2 + 1)) = 0.246 ~ cv -- i.e. cv ~ sd
         IOA = as.matrix(res$B), # observed index of abundance
-        IOAcv = as.matrix(res$B.sd ), # observed index of log abundance SD estimates ~ CV
+        IOAcv = as.matrix(res$Bsd ), # observed index of log abundance SD estimates ~ CV
         #IREC = as.matrix(res$R), # observed index of abundance
-        #IRECcv = as.matrix(res$R.sd ), # observed index of log abundance SD estimates ~CV
+        #IRECcv = as.matrix(res$Rsd ), # observed index of log abundance SD estimates ~CV
         CAT = as.matrix(res$L) , # catches  , assume 20% handling mortality and illegal landings
-        CAT.min = apply( res$L, 2, min, na.rm=T),
-        CAT.max = apply( res$L, 2, max, na.rm=T),
+        CATmin = apply( res$L, 2, min, na.rm=T),
+        CATmax = apply( res$L, 2, max, na.rm=T),
         er = 0.2,  # target exploitation rate
         U = ncol( res$B),  # number of regions
         N = nrow( res$B) , # no years with data
@@ -86,15 +86,15 @@
 
       L = biomass.summary.db( DS="L.redo", p=p  )  # must go first as part of biomass estimates
       B = biomass.summary.db( DS="B.redo", p=p )  # rename to avoid confusion below as B is also used
-      B.sd = biomass.summary.db( DS="B.sd.redo", p=p )  # rename to avoid confusion below as B is also used
+      Bsd = biomass.summary.db( DS="Bsd.redo", p=p )  # rename to avoid confusion below as B is also used
      #  R = biomass.summary.db( DS="R.redo", p=p  )  # rename to avoid confusion below as B is also used
-     #  R.sd = biomass.summary.db( DS="R.sd.redo", p=p  )  # rename to avoid confusion below as B is also used
+     #  Rsd = biomass.summary.db( DS="Rsd.redo", p=p  )  # rename to avoid confusion below as B is also used
 
       # geometric means -- sd are on log scale
       Bg = biomass.summary.db( DS="B_geomean.redo", p=p  )
-      Bg.sd = biomass.summary.db( DS="B_geomean.sd.redo", p=p  )
+      Bgsd = biomass.summary.db( DS="B_geomeansd.redo", p=p  )
      # Rg = biomass.summary.db( DS="R_geomean.redo", p=p  )
-     # Rg.sd = biomass.summary.db( DS="R_geomean.sd.redo", p=p  )
+     # Rgsd = biomass.summary.db( DS="R_geomeansd.redo", p=p  )
 
 
       # cfa4x have had no estimates prior to 2004
@@ -103,17 +103,17 @@
       B[ib,3] = NA
 
       L = L[ which(rownames(L) %in% rownames(B) ),  ]
-      B.sd = B.sd[ which(rownames(B.sd) %in% rownames(B) ),  ]
+      Bsd = Bsd[ which(rownames(Bsd) %in% rownames(B) ),  ]
     #  R = R[ which(rownames(R) %in% rownames(B) ),  ]
-    #  R.sd = R.sd[ which(rownames(R.sd) %in% rownames(B) ),  ]
+    #  Rsd = Rsd[ which(rownames(Rsd) %in% rownames(B) ),  ]
       Bg = Bg[ which(rownames(Bg) %in% rownames(B) ),  ]
-      Bg.sd = Bg.sd[ which(rownames(Bg.sd) %in% rownames(B) ),  ]
+      Bgsd = Bgsd[ which(rownames(Bgsd) %in% rownames(B) ),  ]
     #  Rg = Rg[ which(rownames(Rg) %in% rownames(B) ),  ]
-    #  Rg.sd = Rg.sd[ which(rownames(Rg.sd) %in% rownames(B) ),  ]
+    #  Rgsd = Rgsd[ which(rownames(Rgsd) %in% rownames(B) ),  ]
 
-     out = list( L=L, B=B, B.sd=B.sd,Bg=Bg, Bg.sd=Bg.sd )
+     out = list( L=L, B=B, Bsd=Bsd,Bg=Bg, Bgsd=Bgsd )
 
-    #  out = list( L=L, B=B, R=R, B.sd=B.sd, R.sd=R.sd, Bg=Bg, Bg.sd=Bg.sd, Rg=Rg, Rg.sd=Rg.sd )
+    #  out = list( L=L, B=B, R=R, Bsd=Bsd, Rsd=Rsd, Bg=Bg, Bgsd=Bgsd, Rg=Rg, Rgsd=Rgsd )
 
       save( out, file=fn, compress=T )
 
@@ -160,10 +160,10 @@
     }
 
 
-    if (DS %in% c("B.sd", "B.sd.redo" )) {
-      fn = file.path( sum_outdir, "B.sd_ts.rdata" )
+    if (DS %in% c("Bsd", "Bsd.redo" )) {
+      fn = file.path( sum_outdir, "Bsd_ts.rdata" )
       B=NULL
-      if (DS=="B.sd") {
+      if (DS=="Bsd") {
         if (file.exists(fn)) load(fn)
         return(B)
       }
@@ -171,8 +171,8 @@
         K = interpolation.db( DS="interpolation.simulation", p=p )
         areas=c("cfanorth", "cfasouth", "cfa4x")
         td = K[ which( K$region %in% areas) ,]
-        td$total.sd.ln = abs(td$total.ub - td$total.lb)/(2*1.96) # assuming approx normal
-        B = tapply( td$total.sd.ln, INDEX=td[,c("yr", "region")], FUN=sum, na.rm=T )  # summation is really returning identity as there is only 1 element
+        td$totalsd.ln = abs(td$total.ub - td$total.lb)/(2*1.96) # assuming approx normal
+        B = tapply( td$totalsd.ln, INDEX=td[,c("yr", "region")], FUN=sum, na.rm=T )  # summation is really returning identity as there is only 1 element
         B = B[ , areas]
         B = as.data.frame(B)
         save( B, file=fn, compress=T )
@@ -246,10 +246,10 @@
     }
 
 
-    if (DS %in% c("B_geomean.sd", "B_geomean.sd.redo" )) {
-      fn = file.path( sum_outdir, "B_geomean.sd_ts.rdata" )
+    if (DS %in% c("B_geomeansd", "B_geomeansd.redo" )) {
+      fn = file.path( sum_outdir, "B_geomeansd_ts.rdata" )
       Bx = NULL
-      if (DS=="B_geomean.sd") {
+      if (DS=="B_geomeansd") {
         if (file.exists(fn)) load(fn)
         return(Bx)
       }
@@ -277,10 +277,10 @@
     }
 
 
-    if (DS %in% c("R_geomean.sd", "R_geomean.sd.redo" )) {
-      fn = file.path( sum_outdir, "R_geomean.sd_ts.rdata" )
+    if (DS %in% c("R_geomeansd", "R_geomeansd.redo" )) {
+      fn = file.path( sum_outdir, "R_geomeansd_ts.rdata" )
       Bx = NULL
-      if (DS=="R_geomean.sd") {
+      if (DS=="R_geomeansd") {
         if (file.exists(fn)) load(fn)
         return(Bx)
       }
@@ -333,10 +333,10 @@
 
 
 
-    if (DS %in% c("R.sd", "R.sd.redo" )) {
-      fn = file.path( sum_outdir, "R.sd_ts.rdata" )
+    if (DS %in% c("Rsd", "Rsd.redo" )) {
+      fn = file.path( sum_outdir, "Rsd_ts.rdata" )
       R=NULL
-      if (DS=="R.sd") {
+      if (DS=="Rsd") {
         if (file.exists(fn)) load(fn)
         return(R)
       }
@@ -347,8 +347,8 @@
       K = interpolation.db( DS="interpolation.simulation", p=p, varnames="R1.no" )
       areas=c("cfanorth", "cfasouth", "cfa4x")
       td = K[ which(K$vars=="R1.no" & K$region %in% areas) ,]
-      td$total.sd.ln = abs(td$total.ub - td$total.lb)/(2*1.96) # assuming approx normal
-      R = tapply( td$total.sd.ln, INDEX=td[,c("yr", "region")], FUN=sum, na.rm=T )  # summation is really returning identity as there is only 1 element
+      td$totalsd.ln = abs(td$total.ub - td$total.lb)/(2*1.96) # assuming approx normal
+      R = tapply( td$totalsd.ln, INDEX=td[,c("yr", "region")], FUN=sum, na.rm=T )  # summation is really returning identity as there is only 1 element
       R = R[ , areas]
 
     # assessments conducted in the spring 2001 and earlier ... they are pre-fishery biomasses ..
