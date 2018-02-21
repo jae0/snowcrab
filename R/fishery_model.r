@@ -5,7 +5,7 @@ fishery_model = function(  p, DS="stan", plotresults=TRUE ) {
     
     year.assessment=2016
     p = bio.snowcrab::load.environment( year.assessment=year.assessent)
-    p$ishery_model = list()
+    p$fishery_model = list()
     p$fishery_model$outdir = file.path(project.datadirectory('bio.snowcrab'), " "essments", p$year.assessment )
 
   }
