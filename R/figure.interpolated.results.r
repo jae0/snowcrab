@@ -2,9 +2,9 @@
   figure.interpolated.results = function( p, outdir, all.areas=T, alt.zero.y=F ) {
     
     varstoplot = matrix(ncol=3, byrow=T, data=
-      c( "R0.mass", "Fishable biomass", "B",
-       "R0.no", "Number of fishable crab", "N",
-       "R1.no", "Number of recruits", "N"#,
+      c( "R0.mass", "Fishable biomass", "B"  #,
+#       "R0.no", "Number of fishable crab", "N",
+#       "R1.no", "Number of recruits", "N"#,
 
        #"totno.female.imm",  "Number of immature females", "N",
        #"totno.female.mat",  "Number of mature females", "N",
@@ -49,7 +49,7 @@
     eps = 1e-6
 
     p$vars.to.model = varstoplot[,1]
-    p$yrs = 1998:p$year.assessment
+#     p$yrs = 1998:p$year.assessment
     p$runindex = list(y=p$yrs, v=p$vars.to.model )
     
     K = interpolation.db( DS="interpolation.simulation", p=p )
@@ -69,7 +69,9 @@
 
     n.regions = length(regions)
     K$region = factor(as.character(K$region), levels=areas, labels=regions)
-
+    K$ubound = K$total.lb
+    K$lbound = K$total.ub
+    
     zero.value = K[1,]
     zero.value$yr = year.assessment
     zero.value$total = 0
@@ -89,8 +91,9 @@
       v = varstoplot[i,1]
       tt = varstoplot[i,2]
 
-      td = K[ which(as.character(K$vars)==v) ,]
-
+      # td = K[ which(as.character(K$vars)==v) ,]
+      td = K
+      
       if (varstoplot[i,3] == "B") {
         yy = expression(paste( "Biomass (X ", 10^3, " t)"))
         convert = 10^3 # from t to kt 
@@ -142,25 +145,26 @@
       fn = file.path( outdir, paste(v, "png", sep=".") )
       print (fn) 
 
-      Cairo( file=fn, type="png", bg="white", units="in", width=5, height=6, dpi=300)
+      png( filename=fn, width=3072, height=2304, pointsize=30, res=300 )
+
       setup.lattice.options()
      
       if (alt.zero.y) {
 
         pl = xyplot( total~yr|region, data=td, ub=td$ubound, lb=td$lbound,
           layout=c(1,n.regions), xlim=xlim, scales = list(y = list(relation="free", limits=limits  )),
-          par.strip.text = list(cex=3),
+          par.strip.text = list(cex=1.5),
           par.settings=list(  
-            axis.text=list(cex=2.5), 
-            par.main.text = list(cex=4),
-            layout.heights=list(strip=0.2, panel=1, main=0.5 ) 
+            axis.text=list(cex=1.5), 
+            par.main.text = list(cex=1),
+            layout.heights=list(strip=0.35, panel=1, main=0.5 ) 
           ),
               main=list(label=tt), xlab=list(label="Survey year", cex=3.5), ylab=list(label=yy, cex=3.5), 
               panel = function(x, y, subscripts, ub, lb, ...) {
               larrows(x, lb[subscripts],
                       x, ub[subscripts],
-                     angle = 90, code = 3, length=0.02, lwd=6)
-              panel.xyplot(x, y, type="b", lty=1, lwd=6, pch=19, col="black", cex=1.2, ...)
+                     angle = 90, code = 3, length=0.02, lwd=4)
+              panel.xyplot(x, y, type="b", lty=1, lwd=4, pch=19, col="black", cex=1.2, ...)
               panel.abline(v=2001.5, col="gray", lty=5, lwd=4, ...)
               panel.abline(h=0, col="gray", lty=1, lwd=4, ...)
               }
@@ -189,8 +193,6 @@
      
      print(pl)
      dev.off()
-     cmd( "convert -trim -frame 10x10 -mattecolor white ", fn, fn )
-     
     }
     return("Done")
   }  
