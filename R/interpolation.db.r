@@ -132,7 +132,7 @@
         dev.off()
       }
 
-      datarange = seq( 0, max(lb, na.rm=TRUE), length.out=150)
+#      datarange = seq( 0, max(lb, na.rm=TRUE), length.out=150)
       cols = color.code( "seis", datarange )
       lb[which(!is.finite(lb))] = qs[1]
       lb[which(lb < qs[1])] = qs[1]
@@ -153,7 +153,7 @@
       }
 
 
-      datarange = seq( 0, max(qs[2]*1.15, na.rm=TRUE), length.out=150)
+#      datarange = seq( 0, max(qs[2]*1.15, na.rm=TRUE), length.out=150)
       cols = color.code( "seis", datarange )
       ub[which(!is.finite(ub))] = qs[1]
       ub[which(ub < qs[1])] = qs[1]
@@ -182,9 +182,9 @@
 
     if (DS=="timeseries") {
       bm = interpolation.db(p=p, DS="biomass")
-      bm$m = exp(bm$m) / 10^3  # kg/km^2 to t/km^2  .. required for biomass.summary.db
-      bm$lb = exp(bm$lb) / 10^3  # kg/km^2 to t/km^2  .. required for biomass.summary.db
-      bm$ub = exp(bm$ub) / 10^3  # kg/km^2 to t/km^2  .. required for biomass.summary.db
+      bm$m = (bm$m) / 10^3  # kg/km^2 to t/km^2  .. required for biomass.summary.db
+      bm$lb =(bm$lb) / 10^3  # kg/km^2 to t/km^2  .. required for biomass.summary.db
+      bm$ub =(bm$ub) / 10^3  # kg/km^2 to t/km^2  .. required for biomass.summary.db
       
       bs = bathymetry.db( p=p, DS="baseline")
       
