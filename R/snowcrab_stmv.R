@@ -485,11 +485,9 @@ snowcrab_stmv = function( DS=NULL, p=NULL, year=NULL, ret="mean", varnames=NULL,
     for (gr in grids ) {
       p1 = spatial_parameters( p=p, spatial.domain=gr ) #target projection
       L1 = bathymetry.db(p=p1, DS="baseline")
-
       BS = snowcrab_stmv( p=p1, DS="stmv.stats" )
       colnames(BS) = paste(voi, colnames(BS), sep=".")
       IC = cbind( L1, BS )
-
       # climatology
       nL1 = nrow(L1)
       PS = PSlb = PSub = matrix( NA, nrow=nL1, ncol=p$ny )
@@ -500,39 +498,18 @@ snowcrab_stmv = function( DS=NULL, p=NULL, year=NULL, ret="mean", varnames=NULL,
         PSlb[,iy] = stmv_db( p=p1, DS="stmv.prediction", yr=yr, ret="lb")
         PSub[,iy] = stmv_db( p=p1, DS="stmv.prediction", yr=yr, ret="ub")
       }
-
-      # if ( p$selection$name=="snowcrab.large.males_abundance" ) {
-      #   u = which( PS < qb[1])
-      #   if (length(u)>0) PS[u] = qb[1]
-      #   v = which( PS > qb[2])
-      #   if (length(v)>0) PS[v] = qb[2]
-      # 
-      #   u = which( PSlb < qb[1])
-      #   if (length(u)>0) PSlb[u] = qb[1]
-      #   v = which( PSlb > qb[2]  * 2)
-      #   if (length(v)>0) PSlb[v] = qb[2]
-      # 
-      #   u = which( PSub < qb[1])
-      #   if (length(u)>0) PSub[u] = qb[1]
-      #   v = which( PSub > qb[2]  * 2)
-      #   if (length(v)>0) PSub[v] = qb[2]
-      # }
-
       CL = cbind( apply( PS, 1, mean, na.rm=TRUE ),
                   apply( PSlb, 1, mean, na.rm=TRUE ),
                   apply( PSub, 1, mean, na.rm=TRUE ) )
       colnames(CL) = paste( voi, c("mean", "lb", "ub"), "climatology", sep=".")
       IC = cbind( IC, CL )
       PS = PSlb = PSub = NULL
-
       projectdir = file.path(p$data_root, "modelled", voi, p1$spatial.domain )
       dir.create( projectdir, recursive=T, showWarnings=F )
       outfile =  file.path( projectdir, paste( "snowcrab", "complete", p1$spatial.domain, "rdata", sep= ".") )
       save( IC, file=outfile, compress=T )
       print( outfile )
-
     }
-
     return( "Complete" )
   }
 

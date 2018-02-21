@@ -35,7 +35,9 @@
 #snowcrab.db( DS ="set.complete.redo", p=p )
 
 # -------------------------------------------------------------------------------------
-# abundance .. positive valued data .. vn = "snowcrab.large.males_abundance"
+# abundance .. positive valued data .. 
+# takes about 5 hrs .. ~1 GB / process
+# vn = "snowcrab.large.males_abundance"
 # year.assessment = 2017
 p = bio.snowcrab::load.environment( year.assessment=year.assessment ) 
 
@@ -57,11 +59,16 @@ p = snowcrab_stmv( p=p, DS="parameters",
   stmv_gam_optimizer=c("outer", "bfgs") ,
   stmv_distance_statsgrid = 2, # resolution (km) of data aggregation (i.e. generation of the ** statistics ** )
   stmv_distance_scale = 50,
-  stmv_global_family = gaussian(link="identity"),
+  stmv_global_family = gaussian(link="log"),
   stmv_Y_transform =list(
-        transf = function(x) {log(x/6675)} ,
-        invers = function(x) {exp(x)*6675}
+        transf = function(x) {x/6675} ,
+        invers = function(x) {x*6675}
   ) # transform data to unit interval to stabilize variance and speed up convergence
+  # stmv_global_family = gaussian(link="identity"),
+  # stmv_Y_transform =list(
+  #       transf = function(x) {log(x/6675)} ,
+  #       invers = function(x) {exp(x)*6675}
+  # ) # transform data to unit interval to stabilize variance and speed up convergence
 )
 
 # range( INP$snowcrab.large.males_abundance )
@@ -149,6 +156,7 @@ GCV = 0.01104  Scale est. = 0.011016  n = 7255
 
 # -------------------------------------------------
 # presence-absence
+# this takes about 40 hrs ... and 5-6 GB /process 
 # year.assessment = 2017
 p = bio.snowcrab::load.environment( year.assessment=year.assessment )
 p = snowcrab_stmv( p=p, DS="parameters",
