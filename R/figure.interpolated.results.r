@@ -153,13 +153,13 @@
 
         pl = xyplot( total~yr|region, data=td, ub=td$ubound, lb=td$lbound,
           layout=c(1,n.regions), xlim=xlim, scales = list(y = list(relation="free", limits=limits  )),
-          par.strip.text = list(cex=1.5),
+          par.strip.text = list(cex=1),
           par.settings=list(  
             axis.text=list(cex=1.5), 
             par.main.text = list(cex=1),
-            layout.heights=list(strip=0.35, panel=1, main=0.5 ) 
+            layout.heights=list(strip=0.5, panel=1, main=0.5 ) 
           ),
-              main=list(label=tt), xlab=list(label="Survey year", cex=3.5), ylab=list(label=yy, cex=3.5), 
+              main=list(label=tt), xlab=list(label="Survey year", cex=2), ylab=list(label=yy, cex=3.5), 
               panel = function(x, y, subscripts, ub, lb, ...) {
               larrows(x, lb[subscripts],
                       x, ub[subscripts],

@@ -3,7 +3,10 @@
 #### final estimation of biomass via fishery models and associated figures and tables:
 
 
-if (!exists("year.assessment")) year.assessment=lubridate::year(Sys.Date())
+if (!exists("year.assessment")) {
+  # year.assessment=lubridate::year(Sys.Date())
+  # year.assessment=lubridate::year(Sys.Date()) - 1
+}
 p = bio.snowcrab::load.environment( year.assessment=year.assessment )
 
 

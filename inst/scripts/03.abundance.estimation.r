@@ -225,6 +225,7 @@ UBRE = -0.71562  Scale est. = 1         n = 25468
 
 
 # collect all predictions into a single file and return:
+# year.assessment=2017
 p = bio.snowcrab::load.environment( year.assessment=year.assessment )
 
 p$selection=list(
