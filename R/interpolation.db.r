@@ -19,7 +19,6 @@
  
       ii = which( set$totmass > 0 )
       qs = quantile( set$totmass[ii], probs=p$stmv_quantile_bounds, na.rm=TRUE )
-      qs = log(qs) # 
 
       bm = snowcrab_stmv( p=p, DS="baseline", ret="mean", varnames=varnames )
       m = bm[[1]]  # biomass
@@ -28,7 +27,7 @@
       
       ll = which(h < p$habitat.threshold.quantile )
       if (length(ll) > 0 ) h[ll] = 0
-      m = log( exp(m) * h ) # bm[[2]] is serving as weight/probabilities
+      m = m * h  # bm[[2]] is serving as weight/probabilities
       # #respect the bounds of input data (no extrapolation)
       
       qq = which( m < qs[1] )
@@ -47,18 +46,18 @@
       ub = snowcrab_stmv( p=p, DS="baseline", ret="ub", varnames=varnames )
       
       # range checks
-      lb = log( exp(lb[[1]]) * lb[[2]] ) # x[[2]] is serving as weight/probabilities
-      ub = log( exp(ub[[1]]) * ub[[2]] ) # x[[2]] is serving as weight/probabilities
+      lb = lb[[1]] * lb[[2]]  # x[[2]] is serving as weight/probabilities
+      ub = ub[[1]] * ub[[2]]  # x[[2]] is serving as weight/probabilities
       
       # sq = quantile(s, probs=p$stmv_quantile_bounds[2], na.rm=TRUE ) 
       # s[which(s > sq)] = sq  # cap upper bound of sd
 
       # mm = which(( m - 1.96*s ) < 0 )
       # if (length(mm)>0) {
+      
       #   m[mm] = NA
       #   s[mm] = NA 
       # }
-
       # limit range of extrapolation to within a given distance from survey stations .. annual basis
       set = snowcrab.db( DS="set.clean")
       bs = bathymetry.db(p=p, DS="baseline")
@@ -116,7 +115,7 @@
       B = NULL
 
       projectdir = file.path(p$data_root, "maps", "fishable.biomass", p$spatial.domain )
-      datarange = seq( qs[1]-0.1, qs[2]+0.1, length.out=150)
+      datarange = seq( log(qs[1])-0.1, log(qs[2])+0.1, length.out=150)
       cols = color.code( "seis", datarange )
       m[which(!is.finite(m))] = qs[1]
       for (iy in 1:p$ny) {
@@ -126,7 +125,7 @@
         dir.create (projectdir, showWarnings=FALSE, recursive =TRUE)
         fn = file.path( projectdir, paste(outfn, "png", sep="." ) )
         png( filename=fn, width=3072, height=2304, pointsize=40, res=300 )
-        lp = aegis::aegis_map( xyz=xyz, cfa.regions=T, depthcontours=T, pts=NULL, annot=y,
+        lp = aegis::aegis_map( xyz=xyz, plotlines='cfa.regions', depthcontours=T, pts=NULL, annot=y,
           annot.cex=annot.cex, corners=p$planar.corners, at=datarange,
           col.regions=cols, rez=c(p$pres,p$pres) )
         print(lp)
@@ -136,16 +135,17 @@
       datarange = seq( 0, max(lb, na.rm=TRUE), length.out=150)
       cols = color.code( "seis", datarange )
       lb[which(!is.finite(lb))] = qs[1]
-      lb[which(lb < 0.1)] = qs[1]
+      lb[which(lb < qs[1])] = qs[1]
+      lb[which(lb > qs[2])] = qs[2]
       
       for (iy in 1:p$ny) {
         y = p$yrs[iy]
         outfn = paste( "prediction.abundance.lb", y, sep=".")
-        xyz = cbind( bs[, c("plon", "plat")], lb[,iy] )
+        xyz = cbind( bs[, c("plon", "plat")], log(lb[,iy]) )
         dir.create (projectdir, showWarnings=FALSE, recursive =TRUE)
         fn = file.path( projectdir, paste(outfn, "png", sep="." ) )
         png( filename=fn, width=3072, height=2304, pointsize=40, res=300 )
-        lp = aegis::aegis_map( xyz=xyz, cfa.regions=T, depthcontours=T, pts=NULL, annot=y,
+        lp = aegis::aegis_map( xyz=xyz, plotlines='cfa.regions', depthcontours=T, pts=NULL, annot=y,
           annot.cex=annot.cex, corners=p$planar.corners, at=datarange,
           col.regions=cols, rez=c(p$pres,p$pres) )
         print(lp)
@@ -155,17 +155,18 @@
 
       datarange = seq( 0, max(qs[2]*1.15, na.rm=TRUE), length.out=150)
       cols = color.code( "seis", datarange )
-      ub[which(!is.finite(ub))] = qs[2]
+      ub[which(!is.finite(ub))] = qs[1]
+      ub[which(ub < qs[1])] = qs[1]
       ub[which(ub > qs[2])] = qs[2]
       
       for (iy in 1:p$ny) {
         y = p$yrs[iy]
         outfn = paste( "prediction.abundance.ub", y, sep=".")
-        xyz = cbind( bs[, c("plon", "plat")], ub[,iy] )
+        xyz = cbind( bs[, c("plon", "plat")], log(ub[,iy]) )
         dir.create (projectdir, showWarnings=FALSE, recursive =TRUE)
         fn = file.path( projectdir, paste(outfn, "png", sep="." ) )
         png( filename=fn, width=3072, height=2304, pointsize=40, res=300 )
-        lp = aegis::aegis_map( xyz=xyz, cfa.regions=T, depthcontours=T, pts=NULL, annot=y,
+        lp = aegis::aegis_map( xyz=xyz, plotlines='cfa.regions', depthcontours=T, pts=NULL, annot=y,
           annot.cex=annot.cex, corners=p$planar.corners, at=datarange,
           col.regions=cols, rez=c(p$pres,p$pres) )
         print(lp)
