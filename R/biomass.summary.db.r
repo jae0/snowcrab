@@ -2,7 +2,7 @@
   biomass.summary.db = function( DS="complete", p=NULL ) {
     #browser()
     
-    sum_outdir = file.path( sum_outdir, "timeseries" )
+    sum_outdir = file.path( project.datadirectory("bio.snowcrab"), "output", "timeseries" )
 
     if (DS=="surplusproduction" ){
       res =  biomass.summary.db(p=p, DS="complete")
