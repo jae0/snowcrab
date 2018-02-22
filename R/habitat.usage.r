@@ -83,19 +83,19 @@
 
     if (covariate=="substrate") {
       # survey densities
-      freq1 = errorbars( b=b, v=c("log.substrate.grainsize", usevar), br=50, nfilter=10, lowess=0.25, trim=0.1,
+      freq1 = errorbars( b=b, v=c("substrate.grainsize", usevar), br=50, nfilter=10, lowess=0.25, trim=0.1,
           xlab="ln ( substrate grainsize; mm )", ylab=ylab, p=p)
       Pr(dev="png", dname=outdir, fname=paste("survey.curvature", usevar, sep=".") )
 
       # dockside landings
       usevar = "landings"
-      freq1 = errorbars( b=L, v= c("log.substrate.grainsize", usevar), br=50, nfilter=10, lowess=0.25,  trim=0.1,
+      freq1 = errorbars( b=L, v= c("substrate.grainsize", usevar), br=50, nfilter=10, lowess=0.25,  trim=0.1,
           xlab="ln ( substrate grainsize; mm )", ylab="Landings (t)", p=p)
       Pr(dev="png", dname=outdir, fname=paste("landings.curvature", usevar, sep="."))
 
       # logbook cpue
       usevar = "cpue"
-      freq1 = errorbars( b=L, v= c("log.substrate.grainsize", usevar), br=30, nfilter=3, lowess=0.3,  trim=0.1,
+      freq1 = errorbars( b=L, v= c("substrate.grainsize", usevar), br=30, nfilter=3, lowess=0.3,  trim=0.1,
           xlab="ln ( substrate grainsize; mm )", ylab="CPUE (kg/trap haul)", p=p)
       Pr(dev="png", dname=outdir, fname=paste("cpue.curvature", usevar, sep="."))
 

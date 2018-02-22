@@ -99,7 +99,7 @@ Formula:
 snowcrab.large.males_abundance ~ s(t, k = 3, bs = "ts") + s(tmean.climatology, 
     k = 3, bs = "ts") + s(tsd.climatology, k = 3, bs = "ts") + 
     s(log(z), k = 3, bs = "ts") + s(log(dZ), k = 3, bs = "ts") + 
-    s(log(ddZ), k = 3, bs = "ts") + s(log.substrate.grainsize, 
+    s(log(ddZ), k = 3, bs = "ts") + s(log(substrate.grainsize), 
     k = 3, bs = "ts") + s(pca1, k = 3, bs = "ts") + s(pca2, k = 3, 
     bs = "ts")
 
@@ -115,7 +115,7 @@ s(tsd.climatology)         1.981      2 231.52 < 2e-16
 s(log(z))                  1.634      2 141.57 < 2e-16
 s(log(dZ))                 1.941      2  10.24 2.4e-05
 s(log(ddZ))                1.696      2  17.52 2.3e-09
-s(log.substrate.grainsize) 1.915      2  58.44 < 2e-16
+s(log(substrate.grainsize)) 1.915      2  58.44 < 2e-16
 s(pca1)                    1.990      2 220.02 < 2e-16
 s(pca2)                    1.917      2 137.45 < 2e-16
 
@@ -130,7 +130,7 @@ GCV = 0.01104  Scale est. = 0.011016  n = 7255
 # snowcrab.large.males_abundance ~ s(t, k = 3, bs = "ts") + s(tmean.climatology, 
 #     k = 3, bs = "ts") + s(tsd.climatology, k = 3, bs = "ts") + 
 #     s(log(z), k = 3, bs = "ts") + s(log(dZ), k = 3, bs = "ts") + 
-#     s(log(ddZ), k = 3, bs = "ts") + s(log.substrate.grainsize, 
+#     s(log(ddZ), k = 3, bs = "ts") + s(log(substrate.grainsize), 
 #     k = 3, bs = "ts") + s(pca1, k = 3, bs = "ts") + s(pca2, k = 3, 
 #     bs = "ts")
 # 
@@ -146,7 +146,7 @@ GCV = 0.01104  Scale est. = 0.011016  n = 7255
 # s(log(z))                  1.49345      2 162.71 < 2e-16
 # s(log(dZ))                 1.91637      2  53.49 < 2e-16
 # s(log(ddZ))                0.72659      2   1.67   0.028
-# s(log.substrate.grainsize) 1.95224      2  44.19 < 2e-16
+# s(log(substrate.grainsize)) 1.95224      2  44.19 < 2e-16
 # s(pca1)                    1.99998      2 102.12 < 2e-16
 # s(pca2)                    2.00000      2 125.48 < 2e-16
 # 
@@ -199,7 +199,7 @@ Formula:
 snowcrab.large.males_presence_absence ~ s(t, k = 3, bs = "ts") + 
     s(tmean.climatology, k = 3, bs = "ts") + s(tsd.climatology, 
     k = 3, bs = "ts") + s(log(z), k = 3, bs = "ts") + s(log(dZ), 
-    k = 3, bs = "ts") + s(log(ddZ), k = 3, bs = "ts") + s(log.substrate.grainsize, 
+    k = 3, bs = "ts") + s(log(ddZ), k = 3, bs = "ts") + s(log(substrate.grainsize), 
     k = 3, bs = "ts") + s(pca1, k = 3, bs = "ts") + s(pca2, k = 3, 
     bs = "ts")
 
@@ -215,7 +215,7 @@ s(tsd.climatology)         1.999      2  537.87 < 2e-16
 s(log(z))                  1.931      2 1560.45 < 2e-16
 s(log(dZ))                 0.498      2    0.96    0.16
 s(log(ddZ))                1.955      2   44.55 6.3e-11
-s(log.substrate.grainsize) 1.831      2   80.98 < 2e-16
+s(log(substrate.grainsize)) 1.831      2   80.98 < 2e-16
 s(pca1)                    1.997      2  205.31 < 2e-16
 s(pca2)                    1.997      2  574.22 < 2e-16
 

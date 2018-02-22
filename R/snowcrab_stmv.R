@@ -47,7 +47,7 @@ snowcrab_stmv = function( DS=NULL, p=NULL, year=NULL, ret="mean", varnames=NULL,
       Y = p$selection$name,
       LOCS = c("plon", "plat"),
       TIME = "tiyr",
-      COV = c("z", "dZ", "ddZ", "log.substrate.grainsize", "t", "tmean.climatology", "tsd.climatology", "pca1", "pca2" ) )
+      COV = c("z", "dZ", "ddZ", "substrate.grainsize", "t", "tmean.climatology", "tsd.climatology", "pca1", "pca2" ) )
 
     # additional variable to extract from aegis_db for inputs
 
@@ -69,7 +69,7 @@ snowcrab_stmv = function( DS=NULL, p=NULL, year=NULL, ret="mean", varnames=NULL,
     if (!exists("stmv_global_modelformula", p)) p$stmv_global_modelformula = formula( paste(
       p$selection$name, ' ~ s(t, k=3, bs="ts") + s(tmean.climatology, k=3, bs="ts") + s(tsd.climatology, k=3, bs="ts")  ',
       ' + s( log(z), k=3, bs="ts") + s( log(dZ), k=3, bs="ts") + s( log(ddZ), k=3, bs="ts") ',
-      ' + s(log.substrate.grainsize, k=3, bs="ts") + s(pca1, k=3, bs="ts") + s(pca2, k=3, bs="ts")   ' ))  # no space
+      ' + s(log(substrate.grainsize), k=3, bs="ts") + s(pca1, k=3, bs="ts") + s(pca2, k=3, bs="ts")   ' ))  # no space
     if (p$stmv_local_modelengine =="twostep") {
       # this is the time component (mostly) .. space enters as a rough constraint
       if (!exists("stmv_local_modelformula", p))  p$stmv_local_modelformula = formula( paste(
@@ -208,7 +208,7 @@ snowcrab_stmv = function( DS=NULL, p=NULL, year=NULL, ret="mean", varnames=NULL,
       stmv::array_map( "xy->1", bathy[,c("plon","plat")], gridparams=p$gridparams ) )
 
     # spatial vars and climatologies
-    newvars = c("dZ", "ddZ", "log.substrate.grainsize", "tmean.climatology", "tsd.climatology", "b.range", "t.range" )
+    newvars = c("dZ", "ddZ", "substrate.grainsize", "tmean.climatology", "tsd.climatology", "b.range", "t.range" )
     sn = aegis_lookup( p=p, DS="spatial", locsmap=locsmap, varnames=newvars )
     set = cbind( set,  sn )
 
