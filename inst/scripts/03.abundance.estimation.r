@@ -43,8 +43,8 @@ p = bio.snowcrab::load.environment( year.assessment=year.assessment )
 
 # 11 hrs with these settings,
 p = snowcrab_stmv( p=p, DS="parameters",
+  variables=list(Y="snowcrab.large.males_abundance"),
   selection=list(
-    name = "snowcrab.large.males_abundance",
     type = "abundance",
     sex=0, # male
     mat=1, # do not use maturity status in groundfish data as it is suspect ..
@@ -161,8 +161,8 @@ GCV = 0.01104  Scale est. = 0.011016  n = 7255
 # year.assessment = 2017
 p = bio.snowcrab::load.environment( year.assessment=year.assessment )
 p = snowcrab_stmv( p=p, DS="parameters",
+  variables=list(Y="snowcrab.large.males_presence_absence"),
   selection=list(
-    name = "snowcrab.large.males_presence_absence",
     type = "presence_absence",
     sex=0, # male
     mat=1, # do not use maturity status in groundfish data as it is suspect ..
@@ -227,18 +227,17 @@ UBRE = -0.71562  Scale est. = 1         n = 25468
 # collect all predictions into a single file and return:
 # year.assessment=2017
 p = bio.snowcrab::load.environment( year.assessment=year.assessment )
-
-p$selection=list(
-  name = "snowcrab.large.males_abundance",
-  type = "abundance",
-  sex=0, # male
-  mat=1, # do not use maturity status in groundfish data as it is suspect ..
-  spec_bio=bio.taxonomy::taxonomy.recode( from="spec", to="parsimonious", tolookup=2526 ),
-  len= c( 95, 200 )/10, #  mm -> cm ; aegis_db in cm
-  drop.groundfish.data=TRUE # esp from 1970 to 1999 measurement of invertebrates was sporatic .. zero-values are dropped as they are unreliable
+p = snowcrab_stmv( p=p, DS="parameters",
+  variables = list(Y="snowcrab.large.males_abundance"),
+  selection=list(
+    type = "abundance",
+    sex=0, # male
+    mat=1, # do not use maturity status in groundfish data as it is suspect ..
+    spec_bio=bio.taxonomy::taxonomy.recode( from="spec", to="parsimonious", tolookup=2526 ),
+    len= c( 95, 200 )/10, #  mm -> cm ; aegis_db in cm
+    drop.groundfish.data=TRUE # esp from 1970 to 1999 measurement of invertebrates was sporatic .. zero-values are dropped as they are unreliable
+  )
 )
-
-p = snowcrab_stmv( p=p, DS="parameters" )
 
 interpolation.db( DS="biomass.redo", p=p  )
 interpolation.db( DS="biomass.map", p=p  )
@@ -261,7 +260,7 @@ biomass.summary.db("complete.redo", p=p) #Uses the model results to create a hab
 
 
 ### --------- prediction success:
-set = snowcrab_stmv(p=p, DS="input_data", voi=p$selection$name )
+set = snowcrab_stmv(p=p, DS="input_data" )
 
 S = set[ , c("plon", "plat") ]
 

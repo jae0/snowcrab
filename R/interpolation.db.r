@@ -240,7 +240,7 @@
     if (DS =="habitat.temperatures") {
 
       bm = interpolation.db( p=p, DS="biomass" )
-      ps = snowcrab_stmv(p=p, DS="output_data" ) # , voi=p$selection$name
+      ps = snowcrab_stmv(p=p, DS="output_data" ) 
       bs = bathymetry.db( p=p, DS="baseline")
 
       temp = ps$t * bm$h
