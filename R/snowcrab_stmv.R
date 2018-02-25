@@ -131,6 +131,8 @@ snowcrab_stmv = function( DS=NULL, p=NULL, year=NULL, ret="mean", varnames=NULL,
       p$variables$ALL = NULL
       p$variables$ALL = c( p$variables$local_all, p$variables$global_all )
       p$variables$ALL = unique( c( p$variables$ALL, p$variables$LOCS, p$variables$TIME ) )  
+      p$variables$TSvars = p$variables$ALL[ unique( c( grep("cos.w", p$variables$ALL) , grep("sin.w", p$variables$ALL) )  )]
+      p$variables$ALL = setdiff( p$variables$ALL, p$variables$TSvars)
       coordinates = unique( c(p$variables$LOCS, p$variables$TIME) )
       p$variables$COV = setdiff( p$variables$ALL, coordinates )  # non-location and non-time based covariates
     }
@@ -228,9 +230,14 @@ snowcrab_stmv = function( DS=NULL, p=NULL, year=NULL, ret="mean", varnames=NULL,
       stmv::array_map( "xy->1", bathy[,c("plon","plat")], gridparams=p$gridparams ) )
 
     # spatial vars and climatologies
-    newvars = c("dZ", "ddZ", "substrate.grainsize", "tmean.climatology", "tsd.climatology", "b.range", "t.range" )
-    sn = aegis_lookup( p=p, DS="spatial", locsmap=locsmap, varnames=newvars )
-    set = cbind( set,  sn )
+    # newvars = c("dZ", "ddZ", "substrate.grainsize", "tmean.climatology", "tsd.climatology", "b.range", "t.range" )
+    newvars = setdiff(p$variables$COV, names(set) )
+    if (length(newvars) > 0) {
+      sn = aegis_lookup( p=p, DS="spatial", locsmap=locsmap, varnames=newvars )
+      if (ncol(sn) > 0) {
+        set = cbind( set,  sn )
+      }
+    }
 
     oo = which( !is.finite(locsmap) )
     if (length(oo) > 0) {
@@ -238,16 +245,25 @@ snowcrab_stmv = function( DS=NULL, p=NULL, year=NULL, ret="mean", varnames=NULL,
       locsmapsse = match(
         stmv::array_map( "xy->1", set[oo, c("plon","plat")], gridparams=psse$gridparams ),
         stmv::array_map( "xy->1", bathysse[,c("plon","plat")], gridparams=psse$gridparams ) )
-      sn = aegis_lookup( p=psse, DS="spatial", locsmap=locsmapsse, varnames=newvars )
-      for (nv in newvars) set[oo,nv] = sn[,nv]
+        if (length(newvars) > 0) {
+          sn = aegis_lookup( p=psse, DS="spatial", locsmap=locsmapsse, varnames=newvars )
+          if (ncol(sn) >0) {
+            for (nv in names(sn)) set[oo,nv] = sn[,nv]
+          }
+        }
     }
 
     # for space-time(year-averages)
-    newvars = c( "tmean", "tsd", "tamplitude" )
-    sn = aegis_lookup( p=p, DS="spatial.annual", locsmap=locsmap, timestamp=set[,"timestamp"], varnames=newvars )
-    colnames( sn  ) = newvars
-    set = cbind( set,  sn )
-
+    # newvars = c( "tmean", "tsd", "tamplitude" )
+    newvars = setdiff(p$variables$COV, names(set) )
+    if (length(newvars) > 0) {
+      sn = aegis_lookup( p=p, DS="spatial.annual", locsmap=locsmap, timestamp=set[,"timestamp"], varnames=newvars )
+      if (ncol(sn) >0) {
+        colnames( sn  ) = newvars
+        set = cbind( set,  sn )
+      } 
+    }
+    
     nn = which( !is.finite(set$tmean) )
     if (length(nn) > 0) {
       # catch stragglers from a larger domain
