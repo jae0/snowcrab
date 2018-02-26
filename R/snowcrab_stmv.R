@@ -13,6 +13,13 @@ snowcrab_stmv = function( DS=NULL, p=NULL, year=NULL, ret="mean", varnames=NULL,
   if (exists( "libs", p)) RLibrary( p$libs )
   if (!("stmv" %in% p$libs)) p$libs = c( p$libs, RLibrary( "stmv" ) )  # required for parallel processing
 
+  # due to formulae being created on the fly, these are required params
+  if (!exists("variables", p)) stop("Please define p$variables$Y")
+  if (!exists("Y", p$variables)) stop("Please define p$variables$Y")
+
+  if (!exists("LOCS", p$variables)) p$variables$LOCS = c("plon", "plat")
+  if (!exists("TIME", p$variables)) p$variables$TIME = "tiyr"
+
   # ---------------------
   if (DS=="parameters") {
 
@@ -43,8 +50,6 @@ snowcrab_stmv = function( DS=NULL, p=NULL, year=NULL, ret="mean", varnames=NULL,
     }
     if (!exists("Y", p$variables)) p$variables$Y = stop("not_defined")
 
-    if (!exists("LOCS", p$variables)) p$variables$LOCS = c("plon", "plat")
-    if (!exists("TIME", p$variables)) p$variables$TIME = "tiyr"
     
     # additional variable to extract from aegis_db for inputs
     p$aegis_variables = list()
@@ -112,30 +117,7 @@ snowcrab_stmv = function( DS=NULL, p=NULL, year=NULL, ret="mean", varnames=NULL,
       message( "The specified stmv_local_modelengine is not tested/supported ... you are on your own ;) ..." )
     }
     
-    
-    if (!exists("COV", p$variables)) {
-      p$variables$local_all = NULL  
-      p$variables$local_cov = NULL
-      if (exists("stmv_local_modelformula", p)) {
-        p$variables$local_all = all.vars( p$stmv_local_modelformula )
-        p$variables$local_cov = all.vars( p$stmv_local_modelformula[[3]] )
-      }
-      p$nloccov = 0
-      if (exists("local_cov", p$variables)) p$nloccov = length(p$variables$local_cov)
-      p$variables$global_all = NULL  
-      p$variables$global_cov = NULL
-      if (exists("stmv_global_modelformula", p)) {
-        p$variables$global_all = all.vars( p$stmv_global_modelformula )
-        p$variables$global_cov = all.vars( p$stmv_global_modelformula[[3]] )
-      }
-      p$variables$ALL = NULL
-      p$variables$ALL = c( p$variables$local_all, p$variables$global_all )
-      p$variables$ALL = unique( c( p$variables$ALL, p$variables$LOCS, p$variables$TIME ) )  
-      p$variables$TSvars = p$variables$ALL[ unique( c( grep("cos.w", p$variables$ALL) , grep("sin.w", p$variables$ALL) )  )]
-      p$variables$ALL = setdiff( p$variables$ALL, p$variables$TSvars)
-      coordinates = unique( c(p$variables$LOCS, p$variables$TIME) )
-      p$variables$COV = setdiff( p$variables$ALL, coordinates )  # non-location and non-time based covariates
-    }
+    p = stmv_variablelist(p=p)  # decompose into covariates, etc
 
     return(p)
   }
