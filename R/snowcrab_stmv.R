@@ -6,7 +6,7 @@ snowcrab_stmv = function( DS=NULL, p=NULL, year=NULL, ret="mean", varnames=NULL,
   if ( is.null(p) ) p=list()
   p_add = list(...)
   if (length(p_add) > 0 ) p = c(p, p_add)
-  i = which(duplicated(names(p), fromLast = TRUE ) ) 
+  i = which(duplicated(names(p), fromLast = TRUE ) )
   if ( length(i) > 0 ) p = p[-i] # give any passed parameters a higher priority, overwriting pre-existing variable
 
   # ---------------------
@@ -46,12 +46,12 @@ snowcrab_stmv = function( DS=NULL, p=NULL, year=NULL, ret="mean", varnames=NULL,
 
     if (!exists("variables", p)) p$variables = list()
     if (!exists("Y", p$variables)) {
-      if (exists("stmv_local_modelformula", p))  p$variables$Y = all.vars( p$stmv_local_modelformula[[2]] ) 
+      if (exists("stmv_local_modelformula", p))  p$variables$Y = all.vars( p$stmv_local_modelformula[[2]] )
       if (exists("stmv_global_modelformula", p)) p$variables$Y = all.vars( p$stmv_global_modelformula[[2]] )
     }
     if (!exists("Y", p$variables)) p$variables$Y = stop("not_defined")
 
-    
+
     # additional variable to extract from aegis_db for inputs
     p$aegis_variables = list()
     # p$aegis_project_datasources = c("speciescomposition", "speciesarea", "sizespectrum", "condition", "metabolism", "biochem")
@@ -117,7 +117,7 @@ snowcrab_stmv = function( DS=NULL, p=NULL, year=NULL, ret="mean", varnames=NULL,
     } else {
       message( "The specified stmv_local_modelengine is not tested/supported ... you are on your own ;) ..." )
     }
-    
+
     p = stmv_variablelist(p=p)  # decompose into covariates, etc
 
     return(p)
@@ -128,8 +128,8 @@ snowcrab_stmv = function( DS=NULL, p=NULL, year=NULL, ret="mean", varnames=NULL,
 
   if (DS=="stmv_inputs") {
     # mostly based on aegis_db( DS="stmv_inputs")
-    INP = snowcrab_stmv(p=p, DS="input_data" )  
-    PS  = snowcrab_stmv(p=p, DS="output_data" ) 
+    INP = snowcrab_stmv(p=p, DS="input_data" )
+    PS  = snowcrab_stmv(p=p, DS="output_data" )
     LOCS = bathymetry.db(p=p, DS="baseline")
     return (list(input=INP, output=list( LOCS=LOCS, COV=PS )) )
   }
@@ -244,9 +244,9 @@ snowcrab_stmv = function( DS=NULL, p=NULL, year=NULL, ret="mean", varnames=NULL,
       if (ncol(sn) >0) {
         colnames( sn  ) = newvars
         set = cbind( set,  sn )
-      } 
+      }
     }
-    
+
     nn = which( !is.finite(set$tmean) )
     if (length(nn) > 0) {
       # catch stragglers from a larger domain
@@ -363,7 +363,7 @@ snowcrab_stmv = function( DS=NULL, p=NULL, year=NULL, ret="mean", varnames=NULL,
     # NOTE: the primary interpolated data were already created by stmv.
     # This routine points to this data and also creates
     # subsets of the data where required, determined by "spatial.domain.subareas"
-    # not strictly required for snow crab data analysis as there are no sub-areas that are analysed 
+    # not strictly required for snow crab data analysis as there are no sub-areas that are analysed
     # at present, but in case there are small-area analysis in future, this is a mechnanism
 
     projectdir = file.path(p$data_root, "modelled", p$variables$Y, p$spatial.domain )
@@ -384,14 +384,14 @@ snowcrab_stmv = function( DS=NULL, p=NULL, year=NULL, ret="mean", varnames=NULL,
     p0 = spatial_parameters( p=p ) # make explicit
     L0 = bathymetry.db( p=p0, DS="baseline" )
     L0i = stmv::array_map( "xy->2", L0[, c("plon", "plat")], gridparams=p0$gridparams )
-    
+
     for ( year in p$yrs ) {
       # print (year)
       # default domain
       PP0 = stmv_db( p=p, DS="stmv.prediction", yr=year, ret="mean")
       VV0 = stmv_db( p=p, DS="stmv.prediction", yr=year, ret="lb")
       WW0 = stmv_db( p=p, DS="stmv.prediction", yr=year, ret="ub")
-      
+
       for ( gr in sreg ) {
         p1 = spatial_parameters( p=p, spatial.domain=gr ) # 'warping' from p -> p1
         L1 = bathymetry.db( p=p1, DS="baseline" )
@@ -415,7 +415,7 @@ snowcrab_stmv = function( DS=NULL, p=NULL, year=NULL, ret="mean", varnames=NULL,
         print (fn1_sg)
       }
     }
-  
+
     return ("Completed")
 
     if (0) {
@@ -440,13 +440,13 @@ snowcrab_stmv = function( DS=NULL, p=NULL, year=NULL, ret="mean", varnames=NULL,
     sreg = setdiff( p$spatial.domain.subareas, p$spatial.domain )
     if (is.null(sreg)) return
     if (length(sreg) < 1 ) return
-  
+
     S0 = stmv_db( p=p, DS="stmv.stats" )
-    Snames = colnames(S0) 
+    Snames = colnames(S0)
     p0 = spatial_parameters( p=p ) # from
     L0 = bathymetry.db( p=p0, DS="baseline" )
     L0i = stmv::array_map( "xy->2", L0[, c("plon", "plat")], gridparams=p0$gridparams )
-    
+
     for ( gr in sreg ) {
       p1 = spatial_parameters( p=p, spatial.domain=gr ) # 'warping' from p -> p1
       L1 = bathymetry.db( p=p1, DS="baseline" )
@@ -495,12 +495,12 @@ snowcrab_stmv = function( DS=NULL, p=NULL, year=NULL, ret="mean", varnames=NULL,
     grids = unique( c(p$spatial.domain.subareas , p$spatial.domain ) ) # operate upon every domain
 
     # if ( p$variables$Y=="snowcrab.large.males_abundance" ) {
-    #   # copied from  snowcrab_stmv(p=p, DS="input_data" )  
+    #   # copied from  snowcrab_stmv(p=p, DS="input_data" )
     #   set = set[ which(set$data.source == "snowcrab"), ]
     #   qq = quantile( set$totmass, probs=0.975, na.rm=TRUE )
     #   qb = c( 0, qq )   # emprical range limit (do not extrapolate)
     # }
-    
+
     for (gr in grids ) {
       p1 = spatial_parameters( p=p, spatial.domain=gr ) #target projection
       # p1$variables$Y = p$variables$Y # need to send this to get the correct results
@@ -589,7 +589,7 @@ snowcrab_stmv = function( DS=NULL, p=NULL, year=NULL, ret="mean", varnames=NULL,
       print (gr)
       p1 = spatial_parameters(  p=p, spatial.domain= gr )
       snowcrab_stmv( p=p1, DS="map.climatology" ) # no parallel option .. just a few
-      snowcrab_stmv( p=p1, DS="map.annual" ) 
+      snowcrab_stmv( p=p1, DS="map.annual" )
     }
 
   }
@@ -601,7 +601,7 @@ snowcrab_stmv = function( DS=NULL, p=NULL, year=NULL, ret="mean", varnames=NULL,
 
     annot.cex=0.65
     eps = 0.001
-    
+
     for ( year in p$yrs ) {
         projectdir = file.path(p$data_root, "maps", p$variables$Y, p$spatial.domain, "annual" )
         dir.create( projectdir, recursive=T, showWarnings=F )
@@ -625,7 +625,7 @@ snowcrab_stmv = function( DS=NULL, p=NULL, year=NULL, ret="mean", varnames=NULL,
         cols = color.code( "blue.black", datarange )
         annot = gsub( ".", " ", toupper(p$variables$Y), fixed=TRUE )
         outfn = paste( p$variables$Y, "mean", year, sep=".")
-        
+
         dir.create (projectdir, showWarnings=FALSE, recursive =TRUE)
         fn = file.path( projectdir, paste(outfn, "png", sep="." ) )
         png( filename=fn, width=3072, height=2304, pointsize=40, res=300 )
@@ -634,7 +634,7 @@ snowcrab_stmv = function( DS=NULL, p=NULL, year=NULL, ret="mean", varnames=NULL,
           corners=p$corners, spatial.domain=p$spatial.domain )
         print(lp)
         dev.off()
-        
+
         H = snowcrab_stmv( p=p, DS="predictions", year=year, ret="lb" )
         if (is.null(H)) next ()
         # H = log(H)
@@ -652,7 +652,7 @@ snowcrab_stmv = function( DS=NULL, p=NULL, year=NULL, ret="mean", varnames=NULL,
         cols = color.code( "blue.black", datarange )
         annot = gsub( ".", " ", toupper(p$variables$Y), fixed=TRUE )
         outfn = paste( p$variables$Y, "lb", year, sep=".")
-        
+
         dir.create (projectdir, showWarnings=FALSE, recursive =TRUE)
         fn = file.path( projectdir, paste(outfn, "png", sep="." ) )
         png( filename=fn, width=3072, height=2304, pointsize=40, res=300 )
@@ -678,7 +678,7 @@ snowcrab_stmv = function( DS=NULL, p=NULL, year=NULL, ret="mean", varnames=NULL,
         cols = color.code( "blue.black", datarange )
         annot = gsub( ".", " ", toupper(p$variables$Y), fixed=TRUE )
         outfn = paste( p$variables$Y, "ub", year, sep=".")
-        
+
         dir.create (projectdir, showWarnings=FALSE, recursive =TRUE)
         fn = file.path( projectdir, paste(outfn, "png", sep="." ) )
         png( filename=fn, width=3072, height=2304, pointsize=40, res=300 )
@@ -701,11 +701,11 @@ snowcrab_stmv = function( DS=NULL, p=NULL, year=NULL, ret="mean", varnames=NULL,
 
     annot.cex=0.75
     eps = 0.001
-    
+
     H = snowcrab_stmv( p=p, DS="complete" )
     vnames = setdiff( names(H), c("plon", "plat" ))
     H = NULL
- 
+
     for (vn in vnames) {
         projectdir = file.path(p$data_root, "maps", p$variables$Y, p$spatial.domain, "climatology" )
         dir.create( projectdir, recursive=T, showWarnings=F )
