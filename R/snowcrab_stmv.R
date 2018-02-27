@@ -14,8 +14,8 @@ snowcrab_stmv = function( DS=NULL, p=NULL, year=NULL, ret="mean", varnames=NULL,
   if (!("stmv" %in% p$libs)) p$libs = c( p$libs, RLibrary( "stmv" ) )  # required for parallel processing
 
   # due to formulae being created on the fly, these are required params
-  if (!exists("variables", p)) stop("Please define p$variables$Y")
-  if (!exists("Y", p$variables)) stop("Please define p$variables$Y")
+  # if (!exists("variables", p)) stop("Please define p$variables$Y")
+  # if (!exists("Y", p$variables)) stop("Please define p$variables$Y")
 
   if (!exists("LOCS", p$variables)) p$variables$LOCS = c("plon", "plat")
   if (!exists("TIME", p$variables)) p$variables$TIME = "tiyr"
@@ -42,6 +42,7 @@ snowcrab_stmv = function( DS=NULL, p=NULL, year=NULL, ret="mean", varnames=NULL,
     if (!exists("n.max", p)) p$n.max = 6000 # actually can have a lot of data from logbooks ... this keeps things reasonable in terms of run-time
     p$sampling = c( 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.1, 1.25 )  #
 
+    p$stmv_dimensionality="space-year"
 
     if (!exists("variables", p)) p$variables = list()
     if (!exists("Y", p$variables)) {
