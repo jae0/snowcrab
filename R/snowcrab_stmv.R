@@ -314,7 +314,7 @@ snowcrab_stmv = function( DS=NULL, p=NULL, year=NULL, ret="mean", varnames=NULL,
     # names(PS)[ names(PS)=="amplitude"] ="tamplitude"
 
     # make years coherent for temperatures
-    p0 = aegis::aegis_parameters(p=p, DS="temperature", year.assessment=p$year.assessment )
+    p0 = aegis::temperature_parameters(p=p)
     yr_index = match( p$yrs, p0$yrs )
     yg = which(is.finite(yr_index))
     ym = which(is.na(yr_index))
