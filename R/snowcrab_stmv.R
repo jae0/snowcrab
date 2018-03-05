@@ -71,7 +71,7 @@ snowcrab_stmv = function( DS=NULL, p=NULL, year=NULL, ret="mean", varnames=NULL,
     # additional variable to extract from aegis_db for inputs
     p$aegis_variables = list()
     # p$aegis_project_datasources = c("speciescomposition", "speciesarea", "sizespectrum", "condition", "metabolism", "biochem")
-    p$aegis_project_datasources = "speciescomposition"
+    if (!exists("aegis_project_datasources", p)) p$aegis_project_datasources = "speciescomposition"
     for (id in p$aegis_project_datasources ) {
       pz = aegis::aegis_parameters( p=p, DS=id )
       pz_vars = intersect( pz$varstomodel, p$variables$COV )  # these are aegis vars to model
@@ -80,6 +80,7 @@ snowcrab_stmv = function( DS=NULL, p=NULL, year=NULL, ret="mean", varnames=NULL,
 
     if (!exists("stmv_variogram_method", p)) p$stmv_variogram_method = "fast"
     if (!exists("stmv_local_modelengine", p)) p$stmv_local_modelengine ="gam"
+
     if (!exists("stmv_global_modelengine", p)) p$stmv_global_modelengine ="gam"
     if (!exists("stmv_global_family", p)) p$stmv_global_family = gaussian(link="log")
 
@@ -88,6 +89,7 @@ snowcrab_stmv = function( DS=NULL, p=NULL, year=NULL, ret="mean", varnames=NULL,
       p$variables$Y, ' ~ s(t, k=3, bs="ts") + s(tmean.climatology, k=3, bs="ts") + s(tsd.climatology, k=3, bs="ts")  ',
       ' + s( log(z), k=3, bs="ts") + s( log(dZ), k=3, bs="ts") + s( log(ddZ), k=3, bs="ts") ',
       ' + s(log(substrate.grainsize), k=3, bs="ts") + s(pca1, k=3, bs="ts") + s(pca2, k=3, bs="ts")   ' ))  # no space
+
     if (p$stmv_local_modelengine =="twostep") {
       # this is the time component (mostly) .. space enters as a rough constraint
       if (!exists("stmv_local_modelformula", p))  p$stmv_local_modelformula = formula( paste(
@@ -102,16 +104,9 @@ snowcrab_stmv = function( DS=NULL, p=NULL, year=NULL, ret="mean", varnames=NULL,
       if (!exists("stmv_twostep_space", p))  p$stmv_twostep_space = "krige"
       # if (!exists("stmv_twostep_space", p))  p$stmv_twostep_space = "tps"
       if (!exists("stmv_gam_optimizer", p)) p$stmv_gam_optimizer=c("outer", "bfgs")
-    }  else if (p$stmv_local_modelengine == "habitat") {
-      p$stmv_global_family = binomial( link="log" )
-      if (!exists("stmv_local_modelformula", p))  p$stmv_local_modelformula = formula( paste(
-        p$variables$Y, '~ s(yr, k=10, bs="ts") + s(cos.w, k=3, bs="ts") + s(sin.w, k=3, bs="ts") ',
-          ' + s(cos.w, sin.w, yr, bs="ts", k=10)  ',
-          ' + s(plon, k=3, bs="ts") + s(plat, k=3, bs="ts") + s(plon, plat, k=10, bs="ts") ' ) )
-      if (!exists("stmv_local_model_distanceweighted", p)) p$stmv_local_model_distanceweighted = TRUE
-      # if (!exists("stmv_gam_optimizer", p)) p$stmv_gam_optimizer="perf"
-      if (!exists("stmv_gam_optimizer", p)) p$stmv_gam_optimizer=c("outer", "bfgs")
+
     }  else if (p$stmv_local_modelengine == "gam") {
+
       if (!exists("stmv_local_modelformula", p))  p$stmv_local_modelformula = formula( paste(
         p$variables$Y, '~ s(yr, bs="ts") + s(cos.w, k=3, bs="ts") + s(sin.w, k=3, bs="ts") ',
           ' + s(cos.w, sin.w, yr, bs="ts", k=25)  ',
@@ -119,6 +114,7 @@ snowcrab_stmv = function( DS=NULL, p=NULL, year=NULL, ret="mean", varnames=NULL,
       if (!exists("stmv_local_model_distanceweighted", p)) p$stmv_local_model_distanceweighted = TRUE
       # if (!exists("stmv_gam_optimizer", p)) p$stmv_gam_optimizer="perf"
       if (!exists("stmv_gam_optimizer", p)) p$stmv_gam_optimizer=c("outer", "bfgs")
+
     }  else if (p$stmv_local_modelengine == "bayesx") {
       # bayesx families are specified as characters, this forces it to pass as is and
       # then the next does the transformation internal to the "stmv__bayesx"

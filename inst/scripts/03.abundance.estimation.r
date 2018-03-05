@@ -178,6 +178,8 @@ p = snowcrab_stmv( p=p, DS="parameters",
     drop.groundfish.data=TRUE # esp from 1970 to 1999 measurement of invertebrates was sporatic .. zero-values are dropped as they are unreliable
   ),
   DATA = 'snowcrab_stmv( p=p, DS="stmv_inputs" )',
+  # aegis_project_datasources = c("speciescomposition", "speciesarea", "sizespectrum", "condition", "metabolism", "biochem"),
+  aegis_project_datasources = c("speciescomposition" ),
   stmv_global_family = binomial( link="log" ),
   stmv_global_modelengine ="gam",
   stmv_stmv_global_modelformula = formula( paste(
