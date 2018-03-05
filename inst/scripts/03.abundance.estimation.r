@@ -35,11 +35,11 @@
 #snowcrab.db( DS ="set.complete.redo", p=p )
 
 # -------------------------------------------------------------------------------------
-# abundance .. positive valued data .. 
+# abundance .. positive valued data ..
 # takes about 5 hrs .. ~1 GB / process
 # vn = "snowcrab.large.males_abundance"
 # year.assessment = 2017
-p = bio.snowcrab::load.environment( year.assessment=year.assessment ) 
+p = bio.snowcrab::load.environment( year.assessment=year.assessment )
 
 # 11 hrs with these settings,
 p = snowcrab_stmv( p=p, DS="parameters",
@@ -53,28 +53,35 @@ p = snowcrab_stmv( p=p, DS="parameters",
     drop.groundfish.data=TRUE # esp from 1970 to 1999 measurement of invertebrates was sporatic .. zero-values are dropped as they are unreliable
   ),
   DATA = 'snowcrab_stmv( p=p, DS="stmv_inputs" )',
-  stmv_global_family = gaussian(link=log),
-  stmv_local_modelengine = "twostep",
-  stmv_twostep_space = "krige",
-  stmv_gam_optimizer=c("outer", "bfgs") ,
-  stmv_distance_statsgrid = 2, # resolution (km) of data aggregation (i.e. generation of the ** statistics ** )
-  stmv_distance_scale = 50,
-  stmv_global_family = gaussian(link="log"),
   stmv_Y_transform =list(
         transf = function(x) {x/6675} ,
         invers = function(x) {x*6675}
-  ) # transform data to unit interval to stabilize variance and speed up convergence
-  # stmv_global_family = gaussian(link="identity"),
-  # stmv_Y_transform =list(
-  #       transf = function(x) {log(x/6675)} ,
-  #       invers = function(x) {exp(x)*6675}
-  # ) # transform data to unit interval to stabilize variance and speed up convergence
+  ), # transform data to unit interval to stabilize variance and speed up convergence
+  stmv_global_modelengine ="gam",
+  stmv_global_family = gaussian(link="log"),
+  stmv_global_modelformula = formula( paste(
+    'snowcrab.large.males_abundance ~ s(t, k=3, bs="ts") + s(tmean.climatology, k=3, bs="ts") + s(tsd.climatology, k=3, bs="ts")  ',
+    ' + s( log(z), k=3, bs="ts") + s( log(dZ), k=3, bs="ts") + s( log(ddZ), k=3, bs="ts") ',
+    ' + s(log(substrate.grainsize), k=3, bs="ts") + s(pca1, k=3, bs="ts") + s(pca2, k=3, bs="ts")   ' )),  # no space
+  stmv_local_family = gaussian(link = "identity"),
+  stmv_local_modelengine = "twostep",
+  stmv_local_modelformula = formula( paste(
+    ' snowcrab.large.males_abundance ~ s(yr, k=10, bs="ts") + s(cos.w, k=3, bs="ts") + s(sin.w, k=3, bs="ts") ',
+    ' + s(cos.w, sin.w, yr, bs="ts", k=20) ',
+    ' + s(plon, k=3, bs="ts") + s(plat, k=3, bs="ts") + s(plon, plat, k=20, bs="ts") ' ) ),
+  stmv_twostep_space = "krige",  # other possibilities: "spatial.process", "fft", "tps"
+  stmv_local_model_distanceweighted = TRUE,
+  stmv_gam_optimizer=c("outer", "bfgs") ,
+  stmv_variogram_method = "fast",
+  stmv_distance_statsgrid = 2, # resolution (km) of data aggregation (i.e. generation of the ** statistics ** )
+  stmv_distance_scale = 50
 )
+
 
 # range( INP$snowcrab.large.males_abundance )
 # [1]   14.3 6675.0
 
-# o = snowcrab_stmv(p=p, DS="stmv_inputs" )  # create fields for  
+# o = snowcrab_stmv(p=p, DS="stmv_inputs" )  # create fields for
 
 stmv( p=p, runmode=c("globalmodel", "interpolate" )  ) #  for a clean start
 # stmv( p=p, runmode=c("globalmodel", "interpolate" ), use_saved_state=TRUE ) # for a restart  .. not working?
@@ -92,15 +99,15 @@ summary( global_model )
 plot(global_model)
 
 #Below lines are just model outputs for comparison sake
-Family: gaussian 
-Link function: identity 
+Family: gaussian
+Link function: identity
 
 Formula:
-snowcrab.large.males_abundance ~ s(t, k = 3, bs = "ts") + s(tmean.climatology, 
-    k = 3, bs = "ts") + s(tsd.climatology, k = 3, bs = "ts") + 
-    s(log(z), k = 3, bs = "ts") + s(log(dZ), k = 3, bs = "ts") + 
-    s(log(ddZ), k = 3, bs = "ts") + s(log(substrate.grainsize), 
-    k = 3, bs = "ts") + s(pca1, k = 3, bs = "ts") + s(pca2, k = 3, 
+snowcrab.large.males_abundance ~ s(t, k = 3, bs = "ts") + s(tmean.climatology,
+    k = 3, bs = "ts") + s(tsd.climatology, k = 3, bs = "ts") +
+    s(log(z), k = 3, bs = "ts") + s(log(dZ), k = 3, bs = "ts") +
+    s(log(ddZ), k = 3, bs = "ts") + s(log(substrate.grainsize),
+    k = 3, bs = "ts") + s(pca1, k = 3, bs = "ts") + s(pca2, k = 3,
     bs = "ts")
 
 Parametric coefficients:
@@ -121,23 +128,23 @@ s(pca2)                    1.917      2 137.45 < 2e-16
 
 R-sq.(adj) =  0.365   Deviance explained = 36.7%
 GCV = 0.01104  Scale est. = 0.011016  n = 7255
- 
+
 # variation 2:
-# Family: gaussian 
-# Link function: log 
-# 
+# Family: gaussian
+# Link function: log
+#
 # Formula:
-# snowcrab.large.males_abundance ~ s(t, k = 3, bs = "ts") + s(tmean.climatology, 
-#     k = 3, bs = "ts") + s(tsd.climatology, k = 3, bs = "ts") + 
-#     s(log(z), k = 3, bs = "ts") + s(log(dZ), k = 3, bs = "ts") + 
-#     s(log(ddZ), k = 3, bs = "ts") + s(log(substrate.grainsize), 
-#     k = 3, bs = "ts") + s(pca1, k = 3, bs = "ts") + s(pca2, k = 3, 
+# snowcrab.large.males_abundance ~ s(t, k = 3, bs = "ts") + s(tmean.climatology,
+#     k = 3, bs = "ts") + s(tsd.climatology, k = 3, bs = "ts") +
+#     s(log(z), k = 3, bs = "ts") + s(log(dZ), k = 3, bs = "ts") +
+#     s(log(ddZ), k = 3, bs = "ts") + s(log(substrate.grainsize),
+#     k = 3, bs = "ts") + s(pca1, k = 3, bs = "ts") + s(pca2, k = 3,
 #     bs = "ts")
-# 
+#
 # Parametric coefficients:
 #             Estimate Std. Error t value Pr(>|t|)
 # (Intercept)  -2.1317     0.0238   -89.4   <2e-16
-# 
+#
 # Approximate significance of smooth terms:
 #                                edf Ref.df      F p-value
 # s(t)                       0.00044      2   0.00   0.196
@@ -149,15 +156,15 @@ GCV = 0.01104  Scale est. = 0.011016  n = 7255
 # s(log(substrate.grainsize)) 1.95224      2  44.19 < 2e-16
 # s(pca1)                    1.99998      2 102.12 < 2e-16
 # s(pca2)                    2.00000      2 125.48 < 2e-16
-# 
+#
 # R-sq.(adj) =  0.231   Deviance explained = 23.3%
 # GCV = 0.00014973  Scale est. = 0.00014942  n = 7255
-# 
+#
 
 
 # -------------------------------------------------
 # presence-absence
-# this takes about 40 hrs ... and 5-6 GB /process 
+# this takes about 40 hrs ... and 5-6 GB /process
 # year.assessment = 2017
 p = bio.snowcrab::load.environment( year.assessment=year.assessment )
 p = snowcrab_stmv( p=p, DS="parameters",
@@ -171,13 +178,26 @@ p = snowcrab_stmv( p=p, DS="parameters",
     drop.groundfish.data=TRUE # esp from 1970 to 1999 measurement of invertebrates was sporatic .. zero-values are dropped as they are unreliable
   ),
   DATA = 'snowcrab_stmv( p=p, DS="stmv_inputs" )',
-  stmv_global_family = binomial(),
+  stmv_global_family = binomial( link="log" ),
+  stmv_global_modelengine ="gam",
+  stmv_stmv_global_modelformula = formula( paste(
+    ' snowcrab.large.males_presence_absence ~ s(t, k=3, bs="ts") + s(tmean.climatology, k=3, bs="ts") + s(tsd.climatology, k=3, bs="ts")  ',
+    ' + s( log(z), k=3, bs="ts") + s( log(dZ), k=3, bs="ts") + s( log(ddZ), k=3, bs="ts") ',
+    ' + s(log(substrate.grainsize), k=3, bs="ts") + s(pca1, k=3, bs="ts") + s(pca2, k=3, bs="ts")   ' )),
+  stmv_local_family = gaussian(link = "identity"),
   stmv_local_modelengine = "twostep",
+  stmv_local_modelformula = formula( paste(
+    'snowcrab.large.males_presence_absence ~ s(yr, bs="ts") + s(cos.w, k=3, bs="ts") + s(sin.w, k=3, bs="ts") ',
+      ' + s(cos.w, sin.w, yr, bs="ts", k=25)  ',
+      ' + s(plon, k=3, bs="ts") + s(plat, k=3, bs="ts") + s(plon, plat, k=25, bs="ts") ' ) ),
+  stmv_local_model_distanceweighted = TRUE,
   stmv_twostep_space = "krige",
   stmv_gam_optimizer=c("outer", "bfgs"),
   stmv_distance_statsgrid = 2, # resolution (km) of data aggregation (i.e. generation of the ** statistics ** ),
   stmv_distance_scale = 50
 )
+
+
 # o = snowcrab_stmv(p=p, DS="stmv_inputs" )  # create fields for
 stmv( p=p, runmode=c("globalmodel", "interpolate" ) ) # no global_model and force a clean restart
 
@@ -192,15 +212,15 @@ snowcrab_stmv( p=p, DS="map.all" )
 
 global_model = stmv_db( p=p, DS="global_model")
 summary( global_model )
-plot(global_model)
-Family: binomial 
-Link function: logit 
+plot(global_model, all.terms=TRUE, trans=bio.snowcrab::inverse.logit, seWithMean=TRUE, jit=TRUE, rug=TRUE )
+Family: binomial
+Link function: logit
 Formula:
-snowcrab.large.males_presence_absence ~ s(t, k = 3, bs = "ts") + 
-    s(tmean.climatology, k = 3, bs = "ts") + s(tsd.climatology, 
-    k = 3, bs = "ts") + s(log(z), k = 3, bs = "ts") + s(log(dZ), 
-    k = 3, bs = "ts") + s(log(ddZ), k = 3, bs = "ts") + s(log(substrate.grainsize), 
-    k = 3, bs = "ts") + s(pca1, k = 3, bs = "ts") + s(pca2, k = 3, 
+snowcrab.large.males_presence_absence ~ s(t, k = 3, bs = "ts") +
+    s(tmean.climatology, k = 3, bs = "ts") + s(tsd.climatology,
+    k = 3, bs = "ts") + s(log(z), k = 3, bs = "ts") + s(log(dZ),
+    k = 3, bs = "ts") + s(log(ddZ), k = 3, bs = "ts") + s(log(substrate.grainsize),
+    k = 3, bs = "ts") + s(pca1, k = 3, bs = "ts") + s(pca2, k = 3,
     bs = "ts")
 
 Parametric coefficients:
@@ -221,7 +241,7 @@ s(pca2)                    1.997      2  574.22 < 2e-16
 
 R-sq.(adj) =  0.598   Deviance explained = 55.4%
 UBRE = -0.71562  Scale est. = 1         n = 25468
- 
+
 
 
 # collect all predictions into a single file and return:
@@ -278,12 +298,12 @@ plot(log(spred)~log(snowcrab.large.males_abundance), data=set )
 cor(log(spred),log(set$snowcrab.large.males_abundance), use="complete.obs")
 
 Call:
-lm(formula = log(spred) ~ log(snowcrab.large.males_abundance), 
+lm(formula = log(spred) ~ log(snowcrab.large.males_abundance),
     data = set, na.action = "na.omit")
 
 Residuals:
-    Min      1Q  Median      3Q     Max 
--2.3039 -0.5507  0.0589  0.6056  2.1379 
+    Min      1Q  Median      3Q     Max
+-2.3039 -0.5507  0.0589  0.6056  2.1379
 
 Coefficients:
                                     Estimate Std. Error t value Pr(>|t|)
@@ -292,7 +312,7 @@ log(snowcrab.large.males_abundance)  0.19035    0.00599    31.8   <2e-16
 
 Residual standard error: 0.795 on 5030 degrees of freedom
   (2223 observations deleted due to missingness)
-Multiple R-squared:  0.167,	Adjusted R-squared:  0.167 
+Multiple R-squared:  0.167,	Adjusted R-squared:  0.167
 F-statistic: 1.01e+03 on 1 and 5030 DF,  p-value: <2e-16
 
 R> plot(log(spred)~log(snowcrab.large.males_abundance), data=set )

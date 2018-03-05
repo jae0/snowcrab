@@ -17,6 +17,8 @@ snowcrab_stmv = function( DS=NULL, p=NULL, year=NULL, ret="mean", varnames=NULL,
   # if (!exists("variables", p)) stop("Please define p$variables$Y")
   # if (!exists("Y", p$variables)) stop("Please define p$variables$Y")
 
+  if (!exists("variables", p)) p$variables = list()
+
   if (!exists("LOCS", p$variables)) p$variables$LOCS = c("plon", "plat")
   if (!exists("TIME", p$variables)) p$variables$TIME = "tiyr"
 
@@ -44,12 +46,26 @@ snowcrab_stmv = function( DS=NULL, p=NULL, year=NULL, ret="mean", varnames=NULL,
 
     p$stmv_dimensionality="space-year"
 
-    if (!exists("variables", p)) p$variables = list()
+    # due to formulae being potentially created on the fly, these are required params
     if (!exists("Y", p$variables)) {
-      if (exists("stmv_local_modelformula", p))  p$variables$Y = all.vars( p$stmv_local_modelformula[[2]] )
-      if (exists("stmv_global_modelformula", p)) p$variables$Y = all.vars( p$stmv_global_modelformula[[2]] )
+      if (exists("stmv_local_modelformula", p))  {
+        if (!is.null(p$stmv_local_modelformula)) {
+          if (p$stmv_local_modelformula != "none") {
+            oo = all.vars( p$stmv_local_modelformula[[2]] )
+            if (length(oo) > 0) p$variables$Y = oo
+          }
+        }
+      }
+      if (exists("stmv_global_modelformula", p))  {
+        if (!is.null(p$stmv_global_modelformula)) {
+          if (p$stmv_global_modelformula != "none") {
+            oo = all.vars( p$stmv_global_modelformula[[2]] )
+            if (length(oo) > 0) p$variables$Y = oo
+          }
+        }
+      }
     }
-    if (!exists("Y", p$variables)) p$variables$Y = stop("not_defined")
+    if (!exists("Y", p$variables)) p$variables$Y = "not_defined" # this can be called to get covars.. do not stop
 
 
     # additional variable to extract from aegis_db for inputs
