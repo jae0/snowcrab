@@ -245,7 +245,13 @@ snowcrab_stmv = function( DS=NULL, p=NULL, year=NULL, ret="mean", varnames=NULL,
           sn = NULL
           sn = aegis_lookup( p=psse, DS="spatial", locsmap=locsmapsse, varnames=newvars )
           if (!is.null(sn)) {
-            for (nv in names(sn)) set[oo,nv] = sn[,nv]
+            for (nv in names(sn)) {
+              if (is.vector(sn)) {
+                set[oo,nv] = sn[nv]
+              } else {
+                set[oo,nv] = sn[,nv]
+              }
+            }
           }
         }
     }
