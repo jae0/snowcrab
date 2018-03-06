@@ -228,8 +228,9 @@ snowcrab_stmv = function( DS=NULL, p=NULL, year=NULL, ret="mean", varnames=NULL,
     # newvars = c("dZ", "ddZ", "substrate.grainsize", "tmean.climatology", "tsd.climatology", "b.range", "t.range" )
     newvars = setdiff(p$variables$COV, names(set) )
     if (length(newvars) > 0) {
+      sn = NULL
       sn = aegis_lookup( p=p, DS="spatial", locsmap=locsmap, varnames=newvars )
-      if (ncol(sn) > 0) {
+      if (!is.null(sn)) {
         set = cbind( set,  sn )
       }
     }
@@ -241,8 +242,9 @@ snowcrab_stmv = function( DS=NULL, p=NULL, year=NULL, ret="mean", varnames=NULL,
         stmv::array_map( "xy->1", set[oo, c("plon","plat")], gridparams=psse$gridparams ),
         stmv::array_map( "xy->1", bathysse[,c("plon","plat")], gridparams=psse$gridparams ) )
         if (length(newvars) > 0) {
+          sn = NULL
           sn = aegis_lookup( p=psse, DS="spatial", locsmap=locsmapsse, varnames=newvars )
-          if (ncol(sn) >0) {
+          if (!is.null(sn)) {
             for (nv in names(sn)) set[oo,nv] = sn[,nv]
           }
         }
@@ -252,8 +254,9 @@ snowcrab_stmv = function( DS=NULL, p=NULL, year=NULL, ret="mean", varnames=NULL,
     # newvars = c( "tmean", "tsd", "tamplitude" )
     newvars = setdiff(p$variables$COV, names(set) )
     if (length(newvars) > 0) {
+      sn = NULL
       sn = aegis_lookup( p=p, DS="spatial.annual", locsmap=locsmap, timestamp=set[,"timestamp"], varnames=newvars )
-      if (ncol(sn) >0) {
+      if (!is.null(sn)) {
         colnames( sn  ) = newvars
         set = cbind( set,  sn )
       }
