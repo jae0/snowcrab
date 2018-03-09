@@ -63,7 +63,6 @@ p = snowcrab_stmv( p=p, DS="parameters",
     'snowcrab.large.males_abundance ~ s(t, k=3, bs="ts") + s(tmean.climatology, k=3, bs="ts") + s(tsd.climatology, k=3, bs="ts")  ',
     ' + s( log(z), k=3, bs="ts") + s( log(dZ), k=3, bs="ts") + s( log(ddZ), k=3, bs="ts") ',
     ' + s(log(substrate.grainsize), k=3, bs="ts") + s(pca1, k=3, bs="ts") + s(pca2, k=3, bs="ts")   ' )),  # no space
-  stmv_local_family = gaussian(link = "identity"),
   stmv_local_modelengine = "twostep",
   stmv_local_modelformula = formula( paste(
     ' snowcrab.large.males_abundance ~ s(yr, k=10, bs="ts") + s(cos.w, k=3, bs="ts") + s(sin.w, k=3, bs="ts") ',
@@ -186,7 +185,6 @@ p = snowcrab_stmv( p=p, DS="parameters",
     ' snowcrab.large.males_presence_absence ~ s(t, k=3, bs="ts") + s(tmean.climatology, k=3, bs="ts") + s(tsd.climatology, k=3, bs="ts")  ',
     ' + s( log(z), k=3, bs="ts") + s( log(dZ), k=3, bs="ts") + s( log(ddZ), k=3, bs="ts") ',
     ' + s(log(substrate.grainsize), k=3, bs="ts") + s(pca1, k=3, bs="ts") + s(pca2, k=3, bs="ts")   ' )),
-  stmv_local_family = gaussian(link = "identity"),
   stmv_local_modelengine = "twostep",
   stmv_local_modelformula = formula( paste(
     'snowcrab.large.males_presence_absence ~ s(yr, bs="ts") + s(cos.w, k=3, bs="ts") + s(sin.w, k=3, bs="ts") ',
