@@ -42,6 +42,35 @@ figure.mcmc( type="diagnostic.production", res=res, fn=file.path(p$fishery_model
 figure.mcmc( type="diagnostic.errors", res=res, fn=file.path(p$fishery_model$outdir, "diagnostic.errors.png" ) )
 figure.mcmc( type="diagnostic.phase", res=res, fn=file.path(p$fishery_model$outdir, "diagnostic.phase.png" ) )
 
+# K 
+plot.new()
+layout( matrix(c(1,2,3), 3, 1 ))
+par(mar = c(4.4, 4.4, 0.65, 0.75))
+for (i in 1:3) plot(density(res$mcmc$K[,i] ), main="")
+( qs = apply(  res$mcmc$K[,], 2, quantile, probs=c(0.025, 0.5, 0.975) ) )
+
+# R
+plot.new()
+layout( matrix(c(1,2,3), 3, 1 ))
+par(mar = c(4.4, 4.4, 0.65, 0.75))
+for (i in 1:3) plot(density(res$mcmc$r[,i] ), main="")
+( qs = apply(  res$mcmc$r[,], 2, quantile, probs=c(0.025, 0.5, 0.975) ) )
+
+# q
+plot.new()
+layout( matrix(c(1,2,3), 3, 1 ))
+par(mar = c(4.4, 4.4, 0.65, 0.75))
+for (i in 1:3) plot(density(res$mcmc$q[,i] ), main="")
+( qs = apply(  res$mcmc$q[,], 2, quantile, probs=c(0.025, 0.5, 0.975) ) )
+
+# FMSY
+plot.new()
+layout( matrix(c(1,2,3), 3, 1 ))
+par(mar = c(4.4, 4.4, 0.65, 0.75))
+for (i in 1:3) plot(density(res$mcmc$FMSY[,i] ), main="")
+( qs = apply(  res$mcmc$FMSY[,], 2, quantile, probs=c(0.025, 0.5, 0.975) ) )
+
+
 # densities of biomass estimates for the year.assessment
 plot.new()
 layout( matrix(c(1,2,3), 3, 1 ))
@@ -65,8 +94,12 @@ for (i in 1:3) plot(density(  res$mcmc$F[,res$sb$N,i] ), xlim=c(0.01, 0.6), main
 ( qs = apply(  res$mcmc$F[,res$sb$N,], 2, mean ) )
 
 # densities of F in previous year
+plot.new()
+layout( matrix(c(1,2,3), 3, 1 ))
+par(mar = c(4.4, 4.4, 0.65, 0.75))
 for (i in 1:3) plot(density(  res$mcmc$F[,res$sb$N-1,i] ), xlim=c(0.01, 0.6), main="")
-( qs = apply(  res$mcmc$F[,res$sb$N-1,], 1, quantile, probs=c(0.025, 0.5, 0.975) ) )
+( qs = apply(  res$mcmc$F[,res$sb$N-1,], 2, quantile, probs=c(0.025, 0.5, 0.975) ) )
+( qs = apply(  res$mcmc$F[,res$sb$N-1,], 2, mean ) )
 
 # F for table ---
 summary( res$mcmc$F, median)
