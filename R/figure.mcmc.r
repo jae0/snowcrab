@@ -211,7 +211,7 @@
           lines ( yrs0, qIOA, lwd=3, col="darkgreen", lty="dashed" )
           lines ( yrs, meanval, lwd=2, col="blue", lty="dotted" )
           points( yrs0, IOA, pch=20, col="darkred" )
-          lines( yrs0, IOA, lwd=3, lty="dashed", col="red" )
+          lines( yrs0, IOA, lwd=3, lty="dotdash", col="red" )
           legend( "topright", bty="n", legend=labs[i])
       }
     }
