@@ -50,9 +50,9 @@
       cex.lab = 1
       cex.axis = 0.2
 
-   if(graphic=='png')Cairo( file=fn, type="png", bg="white",  units="in", width=5, height=6, dpi=350 )
-   if(graphic=='pdf')pdf(file=fn, width=5, height=6, bg='white')
-   if(graphic=='R')plot.new(4,6)
+   if(graphic=='png') Cairo( file=fn, type="png", bg="white",  units="in", width=5, height=6, dpi=350 )
+   if(graphic=='pdf') pdf(file=fn, width=5, height=6, bg='white')
+   if(graphic=='R') plot.new()
       setup.lattice.options()
       pl = xyplot( mean~year|region, data=td, ub=td$ub, lb=td$lb,
             layout=c(1,n.regions),
@@ -77,7 +77,7 @@
         )
 
       print(pl)
-      if(graphic!='R')dev.off()
+      if(graphic!='R') dev.off()
     }
    #cmd( "convert   -trim -quality 9  -geometry 200% -frame 2% -mattecolor white -antialias ", paste(fn, "pdf", sep="."),  paste(fn, "png", sep=".") )
      return("Done")

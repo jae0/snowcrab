@@ -11,7 +11,7 @@
     recaps.file = "recaptures.csv"
 
 
-    move = get.move (redo=T, region="cfaall") #  
+    move = get.move (redo=T) 
 
     toplot = move
     toplot = toplot[ is.finite(toplot$lon0 + toplot$lat0 + toplot$lon1 + toplot$lat1) ,]
