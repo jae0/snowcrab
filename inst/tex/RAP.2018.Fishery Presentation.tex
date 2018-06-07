@@ -1,0 +1,552 @@
+%----------------------
+% Use master copy at bio.snowcrab.inst/tex  !!!
+% Allows git to manage and distribute changes
+%-------------------------------------
+
+
+
+
+%----------------------------------------------------------------------------------------
+%	PACKAGES AND THEMES
+\documentclass{beamer}
+
+\mode<presentation> {
+	
+	\usetheme{Boadilla}
+	
+	\usecolortheme{dolphin}
+	
+}
+
+\newcommand{\D}{.} %Allows for '.' in figure names
+\newcommand{\h}{C:/} %Sets root directory
+\newcommand{\e}{bio.data/} %Sets home directory
+\newcommand{\es}{bio.data/bio.snowcrab/}
+\newcommand{\eb}{bio.data/bio.bathymetry/}
+\newcommand{\et}{bio.data/bio.temperature/}
+\newcommand{\ei}{bio.data/bio.indicators/}
+\newcommand{\Ay}{assessments/2017/}
+\newcommand{\fish}{C:/Rsaves/fishery/2017/}
+\newcommand{\A}{assessments/}
+\newcommand{\m}{output/maps/} %base folder for maps
+\newcommand{\mb}{output/maps/survey/snowcrab/annual/bycatch/} %survey bycatch folder
+
+
+\usepackage{graphicx} % Allows including images
+\usepackage{booktabs} % Allows the use of \toprule, \midrule and \bottomrule in tables
+
+%----------------------------------------------------------------------------------------
+%	TITLE PAGE
+%----------------------------------------------------------------------------------------
+
+\title[Snow Crab RAP 2018]{2017 Snow Crab Season} % The short title appears at the bottom of every slide, the full title is only on the title page
+
+\author{Snow Crab Unit} % Your name
+\institute[DFO] % Your institution as it will appear on the bottom of every slide, may be shorthand to save space
+{
+Department of Fisheries and Oceans \\ % Your institution for the title page
+\medskip
+\textit{} % Your email address
+}
+\date{\the\year} % Date, can be changed to a custom date
+
+\begin{document}
+
+\begin{frame}
+\titlepage % Print the title page as the first slide
+\end{frame}
+
+\begin{frame}
+\frametitle{Overview} % Table of contents slide, comment this block out to remove it
+\tableofcontents % Throughout your presentation, if you choose to use \section{} and \subsection{} commands, these will automatically be printed on this slide as an overview of your presentation
+\end{frame}
+
+%----------------------------------------------------------------------------------------
+%	PRESENTATION SLIDES
+%----------------------------------------------------------------------------------------
+
+\section{Landings}
+
+% ----------------------------------
+\begin{frame}
+\frametitle{ENS Snow Crab}
+\begin{columns}[T]
+	\begin{column}{0.4\textwidth}
+		\begin{itemize}
+			\item Southern limit of Atlantic Snow Crab distribution 
+			\item Three assessment areas
+			\item Four fishery management areas
+			\item CFA 23 and CFA 24 separated for fishery metrics
+		\end{itemize}
+	\end{column}
+	
+	\begin{column}{0.6\textwidth}
+		\begin{centering}
+			Scotian Shelf and CFAs
+			\begin{figure}
+				\includegraphics[width=\textwidth]{\h \es \A /common/Basemap.pdf}
+			\end{figure}
+		\end{centering}
+	\end{column}
+\end{columns}
+\end{frame}
+
+%------------------------------------------------
+
+
+\begin{frame}
+\frametitle{Landings}
+
+%\begin{table}[ht]
+%	\centering
+%	\begin{tabular}{rlccclrr}
+%		\hline
+%		Area & Year & TAC & Landings & Catch Rate (kg/trap) \\ 
+%		\hline
+%		N-ENS & 2015 & 620 & 619 & 103 \\
+%%		& 2016 & 286 & 290 & 110 \\
+%		& 2017 & 825 & 813 & 90 \\
+%		\hline
+%		CFA 23 & 2015 & 6120 & 6097 & 117 \\
+%		& 2016 & 5202 & 5202 & 115 \\
+%		& 2017 & 3640 & 3636 & 98 \\
+%%		\hline
+%		CFA 24 & 2015 & 5191 & 5195 & 96 \\
+%		& 2016 & 4412 & 4404 & 97 \\
+%		& 2017 & 3090 & 3083 & 90 \\
+%		\hline
+%		4X & 2015-2016 & 150 & 142 & 31 \\
+%		& 2016-2017 & 80 & 55 & 24 \\
+%		& 2017-2018* & 110 & 32 & 13 \\
+%		\hline
+%		\hline
+%		&&&&\\
+%		&* to Feb 2, 2018&&&\\
+%	\end{tabular}
+%\end{table}
+
+\begin{figure}
+	
+	\vspace*{-0.25cm}
+	\centerline{\includegraphics[width=0.6\textwidth]{\h \es \Ay timeseries/fishery/landings\D ts.pdf}}
+	
+\end{figure}
+
+\end{frame}
+
+
+%------------------------------------------------
+\begin{frame}
+\frametitle{Landings}
+
+\begin{figure}
+	
+	\vspace*{-0.25cm}
+	\centerline{\includegraphics[width=0.6\textwidth]{\h \es \Ay timeseries/fishery/landings\D ts\D sm.pdf}}
+	
+\end{figure}
+
+\end{frame}
+
+%------------------------------------------------
+
+\begin{frame}
+%\frametitle{Spring Landings}
+\begin{figure}
+
+ \vspace*{-0.25cm}
+ \centerline{\includegraphics[width=0.8\textwidth]{\fish percent_spring_landings.pdf}}
+
+ \end{figure}
+\end{frame}
+
+%------------------------------------------------
+
+
+\begin{frame}
+%\frametitle{Active Vessels}
+\begin{figure}
+
+% \vspace*{1cm}
+ \centerline{\includegraphics[width=0.80\textwidth]{\fish vessels_per_year.pdf}}
+
+ \end{figure}
+\end{frame}
+
+
+%------------------------------------------------
+
+\section{Catch Rates}
+
+
+\begin{frame}
+%\frametitle{Catch Rates}
+\begin{figure}
+
+ \vspace*{-.25cm}
+ \centerline{\includegraphics[width=0.75\textwidth]{\fish annual_cpue_kg.pdf}}
+
+ \end{figure}
+\end{frame}
+
+%------------------------------------------------
+
+
+\begin{frame}
+%\frametitle{Weekly Catch Rates}
+\begin{figure}
+
+ \vspace*{-.5cm}
+ \centerline{\includegraphics[width=0.90\textwidth]{\fish weekly_cpue_smoothed.pdf}}
+
+ \end{figure}
+\end{frame}
+
+
+%------------------------------------------------
+
+
+\begin{frame}
+\frametitle{Crab Size}
+\begin{figure}
+
+ \vspace*{-.5cm}
+ \centerline{\includegraphics[width=0.70\textwidth]{\fish mean_cw_observed.pdf}}
+
+ \end{figure}
+\end{frame}
+
+%------------------------------------------------
+
+\begin{frame}
+\frametitle{Crab Size}
+\begin{figure}
+
+ \vspace*{-.5cm}
+ \centerline{\includegraphics[width=0.70\textwidth]{\fish cw_vs_mass.pdf}}
+
+ \end{figure}
+\end{frame}
+
+%------------------------------------------------
+
+\begin{frame}
+\frametitle{Crab Size}
+\begin{figure}
+
+ \vspace*{-.5cm}
+ \centerline{\includegraphics[width=0.90\textwidth]{\fish mean_weight_observed.pdf}}
+
+\end{figure}
+\end{frame}
+
+%------------------------------------------------
+
+\section{Fishing Positions}
+
+\begin{frame}
+\frametitle{Seasonal Fishing Patterns}
+
+\begin{columns}
+\begin{column}<+->{0.5\textwidth}
+ \vspace*{-0.5cm}
+\begin{figure}
+\centerline{\includegraphics[width=1.05\textwidth]{\fish nens_spring_fishing_positions.pdf}}
+
+\end{figure}
+\end{column}
+
+\begin{column}{0.5\textwidth}
+\begin{figure}
+ \vspace*{-0.5cm}
+
+\centerline{\includegraphics[width=1.05\textwidth]{\fish nens_summer_fishing_positions.pdf}}
+
+ \end{figure}
+
+\end{column}
+\end{columns}
+
+\end{frame}
+
+%------------------------------------------------
+
+
+\begin{frame}
+\frametitle{Seasonal Fishing Patterns}
+
+\begin{columns}
+\begin{column}<+->{0.5\textwidth}
+ \vspace*{-0.5cm}
+\begin{figure}
+\centerline{\includegraphics[width=1.05\textwidth]{\fish sens_spring_fishing_positions.pdf}}
+
+\end{figure}
+\end{column}
+
+\begin{column}{0.5\textwidth}
+\begin{figure}
+ \vspace*{-0.5cm}
+
+\centerline{\includegraphics[width=1.05\textwidth]{\fish sens_summer_fishing_positions.pdf}}
+
+ \end{figure}
+
+\end{column}
+\end{columns}
+
+\end{frame}
+
+%------------------------------------------------
+\begin{frame}
+	\frametitle{4X}
+	\begin{figure}
+		
+		\vspace*{-1cm}
+		\centerline{\includegraphics[width=0.75\textwidth]{\fish cfa4x_past_two_years_fishing_positions.pdf}}
+		
+	\end{figure}
+	 \vspace*{-0.5cm}
+	 \begin{itemize}
+	 	\item Year in 4X refers to end year of season
+	 \end{itemize}
+\end{frame}
+%------------------------------------------------
+
+\section{At-Sea Observers}
+
+
+\begin{frame}
+\frametitle{Observer Coverage}
+
+\begin{table}[ht]
+\centering
+\begin{tabular}{rcccclrr}
+  \hline
+ Area & Observed (mt) & Traps Sampled & Traps Obs. & Coverage \\ 
+  \hline
+N-ENS & 46 & 89 & 443 & 5.7\% (7.2)\\  
+CFA 23 & 203 & 409 & 2067 & 5.6\% (5.6) \\ 
+ CFA 24 & 177 & 349 & 1614 & 5.7\% (6.3)\\ 
+ 4X & *Season Ongoing&&&\\
+   \hline
+\end{tabular}
+
+\end{table}
+
+
+\end{frame}
+
+%------------------------------------------------
+
+\begin{frame}
+\frametitle{Catch Composition N-ENS}
+
+\begin{columns}
+\begin{column}<+->{0.5\textwidth}
+ \vspace*{-0.5cm}
+\begin{figure}
+\centerline{\includegraphics[width=1.05\textwidth]{\h \es \Ay figures/size\D freq/observer/size\D freqcfanorth2016.pdf}}
+
+\end{figure}
+\end{column}
+
+\begin{column}{0.5\textwidth}
+\begin{figure}
+ \vspace*{-0.5cm}
+
+	\centerline{\includegraphics[width=1.05\textwidth]{\h \es \Ay figures/size\D freq/observer/size\D freqcfanorth2017.pdf}}
+
+ \end{figure}
+\end{column}
+\end{columns}
+\end{frame}
+
+%------------------------------------------------
+
+\begin{frame}
+\frametitle{Catch Composition S-ENS}
+
+\begin{columns}
+\begin{column}<+->{0.5\textwidth}
+ \vspace*{-0.5cm}
+\begin{figure}
+\centerline{\includegraphics[width=1.05\textwidth]{\h \es \Ay figures/size\D freq/observer/size\D freqcfasouth2016.pdf}}
+
+\end{figure}
+\end{column}
+
+\begin{column}{0.5\textwidth}
+\begin{figure}
+ \vspace*{-0.5cm}
+
+\centerline{\includegraphics[width=1.05\textwidth]{\h \es \Ay figures/size\D freq/observer/size\D freqcfasouth2017.pdf}}
+
+ \end{figure}
+
+\end{column}
+\end{columns}
+
+
+\end{frame}
+
+%------------------------------------------------
+
+\begin{frame}
+\frametitle{Catch Composition 4X}
+
+\begin{columns}
+\begin{column}<+->{0.5\textwidth}
+ \vspace*{-0.5cm}
+\begin{figure}
+\centerline{\includegraphics[width=1.05\textwidth]{\h \es \Ay figures/size\D freq/observer/size\D freqcfa4x2016.pdf}}
+
+\end{figure}
+\end{column}
+
+\begin{column}{0.5\textwidth}
+\begin{figure}
+ \vspace*{-0.5cm}
+
+\centerline{\includegraphics[width=1.05\textwidth]{\h \es \Ay figures/size\D freq/observer/size\D freqcfa4x2017.pdf}}
+
+ \end{figure}
+
+\end{column}
+\end{columns}
+*Year refers to end year of season
+
+\end{frame}
+
+%------------------------------------------------
+
+\begin{frame}
+\frametitle{Seasonal Catch Composition}
+
+\begin{columns}
+\begin{column}<+->{0.5\textwidth}
+ \vspace*{-0.5cm}
+\begin{figure}
+\centerline{\includegraphics[width=1.05\textwidth]{\fish N-ENS_Spring_size_freq.pdf}}
+
+\end{figure}
+\end{column}
+
+\begin{column}{0.5\textwidth}
+\begin{figure}
+ \vspace*{-0.5cm}
+
+\centerline{\includegraphics[width=1.05\textwidth]{\fish N-ENS_Summer_size_freq.pdf}}
+
+ \end{figure}
+
+\end{column}
+\end{columns}
+
+
+\end{frame}
+
+%------------------------------------------------
+
+\begin{frame}
+\frametitle{Seasonal Catch Composition}
+
+\begin{columns}
+\begin{column}<+->{0.5\textwidth}
+ \vspace*{-0.5cm}
+\begin{figure}
+\centerline{\includegraphics[width=1.05\textwidth]{\fish S-ENS_Spring_size_freq.pdf}}
+
+\end{figure}
+\end{column}
+
+\begin{column}{0.5\textwidth}
+\begin{figure}
+ \vspace*{-0.5cm}
+
+\centerline{\includegraphics[width=1.05\textwidth]{\fish S-ENS_Summer_size_freq.pdf}}
+
+ \end{figure}
+
+\end{column}
+\end{columns}
+
+\end{frame}
+
+%------------------------------------------------
+
+\begin{frame}
+	\frametitle{Softshell Catches}
+	\begin{figure}
+		
+		\vspace*{-.5cm}
+		\centerline{\includegraphics[width=0.90\textwidth]{\fish softsummary.pdf}}
+		
+	\end{figure}
+\*4X has negligible soft shell catches due to season timing
+\end{frame}
+
+
+
+
+
+
+%------------------------------------------------
+
+\begin{frame}
+\begin{figure}
+  \centerline{\includegraphics[width=0.75\textwidth]{\fish soft_crab_by_month.pdf}}
+
+ \end{figure}
+\end{frame}
+
+
+%------------------------------------------------
+
+%----------------------------------------------------------------------------------------
+
+
+\section{Collaborative Agreement}
+
+\begin{frame}
+	
+	\frametitle{Collaborative Agreement (CA)}
+	
+	\vspace*{-0.5cm}
+	\begin{block}
+		
+		\begin{itemize}
+			\item 2017 is year four of a five year CA
+			\item Funds roll-over to next year
+			\item Any remaining funds after year 4 decrease amount in year 5
+			\item \% of each licence recalculates annually based on previous season's quota
+			\item Amendment to reflect new individual shares completed and signed
+			\item Invoices should be issued shortly
+			
+		\end{itemize}
+	\end{block}
+	
+	
+\end{frame}
+
+%----------------------------------------------------------------------------------------
+\begin{frame}
+	
+	\frametitle{Collaborative Agreement (CA)}
+	
+	\begin{figure}
+		
+		%\vspace*{-.5cm}
+		\centerline{\includegraphics[width=0.9\textwidth]{\fish spending_breakdown.pdf}}
+		
+	\end{figure}
+\end{frame}
+
+%----------------------------------------------------------------------------------------
+
+
+% Document End
+
+\end{document} 
+
+
