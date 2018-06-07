@@ -164,14 +164,14 @@
       lb.historical = logbook.db( DS="fisheries.historical" )
       lb.historical$cfa = NA
       lb.historical$date.fished = paste( lb.historical$date.fished, "01:00:00" )
-      lb.historical$date.landed = as.POSIXct( lb.historical$date.landed  )
+      #lb.historical$date.landed = as.POSIXct( lb.historical$date.landed  )
 
       # logbooks from marfissci tables
       x = logbook.db( DS="rawdata.logbook", yrs=1996:p$year.assessment )
 
       names( x ) = tolower( names( x ) )
       names( x ) = rename.bio.snowcrab.variables(names( x ))
-      to.char = c( "cfa", "licence_id_old", "licence", "date.fished", "date.landed",
+      to.char = c( "cfa", "licence_id_old", "licence", "date.fished", 
                    "captain", "vessel", "doc_id", "doc_type")
       for (i in to.char) x[,i] = as.character(x[,i])
 
@@ -207,7 +207,7 @@
 
       lb.marfis = x[, to.extract ]
 
-      lb.historical$date.landed = as.POSIXct(lb.historical$date.landed)
+      # lb.historical$date.landed = as.POSIXct(lb.historical$date.landed)
       a = lb.historical$date.fished
       b = paste(substr(a, 1, 4), "/", substr(a, 5, 6), "/", substr(a, 7, 8), sep="")
       lb.historical$date.fished = as.POSIXct(b)
