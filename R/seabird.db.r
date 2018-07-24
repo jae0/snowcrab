@@ -176,6 +176,22 @@
 
           M = sbRAW[ Mi, ]
 
+          ### BC Trying to add netmind metrics for better manual touchdown determination
+          
+          
+          nmRAW = netmind.db( DS="basedata", Y=yr )
+          nid = netmind.db( DS="set.netmind.lookuptable" )
+          nuid = nid[which(nid$trip == sso.trip & nid$set == sso.set),]$netmind_uid
+          Ni = nmRAW[which(nmRAW$netmind_uid == nuid),]
+          Ni = Ni[which(Ni$timestamp>=M$timestamp[1] & Ni$timestamp<=M$timestamp[length(M$timestamp)]),]
+          
+          Ni = merge(Ni, M, by = "timestamp", all.x = TRUE)
+          Ni = Ni[, which(names(Ni) %in% c("timestamp", "temperature", "depth.y", "lat", "lon", "primary", "doorspread" ))]
+          names(Ni) = c("timestamp", "latitude", "longitude", "opening", "wingspread", "temperature", "depth")
+          M = Ni
+          
+          ##End of Netmind metrics merger
+          
           settimestamp= rid$timestamp[i]
 
           # default, empty container
@@ -195,10 +211,22 @@
           bcp = list(id=id, nr=nrow(M), YR=yr, tdif.min=3, tdif.max=11, time.gate=time.gate,
                      depth.min=20, depth.range=c(-25,15), eps.depth=1,
                      smooth.windowsize=5, modal.windowsize=5,
-                     noisefilter.trim=0.025, noisefilter.target.r2=0.85, noisefilter.quants=c(0.025, 0.975))
+                     noisefilter.trim=0.025, noisefilter.target.r2=0.85, noisefilter.quants=c(0.025, 0.975),
+                     user.interaction = TRUE)
 
           bcp = bottom.contact.parameters( bcp ) # add other default parameters
 
+          #BC: Determine if this station was done yet, if not then we want user interaction.
+          if(file.exists(file.path(bcp$from.manual.archive, "clicktouchdown_all.csv"))){
+            manualclick = read.csv(file.path(bcp$from.manual.archive, "clicktouchdown_all.csv"), as.is=TRUE)
+            station = unlist(strsplit(bcp$id, "\\."))[4]
+            sta.ind = which(manualclick$station == station & manualclick$year == bcp$YR)
+            if(length(sta.ind == 1)) bcp$user.interaction = FALSE
+            else bcp$user.interaction = TRUE
+          }
+          
+          
+          
           print(id)
           bc = NULL
           bc = bottom.contact( x=M, bcp=bcp )

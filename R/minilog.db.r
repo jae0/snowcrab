@@ -236,14 +236,26 @@
               next()
             } else {
 
+              
+              
               bcp = list(id=id, nr=nrow(M), YR=yr, tdif.min=3, tdif.max=11, time.gate=time.gate,
                          depth.min=20, depth.range=c(-25,15), eps.depth = 2 ,
                          smooth.windowsize=5, modal.windowsize=5,
                          noisefilter.trim=0.025, noisefilter.target.r2=0.85, noisefilter.quants=c(0.025, 0.975) )
 
               if(yr<2007)bcp$from.manual.archive=FALSE # manual touchdown only done since 2007
-              
+            
               bcp = bottom.contact.parameters( bcp ) # add other default parameters .. not specified above
+              
+              #BC: Determine if this station was done yet, if not then we want user interaction.
+              if(file.exists(file.path(bcp$from.manual.archive, "clicktouchdown_all.csv"))){
+                manualclick = read.csv(file.path(bcp$from.manual.archive, "clicktouchdown_all.csv"), as.is=TRUE)
+                station = unlist(strsplit(bcp$id, "\\."))[4]
+                sta.ind = which(manualclick$station == station & manualclick$year == bcp$YR)
+                if(length(sta.ind == 1)) bcp$user.interaction = FALSE
+                else bcp$user.interaction = TRUE
+              }
+  
               bc =  NULL
 
               bc = bottom.contact( x=M, bcp=bcp )

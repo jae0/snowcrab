@@ -66,6 +66,7 @@
 
 
       bcp = bottom.contact.parameters( bcp ) # add other default parameters
+      bcp$user.interaction = FALSE
       bc = NULL
       bc = bottom.contact( x=M, bcp=bcp )
       if ( is.null(bc) || (!is.null( bc$res) && ( ( !is.finite(bc$res$t0 ) || !is.finite(bc$res$t1 ) ) ) )) {
