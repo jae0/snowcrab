@@ -190,8 +190,8 @@
       x$trap.type = "" # dummy value until this can be added to the views .. check with Alan
       x$status = ""  # "" "" ""
 
-      datelanded =  matrix(unlist(strsplit(x$date.landed, " ", fixed=T)), ncol=2, byrow=T)[,1]
-      x$date.landed = lubridate::ymd( datelanded, tz="America/Halifax" )
+      # datelanded =  matrix(unlist(strsplit(x$date.landed, " ", fixed=T)), ncol=2, byrow=T)[,1]
+      # x$date.landed = lubridate::ymd( datelanded, tz="America/Halifax" )
       x$date.landed = with_tz( x$date.landed, "UTC" )
 
       x$landings = x$pro_rated_slip_wt_lbs * 0.454  # convert to kg
