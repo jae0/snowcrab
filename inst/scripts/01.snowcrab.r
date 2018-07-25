@@ -10,7 +10,7 @@ p = bio.snowcrab::load.environment( year.assessment=year.assessment )
 
 # get data tables from Oracle server and store local copies
 #BZ 2017- Can now be run on a Linux machine. rawdata connection changed to ROracle
-# !!!!!! --------- these should be run on a windows machine: !!!!!!!!! <--------- READ THIS
+
 if (obtain.database.snapshot) {
   # yrs = 1996:p$year.assessment  # to redo all years
   yrs = p$year.assessment # to update only the current year
@@ -70,7 +70,7 @@ if (obtain.database.snapshot) {
     p$esonar.yToload  = p$year.assessment
   }
 
-  seabird.db( DS="load", Y=p$seabird.yToload ) # this begins 2012;duplicates are often due to seabird files not being retsrated each morning
+  seabird.db( DS="load", Y=p$seabird.yToload ) # this begins 2012;duplicates are often due to seabird files not being restarted each morning
   minilog.db( DS="load", Y=p$minilog.yToload ) # minilog data series "begins" in 1999 -- 60 min?
   #netmind.db( DS='esonar2netmind.conversion',Y=p$esonar.yToload ) #may no longer need to be run BZ
   
