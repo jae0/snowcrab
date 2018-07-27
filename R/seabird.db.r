@@ -256,6 +256,7 @@
               print (plotfn)
               dev.flush()
               #dev.copy2pdf( file=plotfn )
+              graphics.off()
             }
           }
           sbStats = rbind( sbStats, cbind( seabird_uid=id, res ) )

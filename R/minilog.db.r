@@ -290,6 +290,7 @@
                   print (plotfn)
                   dev.flush()
                   dev.copy2pdf( file=plotfn )
+                  graphics.off()
                 }
               }
               if ( !is.null(bc) && !is.null(bc$res) ) {
