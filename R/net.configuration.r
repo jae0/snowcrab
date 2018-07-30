@@ -93,6 +93,7 @@
           print (plotfn)
           dev.flush()
           dev.copy2pdf( file=plotfn )
+          graphics.off()
         }
       }
       if (is.null(t0) & !is.null(bc$bottom0) ) t0 = bc$bottom0
