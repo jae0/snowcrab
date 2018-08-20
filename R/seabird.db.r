@@ -230,6 +230,7 @@
           print(id)
           M$doorspread = M$wingspread# hack to force SA to run
           bc = NULL
+          str(M)
           bc = bottom.contact( x=M, bcp=bcp )
           #browser()
 

@@ -1,5 +1,5 @@
 
-  minilog.db = function( DS="", Y=NULL, plotdata=TRUE ){
+  minilog.db = function( DS="", Y=NULL, plotdata=FALSE ){
 
     minilog.dir = project.datadirectory("bio.snowcrab", "data", "minilog" )
     minilog.rawdata.location = file.path( minilog.dir, "archive" )
@@ -289,7 +289,7 @@
                   plotfn = file.path( plotdir, paste(id, "pdf", sep="." ) )
                   print (plotfn)
                   dev.flush()
-                  dev.copy2pdf( file=plotfn )
+                  #dev.copy2pdf( file=plotfn )
                   graphics.off()
                 }
               }

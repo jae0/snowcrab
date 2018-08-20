@@ -1,4 +1,4 @@
-
+  
 
   logbook.db = function( DS, prorate=T, p=NULL, yrs=NULL ) {
 
