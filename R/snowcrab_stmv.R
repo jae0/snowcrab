@@ -92,18 +92,35 @@ snowcrab_stmv = function( DS=NULL, p=NULL, year=NULL, ret="mean", varnames=NULL,
 
     if (p$stmv_local_modelengine =="twostep") {
       # this is the time component (mostly) .. space enters as a rough constraint
-      if (!exists("stmv_local_modelformula", p))  p$stmv_local_modelformula = formula( paste(
-        p$variables$Y, '~ s(yr, k=10, bs="ts") + s(cos.w, k=3, bs="ts") + s(sin.w, k=3, bs="ts") ',
-          ' + s(cos.w, sin.w, yr, bs="ts", k=20) ',
-          ' + s(plon, k=3, bs="ts") + s(plat, k=3, bs="ts") + s(plon, plat, k=20, bs="ts") ' ) )
+      # if (!exists("stmv_local_modelformula", p))  p$stmv_local_modelformula = formula( paste(
+      #   p$variables$Y, '~ s(yr, k=10, bs="ts") + s(cos.w, k=3, bs="ts") + s(sin.w, k=3, bs="ts") ',
+      #     ' + s(cos.w, sin.w, yr, bs="ts", k=20) ',
+      #     ' + s(plon, k=3, bs="ts") + s(plat, k=3, bs="ts") + s(plon, plat, k=20, bs="ts") ' ) )
       if (!exists("stmv_local_model_distanceweighted", p)) p$stmv_local_model_distanceweighted = TRUE
+      if (!exists("stmv_gam_optimizer", p)) p$stmv_gam_optimizer=c("outer", "bfgs")
+
+      if (!exists("stmv_twostep_time", p))  p$stmv_twostep_time = "gam"
+      if (p$stmv_twostep_time == "gam") {
+        if (!exists("stmv_local_modelformula_time", p))  p$stmv_local_modelformula_time = formula( paste(
+          p$variables$Y, '~ s(yr, bs="ts") + s(cos.w, k=3, bs="ts") + s(sin.w, k=3, bs="ts") ',
+            ' + s(cos.w, sin.w, yr, bs="ts", k=25)  ',
+            ' + s(plon, k=3, bs="ts") + s(plat, k=3, bs="ts") + s(plon, plat, k=25, bs="ts") ' ) )
+      }
+
       # this is the spatial component
       # p$stmv_twostep_space = "spatial.process"
       # p$stmv_twostep_space = "fft"
       # p$stmv_twostep_space = "tps"
-      if (!exists("stmv_twostep_space", p))  p$stmv_twostep_space = "krige"
+      # if (!exists("stmv_twostep_space", p))  p$stmv_twostep_space = "krige"
       # if (!exists("stmv_twostep_space", p))  p$stmv_twostep_space = "tps"
-      if (!exists("stmv_gam_optimizer", p)) p$stmv_gam_optimizer=c("outer", "bfgs")
+
+      if (!exists("stmv_twostep_space", p))  p$stmv_twostep_space = "fft" #  fft==spatial.process, krige (very slow), lowpass, lowpass_spatial.process
+      if (p$stmv_twostep_space == "gam") {
+        if (!exists("stmv_local_modelformula_space", p))  p$stmv_local_modelformula_space = formula( paste(
+        p$variables$Y, '~ s(log(z), k=3, bs="ts") + s(plon, k=3, bs="ts") + s(plat, k=3, bs="ts") + s( log(z), plon, plat, k=27, bs="ts")  ') )
+      }
+      if (!exists("stmv_fft_filter", p)) p$stmv_fft_filter="spatial.process" #  fft==spatial.process, krige (very slow), lowpass, lowpass_spatial.process
+
 
     }  else if (p$stmv_local_modelengine == "gam") {
 
