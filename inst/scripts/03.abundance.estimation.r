@@ -46,11 +46,16 @@ p = snowcrab_stmv( p=p, DS="parameters",
   variables=list(Y="snowcrab.large.males_abundance"),
   selection=list(
     type = "abundance",
-    sex=0, # male
-    mat=1, # do not use maturity status in groundfish data as it is suspect ..
-    spec_bio=bio.taxonomy::taxonomy.recode( from="spec", to="parsimonious", tolookup=2526 ),
-    len= c( 95, 200 )/10, #  mm -> cm ; aegis_db in cm
-    drop.groundfish.data=TRUE # esp from 1970 to 1999 measurement of invertebrates was sporatic .. zero-values are dropped as they are unreliable
+    biologicals=list(
+      sex=0, # male
+      mat=1, # do not use maturity status in groundfish data as it is suspect ..
+      spec_bio=bio.taxonomy::taxonomy.recode( from="spec", to="parsimonious", tolookup=2526 ),
+      len= c( 95, 200 )/10, #  mm -> cm ; aegis_db in cm
+      ranged_data="len"
+    ),
+    survey=list(
+      drop.groundfish.data=TRUE # esp from 1970 to 1999 measurement of invertebrates was sporatic .. zero-values are dropped as they are unreliable
+    )
   ),
   DATA = 'snowcrab_stmv( p=p, DS="stmv_inputs" )',
   stmv_Y_transform =list(
@@ -185,11 +190,16 @@ p = snowcrab_stmv( p=p, DS="parameters",
   variables=list(Y="snowcrab.large.males_presence_absence"),
   selection=list(
     type = "presence_absence",
-    sex=0, # male
-    mat=1, # do not use maturity status in groundfish data as it is suspect ..
-    spec_bio=bio.taxonomy::taxonomy.recode( from="spec", to="parsimonious", tolookup=2526 ),
-    len= c( 95, 200 )/10, #  mm -> cm ; aegis_db in cm
-    drop.groundfish.data=TRUE # esp from 1970 to 1999 measurement of invertebrates was sporatic .. zero-values are dropped as they are unreliable
+    biologicals = list(
+      sex=0, # male
+      mat=1, # do not use maturity status in groundfish data as it is suspect ..
+      spec_bio=bio.taxonomy::taxonomy.recode( from="spec", to="parsimonious", tolookup=2526 ),
+      len= c( 95, 200 )/10, #  mm -> cm ; aegis_db in cm
+      ranged_data="len"
+    ),
+    survey=list(
+      drop.groundfish.data=TRUE # esp from 1970 to 1999 measurement of invertebrates was sporatic .. zero-values are dropped as they are unreliable
+    )
   ),
   DATA = 'snowcrab_stmv( p=p, DS="stmv_inputs" )',
   # aegis_project_datasources = c("speciescomposition", "speciesarea", "sizespectrum", "condition", "metabolism", "biochem"),
@@ -283,12 +293,17 @@ p = snowcrab_stmv( p=p, DS="parameters",
   variables = list(Y="snowcrab.large.males_abundance"),
   selection=list(
     type = "abundance",
-    sex=0, # male
-    mat=1, # do not use maturity status in groundfish data as it is suspect ..
-    spec_bio=bio.taxonomy::taxonomy.recode( from="spec", to="parsimonious", tolookup=2526 ),
-    len= c( 95, 200 )/10, #  mm -> cm ; aegis_db in cm
-    drop.groundfish.data=TRUE # esp from 1970 to 1999 measurement of invertebrates was sporatic .. zero-values are dropped as they are unreliable
-  )
+    biologicals=list(
+      sex=0, # male
+      mat=1, # do not use maturity status in groundfish data as it is suspect ..
+      spec_bio=bio.taxonomy::taxonomy.recode( from="spec", to="parsimonious", tolookup=2526 ),
+      len= c( 95, 200 )/10, #  mm -> cm ; aegis_db in cm
+      ranged_data="len"
+    ),
+    survey=list(
+      drop.groundfish.data=TRUE # esp from 1970 to 1999 measurement of invertebrates was sporatic .. zero-values are dropped as they are unreliable
+    )
+  ),
 )
 
 interpolation.db( DS="biomass.redo", p=p  )

@@ -190,7 +190,7 @@ snowcrab_stmv = function( DS=NULL, p=NULL, year=NULL, ret="mean", varnames=NULL,
 
     if ( p$selection$type=="presence_absence") {
       # must run here as we need the wgt from this for both PA and abundance
-      if (p$selection$drop.groundfish.data) {
+      if (p$selection$survey$drop.groundfish.data) {
           todrop = which(set$data.source == "groundfish")
           if (length(todrop)> 0 ) set = set[ -todrop, ]
       }
