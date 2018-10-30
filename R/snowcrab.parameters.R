@@ -30,6 +30,10 @@ snowcrab.parameters = function( p=NULL, year.assessment=NULL, ... ) {
   if (!is.null(year.assessment) ) p$year.assessment = year.assessment
   if (!exists( "year.assessment", p)) p$year.assessment = lubridate::year(lubridate::now())
 
+  # ---------------------
+  # define years to map when mapping various variables, defaults to last four years
+  if (!is.null(mapyears) ) p$mapyears = mapyears
+  if (!exists("mapyears", p)) p$mapyears = (as.numeric(p$year.assessment)-3):p$year.assessment
   
   if (!exists("yrs", p)) p$yrs = c(1999:p$year.assessment)
 
