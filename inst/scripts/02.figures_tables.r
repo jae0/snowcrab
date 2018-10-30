@@ -62,15 +62,15 @@
 
   outdir = file.path( p$project.outputdir, "maps", "survey", "snowcrab","annual" )
 
-  #BZ TODO add a variable to p for mapyears
+  #BZ TODO add a variable to p for mapyears- done Oct 2018
   # just for the roadshow
-    map.set.information( p=p, outdir=outdir, variables=c('totmass.male.com', 'totmass.female.mat'),mapyears=2014:p$year.assessment)
-    map.set.information( p=p, variables='t',mapyears=2014:p$year.assessment,outdir=outdir,log.variable=F,add.zeros=F,theta=100)
+    map.set.information( p=p, outdir=outdir, variables=c('totmass.male.com', 'totmass.female.mat'),mapyears=p$mapyears)
+    map.set.information( p=p, variables='t',mapyears=p$mapyears,outdir=outdir,log.variable=F,add.zeros=F,theta=100)
 
     # bycatch (geometric means)
     bc.vars = c(paste("ms.mass",species,sep='.'),paste("ms.no",species,sep='.'))
     outdir.bc= file.path( p$project.outputdir, "maps", "survey", "snowcrab","annual", "bycatch" )
-    map.set.information( p, variables=bc.vars, mapyears=2014:p$year.assessment, outdir=outdir.bc,probs=c(0,0.975)) #
+    map.set.information( p, variables=bc.vars, mapyears=p$mapyears, outdir=outdir.bc,probs=c(0,0.975)) #
 
 
     # all variables (geometric means)
