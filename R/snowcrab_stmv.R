@@ -167,7 +167,7 @@ snowcrab_stmv = function( DS=NULL, p=NULL, year=NULL, ret="mean", varnames=NULL,
   # --------------------------
 
   if (DS %in% c("input_data") ) {
-    set = aegis::survey.db( p=p, DS="set.filter" ) # mature male > 95 mm
+    set = aegis::survey.db( p=p, DS="det.filter" ) # mature male > 95 mm
 
     if ( p$selection$type=="abundance") {
       # snowcrab survey data only

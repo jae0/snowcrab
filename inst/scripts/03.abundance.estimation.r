@@ -204,7 +204,7 @@ p = snowcrab_stmv( p=p, DS="parameters",
   DATA = 'snowcrab_stmv( p=p, DS="stmv_inputs" )',
   # aegis_project_datasources = c("speciescomposition", "speciesarea", "sizespectrum", "condition", "metabolism", "biochem"),
   aegis_project_datasources = c("speciescomposition" ),
-  stmv_global_family = binomial( link="log" ),
+  stmv_global_family = binomial( link="logit" ),
   stmv_global_modelengine ="gam",
   stmv_stmv_global_modelformula = formula( paste(
     ' snowcrab.large.males_presence_absence ~ s(t, k=3, bs="ts") + s(tmean.climatology, k=3, bs="ts") + s(tsd.climatology, k=3, bs="ts")  ',

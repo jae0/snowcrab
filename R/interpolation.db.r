@@ -15,7 +15,7 @@
       }
 
       
-      set = aegis::survey.db( p=p, DS="set.filter" ) # mature male > 95 mm 
+      set = aegis::survey.db( p=p, DS="det.filter" ) # mature male > 95 mm 
  
       ii = which( set$totmass > 0 )
       qs = quantile( set$totmass[ii], probs=p$stmv_quantile_bounds, na.rm=TRUE )

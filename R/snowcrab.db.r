@@ -573,7 +573,7 @@ snowcrab.db = function( DS, p=NULL, yrs=NULL) {
 
 		# add groundfish data if it does not exist already
     gp = aegis_parameters( DS="groundfish", year.assessment=p$year.assessment )
-    gs = aegis::groundfish.db( p=gp, DS="cat" )
+    gs = aegis::groundfish.db( p=gp, DS="gscat" )  # raw data .. does not need vessel corrections
 		meanwgt = gs$totwgt / gs$totno
 		good = which( is.finite( meanwgt) & is.finite( 1/meanwgt ) )
 		mw2 = as.data.frame( unlist( (tapply( log( meanwgt[good]), gs$spec[good], mean )) ))
