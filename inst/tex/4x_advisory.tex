@@ -1,0 +1,405 @@
+
+\documentclass{beamer}
+
+\mode<presentation> {
+	%\usetheme{Hannover}
+	%\usetheme{AnnArbor}
+	\usetheme{Boadilla}
+	%\usecolortheme{dolphin}
+	\usecolortheme{seagull}
+	\usefonttheme{structuresmallcapsserif}
+	\beamertemplatenavigationsymbolsempty % turn off navigation
+	\hypersetup{pdfstartview={Fit}} % fits the presentation to the window when first displayed
+}
+
+\usepackage{subfig}
+\usepackage{graphicx} % Allows including images
+\usepackage{booktabs} % Allows the use of \toprule, \midrule and \bottomrule in tables
+
+%\usepackage{default}
+%\usepackage{fourier}
+%\usepackage[english]{babel}															% English language/hyphenation
+%\usepackage[protrusion=true,expansion=true]{microtype}				% Better typography
+%\usepackage[toc,page]{appendix}
+%\usepackage[utf8]{inputenc}
+%\usepackage{csquotes}
+%\usepackage{hyperref}
+\usepackage{graphicx} % Allows including images
+%\usepackage{graphics}
+%\usepackage{booktabs} % Allows the use of \toprule, \midrule and \bottomrule in tables
+%\usepackage{amsmath,amsfonts}				% Math packages
+\numberwithin{equation}{section}		% Equationnumbering: section.eq#
+\numberwithin{figure}{section}	   	% Figurenumbering: section.fig#
+\numberwithin{table}{section}				% Tablenumbering: section.tab#
+
+
+
+%----------------------------------------------------------------------------------------
+% these need to be incremented each year .. <<<<<<<<<<<<<<<<<<<<<
+\newcommand{\present}{2018}
+\newcommand{\yr}{2017}
+\newcommand{\yrminusone}{2016}
+\newcommand{\yrminustwo}{2015}
+\newcommand{\yrminusthree}{2014}
+\newcommand{\yrminusfour}{2013}
+\newcommand{\yrminusfive}{2012}
+% these need to be incremented each year .. <<<<<<<<<<<<<<<<<<<<<
+
+
+% ----------------------------------
+\newcommand{\D}{.}  % to replace dots .. 
+\newcommand{\h}{C:/} %home directory
+\newcommand{\e}{bio.data/}
+\newcommand{\es}{bio.data/bio.snowcrab/} %snow crab assessment base directory
+\newcommand{\eb}{bathymetry/}
+\newcommand{\ea}{bio.data/aegis/}
+\newcommand{\Ay}{assessments/2017/}
+\newcommand{\A}{assessments/}
+\newcommand{\m}{output/maps/} %base folder for maps
+\newcommand{\mb}{output/maps/survey/snowcrab/annual/bycatch/} %survey bycatch folder
+\newcommand{\main}{C:/bio.data/bio.snowcrab/assessments/2018/presentations/4X/}
+
+% ----------------------------------
+\date{June 19, 2018}
+\title[4X Snow Crab Advisory \present]{4X Snow Crab Advisory\\  Maritimes Region\\ \present } 
+\author[Snow Crab Unit]{Ben Zisserson, Brent Cameron, Amy Glass, Jae Choi} 
+\institute[DFO Science]{
+	Canadian Department of Fisheries and Oceans \\ % Your institution for the title page
+	Science Branch \\
+	Population Ecology Division
+	\medskip
+	\textit{} % Your email address
+}
+
+
+% ----------------------------------
+\begin{document}
+	
+% ----------------------------------
+\begin{frame}
+\titlepage % Print the title page as the first slide
+
+\end{frame}
+
+
+% ----------------------------------
+\begin{frame}
+\frametitle{Overview} % Table of contents slide
+\tableofcontents % \section{} and \subsection{} 
+\end{frame}
+
+%----------------------------------------------------------------------------------------
+%	PRESENTATION SLIDES
+%----------------------------------------------------------------------------------------
+
+
+\section{Fishery}
+
+\subsection{Landings}
+\begin{frame}
+\frametitle{Annual Landings}
+\begin{figure}
+ \vspace*{-0.4cm}
+\centering
+ \subfloat{\includegraphics[width=0.70\textwidth]{\main annual\D landings.pdf}}\
+\end{figure}
+\end{frame}
+
+%\begin{frame}
+%\frametitle{Annual Effort}
+%\begin{figure}
+%
+% \centerline{\includegraphics[width=0.70\textwidth]{\main annual\D effort.pdf}}
+% \end{figure}
+%\end{frame}
+
+%%------------------------------------------------
+%
+\begin{frame}
+\subsection{Catch Rates}
+\frametitle{Annual Catch Rates}
+\begin{figure}
+ \centerline{\includegraphics[width=0.70\textwidth]{\main annual\D cpue\D jack.pdf}}
+
+ \end{figure}
+\end{frame}
+
+%--------------------------------------------------------------
+
+\begin{frame}
+\frametitle{Logbook locations}
+ \vspace*{-0.65cm}
+\begin{figure}
+	\centering
+	\subfloat{\includegraphics[width=0.36\textwidth]{\main logbook\D effort\D 2010.png}}\
+	\subfloat{\includegraphics[width=0.36\textwidth]{\main logbook\D effort\D 2011.png}}\
+	\subfloat{\includegraphics[width=0.36\textwidth]{\main logbook\D effort\D 2012.png}}\
+	\subfloat{\includegraphics[width=0.36\textwidth]{\main logbook\D effort\D 2013.png}}\
+	
+\end{figure}
+\end{frame}
+
+\begin{frame}
+\vspace*{-0.65cm}
+\frametitle{Logbook locations}
+\begin{figure}
+\centering
+\subfloat{\includegraphics[width=0.36\textwidth]{\main logbook\D effort\D 2014.png}}\
+\subfloat{\includegraphics[width=0.36\textwidth]{\main logbook\D effort\D 2015.png}}\
+\subfloat{\includegraphics[width=0.36\textwidth]{\main logbook\D effort\D 2016.png}}\
+\subfloat{\includegraphics[width=0.36\textwidth]{\main logbook\D effort\D 2017.png}}\
+
+\end{figure}
+\end{frame}
+
+%%------------------------------------------------
+\subsection{Activity}
+\begin{frame}
+\frametitle{Active Vessels}
+\begin{figure}
+%
+
+ \centerline{\includegraphics[width=0.70\textwidth]{\main annual\D vessels.pdf}}
+
+ \end{figure}
+\end{frame}
+
+
+%%------------------------------------------------
+
+\begin{frame}
+\frametitle{Monthly Landings}
+\begin{figure}
+
+ \centerline{\includegraphics[width=0.70\textwidth]{\main monthly\D landings.pdf}}
+ \end{figure}
+\end{frame}
+
+%
+\section{At-Sea Observers}
+\subsection{Sampling Details}
+%
+\begin{frame}
+\frametitle{Observer Sampling}
+%\vspace*{-2cm}
+\begin{figure}
+	
+\subfloat{\includegraphics[width=0.8\textwidth]{\main observersummary.pdf}}
+\end{figure}
+\end{frame}
+
+%%------------------------------------------------
+%
+\subsection{Catch Composition}
+%
+\begin{frame}
+\frametitle{Observed Catch Composition}
+
+\begin{columns}
+\begin{column}<+->{0.5\textwidth}
+%
+\begin{figure}
+\centerline{\includegraphics[width=1.0\textwidth]{\main cc\D obs\D past.pdf}}
+%
+\end{figure}
+\end{column}
+%
+\begin{column}{0.5\textwidth}
+\begin{figure}
+%
+
+\centerline{\includegraphics[width=1.0\textwidth]{\main cc\D obs\D present.pdf}}
+%
+\end{figure}
+%
+\end{column}
+\end{columns}
+*Dashed black line is 95mm MLS
+%
+\end{frame}
+
+
+
+%%------------------------------------------------
+
+\section{Environmental Conditions}
+
+\begin{frame}
+\frametitle{Fishery Temperatures}
+\begin{figure}
+	
+	\centerline{\includegraphics[width=0.7\textwidth]{\main monthly\D temps.pdf}}
+	
+\end{figure}
+
+\begin{itemize}
+\item Temperatures from temperature loggers in fishermen's traps. Should be coldest of the year.
+\item Colour blocks are snow crab temperature preferences. Green is ideal, yellow is marginal, red is potentially lethal longterm.
+\end{itemize}
+\end{frame}
+
+%-----------------------------------------------------------------
+\begin{frame}
+\frametitle{Survey Temperatures}
+\begin{figure}
+
+\centerline{\includegraphics[width=0.6\textwidth]{\h \es \Ay timeseries/survey/t.pdf}}
+
+\end{figure}
+%Annual variations in bottom temperature observed during the ENS snow crab survey. The horizontal line indicates the long-term median temperature within each subarea
+\end{frame}
+%
+%%------------------------------------------------
+%
+
+\begin{frame}
+\frametitle{Shelf Wide Bottom Temperatures}
+\begin{figure}
+	\centering
+	\subfloat{\includegraphics[width=0.4\textwidth]{\main temperatures\D bottom\D 2004.png}}\
+	\subfloat{\includegraphics[width=0.4\textwidth]{\main temperatures\D bottom\D 2009.png}}\
+	\subfloat{\includegraphics[width=0.4\textwidth]{\main temperatures\D bottom\D 2013.png}}\
+	\subfloat{\includegraphics[width=0.4\textwidth]{\main temperatures\D bottom\D 2016.png}}\
+\end{figure}
+\end{frame}
+
+\begin{frame}
+\frametitle{Shelf Wide Bottom Temperatures}
+\begin{figure}
+	\centering
+	\subfloat{\includegraphics[width=0.85\textwidth]{\main temperatures\D bottom\D 2017.png}}\
+\end{figure}
+\end{frame}
+
+%%------------------------------------------------
+%
+\section{Assessment}
+\subsection{Survey}
+%
+\begin{frame}
+\frametitle{Survey Catches}
+\vspace*{-0.3cm}
+\begin{figure}
+	\centering
+	\subfloat{\includegraphics[width=0.45\textwidth]{\main R0\D mass\D 2012.png}}\
+	\subfloat{\includegraphics[width=0.45\textwidth]{\main R0\D mass\D 2015.png}}\
+	\subfloat{\includegraphics[width=0.45\textwidth]{\main R0\D mass\D 2016.png}}\
+	\subfloat{\includegraphics[width=0.45\textwidth]{\main R0\D mass\D 2017.png}}\
+\end{figure}
+\end{frame}
+
+
+
+%%------------------------------------------------
+
+\begin{frame}
+\frametitle{Population}
+\begin{figure}
+\centerline{\includegraphics[width=0.55\textwidth]{\main hist\D cfa4x.pdf}}
+
+\end{figure}
+\end{frame}
+%
+
+%
+\subsection{Biomass Estimation}
+%
+\begin{frame}
+\frametitle{Biomass Modelling}
+\begin{itemize}
+%
+%
+\item A new biomass estimation methodology was introduced in 2016 and further refined in 2017. 
+\item This approach relates habitat and abundance with environmental and ecosystem variables while also accounting for spatial and temporal variation. 
+\item The 2016 approach gave biomass estimates that potentially fluctuated greatly between years.
+\item 2017 biomass estimation methodology further simplified model inputs (removing some ecosystem parameters) and added localized temporal smoothing. As a result, fishable biomass estimates are less variable from year to year.
+\item 2016 methodology was overly optimistic for 4X. We believe the current methodology is more realistic and reflective of the 4X biomass
+\item 4X is inherently hard to assess: large area with limited snow crab habitat and high environmental (temperature) variability 
+
+\end{itemize}
+\end{frame}
+
+%%------------------------------------------------
+%
+%
+\begin{frame}
+\frametitle{Modelled Fishable Biomass}
+\begin{figure}
+	\centering
+	\includegraphics[width=0.6\textwidth]{\main biomass\D timeseries.png}\\ 
+\end{figure}
+\vspace*{-0.3cm}
+\begin{itemize}
+	\item Red line: Biomass Survey Index; Blue Line: Modelled biomass estimate 
+	\item Pre-fishery 4X biomass estimate was 120 t for 2017/18, relative to 149 t for previous year 
+	\item Pre-2004 estimates are unreliable as no survey data, driven exclusively by catch rate / fishery information	
+\end{itemize}
+
+\end{frame}
+
+
+\begin{frame}
+\frametitle{Modelled Fishing Mortality}
+\begin{figure}
+\centering
+\includegraphics[width=0.7\textwidth]{\main fishingmortality\D timeseries.png}\\
+\end{figure}
+\end{frame}
+
+
+%%------------------------------------------------
+\subsection{Harvest Advice}
+
+\begin{frame}
+\frametitle{Precautionary Approach}
+\begin{figure}
+	\centering
+	\includegraphics[width=0.7\textwidth]{\h \es \A common/hcr_ideal.pdf}\\ 
+Harvest control rules for the SSE snow crab fishery.
+\end{figure}
+\begin{itemize}
+	\item Harvest control rules for the SSE snow crab fishery.
+	\item Suite of biological indicators inform decisions within "Target Harvest Area"
+\end{itemize}
+\end{frame}
+
+
+%------------------------------------------------
+\subsection{Fisheries Model}
+\begin{frame}
+\frametitle{Fishable Biomass -- Biomass dynamics}
+
+\begin{figure}
+	\centering
+	\includegraphics[width=0.8\textwidth]{\main hcr\D default.png}\\ 
+\end{figure}
+\begin{itemize}
+	\item Pre-2004 biomass estimates likely shift the zones (critical, cautious, healthy) to higher values 
+	\item This would not change the "critical" status based on past assessments and all other indicators (environment, catch rates, historical abundance, etc )
+\end{itemize}
+\end{frame}
+
+%%------------------------------------------------
+
+\section{Summary}
+\begin{frame}
+\frametitle{Summary}
+\begin{itemize}
+\item Lowest catch rates in time series even with very focused fishery footprint
+\item TAC 50\% caught, even with minor season extension
+\item No appreciable internal recruitment to fishery
+\item Though survey temperatures lower in 2017 than 2016, overall viable snowcrab habitat severely constricted
+\item Spatial extent of survey catches mirroring fishery and viable habitat footprints 
+\item Stock is in the "critical zone"
+\item Viability of this fishery is uncertain
+%\item If we consider the stations sampled as representative of the area, population is in the healthy zone.
+%\item Little confidence in biomass estimates but trends seem to align across multiple sources
+%\item Temperatures were lower in 2014 than 2013 and 2012
+%\item Apparent pulse of small crab in the area.
+%\item \emph{Given these uncertainties but the indication that things are on the up turn an increase in TAC of 20-50\% of the 2014 TAC would likely have a negative impact on the stock}
+
+\end{itemize}
+\end{frame}
+
+
+\end{document}

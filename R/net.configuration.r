@@ -66,6 +66,7 @@
 
 
       bcp = bottom.contact.parameters( bcp ) # add other default parameters
+      bcp$user.interaction = FALSE
       bc = NULL
       bc = bottom.contact( x=M, bcp=bcp )
       if ( is.null(bc) || (!is.null( bc$res) && ( ( !is.finite(bc$res$t0 ) || !is.finite(bc$res$t1 ) ) ) )) {
@@ -92,6 +93,7 @@
           print (plotfn)
           dev.flush()
           dev.copy2pdf( file=plotfn )
+          graphics.off()
         }
       }
       if (is.null(t0) & !is.null(bc$bottom0) ) t0 = bc$bottom0

@@ -1,0 +1,812 @@
+
+
+%%---------
+% Use master copy at bio.snopwcrab/inst/tex !!!!
+%%----------------- 
+
+%----------------------------------------------------------------------------------------
+%	Presentation for snow crab RAP using beamer
+% last edit: Feb 2018
+%
+% Note: to reduce the size of the PDF:
+% use ghostscript:
+% gs -q -dSAFER -dNOPAUSE -sDEVICE=pdfwrite -sPDFSETTINGS=printer -sOutputFile="resdoc2006sc.pdf" resdoc2006sc.pdf 
+% the key being sPDFSETTINGS: with options: default, screen, ebook, printer, preprint
+% try also:  -sCompressPages=true
+% -sDownsampleColorImages=true
+% -sColorImageResolution=300
+% -sGrayImageResolution=300
+% -sMonoImageResolution=300
+% final choice to get it under 8MB :
+% gs -q -dSAFER -dNOPAUSE -sDEVICE=pdfwrite -dPDFSETTINGS=/printer -dColorImageResolution=150 -dMonoImageResolution=150 -dGrayImageResolution=150  -dCompatibilityLevel=1.4 -sOutputFile="resdoc2006sc.printer.pdf" resdoc2006sc.pdf  < /dev/null
+%----------------------------------------------------------------------------------------
+
+
+\documentclass{beamer}
+
+\mode<presentation> {
+  %\usetheme{Hannover}
+  %\usetheme{AnnArbor}
+  \usetheme{Boadilla}
+  %\usecolortheme{dolphin}
+  \usecolortheme{seagull}
+  \usefonttheme{structuresmallcapsserif}
+  \beamertemplatenavigationsymbolsempty % turn off navigation
+  \hypersetup{pdfstartview={Fit}} % fits the presentation to the window when first displayed
+}
+
+%\usepackage{default}
+%\usepackage{fourier}
+%\usepackage[english]{babel}															% English language/hyphenation
+%\usepackage[protrusion=true,expansion=true]{microtype}				% Better typography
+%\usepackage[toc,page]{appendix}
+%\usepackage[utf8]{inputenc}
+%\usepackage{csquotes}
+%\usepackage{hyperref}
+\usepackage{graphicx} % Allows including images
+%\usepackage{graphics}
+%\usepackage{booktabs} % Allows the use of \toprule, \midrule and \bottomrule in tables
+%\usepackage{amsmath,amsfonts}				% Math packages
+\numberwithin{equation}{section}		% Equationnumbering: section.eq#
+\numberwithin{figure}{section}	   	% Figurenumbering: section.fig#
+\numberwithin{table}{section}				% Tablenumbering: section.tab#
+
+
+
+%----------------------------------------------------------------------------------------
+% these need to be incremented each year .. <<<<<<<<<<<<<<<<<<<<<
+\newcommand{\yr}{2017}
+\newcommand{\yrminusone}{2016}
+\newcommand{\yrminustwo}{2015}
+\newcommand{\yrminusthree}{2014}
+\newcommand{\yrminusfour}{2013}
+\newcommand{\yrminusfive}{2012}
+% these need to be incremented each year .. <<<<<<<<<<<<<<<<<<<<<
+
+
+% ----------------------------------
+\newcommand{\D}{.}  % to replace dots .. 
+\newcommand{\h}{C:/} %home directory
+\newcommand{\e}{bio.data/}
+\newcommand{\es}{bio.data/bio.snowcrab/} %snow crab assessment base directory
+\newcommand{\eb}{bathymetry/}
+\newcommand{\ea}{bio.data/aegis/}
+\newcommand{\Ay}{assessments/2017/}
+\newcommand{\A}{assessments/}
+\newcommand{\m}{output/maps/} %base folder for maps
+\newcommand{\mb}{output/maps/survey/snowcrab/annual/bycatch/} %survey bycatch folder
+
+
+% ----------------------------------
+\title[Snow Crab Assessment \yr]{Snow Crab Assessment\\  Maritimes Region\\ \yr } 
+\author[Snow Crab Unit]{Ben Zisserson, Brent Cameron, Amy Glass, Jae Choi} 
+\institute[DFO Science]{
+  Canadian Department of Fisheries and Oceans \\ % Your institution for the title page
+  Science Branch \\
+  Population Ecology Division
+  \medskip
+  \textit{} % Your email address
+}
+ 
+
+% ----------------------------------
+\begin{document}
+
+
+% ----------------------------------
+  \begin{frame}
+    \titlepage % Print the title page as the first slide
+  \end{frame}
+  
+
+% ----------------------------------
+  \begin{frame}
+    \frametitle{Overview} % Table of contents slide
+    \tableofcontents % \section{} and \subsection{} 
+  \end{frame}
+  
+\section{Survey}
+%\subsection{Sampling}  
+% ----------------------------------
+  \begin{frame}
+    \frametitle{ENS Snow Crab}
+    \begin{columns}
+      \begin{column}{0.4\textwidth}
+        \begin{itemize}
+        
+        	\item Southern limit of Atlantic Snow Crab distribution 
+        	\item Three assessment areas
+        	\item Four fishery management areas
+        \end{itemize}
+      \end{column}
+      
+      \begin{column}{0.6\textwidth}
+      	\begin{centering}
+          \begin{figure}
+            \includegraphics[width=\textwidth]{\h \es \A /common/Basemap.png}
+          \end{figure}
+      	\end{centering}
+      \end{column}
+    \end{columns}
+  \end{frame}
+  
+
+% ----------------------------------
+%
+%\iffalse % comments out following code until reaching \fi
+
+%\subsection{Maps}
+%
+
+
+\begin{frame}
+\frametitle{Survey}
+ 
+  	\begin{columns}
+  		\begin{column}{0.4\textwidth}
+  		 \begin{itemize}
+  		 	\item Started in late 1990's by GFC
+  		 	\item Standardized sampling since 2004
+  		 	\item Specialized trawl designed to dig into bottom sediments
+  		 	\item Habitat, community and biological data collected
+  		 	\item 32 stations not sampled in 2017 due to weather and time constraints %survey year specific comment(s)
+  		 \end{itemize}
+  		\end{column}
+  		
+  		\begin{column}{0.6\textwidth}
+  			\begin{centering}
+  					\begin{figure}
+  						\includegraphics[width=0.7\textwidth]{\h \es \m survey\D locations/survey\D locations\D \yrminusone.png}\\   
+  						\includegraphics[width=0.7\textwidth]{\h \es \m survey\D locations/survey\D locations\D \yr.png}\\   
+  					\end{figure}
+  		
+  			\end{centering}
+  		\end{column}
+  	\end{columns}
+  		
+  \end{frame}
+%\fi
+
+\begin{frame}
+\frametitle{Survey Timing}
+ \vspace*{0.4cm}
+Day of year from August 15
+ \vspace*{-0.65cm}
+\begin{columns}[T]
+	\begin{column}{0.5\textwidth}
+		\begin{figure}
+			\includegraphics[width=0.75\textwidth]{\h \es \m survey/snowcrab/annual/julian\D compressed/julian\D compressed\D \yrminusfive.png}\\   
+			\includegraphics[width=0.75\textwidth]{\h \es \m survey/snowcrab/annual/julian\D compressed/julian\D compressed\D \yrminusone.png}\\   
+		\end{figure}
+	\end{column}
+	
+	\begin{column}{0.5\textwidth}
+		\begin{centering}
+			\begin{figure}
+				\includegraphics[width=0.75\textwidth]{\h \es \m survey/snowcrab/annual/julian\D compressed/julian\D compressed\D \yrminusthree.png}\\   
+				\includegraphics[width=0.75\textwidth]{\h \es \m survey/snowcrab/annual/julian\D compressed/julian\D compressed\D \yr.png}\\   
+			\end{figure}
+		\end{centering}
+	\end{column}
+\end{columns}
+
+\end{frame}
+
+
+
+
+% ----------------------------------
+\section{Ecosystem Interactions}
+\begin{frame}
+\frametitle{Community Interactions}
+
+\begin{itemize}
+	\setlength\itemsep{2em}
+	\item Competitors: Some benthic fish and crabs, but few strong competitors
+	\item Prey: Echinoderms, shrimp, crabs, worms, bivalves, sea stars
+	\item Predators: Halibut, Wolfish, Skates, Longhorn Sculpin, Atlantic Cod, White Hake, Plaice, Haddock, other Snow Crab
+\end{itemize}
+\end{frame}
+
+%------------------------------------------------------------------------------
+%\subsection{Competition/ Prey}
+\begin{frame}
+\frametitle{Competition/Prey}
+Competitors/prey (kg\textbackslash$km^2$) of Snow Crab in the Snow Crab Survey
+	\begin{columns}
+	\begin{column}{0.2\textwidth}
+	\begin{itemize}
+	  \setlength\itemsep{2em}
+		\item[] Jonah Crab 
+		%\item[]
+		\item[] Lesser Toad Crab
+		%\item[]
+		\item[] Northern Shrimp
+	\end{itemize}
+	\end{column}
+
+	\begin{column}{0.35\textwidth}
+ 	\begin{figure}
+    \includegraphics[width=0.75\textwidth,trim={0 1cm 0 1cm}]{\h \es \mb ms\D mass\D 2511/ms\D mass\D 2511\D \yrminusone.png}\\   
+    \includegraphics[width=0.75\textwidth,trim={0 1cm 0 1cm}]{\h \es \mb ms\D mass\D 2521/ms\D mass\D 2521\D \yrminusone.png}\\   
+    \includegraphics[width=0.75\textwidth,trim={0 1cm 0 1cm}]{\h \es \mb ms\D mass\D 2211/ms\D mass\D 2211\D \yrminusone.png}  
+  	\end{figure}
+  	\end{column}
+
+  	\begin{column}{0.35\textwidth}
+ 		\begin{figure}
+			\includegraphics[width=0.75\textwidth,trim={0 1cm 0 1cm}]{\h \es \mb ms\D mass\D 2511/ms\D mass\D 2511\D \yr.png}\\   
+			\includegraphics[width=0.75\textwidth,trim={0 1cm 0 1cm}]{\h \es \mb ms\D mass\D 2521/ms\D mass\D 2521\D \yr.png}\\   
+			\includegraphics[width=0.75\textwidth,trim={0 1cm 0 1cm}]{\h \es \mb ms\D mass\D 2211/ms\D mass\D 2211\D \yr.png}  
+\end{figure} 
+  	\end{column}
+
+  	\end{columns}
+\end{frame}
+
+
+% ----------------------------------
+%\subsection{Predation}
+\begin{frame}
+\frametitle{Potential Predation}
+Potential predators (kg\textbackslash$km^2$) of snow crab in the Snow Crab Survey: \textbf{Atlantic Cod}
+	\begin{columns}
+
+	\begin{column}{0.4\textwidth}
+ 	\begin{figure}
+    \includegraphics[width=0.9\textwidth]{\h \es \mb ms\D mass\D 10/ms\D mass\D 10\D \yrminusone.png}\\   
+    \includegraphics[width=0.9\textwidth]{\h \es \mb ms\D mass\D 10/ms\D mass\D 10\D \yr.png}\\   
+    \end{figure}
+  	\end{column}
+
+	\begin{column}{0.6\textwidth}
+ 	\begin{figure}
+  	\includegraphics[width=0.8\textwidth]{\h \es \Ay timeseries/survey/ms\D mass\D 10.pdf}\\
+   	\end{figure}
+  	\end{column}
+
+  	\end{columns}
+\end{frame}
+
+
+% ----------------------------------
+\begin{frame}
+\frametitle{Potential Predation}
+Potential predators (kg\textbackslash$km^2$) of snow crab in the Snow crab survey: \textbf{Thorny Skate}
+\begin{columns}
+	
+	\begin{column}{0.4\textwidth}
+		\begin{figure}
+			\includegraphics[width=0.9\textwidth]{\h \es \mb ms\D mass\D 201/ms\D mass\D 201\D \yrminusone.png}\\   
+			\includegraphics[width=0.9\textwidth]{\h \es \mb ms\D mass\D 201/ms\D mass\D 201\D \yr.png}\\   
+		\end{figure}
+	\end{column}
+	
+	\begin{column}{0.6\textwidth}
+		\begin{figure}
+			\includegraphics[width=0.8\textwidth]{\h \es \Ay timeseries/survey/ms\D mass\D 201.pdf}\\
+		\end{figure}
+	\end{column}
+	
+\end{columns}
+\end{frame}
+
+
+%--------------------------------------------------------------
+\section{Resource Status}
+%\subsection{Reproductive Potential}
+
+
+% ----------------------------------
+\begin{frame}
+\frametitle{Female Size-Frequency}
+\begin{columns}
+	\begin{column}{0.5\textwidth}
+		\begin{itemize}
+		\item Size-frequency histograms of carapace width of female Snow Crab
+		\item Majority of females now mature
+		\item Expect increasing egg production for next 1-3 years
+		\end{itemize}
+	\end{column}
+
+	\begin{column}{0.5\textwidth}
+	\begin{figure}
+		\includegraphics[width=\textwidth]{\h \es \Ay figures/size\D freq/survey/female.pdf}
+	\end{figure}
+	\end{column}
+	\end{columns}
+\end{frame}
+
+
+
+% ----------------------------------
+\begin{frame}
+\frametitle{Primiparous/Multiparous}
+\begin{columns}
+	\begin{column}{0.5\textwidth}
+	\begin{center}
+	Primiparous 
+	\vspace*{-0.65cm}
+	\end{center}
+		\begin{figure}
+		\includegraphics[width=\textwidth]{\h \es \m survey/snowcrab/annual/totno\D female\D primiparous/totno\D female\D primiparous\D \yr.png}
+	\end{figure}
+	\end{column}
+
+	\begin{column}{0.5\textwidth}
+	\begin{center}
+	Multiparous 
+	\vspace*{-0.65cm}
+	\end{center}
+	\begin{figure}
+		\includegraphics[width=\textwidth]{\h \es \m survey/snowcrab/annual/totno\D female\D multiparous/totno\D female\D multiparous\D \yr.png}	
+	\end{figure}
+	\end{column}
+\end{columns}
+\end{frame}
+
+
+
+% ----------------------------------
+\begin{frame}
+\frametitle{Mature Female Abundance}
+
+	\begin{columns}
+    \begin{column}{0.5\textwidth}
+      \begin{figure}
+        \includegraphics[width=\textwidth]{\h \es \m survey/snowcrab/annual/totno\D female\D mat/totno\D female\D mat\D \yr.png}	
+      \end{figure}
+    \end{column}
+
+  	\begin{column}{0.5\textwidth}
+      \begin{figure}
+        \includegraphics[width=0.9\textwidth]{\h \es \Ay timeseries/survey/totno\D female\D mat.pdf}
+      \end{figure}
+    \end{column}
+  \end{columns}
+Reproductive potential peaked in 2007/8 (2012 in 4X)
+\end{frame}
+
+\begin{frame}
+\frametitle{Mature Sex Ratios}
+
+\begin{columns}
+	\begin{column}{0.3\textwidth}
+		\begin{itemize}
+			\begin{footnotesize}
+				\item  SSE: Traditionally male dominated 
+				\item S-ENS: Stable
+				\item N-ENS: Approaching 50\%. Recovering from near zero
+				\item 4X: Continued high proportion of males. Overall numbers very low  
+			\end{footnotesize}
+		\end{itemize}
+	\end{column}
+	
+	\begin{column}{0.7\textwidth}
+		\begin{figure}
+			%	\includegraphics[width=	0.6\textwidth]{\h \es \m survey/snowcrab/annual/sexratio\D mat/sexratio\D mat\D \yr.png}\\
+			\includegraphics[width=0.8\textwidth]{\h \es \Ay timeseries/survey/sexratio\D mat.pdf}
+		\end{figure}
+	\end{column}
+	
+\end{columns}
+\end{frame}
+
+
+% ----------------------------------
+%\subsection{Recruitment}
+\begin{frame}
+\frametitle{Recruitment}
+\begin{columns}
+	\begin{column}{0.5\textwidth}
+		Size-frequency histograms of carapace width of male Snow Crab. The vertical line represents the legal size (95 mm)
+		\begin{itemize}
+			\item S-ENS: Moderate internal recruitment
+			\item N-ENS: Leading edge of recruitment pulse now entering fishery. Protecting soft crab essential.
+			\item 4x: Minimal internal recruitment for the foreseeable future  
+		\end{itemize}
+	\end{column}
+	
+	\begin{column}{0.5\textwidth}
+		\begin{figure}
+			\includegraphics[width=\textwidth]{\h \es \Ay figures/size\D freq/survey/male.pdf}
+		\end{figure}
+	\end{column}
+\end{columns}
+\end{frame}
+
+
+
+
+% ----------------------------------
+\section{Space Time Modelling}
+\begin{frame}
+\frametitle{Space Time Modelling --  lbm \& stmv}
+
+\begin{itemize}
+	\item Hierarchal process
+	\item Global model of environmental factors upon snow crab
+	\item Location specific timeseries analysis with seasonal and annual harmonic components
+	\item Local spatial interpolation of variability at each location and time
+	\item Results combine to form prediction surfaces for snowcrab habitat and abundance
+\end{itemize}
+\end{frame}
+
+% ----------------------------------
+
+\begin{frame}
+\frametitle{Space Time Modelling -- lbm vs stmv }
+
+
+		\vspace*{-.5cm}
+		\begin{itemize}
+		\item stmv is refinement of 2016 lbm approach
+		\item stmv removed some model inputs (metabolic rate, condition index, etc)
+		\item Added localized temporal smoothing
+		\item More stable inter-annual estimates
+		\item More stable results allow biomass dynamics model to be more informative
+		\item New approach requires recalculation of past results
+		\end{itemize}
+
+
+\end{frame}
+
+
+%------------------------------------------------------------------------------
+%\subsection{Ecosystem Inputs -- Environmental}
+\begin{frame}
+\frametitle{Ecosystem Inputs -- Environmental}
+	\begin{columns}
+	\begin{column}{0.25\textwidth}
+	\begin{itemize}
+	  \setlength\itemsep{2em}
+		\item[] Bottom Temperature 
+		\item[] Bottom Temperature SD
+		\item[] Substrate ln(grain size)
+	\end{itemize}
+	\end{column}
+
+	\begin{column}{0.25\textwidth}
+ 	\begin{figure}
+    \includegraphics[width=\textwidth]{\h \ea temperature/maps/SSE/bottom\D predictions/climatology/temperatures\D bottom.png}\\   
+    \includegraphics[width=\textwidth]{\h \ea temperature/maps/SSE/bottom\D predictions/climatology/temperatures\D bottom\D sd.png}\\   
+    \includegraphics[width=\textwidth]{\h \ea substrate/R/substrate\D grainsize\D edit.png}  
+  	\end{figure}
+  	\end{column}
+
+  	\begin{column}{0.25\textwidth}
+ 	\begin{figure}
+    \includegraphics[width=\textwidth]{\h \ea \eb maps/SSE/depth.png}\\   
+    \includegraphics[width=\textwidth]{\h \ea \eb maps/SSE/slope.png}\\   
+    \includegraphics[width=\textwidth]{\h \ea \eb maps/SSE/curvature.png}  
+  	\end{figure}
+  	\end{column}
+
+	\begin{column}{0.25\textwidth}
+	\begin{itemize}
+	  \setlength\itemsep{2em}
+		\item[] Depth
+		\item[] 
+		\item[] Slope
+		\item[] 
+		\item[] Curvature
+	\end{itemize}
+  	\end{column}
+
+  	\end{columns}
+\end{frame}
+
+
+\begin{frame}
+\frametitle{Ecosystem Inputs -- Temperature}
+\vspace*{-0.4cm}
+	\begin{columns}
+
+	\begin{column}{0.5\textwidth}
+ 	\begin{figure}
+    \includegraphics[width=0.55\textwidth]{\h \ea temperature/maps/SSE/bottom\D predictions/annual/temperatures\D bottom\D  1960.png}\\   
+    \includegraphics[width=0.55\textwidth]{\h \ea temperature/maps/SSE/bottom\D predictions/annual/temperatures\D bottom\D  2012.png}\\   
+    \includegraphics[width=0.55\textwidth]{\h \ea temperature/maps/SSE/bottom\D predictions/annual/temperatures\D bottom\D  \yrminusone.png}\\   
+  	\end{figure}
+  	\end{column}
+
+  	\begin{column}{0.5\textwidth}
+ 	\begin{figure}
+    \includegraphics[width=0.55\textwidth]{\h \ea temperature/maps/SSE/bottom\D predictions/annual/temperatures\D bottom\D  2000.png}\\   
+    \includegraphics[width=0.55\textwidth]{\h \ea temperature/maps/SSE/bottom\D predictions/annual/temperatures\D bottom\D  \yrminusthree.png}\\   
+    \includegraphics[width=0.55\textwidth]{\h \ea temperature/maps/SSE/bottom\D predictions/annual/temperatures\D bottom\D  \yr.png}\\   
+  	\end{figure}
+  	\end{column}
+
+ 	\end{columns}
+\end{frame}
+
+%\subsection{Ecosystem Inputs -- Community}
+\begin{frame}
+\frametitle{Ecosystem Inputs -- Community Structure}
+
+	\begin{columns}
+	\begin{column}{0.2\textwidth}
+	\begin{center}
+	\begin{itemize}
+	  \setlength\itemsep{2em}
+		\item[] PCA 1st Axis 
+		\item[]
+		\item[] PCA 2nd Axis
+	\end{itemize}
+	\end{center}
+	\end{column}
+
+	\begin{column}{0.7\textwidth}
+ 	\begin{figure}
+   		\includegraphics[width=0.55\textwidth,trim={0 1cm 0 1cm}]{\h \ea speciescomposition/maps/pca1/snowcrab/annual/pca1\D mean\D 2016.png}\\
+  		\includegraphics[width=0.55\textwidth,trim={0 1cm 0 1cm}]{\h \ea speciescomposition/maps/pca2/snowcrab/annual/pca2\D mean\D 2016.png}\
+  	\end{figure}
+  	\end{column}
+
+  	\end{columns}
+\end{frame}
+
+
+
+%\subsection{Fishable Biomass STMV}
+\begin{frame}
+\frametitle{Fishable Biomass Index -- STMV}
+
+\begin{columns}
+
+\begin{column}{0.5\textwidth}
+  \begin{center}
+    Habitat Space
+  \end{center}
+  \vspace*{-0.6cm}
+  	\begin{figure}
+    \includegraphics[width=0.7\textwidth,trim={0 1cm 0 1cm}]{\h \es maps/snowcrab\D large\D males_presence_absence/snowcrab/annual/snowcrab\D large\D males_presence_absence\D mean\D \yr.png}
+  	\end{figure}
+\end{column}
+
+\begin{column}{0.5\textwidth}
+  \begin{center}
+    Survey Abundance Index 
+  \end{center}
+\vspace*{-0.6cm}
+  \begin{figure}
+    \includegraphics[width=0.7\textwidth,trim={0 1cm 0 1cm}]{\h \es maps/snowcrab\D large\D males_abundance/snowcrab/annual/snowcrab\D large\D males_abundance\D mean\D \yr.png}
+  \end{figure}
+\end{column}
+
+\end{columns}
+
+\vspace*{0.2cm}
+\begin{center}
+Fishable Biomass Index
+\end{center}
+\vspace*{-0.2cm}
+\begin{figure}
+	\includegraphics[width=0.45\textwidth,trim={0 1cm 0 1cm}]{\h \es maps/fishable.biomass/snowcrab/prediction\D abundance\D mean\D \yr.png}
+\end{figure}
+	
+\end{frame}
+
+
+%------------------------------------------------
+%\begin{frame}
+ % \frametitle{Fishable Biomass Index -- STMV}
+ 
+    %  \begin{figure}
+    %    \includegraphics[width=0.8\textwidth]{\h \es maps/fishable.biomass/snowcrab/prediction\D abundance\D mean\D \yr.png}
+    %  \end{figure}
+  
+
+%\end{frame}
+
+% ----------------------------------
+\begin{frame}
+\frametitle{Precautionary Approach}
+
+		\begin{itemize}
+			\item Guiding principle for Fisheries Management
+			\item Attempts to make careful decisions accounting for uncertainties in natural systems
+			\item Canada has a legally binding international obligation to manage NR using a "PA"
+			\item Establishes biological reference points and defines management actions around these reference points
+			\item Assumes management actions are a dominant force in stock dynamics
+			\item SSE snow crab fishery is inherently precautious
+				\begin{itemize}
+				\item no removal of females
+				\item only mature males removed
+				\item relatively low exploitation
+				\item catches monitored (at-sea and dockside)
+				\end{itemize}
+		\end{itemize}
+
+\end{frame}
+%------------------------------------------------
+
+\begin{frame}
+\frametitle{Precautionary Approach}
+\begin{figure}[ht]
+	\centering
+	\includegraphics[width=0.8\textwidth]{\h \es \A common/hcr_ideal.pdf}
+\end{figure}
+Suite of biological indicators inform decisions within "Target Harvest Area"
+\end{frame}
+
+
+%------------------------------------------------
+\section{Fisheries Model}
+\begin{frame}
+\frametitle{Fishable Biomass -- Biomass dynamics}
+	\begin{itemize}
+		\item Use fisheries model to determine relevant biological reference points
+		\item Unable to use classic fishery models
+			\begin{itemize}
+				\item aging not possible
+				\item complex life cycles
+				\item spatially and temporally variable size  and sex structure
+			\end{itemize}
+		\item Use a biomass dynamics ("Surplus Production") model
+		\item Provides estimates of posterior distributions of parameters (K, r, q, F, Fmsy) 
+	\end{itemize}
+\end{frame}
+
+
+% ----------------------------------
+%\subsection{Posteriors}
+\begin{frame}
+\frametitle{Posteriors -- Carrying Capacity}
+\begin{figure}
+	\centering
+	\includegraphics[width=0.5\textwidth]{\h \es \Ay K\D density.png} 
+\end{figure}
+Attempts to define the maximum population size an environment can sustain indefinitely
+\end{frame}
+
+
+% ----------------------------------
+\begin{frame}
+\frametitle{Posteriors -- Population Growth Rate}
+\begin{figure}
+\centering
+\includegraphics[width=0.5\textwidth]{\h \es \Ay r\D density.png} 
+\end{figure}
+Inherently includes natural mortality, immigration, growth, incidental fishery mortality 
+\end{frame}
+
+
+% ----------------------------------
+\begin{frame}
+\frametitle{Posteriors -- Catchability}
+\begin{figure}
+\centering
+\includegraphics[width=0.5\textwidth]{\h \es \Ay q\D density.png} 
+\end{figure}
+Simplistically quantifies the influence of differing biases such as survey gear and sampling,  areal expansion,  statistical modeling, etc.
+\end{frame}
+
+
+% ----------------------------------
+%\subsection{Fishable Biomass -- Biomass dynamics}
+\begin{frame}
+\frametitle{Fishable Biomass -- Biomass dynamics}
+\begin{columns} 
+\begin{column}{0.4\textwidth}
+ \begin{itemize}
+  \begin{tiny}
+     \item Red: The stmv fishable biomass index, Green : q-corrected
+     \item Blue: The posterior mean fishable biomass estimated from the logistic model
+     \item Grey: The density distribution of posterior fishable biomass with estimates darkest area being medians 
+     \end{tiny}
+    \end{itemize}
+\end{column}
+\begin{column}{0.6\textwidth}
+  \begin{figure}[ht]
+    \centering
+    \includegraphics[width=0.9\textwidth]{\h \es \Ay biomass\D timeseries.png}
+  \end{figure}
+\end{column}
+\end{columns} 
+
+\end{frame}
+
+
+%------------------------------------------------
+%\subsection{Fishing Mortality}
+\begin{frame}
+\frametitle{Fishing Mortality}
+\begin{columns}
+\begin{column}{0.4\textwidth}
+
+\begin{itemize}
+\begin{footnotesize}
+	\item N-ENS: Less stable but similar mean to S-ENS
+	\item S-ENS: Relatively stable over past 15 years
+	\item 4x: High since 2011
+\end{footnotesize}
+\end{itemize}
+\end{column}
+
+\begin{column}{0.6\textwidth}
+
+
+\begin{figure}
+    \includegraphics[width=0.85\textwidth]{\h \es \Ay fishingmortality\D timeseries.png}
+\end{figure}
+\begin{itemize}
+	\begin{tiny}
+		\item[] Grey Area: Posterior density distributions, with median  
+		\item[] Dark-dashed line: is the 20\% harvest rate
+		\item[] Red line: estimated FMSY 	
+	\end{tiny}
+\end{itemize}
+
+\end{column}
+
+\end{columns}
+\end{frame}
+
+
+% ----------------------------------
+%\begin{frame}
+%  \frametitle{Posteriors -- Process Errors (sd)}
+%  \begin{figure}
+%    \centering
+%    \includegraphics[width=0.6\textwidth]{\h \es \Ay bp\D sd\D density.png} 
+%  \end{figure}
+%\end{frame}
+
+
+% ----------------------------------
+%\begin{frame}
+%  \frametitle{Posteriors -- Observation Errors (sd)}
+%  \begin{figure}
+%    \centering
+%    \includegraphics[width=0.6\textwidth]{\h \es \Ay bo\D sd\D density.png} 
+%  \end{figure}
+%\end{frame}
+
+%\subsection{Harvest Advice}
+
+% ----------------------------------
+
+
+% ----------------------------------
+\begin{frame}
+  \frametitle{Precautionary approach}
+\begin{figure}
+  \centering
+  \includegraphics[width=0.6\textwidth]{\h \es \Ay hcr\D default.png}\\ 
+\end{figure}
+\end{frame}
+
+\begin{frame}
+\frametitle{Harvest Advice}
+
+\begin{itemize}
+	\item N-ENS
+	\begin{itemize}
+		\item Refined assessment methodology stabilized inter-annual variabity in biomass estimates
+		\item Stock is in the "heathly zone" though below long-term mean
+		\item A moderate decrease in TAC is recommended
+	\end{itemize}
+	\item S-ENS
+	\begin{itemize}
+		\item Refined assessment methodology shows more stable trends of Fishing Mortality and Biomass
+		\item Stock is in the "heathly zone" though below long-term mean
+		\item Biomass index continued to decline in spite of TAC reductions
+		\item A moderate decrease in TAC is recommended
+	\end{itemize}
+	\item 4X
+	\begin{itemize}
+		\item Low recruitment and poor environmental conditions create uncertainties about this population
+		\item Stock is in the "critical zone"
+		
+	\end{itemize}
+\end{itemize}
+\end{frame}
+
+% ----------------------------------
+% ----------------------------------
+% ----------------------------------
+
+\end{document}
+

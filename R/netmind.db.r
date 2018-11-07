@@ -1,4 +1,4 @@
-netmind.db = function( DS, Y=NULL, plotdata=TRUE ) {
+netmind.db = function( DS, Y=NULL, plotdata=FALSE ) {
 
   netmind.dir = project.datadirectory("bio.snowcrab", "data", "netmind" )
   netmind.rawdata.location = file.path( netmind.dir, "archive" )

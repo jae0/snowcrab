@@ -17,7 +17,7 @@
     "set_no", "set",
     "nafarea_id", "nafo",
     "depth", "Zx",                     # m
-    "water_temperature", "Tx",
+    "bottom_temperature", "Tx",
     "distance_gps", "dist",
     "area_swept", "sa",                # m2
     "fish_no", "crabno",

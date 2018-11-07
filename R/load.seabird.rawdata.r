@@ -46,7 +46,10 @@
 
     seabird$timestamp = with_tz( seabird$timestamp, tz.snowcrab )  # from now on, seabird is UTC
 
-    seabird$timestamp = seabird$timestamp + difftime(lt,st)
+  # BC 2018 - Seabird header data not populated in single instance so comparing system time with seabird
+  #           time is not accurate to get time offset betweem system and seabird. Seabird is time is synced 
+  #           to system time every morning and should not be more than a few seconds in difference. 
+  # seabird$timestamp = seabird$timestamp + difftime(lt,st)
 
     numerics = c("temperature", "pressure")
     seabird = factor2number(seabird, numerics)
