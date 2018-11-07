@@ -98,7 +98,7 @@ p = bio.snowcrab::load.environment( year.assessment=year.assessment )
   out = res[, c("mean", "se")]
   out$year = as.numeric(rownames(out))
   rownames(out)=NULL
-  write.table ( out, file="bio.snowcrab.recruitment.index.csv", sep="\t" )
+  write.csv ( out, file=paste("~/bio.data/bio.snowcrab/requests/", "shrimp", year.assessment, "bio.snowcrab.recruitment.index.csv"))
 
   plot(  res[, c("mean")], ylim=c(0, max(res$mean, na.rm=T)*1.1))
 
