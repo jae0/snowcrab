@@ -110,11 +110,6 @@
       modm1 = glm( mat ~ log(cw) + log(chela) + shell, data=x[imm,], family=binomial(link="logit") )
       modf1 = glm( mat ~ log(cw) + log(abdomen) + shell, data=x[iff,], family=binomial(link="logit") )
 
-
-      # require( boot )  # inv.logit
-      # plot( modm1, trans=inv.logit,  rug=T, jit=T, scale=0 )
-      # plot( modf1, trans=inv.logit,  rug=T, jit=T, scale=0 )
-
       # identify inds without maturity indications
       WW = which( !(x$mat %in% c(immature, mature) )  )
       imm = intersect( intersect( intersect( MM, WW ), SC ), cleandata_mm )
@@ -126,6 +121,7 @@
       x$mat[imm] = x$mat.predicted[imm]
       x$mat[iff] = x$mat.predicted[iff]
 
+#animals without shell did not get assigned mat through models to this point so...
       cleandata_mm = which( x$cw > 0 & x$chela > 0 )
       cleandata_ff = which( x$cw > 0 & x$abdomen > 0 )
       NoC= which( is.na(x$shell)) #individuals w/o shell condition
