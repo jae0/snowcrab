@@ -54,9 +54,10 @@ map.fisheries.data = function(p, outdir,  FUN, yrs, variable='effort',probs=c(0,
       col.regions=cols(length(datarange)+1), colpts=F, corners=p$corners, display=F,rez=c(pres,pres))
     print(lp)
     dev.off()
+    print(fn)
 
 
-    try( )
+    #try( ) ##BZ Nov 2018- Removed. Producing errors. No expression to "try" within the try() function
   }
 }
 
