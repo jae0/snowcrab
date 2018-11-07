@@ -126,9 +126,6 @@
       x$mat[imm] = x$mat.predicted[imm]
       x$mat[iff] = x$mat.predicted[iff]
 
-
-     browser()
-
       cleandata_mm = which( x$cw > 0 & x$chela > 0 )
       cleandata_ff = which( x$cw > 0 & x$abdomen > 0 )
       NoC= which( is.na(x$shell)) #individuals w/o shell condition
