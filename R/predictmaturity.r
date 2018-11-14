@@ -53,6 +53,8 @@
     if (method=="logistic.regression") {
       require(mgcv)
 
+      ##TODO- need to add a final step for animals without a SC. Maybe revert to DFA method for these only?
+
       x$rs = NA
       x$mat.predicted = NA
 
@@ -98,6 +100,16 @@
       # plot( modm1, trans=inv.logit,  rug=T, jit=T, scale=0 )
       # plot( modf1, trans=inv.logit,  rug=T, jit=T, scale=0 )
 
+     
+      # update data vectors removing "bad" data and redo model
+      cleandata_mm = which( x$cw > 0 & x$chela > 0 )
+      cleandata_ff = which( x$cw > 0 & x$abdomen > 0 )
+      imm = intersect( intersect( intersect( MM, WW ), SC ), cleandata_mm )
+      iff = intersect( intersect( intersect( FF, WW ), SC ), cleandata_ff )
+
+      modm1 = glm( mat ~ log(cw) + log(chela) + shell, data=x[imm,], family=binomial(link="logit") )
+      modf1 = glm( mat ~ log(cw) + log(abdomen) + shell, data=x[iff,], family=binomial(link="logit") )
+
       # identify inds without maturity indications
       WW = which( !(x$mat %in% c(immature, mature) )  )
       imm = intersect( intersect( intersect( MM, WW ), SC ), cleandata_mm )
@@ -108,6 +120,25 @@
 
       x$mat[imm] = x$mat.predicted[imm]
       x$mat[iff] = x$mat.predicted[iff]
+
+#animals without shell did not get assigned mat through models to this point so...
+      cleandata_mm = which( x$cw > 0 & x$chela > 0 )
+      cleandata_ff = which( x$cw > 0 & x$abdomen > 0 )
+      NoC= which( is.na(x$shell)) #individuals w/o shell condition
+      WW = which( !(x$mat %in% c(immature, mature) )  ) #individuals w/o maturity indications
+
+      imm = intersect( intersect( intersect( MM, WW ), NoC ), cleandata_mm )
+      iff = intersect( intersect( intersect( FF, WW ), NoC ), cleandata_ff )
+
+      modm1 = glm( mat ~ log(cw) + log(chela), data=x[imm,], family=binomial(link="logit") )
+      modf1 = glm( mat ~ log(cw) + log(abdomen) , data=x[iff,], family=binomial(link="logit") )
+
+      x$mat.predicted[imm] = ifelse( predict( modm1, x[imm,], type="response" ) < 0.5, immature, mature )
+      x$mat.predicted[iff] = ifelse( predict( modf1, x[iff,], type="response" ) < 0.5, immature, mature )
+
+      x$mat[imm] = x$mat.predicted[imm]
+      x$mat[iff] = x$mat.predicted[iff]
+
 
       x$rs = NULL
       x$mat.predicted = NULL
