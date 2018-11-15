@@ -78,7 +78,7 @@ snowcrab_stmv = function( DS=NULL, p=NULL, year=NULL, ret="mean", varnames=NULL,
       if (length(pz_vars) > 0) p$aegis_variables[[id]] = pz_vars
     }
 
-    if (!exists("stmv_variogram_method", p)) p$stmv_variogram_method = "fast"
+    if (!exists("stmv_variogram_method", p)) p$stmv_variogram_method = "gstat"
     if (!exists("stmv_local_modelengine", p)) p$stmv_local_modelengine ="gam"
 
     if (!exists("stmv_global_modelengine", p)) p$stmv_global_modelengine ="gam"
