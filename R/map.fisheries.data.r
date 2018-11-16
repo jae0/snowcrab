@@ -6,7 +6,7 @@ map.fisheries.data = function(p, outdir,  FUN, yrs, variable='effort',probs=c(0,
   x = x[ which(x$effort <= 300) ,]
   x = x[ which(x$cpue < 500),]
   
-  x = lonlat2planar( x,  proj.type=p$internal.projection )
+  x = lonlat2planar( x,  proj.type=p$internal.crs )
   x = subset(x,select=c('year','plon','plat',variable))
   names(x)[4] = 'z'
   

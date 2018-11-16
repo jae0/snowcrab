@@ -48,7 +48,7 @@ if(do.interpolation) {
       print(lp)
       dev.off()
 
-    ras 			<- rasterFromXYZ(fp[,c('plon','plat','z')],crs=lookup.projection.params(p$internal.projection))
+    ras 			<- rasterFromXYZ(fp[,c('plon','plat','z')],crs=p$internal.crs)
 
     writeRaster(ras,filename=file.path(fo,paste(gps[i],".asc",sep="")), format="ascii", overwrite=TRUE)
     }

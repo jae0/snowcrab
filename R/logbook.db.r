@@ -246,7 +246,7 @@
       pp = which ( x$effort > 240 ) # small traps were used at times with large 240 trap compliments
       if ( length(pp) > 0 ) x$effort[pp] = NA
 
-      x = lonlat2planar( x,  proj.type=p$internal.projection )
+      x = lonlat2planar( x,  proj.type=p$internal.crs )
       logbook = x
 
       save (logbook, file=filename, compress=T )  # this is for plotting maps, etc
