@@ -160,79 +160,26 @@ snowcrab.db = function( DS, p=NULL, yrs=NULL) {
     #  plot( dist0 ~ dist, set) shows good correspondence
 
     ############
-    # We had discussed that one station got missed in the assessment last year as there was a
-    # typo in the Haul Code ID which indicated that the tow was bad when it was actually a good tow.
-    # You can easily build a double check into your script to catch that. When the tow is "bad", there
-    # is an estimated catch of "0". In all cases where the tow is good, the estimated catch is >0.
-    # You can add a line that says if the estimated catch is >0 but the HAUL_CD_ID =4 (bad tow),
-    # flag that entry for us to check before proceeding.
+    # As a simple double check, totmass cannot be 0 on a good tow (quality 1) or >0 on a bad tow (quality 4)
     oo = which( set$towquality ==4 & set$totmass >0 )
     if (length(oo)>1) {
       print( "The following needs some checking as there is a mass estimate but towquality set to be bad" )
       print( set[ oo, ] )
     }
 
-    dbug.2011 = T
-    if ( dbug.2011 ) {
+  # The following section were "on the fly" fixes to minor problems before data base corrections can be made
+  # 2018- BZ. These have all been corrected in the database. One "debug" is left as an example in case needed in the future
+    
+    #dbug.2011 = T
+    #if ( dbug.2011 ) {
       # one-off error corrections until database gets refreshed
-      i = which(set$trip=="S15092006" & set$set==3)
-      if (length(i)==1) set$totmass[i] = 0
+     # i = which(set$trip=="S15092006" & set$set==3)
+      #if (length(i)==1) set$totmass[i] = 0
 
-      i = which(set$trip=="S21092007" & set$set==12)
-      if (length(i)==1) set$towquality[i] = 1
-    }
-    dbug.2009 = T
-    if(dbug.2009) {
-      i = which(set$trip =='S05092009' & set$set == 9 & set$station==189)
-      set$stime[i] <- 1532
-    }
-
-    dbug.2014 = T
-    if(dbug.2014) {
-      i = which(set$trip == 'S26112014' &set$set==7)
-      set$station[i] = 212
-      i = which(set$trip == 'S07102014' &set$set==13)
-      set$stime[i] = 2146
-      i = which(set$trip == 'S06112014' &set$set==8)
-      set$lon[i] = 60.08317
-    }
-
-    debug.2015= FALSE
-    if(debug.2015) {
-      i= which(set$trip_id == '100045549' & set$set==1 & set$station ==1)
-      set$stime[i] = 0449
-      i= which(set$trip_id == '100045553' & set$set==4 & set$station ==615)
-      set$stime[i] = 0944
-      i= which(set$trip_id == '100045757' & set$set==4 & set$station ==210)
-      set$stime[i] = 0845
-      i= which(set$trip_id == '100045764' & set$set ==5 & set$station == 344)
-      set$stime[i] = 0947
-
-      i= which(set$trip == 'S21112015' & set$set ==6 & set$station == 378)
-      set$stime[i] = 1102
-      i= which(set$trip == 'S26102015' & set$set ==5 & set$station == 724)
-      set$stime[i] = 1948
-
-      i=which(set$trip_id == '100045765' & set$set==15 & set$station==911)
-      set$sdate[i]= '2015-12-12 01:00:00'
-
-      i=which(set$trip_id == '100045765' & set$set ==15 & set$station==809)
-      set$sdate[i] = '2015-12-12 01:00:00'
-
-      i=which(set$trip== 'S12092015' & set$set==7)
-      set$towquality[i] = 4
-
-      i=which(set$trip== 'S05092015' & set$set==9 & set$station==187)
-      set$lon[i]= 60.2575
-      print("2015 debugging complete")
-    }
-
-    dbug.2016 = T
-    if(dbug.2016) {
-       i = which(set$trip == 'S20092016' &set$set==4)
-      set$lon[i] = 63.599
-    }
-
+      #i = which(set$trip=="S21092007" & set$set==12)
+      #if (length(i)==1) set$towquality[i] = 1
+    #}
+    
     set = set[,setvars]
     set$sa[ which(set$sa==0) ] = NA
     set$sa = set$sa / 10^6    # convert to km2 ... sa was stored as m2
