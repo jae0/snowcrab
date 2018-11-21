@@ -20,20 +20,21 @@ snowcrab.parameters = function( p=NULL, year.assessment=NULL, ... ) {
 
   # ---------------------
   if (!exists("project.name", p)) p$project.name = "bio.snowcrab"
-  if (!exists("data_root", p)) p$data_root = project.datadirectory( p$project.name ) 
-  
+  if (!exists("data_root", p)) p$data_root = project.datadirectory( p$project.name )
+
   p$project.outputdir = project.datadirectory( p$project.name, "output" ) #required for interpolations and mapping
   p$transform_lookup = file.path( p$project.outputdir, "transform.lookup.rdata" ) # local storage of transforms for timeseries plots
 
   # ---------------------
   # define focal year. not required for pure spatial models but ignored by the spatial methods anyways
   if (!is.null(year.assessment) ) p$year.assessment = year.assessment
+  if (!exists( "year.assessment", p)) if ( exists("yrs", p)) p$year.assessment = max(p$yrs)
   if (!exists( "year.assessment", p)) p$year.assessment = lubridate::year(lubridate::now())
 
   # ---------------------
   # define years to map when mapping various variables, defaults to last four years
   if (!exists("mapyears", p)) p$mapyears = (as.numeric(p$year.assessment)-3):p$year.assessment
-  
+
   if (!exists("yrs", p)) p$yrs = c(1999:p$year.assessment)
 
   p$seabird.yToload = intersect( p$yrs, 2012:p$year.assessment)
@@ -70,8 +71,8 @@ snowcrab.parameters = function( p=NULL, year.assessment=NULL, ... ) {
   p$recode.data = TRUE
 
   if (!exists("clusters", p)) p$clusters = rep("localhost", detectCores() )
-  if (!exists("vars.to.model", p))  p$vars.to.model = bio.snowcrab::snowcrab.variablelist("all.to.model") 
-  
+  if (!exists("vars.to.model", p))  p$vars.to.model = bio.snowcrab::snowcrab.variablelist("all.to.model")
+
   p$habitat.threshold.quantile = 0.05 # quantile at which to consider zero-valued abundance
   p$threshold.distance = 5 # predict no farther than this distance km from survey stations
 

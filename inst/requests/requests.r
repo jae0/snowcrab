@@ -83,7 +83,7 @@ p = bio.snowcrab::load.environment( year.assessment=year.assessment )
   pcoords = c("plon", "plat")
 
   # new method: directly computed averages of core areas
-  i = aegis::polygon_inside(x=set[, pcoords], region=p$regions.to.model, planar=T, proj.type=p$internal.projection )
+  i = aegis::polygon_inside(x=set[, pcoords], region=p$regions.to.model, planar=T, proj.type=p$internal.crs )
   xs = set[ i, ]
   xs$dummy = 1
 

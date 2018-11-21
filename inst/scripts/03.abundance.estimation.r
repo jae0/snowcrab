@@ -91,7 +91,7 @@ p = snowcrab_stmv( p=p, DS="parameters",
 
   stmv_local_model_distanceweighted = TRUE,
   stmv_gam_optimizer=c("outer", "bfgs") ,
-  stmv_variogram_method = "fast",
+  stmv_variogram_method = "gstat",
   stmv_distance_statsgrid = 2, # resolution (km) of data aggregation (i.e. generation of the ** statistics ** )
   stmv_distance_scale = 50
 )

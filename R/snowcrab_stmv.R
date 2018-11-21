@@ -78,7 +78,7 @@ snowcrab_stmv = function( DS=NULL, p=NULL, year=NULL, ret="mean", varnames=NULL,
       if (length(pz_vars) > 0) p$aegis_variables[[id]] = pz_vars
     }
 
-    if (!exists("stmv_variogram_method", p)) p$stmv_variogram_method = "fast"
+    if (!exists("stmv_variogram_method", p)) p$stmv_variogram_method = "gstat"
     if (!exists("stmv_local_modelengine", p)) p$stmv_local_modelengine ="gam"
 
     if (!exists("stmv_global_modelengine", p)) p$stmv_global_modelengine ="gam"
@@ -159,6 +159,8 @@ snowcrab_stmv = function( DS=NULL, p=NULL, year=NULL, ret="mean", varnames=NULL,
     # mostly based on aegis_db( DS="stmv_inputs")
     INP = snowcrab_stmv(p=p, DS="input_data" )
     PS  = snowcrab_stmv(p=p, DS="output_data" )
+    # alternatively using aegis:
+    # PS = aegis_db_extract( varnames=p$variables$COV, yrs=p$yrs, spatial.domain=p$spatial.domain, aegis_project_datasources =p$aegis_variables )
     LOCS = bathymetry.db(p=p, DS="baseline")
     return (list(input=INP, output=list( LOCS=LOCS, COV=PS )) )
   }
@@ -348,33 +350,40 @@ snowcrab_stmv = function( DS=NULL, p=NULL, year=NULL, ret="mean", varnames=NULL,
 
 
   if (DS %in% c("output_data") ) {
+
+    # alternative to below is... still in testing
+    # PS = aegis_db_extract( varnames=p$variables$COV, yrs=p$yrs, spatial.domain=p$spatial.domain, aegis_project_datasources =p$aegis_variables )
+
     PS = aegis_db( p=p, DS="prediction.surface" ) # a list object with static and annually varying variables
     # names(PS)[ names(PS)=="amplitude"] ="tamplitude"
 
     # make years coherent for temperatures
-    p0 = aegis::temperature_parameters(p=p)
-    yr_index = match( p$yrs, p0$yrs )
+    PSyrs = colnames(PS[["t"]])
+    pt = aegis::aegis_parameters(p=p, DS="temperature")
+    yr_index = match( as.character(p$yrs), PSyrs )
     yg = which(is.finite(yr_index))
     ym = which(is.na(yr_index))
     if (length(ym) > 0) {
-      for ( vn in c("t", p0$bstats) ) {
+      for ( vn in c("t", pt$bstats) ) {  # annual summaries
         PS[[vn]][yg] = PS[[vn]][,yr_index[yg]]
         PS[[vn]][ym] = rowMeans( PS[[vn]][], na.rm=TRUE )
       }
     } else {
-      for ( vn in c("t", p0$bstats) ) {
+      for ( vn in c("t", pt$bstats) ) {
         PS[[vn]][] = PS[[vn]][,yr_index]
       }
     }
 
     # aegis_db variables
     for (iv in names(p$aegis_variables)) {
-      p0 = aegis::aegis_parameters( p=p, DS=iv, year.assessment=p$year.assessment  )
-      p0 = aegis::spatial_parameters( p=p0, spatial.domain=p$spatial.domain ) # return to correct domain
+      pv = aegis::aegis_parameters( p=p, DS=iv, year.assessment=p$year.assessment  )
+      pv = aegis::spatial_parameters( p=pv, spatial.domain=p$spatial.domain ) # return to correct domain
 
-      vn = p0$aegis_variables[[iv]]
-      sn = aegis_db( p=p0, DS="baseline", varnames=vn )
-      yr_index = match( p$yrs, p0$yrs )
+      vn = pv$aegis_variables[[iv]]
+      sn = aegis_db( p=pv, DS="baseline", varnames=vn )
+      snyrs = colnames(sn[[vn[1]]])
+
+      yr_index = match( as.character(p$yrs), snyrs )
       yg = which(is.finite(yr_index))
       ym = which(is.na(yr_index))
       if (length(ym) > 0) {
