@@ -160,7 +160,7 @@ snowcrab_stmv = function( DS=NULL, p=NULL, year=NULL, ret="mean", varnames=NULL,
     INP = snowcrab_stmv(p=p, DS="input_data" )
     PS  = snowcrab_stmv(p=p, DS="output_data" )
     # alternatively using aegis:
-    # PS = aegis_db_extract( varnames=p$variables$COV, yrs=p$yrs, spatial.domain=p$spatial.domain, aegis_project_datasources =p$aegis_variables )
+    # PS = aegis_db_extract( vars=p$variables$COV, yrs=p$yrs, spatial.domain=p$spatial.domain, dyear=p$prediction.dyear )
     LOCS = bathymetry.db(p=p, DS="baseline")
     return (list(input=INP, output=list( LOCS=LOCS, COV=PS )) )
   }
@@ -294,6 +294,30 @@ snowcrab_stmv = function( DS=NULL, p=NULL, year=NULL, ret="mean", varnames=NULL,
         stmv::array_map( "xy->1", set[nn, c("plon","plat")], gridparams=psse$gridparams ),
         stmv::array_map( "xy->1", bathysse[,c("plon","plat")], gridparams=psse$gridparams ) )
       sn = aegis_lookup( p=psse, DS="spatial.annual", locsmap=locsmapsse, timestamp=set[nn,"timestamp"], varnames=newvars )
+      for (nv in newvars) set[nn,nv] = sn[,nv]
+    }
+
+
+
+    # for space-time(year-averages)
+    # newvars = c( "tmean", "tsd", "tamplitude" )
+    newvars = setdiff(p$variables$COV, names(set) )
+    if (length(newvars) > 0) {
+      sn = NULL
+      sn = aegis_lookup( p=p, DS="spatial.annual.seasonal", locsmap=locsmap, timestamp=set[,"timestamp"], varnames=newvars )
+      if (!is.null(sn)) {
+        colnames( sn  ) = newvars
+        set = cbind( set,  sn )
+      }
+    }
+
+    nn = which( !is.finite(set$tmean) )
+    if (length(nn) > 0) {
+      # catch stragglers from a larger domain
+      locsmapsse = match(
+        stmv::array_map( "xy->1", set[nn, c("plon","plat")], gridparams=psse$gridparams ),
+        stmv::array_map( "xy->1", bathysse[,c("plon","plat")], gridparams=psse$gridparams ) )
+      sn = aegis_lookup( p=psse, DS="spatial.annual.seasonal", locsmap=locsmapsse, timestamp=set[nn,"timestamp"], varnames=newvars )
       for (nv in newvars) set[nn,nv] = sn[,nv]
     }
 
