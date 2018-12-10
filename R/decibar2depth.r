@@ -41,9 +41,8 @@
           # 
           # Sea-Bird uses the formula in UNESCO Technical Papers in Marine Science No. 44. 
           # This is an empirical formula that takes compressibility (that is, density) into account. 
-          # An ocean water column at 0 °C (t = 0) and 35 PSU (s = 35) is assumed.
-          # 
-          # The gravity variation with latitude and pressure is computed as:
+          ## An ocean water column at 0 C (t = 0) and 35 PSU (s = 35) is assumed#
+          # The gravity variation with latitude and pressure is computed as
           # 
           # g (m/sec2) = 9.780318 * [ 1.0 + ( 5.2788x10 -3  + 2.36x10 -5  * x) * x ] + 1.092x10 -6  * p
           # 

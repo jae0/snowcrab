@@ -301,7 +301,9 @@ snowcrab.db = function( DS, p=NULL, yrs=NULL) {
     chela.e$error <- 'chela.e'
     #Abdomen.e:Abdomen less than 1 and greater than 66
     abdomen.e <- det[which(det$abdomen < 1 | det$abdomen > 66 ),]
-    abdomen.e$error <- 'abdomen.e'
+    #abdomen.e$error <- 'abdomen.e' #BZ 2018 no abdomen lengths met "error" condition, broke script #
+    if ( !is.na(abdomen.e$trip[1]))  abdomen.e$test='abdomen.e' #replaced above statement
+    
     #Mass.e: Mass less than 1 or greater than 1500
     mass.e <- det[which( det$mass < 1 | det$mass > 1500  ),]
     mass.e$error <- 'mass.e'
@@ -357,7 +359,7 @@ snowcrab.db = function( DS, p=NULL, yrs=NULL) {
     det$fecundity[ which(det$fecundity> 250000) ] = NA
 
     save(det, file=fn, compress=T)
-
+    
     # do only after the above save
 
     allometry.snowcrab( "cw.mass", "male", redo=T )
