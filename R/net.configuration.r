@@ -71,6 +71,7 @@
       bc = bottom.contact( x=M, bcp=bcp )
       if ( is.null(bc) || (!is.null( bc$res) && ( ( !is.finite(bc$res$t0 ) || !is.finite(bc$res$t1 ) ) ) )) {
          bcp$noisefilter.target.r2=0.8
+         if(bcp$id=="netmind.S20092011.14.527.0.47.334") browser()
          bc = bottom.contact( x=M, bcp=bcp )
       }
       if ( is.null(bc) || (!is.null( bc$res) && ( ( !is.finite(bc$res$t0 ) || !is.finite(bc$res$t1 ) ) ) )) {

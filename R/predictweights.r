@@ -80,7 +80,7 @@
 #shell5       0.164819   0.039400    4.18  2.9e-05 ***
 #cw:sex2     -0.023230   0.000649  -35.81  < 2e-16 ***
 #---
-#Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
 
 #Residual standard error: 0.00838 on 13236 degrees of freedom
 #  (36127 observations deleted due to missingness)
