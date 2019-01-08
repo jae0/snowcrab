@@ -34,7 +34,7 @@
   # ------------------------------------------
   # Size-frequency distributions of snow crab cw from trawl data, broken down by maturity classes
     histograms.size.maturity.update( outdir=file.path( p$annual.results, "figures", "size.freq", "survey"),  redo.data=T )
-    histograms.size.maturity.single.area( outdir=file.path( p$annual.results, "figures", "size.freq", "survey"),  area='cfa4x',redo.data=T )
+    histograms.size.maturity.single.area( outdir=file.path( p$annual.results, "figures", "size.freq", "survey"),  area='cfa4x',redo.data=T ) #area = cfanorth, cfasouth of cfa4x
 
 
   # ------------------------------------------

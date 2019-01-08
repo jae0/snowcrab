@@ -104,5 +104,6 @@
       print(pl)
       if(graphic!='R')dev.off()
     }
-    return("Done")
+    print(fn)
+     return("Done")
   }

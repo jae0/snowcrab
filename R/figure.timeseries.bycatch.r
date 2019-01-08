@@ -78,9 +78,11 @@
 
       print(pl)
       if(graphic!='R') dev.off()
+      print(fn)
     }
    #cmd( "convert   -trim -quality 9  -geometry 200% -frame 2% -mattecolor white -antialias ", paste(fn, "pdf", sep="."),  paste(fn, "png", sep=".") )
-     return("Done")
+     
+    return("Done")
     }
 
 

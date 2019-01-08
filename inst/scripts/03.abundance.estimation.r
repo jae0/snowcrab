@@ -10,19 +10,19 @@
 #Require the following:
 #snowcrab.db("complete.redo")
 
-#Run aegis::(inst/scripts/11.surveys.r), need to update year within or run next line
-  #system.file(package="aegis", "scripts", "11.surveys.r")
+#Run aegis::(inst/scripts/10.surveys.r), need to update year within or run next line
+  #system.file(package="aegis", "scripts", "10.surveys.r")
 
-#Run aegis::(inst/scripts/temperature.r), need to update year within
-  #system.file(package="aegis", "scripts", "07.temperature.R") or run next line
+#Run aegis::(inst/scripts/05.temperature.r), need to update year within
+  #system.file(package="aegis", "scripts", "05.temperature.R") or run next line
 
 #Substrate and bathymetry can be run (as below) if suspect significant changes in one or both of these datasets
 
 #BZ 2017 these lines below can directly run the indicators without goint to run individual scripts
-#  system.file(package="aegis", "scripts", "07.temperature.R")
-#  system.file(package="aegis", "scripts", "10.lookuptables.r")
-#  system.file(package="aegis", "scripts", "11.surveys.r")
-#  system.file(package="aegis", "scripts", "16.speciescomposition.R")
+#  system.file(package="aegis", "scripts", "05.temperature.R")
+#  system.file(package="aegis", "scripts", "20.lookuptables.r")
+#  system.file(package="aegis", "scripts", "10.surveys.r")
+#  system.file(package="aegis", "scripts", "11.speciescomposition.R")
 
 # 1. Define some additional starting parameters for debugging
 #    choose various over-rides: these are initially defined in parameters.r
