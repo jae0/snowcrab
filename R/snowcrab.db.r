@@ -306,7 +306,8 @@ snowcrab.db = function( DS, p=NULL, yrs=NULL) {
     
     #Mass.e: Mass less than 1 or greater than 1500
     mass.e <- det[which( det$mass < 1 | det$mass > 1500  ),]
-    mass.e$error <- 'mass.e'
+    if ( !is.na(mass.e$trip[1]))  mass.e$error <- 'mass.e'
+    
     #Sex.a: Indeterminate sex based on measurements taken (abdomen values where sex=male)
     sex.a <- det[which(is.finite( det$abdomen ) & det$sex==male),]
     sex.a$error <- 'sex.a'

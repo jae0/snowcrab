@@ -50,6 +50,7 @@ if (obtain.database.snapshot) {
     problems = data.quality.check( type="stations", p=p)  # duplicates
     problems = data.quality.check( type="count.stations", p=p)
     problems = data.quality.check( type="position", p=p) #MG try checking the end position of the tow, if there is an error
+    #BZ ToDo 2019- getting an error with line 52 but runing the function directly works
 
     # was in above. Split off as a separate function it is not essential
     # and can break without the right ESRI drivers. JC
@@ -71,9 +72,10 @@ if (obtain.database.snapshot) {
   }
 
   seabird.db( DS="load", Y=p$seabird.yToload ) # this begins 2012;duplicates are often due to seabird files not being restarted each morning
+ 
   minilog.db( DS="load", Y=p$minilog.yToload ) # minilog data series "begins" in 1999 -- 60 min?
-  #netmind.db( DS='esonar2netmind.conversion',Y=p$esonar.yToload ) #may no longer need to be run BZ
   
+  #netmind.db( DS='esonar2netmind.conversion',Y=p$esonar.yToload ) #may no longer need to be run BZ
   netmind.db( DS="load", Y=p$netmind.yToload) # netmind data series "begins" in 1998 -- 60 min?
   #JC note: 1998:2002 have about 60 files with no data, just a short header
 
@@ -89,7 +91,7 @@ if (obtain.database.snapshot) {
 # Can add any datachecks that might improve overall data quality
 # BZ for 2017- If errors repeat and are not actually a problem, create an override
 
-    problems = data.quality.check( type="minilog.mismatches", p=p )
+    #problems = data.quality.check( type="minilog.mismatches", p=p )
     problems = data.quality.check( type="minilog.load", p=p)
     problems = data.quality.check( type="minilog.dateproblems", p=p) #track down why ~all sets are giving mismatches
     problems = data.quality.check( type="minilog", p=p)   # Check for duplicate timestamps
