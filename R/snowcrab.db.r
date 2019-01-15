@@ -378,15 +378,15 @@ snowcrab.db = function( DS, p=NULL, yrs=NULL) {
     }
 
     errors.yearly <- errors[grep(yr.e, errors$trip),]
-
     errors <<- errors
     message("check dataframe 'errors' for the errors")
+    if ( !is.na(errors.yearly$trip[1]))  {
     print(errors.yearly)
-
     write.csv(errors.yearly, file=outfile.e)
     print("Current Year Morphology Errors saved to file")
     print(outfile.e)
-
+}
+    
     write.csv(errors, file=outfile.e2)
     print("All Years Morphology Errors saved to file")
     print(outfile.e2)
