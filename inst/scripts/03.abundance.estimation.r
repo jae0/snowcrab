@@ -21,7 +21,6 @@ require(aegis.env)
 
 #BZ 2017 these lines below can directly run the indicators without goint to run individual scripts
 #  system.file(package="aegis", "scripts", "05.temperature.R")
-#  system.file(package="aegis", "scripts", "20.lookuptables.r")
 #  system.file(package="aegis", "scripts", "10.surveys.r")
 #  system.file(package="aegis", "scripts", "11.speciescomposition.R")
 
@@ -36,12 +35,12 @@ require(aegis.env)
 #snowcrab.db( DS ="set.complete.redo", p=p )
 
 p = bio.snowcrab::load.environment( year.assessment=year.assessment )
-  
-  
+
+
 # -------------------------------------------------------------------------------------
 # STEP ONE commercial abundance
 #--------------------------------------------------------------------------------------
-  
+
 # abundance .. positive valued data ..
 # takes about 5 hrs .. ~1 GB / process
 # vn = "snowcrab.large.males_abundance"
@@ -67,7 +66,7 @@ p = snowcrab_stmv( p=p, DS="parameters",
       drop.groundfish.data=TRUE # esp from 1970 to 1999 measurement of invertebrates was sporatic .. zero-values are dropped as they are unreliable
     )
   ),
-  
+
   DATA = 'snowcrab_stmv( p=p, DS="stmv_inputs" )',
   stmv_Y_transform =list(
         transf = function(x) {x/6675} ,
@@ -135,7 +134,7 @@ plot(global_model)
 #Below lines are just model outputs for comparison sake
 # Family: gaussian
 # Link function: identity
-# 
+#
 # Formula:
 # snowcrab.large.males_abundance ~ s(t, k = 3, bs = "ts") + s(tmean.climatology,
 #     k = 3, bs = "ts") + s(tsd.climatology, k = 3, bs = "ts") +
@@ -143,11 +142,11 @@ plot(global_model)
 #     s(log(ddZ), k = 3, bs = "ts") + s(log(substrate.grainsize),
 #     k = 3, bs = "ts") + s(pca1, k = 3, bs = "ts") + s(pca2, k = 3,
 #     bs = "ts")
-# 
+#
 # Parametric coefficients:
 #             Estimate Std. Error t value Pr(>|t|)
 # (Intercept)  -3.4506     0.0197    -175   <2e-16
-# 
+#
 # Approximate significance of smooth terms:
 #                              edf Ref.df      F p-value
 # s(t)                       1.274      2  38.37 < 2e-16
@@ -159,7 +158,7 @@ plot(global_model)
 # s(log(substrate.grainsize)) 1.915      2  58.44 < 2e-16
 # s(pca1)                    1.990      2 220.02 < 2e-16
 # s(pca2)                    1.917      2 137.45 < 2e-16
-# 
+#
 # R-sq.(adj) =  0.365   Deviance explained = 36.7%
 # GCV = 0.01104  Scale est. = 0.011016  n = 7255
 
@@ -372,21 +371,21 @@ cor(log(spred),log(set$snowcrab.large.males_abundance), use="complete.obs")
 # Call:
 # lm(formula = log(spred) ~ log(snowcrab.large.males_abundance),
 #     data = set, na.action = "na.omit")
-# 
+#
 # Residuals:
 #     Min      1Q  Median      3Q     Max
 # -2.3039 -0.5507  0.0589  0.6056  2.1379
-# 
+#
 # Coefficients:
 #                                     Estimate Std. Error t value Pr(>|t|)
 # (Intercept)                          5.17806    0.03824   135.4   <2e-16
 # log(snowcrab.large.males_abundance)  0.19035    0.00599    31.8   <2e-16
-# 
+#
 # Residual standard error: 0.795 on 5030 degrees of freedom
 #   (2223 observations deleted due to missingness)
 # Multiple R-squared:  0.167,	Adjusted R-squared:  0.167
 # F-statistic: 1.01e+03 on 1 and 5030 DF,  p-value: <2e-16
-# 
+#
 # R> plot(log(spred)~log(snowcrab.large.males_abundance), data=set )
 # R> cor(log(spred),log(set$snowcrab.large.males_abundance), use="complete.obs")
 # [1] 0.409
