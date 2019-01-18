@@ -85,7 +85,7 @@
     nolog.variables = c("t","z","sexratio.all","sexratio.mat","sexratio.imm","julian","julian.compressed", variables[grep("cw",variables)])
     map.set.information( p=p, variables=nolog.variables,outdir=outdir,log.variable=F,add.zeros=F,theta=35)
     # logit transform for ratios
-    map.set.information( p=p, variables=c("sexratio.all","sexratio.mat","sexratio.imm"),outdir=outdir,log.variable=F,add.zeros=F,theta=100)
+    map.set.information( p=p, variables=c("sexratio.all","sexratio.mat","sexratio.imm"),outdir=outdir,log.variable=F,add.zeros=F,theta=40)
 
     # Geometric Means
     # all except variables that shouldn't be logged
