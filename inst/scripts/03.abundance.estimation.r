@@ -19,6 +19,13 @@ require(aegis.env)
 
 #Substrate and bathymetry can be run (as below) if suspect significant changes in one or both of these datasets
 
+
+#BZ 2017 these lines below can directly run the indicators without goint to run individual scripts
+# 01.#  system.file(package="aegis", "scripts", "05.temperature.R")
+# No Longer needed, now built into next step (10. surveys) system.file(package="aegis", "scripts", "20.lookuptables.r") 
+# 02.#  system.file(package="aegis", "scripts", "10.surveys.r")
+# 03.#  system.file(package="aegis", "scripts", "11.speciescomposition.R")
+
 # 1. Define some additional starting parameters for debugging
 #    choose various over-rides: these are initially defined in parameters.r
 
