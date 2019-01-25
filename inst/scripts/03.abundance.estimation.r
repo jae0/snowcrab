@@ -20,11 +20,24 @@ require(aegis.env)
 #Substrate and bathymetry can be run (as below) if suspect significant changes in one or both of these datasets
 
 
-#BZ 2017 these lines below can directly run the indicators without goint to run individual scripts
-# 01.#  system.file(package="aegis", "scripts", "05.temperature.R")
+#BZ- Jan 2019 Run the following steps before moving to stmv abundance estimation step 
+# 01.#  system.file(package="aegis", "scripts", "05.temperature.R") #BC Jan 2019- 50 hours with following setings:
+# stmv_distance_statsgrid = 5, # resolution (km) of data aggregation (i.e. generation of the ** statistics ** )
+# stmv_distance_scale = 25, # km ... approx guess of 95% AC range
+# stmv_distance_max = 25*1.5,
+# sampling = c( 1, 1.1, 1.25 ), # fractions of distance scale and n.min to try when insufficient data
+
+
+#Deprectated
 # No Longer needed, now built into next step (10. surveys) system.file(package="aegis", "scripts", "20.lookuptables.r") 
 # 02.#  system.file(package="aegis", "scripts", "10.surveys.r")
-# 03.#  system.file(package="aegis", "scripts", "11.speciescomposition.R")
+
+
+# 03.#  system.file(package="aegis", "scripts", "11.speciescomposition.R") #January 2018 BZ-29 hours with following setting:
+# stmv_distance_statsgrid = 2, 
+# stmv_diswatch -n 60 cat /home/ben/bio.data/aegis/speciescomposition/modelled/pca1/SSE/stmv_current_statustance_scale = 50, 
+# stmv_distance_prediction = 4, 
+# sampling = c( 1, 1.1, 1.25 )
 
 # 1. Define some additional starting parameters for debugging
 #    choose various over-rides: these are initially defined in parameters.r
