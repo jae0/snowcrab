@@ -28,8 +28,9 @@ require(aegis.env)
 # sampling = c( 1, 1.1, 1.25 ), # fractions of distance scale and n.min to try when insufficient data
 
 
-#Deprectated
-# No Longer needed, now built into next step (10. surveys) system.file(package="aegis", "scripts", "20.lookuptables.r") 
+#Deprectated 2019. now built into next step (10. surveys) system.file(package="aegis", "scripts", "20.lookuptables.r") 
+
+
 # 02.#  system.file(package="aegis", "scripts", "10.surveys.r")
 
 
