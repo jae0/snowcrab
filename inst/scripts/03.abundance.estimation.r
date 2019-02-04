@@ -119,7 +119,7 @@ p = snowcrab_stmv( p=p, DS="parameters",
   stmv_gam_optimizer=c("outer", "bfgs") ,
   stmv_variogram_method = "gstat",
   stmv_distance_statsgrid = 2, # resolution (km) of data aggregation (i.e. generation of the ** statistics ** )
-  stmv_distance_scale = 50 #likely must be over 30km, so 50 +/- 20km, should likely match the setting in ~ line 256
+  stmv_distance_scale = 50 #likely must be over 30km, so 50 +/- 20km, should likely match the setting in ~ line 271
 ) #End passing of parameters
 
 
