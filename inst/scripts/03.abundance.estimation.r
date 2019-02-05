@@ -118,8 +118,8 @@ p = snowcrab_stmv( p=p, DS="parameters",
   stmv_local_model_distanceweighted = TRUE,
   stmv_gam_optimizer=c("outer", "bfgs") ,
   stmv_variogram_method = "gstat",
-  stmv_distance_statsgrid = 2, # resolution (km) of data aggregation (i.e. generation of the ** statistics ** )
-  stmv_distance_prediction_fraction = 2, # stmv_distance_prediction = stmv_distance_statsgrid * XX ..this is a half window km
+  stmv_distance_statsgrid = 2, # resolution (km) of data aggregation (i.e. generation of the ** statistics ** ) --- could probably be larger 
+  stmv_distance_prediction_fraction = 1, # stmv_distance_prediction = stmv_distance_statsgrid * XX ..this is a half window km
   stmv_distance_scale = c( 50, 60, 70 ), #likely must be over 30km, so 50 +/- 20km, should likely match the setting in ~ line 256
   stmv_clusters = list( rep("localhost", 8), rep("localhost", 7), rep("localhost", 6) )  # no of cores used made explicit.. must be same length as "stmv_distance_scale"
 ) #End passing of parameters
