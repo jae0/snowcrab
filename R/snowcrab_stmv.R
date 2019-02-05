@@ -26,7 +26,6 @@ snowcrab_stmv = function( DS=NULL, p=NULL, year=NULL, ret="mean", varnames=NULL,
   if (DS=="parameters") {
 
     if (!exists("storage.backend", p)) p$storage.backend="bigmemory.ram"
-    if (!exists("clusters", p)) p$clusters = rep("localhost", detectCores() )
 
     if (!exists("boundary", p)) p$boundary = FALSE
     if (!exists("depth.filter", p)) p$depth.filter = 0 # depth (m) stats locations with elevation > 0 m as being on land (and so ignore)
@@ -40,7 +39,6 @@ snowcrab_stmv = function( DS=NULL, p=NULL, year=NULL, ret="mean", varnames=NULL,
     if (!exists("n.min", p)) p$n.min = 100 # n.min/n.max changes with resolution must be more than the number of knots/edf
     # min number of data points req before attempting to model timeseries in a localized space
     if (!exists("n.max", p)) p$n.max = 6000 # actually can have a lot of data from logbooks ... this keeps things reasonable in terms of run-time
-    p$sampling = c( 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.1, 1.25 )  #
 
     p$stmv_dimensionality="space-year"
 

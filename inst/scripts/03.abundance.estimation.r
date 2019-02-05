@@ -20,7 +20,7 @@ require(aegis.env)
 #Substrate and bathymetry can be run (as below) if suspect significant changes in one or both of these datasets
 
 
-#BZ- Jan 2019 Run the following steps before moving to stmv abundance estimation step 
+#BZ- Jan 2019 Run the following steps before moving to stmv abundance estimation step
 # 01.#  system.file(package="aegis", "scripts", "05.temperature.R") #BC Jan 2019- 50 hours with following setings:
     # stmv_distance_statsgrid = 5, # resolution (km) of data aggregation (i.e. generation of the ** statistics ** )
     # stmv_distance_scale = 25, # km ... approx guess of 95% AC range
@@ -28,16 +28,16 @@ require(aegis.env)
     # sampling = c( 1, 1.1, 1.25 ), # fractions of distance scale and n.min to try when insufficient data
 
 
-#Deprectated 2019. now built into next step (10. surveys) system.file(package="aegis", "scripts", "20.lookuptables.r") 
+#Deprectated 2019. now built into next step (10. surveys) system.file(package="aegis", "scripts", "20.lookuptables.r")
 
 
 # 02.#  system.file(package="aegis", "scripts", "10.surveys.r")
 
 
 # 03.#  system.file(package="aegis", "scripts", "11.speciescomposition.R") #January 2018 BZ-29 hours with following setting:
-      # stmv_distance_statsgrid = 2, 
-      # stmv_diswatch -n 60 cat /home/ben/bio.data/aegis/speciescomposition/modelled/pca1/SSE/stmv_current_statustance_scale = 50, 
-      # stmv_distance_prediction = 4, 
+      # stmv_distance_statsgrid = 2,
+      # stmv_diswatch -n 60 cat /home/ben/bio.data/aegis/speciescomposition/modelled/pca1/SSE/stmv_current_statustance_scale = 50,
+      # stmv_distance_prediction = 4,
       # sampling = c( 1, 1.1, 1.25 )
 
 # 1. Define some additional starting parameters for debugging
@@ -119,7 +119,9 @@ p = snowcrab_stmv( p=p, DS="parameters",
   stmv_gam_optimizer=c("outer", "bfgs") ,
   stmv_variogram_method = "gstat",
   stmv_distance_statsgrid = 2, # resolution (km) of data aggregation (i.e. generation of the ** statistics ** )
-  stmv_distance_scale = c(50, 60, 70 ) #likely must be over 30km, so 50 +/- 20km, should likely match the setting in ~ line 256
+  stmv_distance_prediction_fraction = 2, # stmv_distance_prediction = stmv_distance_statsgrid * XX ..this is a half window km
+  stmv_distance_scale = c( 50, 60, 70 ), #likely must be over 30km, so 50 +/- 20km, should likely match the setting in ~ line 256
+  stmv_clusters = list( rep("localhost", 8), rep("localhost", 7), rep("localhost", 6) )  # no of cores used made explicit.. must be same length as "stmv_distance_scale"
 ) #End passing of parameters
 
 
