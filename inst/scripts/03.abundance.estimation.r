@@ -118,7 +118,7 @@ p = snowcrab_stmv( p=p, DS="parameters",
   stmv_local_model_distanceweighted = TRUE,
   stmv_gam_optimizer=c("outer", "bfgs") ,
   stmv_variogram_method = "gstat",
-  stmv_distance_statsgrid = 4, # resolution (km) of data aggregation (i.e. generation of the ** statistics ** ) --- could probably be larger 
+  stmv_distance_statsgrid = 4, # resolution (km) of data aggregation (i.e. generation of the ** statistics ** ) --- could probably be larger
   stmv_distance_prediction_fraction = 1, # stmv_distance_prediction = stmv_distance_statsgrid * XX ..this is a half window km
   stmv_distance_scale = c( 50, 60, 70 ), #likely must be over 30km, so 50 +/- 20km, should likely match the setting in ~ line 256
   stmv_clusters = list( rep("localhost", 8), rep("localhost", 7), rep("localhost", 6) )  # no of cores used made explicit.. must be same length as "stmv_distance_scale"
@@ -259,8 +259,8 @@ p = snowcrab_stmv( p=p, DS="parameters",
   # stmv_twostep_space = "krige",  # other possibilities: "spatial.process", "fft", "tps"
 
   stmv_twostep_space = "fft", #  fft==spatial.process, krige (very slow), lowpass, lowpass_spatial.process
-  stmv_local_modelformula_space = formula( paste(
-    'snowcrab.large.males_abundance', '~ s(log(z), k=3, bs="ts") + s(plon, k=3, bs="ts") + s(plat, k=3, bs="ts") + s( log(z), plon, plat, k=27, bs="ts")  ') ),
+  # stmv_local_modelformula_space = formula( paste(
+  #   'snowcrab.large.males_abundance', '~ s(log(z), k=3, bs="ts") + s(plon, k=3, bs="ts") + s(plat, k=3, bs="ts") + s( log(z), plon, plat, k=27, bs="ts")  ') ),
 
   stmv_twostep_time = "gam",
   stmv_local_modelformula_time = formula( paste(
