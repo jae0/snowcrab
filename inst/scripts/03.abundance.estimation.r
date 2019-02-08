@@ -43,6 +43,7 @@ require(aegis.env)
 # 1. Define some additional starting parameters for debugging
 #    choose various over-rides: these are initially defined in parameters.r
 
+p = bio.snowcrab::load.environment( year.assessment=year.assessment )
 
 # --------------------------------------------------------------
 # using environmental data ... estimate/lookup missing environmental data .. (t,z)
@@ -50,7 +51,7 @@ require(aegis.env)
 #logbook.db( DS ="fisheries.complete.redo", p=p )
 #snowcrab.db( DS ="set.complete.redo", p=p )
 
-p = bio.snowcrab::load.environment( year.assessment=year.assessment )
+
 
 
 # -------------------------------------------------------------------------------------
