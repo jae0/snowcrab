@@ -135,9 +135,6 @@ p = snowcrab_stmv( p=p, DS="parameters",
 #--------------------------------------------------------------
 
 stmv( p=p, runmode=c("globalmodel", "interpolate" )  ) #  for a clean start
-# stmv( p=p, runmode=c("globalmodel", "interpolate" ), use_saved_state=TRUE ) # for a restart  .. not working?
-
-# if (really.finished) stmv_db( p=p, DS="cleanup.all" )
 
 snowcrab_stmv( p=p, DS="predictions.redo" ) # warp predictions to other grids (if any)
 snowcrab_stmv( p=p, DS="stmv.stats.redo" ) # warp stats to other grids (if any)
