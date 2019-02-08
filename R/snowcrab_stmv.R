@@ -229,14 +229,9 @@ snowcrab_stmv = function( DS=NULL, p=NULL, year=NULL, ret="mean", varnames=NULL,
 
     set$tiyr = lubridate::decimal_date( set$timestamp )
 
-    # bathy = bathymetry.db(p=p, DS="baseline")
-    #
-    # psse = spatial_parameters( p=p, spatial.domain = "SSE" )  # data are from this domain .. so far
-    # bathysse = bathymetry.db(p=psse, DS="baseline")
-
     covars = p$variables$COV
 
-    set0 = aegis_db_lookup(
+    set = aegis_db_lookup(
       X=set,
       lookupvars=covars,
       xy_vars=c("lon", "lat"),
@@ -244,119 +239,6 @@ snowcrab_stmv = function( DS=NULL, p=NULL, year=NULL, ret="mean", varnames=NULL,
     )
 
     set$lon = set$lat = NULL
-
-    # pl = aegis::aegis_parameters( DS="lookuptables", spatial.domain="SSE" )
-    # set_new = aegis_lookup( DS="all", p=pl, locs=set[,c("plon", "plat")], timestamp=set[,"timestamp"], varnames=covars )
-    # newvars = setdiff( covars, names(set) )
-    # for ( vn in setdiff( covars, newvars ) ) {
-    #   i = which( !is.finite(set[,vn]) )
-    #   if (length(i) > 0) set[i,vn] = set_new[i,vn]
-    # }
-    # set = cbind( set, set_new[, newvars])
-    #
-    # # spatial vars and climatologies
-    # # newvars = c("dZ", "ddZ", "substrate.grainsize", "tmean.climatology", "tsd.climatology", "b.range", "t.range" )
-    # newvars = setdiff(p$variables$COV, names(set) )
-    # if (length(newvars) > 0) {
-    #   sn = NULL
-    #   sn = aegis_lookup( p=p, DS="spatial", locsmap=locsmap, varnames=newvars )
-    #   if (!is.null(sn)) {
-    #     set = cbind( set,  sn )
-    #   }
-    # }
-    #
-    # oo = which( !is.finite(locsmap) )
-    # if (length(oo) > 0) {
-    #   # catch stragglers from a larger domain
-    #   locsmapsse = match(
-    #     stmv::array_map( "xy->1", set[oo, c("plon","plat")], gridparams=psse$gridparams ),
-    #     stmv::array_map( "xy->1", bathysse[,c("plon","plat")], gridparams=psse$gridparams ) )
-    #     if (length(newvars) > 0) {
-    #       sn = NULL
-    #       sn = aegis_lookup( p=psse, DS="spatial", locsmap=locsmapsse, varnames=newvars )
-    #       if (!is.null(sn)) {
-    #         for (nv in names(sn)) {
-    #           if (is.vector(sn)) {
-    #             set[oo,nv] = sn[nv]
-    #           } else {
-    #             set[oo,nv] = sn[,nv]
-    #           }
-    #         }
-    #       }
-    #     }
-    # }
-    #
-    # # for space-time(year-averages)
-    # # newvars = c( "tmean", "tsd", "tamplitude" )
-    # newvars = setdiff(p$variables$COV, names(set) )
-    # if (length(newvars) > 0) {
-    #   sn = NULL
-    #   sn = aegis_lookup( p=p, DS="spatial.annual", locsmap=locsmap, timestamp=set[,"timestamp"], varnames=newvars )
-    #   if (!is.null(sn)) {
-    #     colnames( sn  ) = newvars
-    #     set = cbind( set,  sn )
-    #   }
-    # }
-    #
-    # nn = which( !is.finite(set$tmean) )
-    # if (length(nn) > 0) {
-    #   # catch stragglers from a larger domain
-    #   locsmapsse = match(
-    #     stmv::array_map( "xy->1", set[nn, c("plon","plat")], gridparams=psse$gridparams ),
-    #     stmv::array_map( "xy->1", bathysse[,c("plon","plat")], gridparams=psse$gridparams ) )
-    #   sn = aegis_lookup( p=psse, DS="spatial.annual", locsmap=locsmapsse, timestamp=set[nn,"timestamp"], varnames=newvars )
-    #   for (nv in newvars) set[nn,nv] = sn[,nv]
-    # }
-    #
-    #
-    #
-    # # for space-time(year-averages)
-    # # newvars = c( "tmean", "tsd", "tamplitude" )
-    # newvars = setdiff(p$variables$COV, names(set) )
-    # if (length(newvars) > 0) {
-    #   sn = NULL
-    #   sn = aegis_lookup( p=p, DS="spatial.annual.seasonal", locsmap=locsmap, timestamp=set[,"timestamp"], varnames=newvars )
-    #   if (!is.null(sn)) {
-    #     colnames( sn  ) = newvars
-    #     set = cbind( set,  sn )
-    #   }
-    # }
-    #
-    # nn = which( !is.finite(set$tmean) )
-    # if (length(nn) > 0) {
-    #   # catch stragglers from a larger domain
-    #   locsmapsse = match(
-    #     stmv::array_map( "xy->1", set[nn, c("plon","plat")], gridparams=psse$gridparams ),
-    #     stmv::array_map( "xy->1", bathysse[,c("plon","plat")], gridparams=psse$gridparams ) )
-    #   sn = aegis_lookup( p=psse, DS="spatial.annual.seasonal", locsmap=locsmapsse, timestamp=set[nn,"timestamp"], varnames=newvars )
-    #   for (nv in newvars) set[nn,nv] = sn[,nv]
-    # }
-    #
-    # # names(set)[ names(set)=="amplitude"] ="tamplitude"
-    #
-    # # additional aegis_db variables
-    # for (iv in names(p$aegis_variables)) {
-    #   p0 = aegis::aegis_parameters( p=p, DS=iv, year.assessment=p$year.assessment )
-    #   p0 = aegis::spatial_parameters( p=p0, spatial.domain=p$spatial.domain ) # return to correct domain
-    #   vn = p0$aegis_variables[[iv]]
-    #   sn = aegis_lookup( p=p0, DS="spatial.annual", locsmap=locsmap, timestamp=set[,"timestamp"],
-    #     varnames=vn, DB=aegis_db( p=p0, DS="baseline", varnames=vn ) )
-    #   sn = as.data.frame(sn)
-    #   names( sn  ) = p$aegis_variables[[iv]]
-    #   set = cbind( set,  sn )
-    #
-    #   mm = which( !is.finite(set[,vn[1]]) )
-    #   if (length(mm) > 0) {
-    #     # catch stragglers from a larger domain
-    #     p0 = aegis::spatial_parameters( p=p0, spatial.domain="SSE" )
-    #     locsmapsse = match(
-    #       stmv::array_map( "xy->1", set[mm, c("plon","plat")], gridparams=p0$gridparams ),
-    #       stmv::array_map( "xy->1", bathysse[,c("plon","plat")], gridparams=p0$gridparams ) )
-    #     sn = aegis_lookup( p=p0, DS="spatial.annual", locsmap=locsmapsse, timestamp=set[mm,"timestamp"],
-    #       varnames=vn, DB=aegis_db( p=p0, DS="baseline", varnames=vn ) )
-    #     for (nv in vn) set[mm,nv] = sn[,nv]
-    #   }
-    # }
 
     set = set[, which(names(set) %in% c( p$variables$LOCS, p$variables$COV, p$variables$Y, p$variables$TIME, "dyear", "yr",  "wt") ) ]  # a data frame
     oo = setdiff( c( p$variables$LOCS, p$variables$COV ), names(set))
