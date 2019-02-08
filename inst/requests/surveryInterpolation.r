@@ -18,7 +18,7 @@ if(do.interpolation) {
 	det	<- det[det$yr>2003 & det$station %in% d[d[,2]>3,1],]
 
 	geo.mean=T
-  
+
 	for(i in 1:length(gps)) {
 		de 				<- det[,c('station',gps[i],'plat','plon','trip','set')]
 		names(de)[2] 	<- 'gg'
@@ -43,8 +43,8 @@ if(do.interpolation) {
       dir.create (fo, showWarnings=FALSE, recursive =TRUE)
       fn = file.path( fo, paste(outfn, "png", sep="." ) )
       png( filename=fn, width=3072, height=2304, pointsize=40, res=300 )
-      lp = aegis::aegis_map( fp[,1:3], xyz.coords="planar", cfa.regions=T, depthcontours=T, 
-        at=datarange , col.regions=cols(length(datarange)+1), colpts=T, corners=p$planar.corners, annot=gps[i] )
+      lp = aegis::aegis_map( fp[,1:3], xyz.coords="planar", depthcontours=TRUE,
+        at=datarange , col.regions=cols(length(datarange)+1), colpts=T, corners=p$planar.corners, annot=gps[i], plotlines="cfa.regions"  )
       print(lp)
       dev.off()
 

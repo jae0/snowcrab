@@ -1,7 +1,7 @@
 map.fisheries.data = function(p, outdir,  FUN, yrs, variable='effort',probs=c(0,0.975),log.variable=F,offset,theta=75,pres=10) {
 
   x = logbook.db( DS="logbook" )
-  
+
   x = x [aegis::polygon_inside( x, region="isobath1000m"),]
   x = x[ which(x$effort <= 300) ,]
   x = x[ which(x$cpue < 500),]
@@ -9,22 +9,22 @@ map.fisheries.data = function(p, outdir,  FUN, yrs, variable='effort',probs=c(0,
   x = lonlat2planar( x,  proj.type=p$internal.crs )
   x = subset(x,select=c('year','plon','plat',variable))
   names(x)[4] = 'z'
-  
+
   if(variable=='landings')x$z = x$z/1000
 
   predlocs = bathymetry.db(p=p, DS="baseline")
   er = quantile( x$z[x$z>0], probs=probs)  # range of all years
   ler = er
-  
+
   if(missing(offset))offset = er[1]  # offset fot log transformation
   if(missing(yrs))yrs=sort(unique(x$year))
-        
+
   xyz = list()
 
   for(i in 1:length(yrs)){
-  
+
     xd = subset(x,year==yrs[i],c('plon','plat','z'))
-    
+
     p$pres=pres
     g= spatial_grid(p,"planar.coords")
     xd$plon = grid_internal( xd$plon, g$plon )
@@ -49,9 +49,9 @@ map.fisheries.data = function(p, outdir,  FUN, yrs, variable='effort',probs=c(0,
     dir.create (outloc, showWarnings=FALSE, recursive =TRUE)
     fn = file.path( outloc, paste(outfn, "png", sep="." ) )
     png( filename=fn, width=3072, height=2304, pointsize=40, res=300 )
-    lp = aegis::aegis_map( xyz[[i]], xyz.coords="planar", cfa.regions=T, depthcontours=T, 
-      pts=NULL, annot=yrs[i], annot.cex=4, at=datarange,colorkey=NULL, 
-      col.regions=cols(length(datarange)+1), colpts=F, corners=p$corners, display=F,rez=c(pres,pres))
+      lp = aegis::aegis_map( xyz[[i]], xyz.coords="planar", depthcontours=TRUE,
+        pts=NULL, annot=yrs[i], annot.cex=4, at=datarange, colorkey=NULL,
+        col.regions=cols(length(datarange)+1), colpts=FALSE, corners=p$corners, display=FALSE, rez=c(pres,pres), plotlines="cfa.regions")
     print(lp)
     dev.off()
     print(fn)
@@ -60,5 +60,3 @@ map.fisheries.data = function(p, outdir,  FUN, yrs, variable='effort',probs=c(0,
     #try( ) ##BZ Nov 2018- Removed. Producing errors. No expression to "try" within the try() function
   }
 }
-
-
