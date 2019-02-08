@@ -170,6 +170,7 @@ snowcrab_stmv = function( DS=NULL, p=NULL, year=NULL, ret="mean", varnames=NULL,
     if ( p$selection$type=="abundance") {
       # snowcrab survey data only
       set = set[ which(set$data.source == "snowcrab"), ]
+      set$totmass = set$totwgt / set$sa ## totmass is biomass density (kg/km^2)
 
       # robustify input data: .. upper bound trim
       qq = quantile( set$totmass, probs=0.975, na.rm=TRUE )
@@ -180,7 +181,7 @@ snowcrab_stmv = function( DS=NULL, p=NULL, year=NULL, ret="mean", varnames=NULL,
       # set = set[jj,]
       lowestpossible = min( set$totmass[jj] , na.rm=TRUE)
       ii = which( set$totmass < lowestpossible )
-      set$totmass[ii] = lowestpossible / 4
+      set$totmass[ii] = lowestpossible / 4  ## arbitrary but close to detection limit
       names(set)[ which( names(set) =="totmass")] = p$variables$Y
       set$Y = NULL
       set$wt = set$sa
@@ -218,7 +219,8 @@ snowcrab_stmv = function( DS=NULL, p=NULL, year=NULL, ret="mean", varnames=NULL,
 
     set = set[ which(set$yr %in% p$yrs ), ]
 
-    coast = aegis::coastline.db( p=p, DS="mapdata.coastPolygon" )
+    coast = coastline.db( p=p, DS="eastcoast_gadm" )
+    # coast = aegis::coastline.db( p=p, DS="mapdata.coastPolygon" )
     coast = spTransform( coast, CRS("+proj=longlat +datum=WGS84") )
     setcoord = SpatialPoints( as.matrix( set[, c("lon", "lat")]),  proj4string=CRS("+proj=longlat +datum=WGS84") )
     inside = sp::over( setcoord, coast )
