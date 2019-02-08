@@ -15,16 +15,13 @@
         toplot = x[ ii, c("lon", "lat")]
         annot = paste ("Logbook", y)
         outfn = paste("logbook.locations", y, sep=".")
-        print(outfn)        
+        print(outfn)
         dir.create (basedir, showWarnings=FALSE, recursive =TRUE)
         fn = file.path( basedir, paste(outfn, "png", sep="." ) )
         png( filename=fn, width=3072, height=2304, pointsize=40, res=300 )
-        lp = aegis::aegis_map( toplot, cfa.regions=TRUE, depthcontours=TRUE, annot=annot, annot.cex=2.8, corners=p$corners )
+        lp = aegis::aegis_map( toplot, depthcontours=TRUE, annot=annot, annot.cex=2.8, corners=p$corners, plotlines="cfa.regions"  )
         print(lp)
         dev.off()
       }
     }
   }
-
-
-

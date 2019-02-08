@@ -18,14 +18,12 @@
         dir.create (basedir, showWarnings=FALSE, recursive =TRUE)
         png( filename=file.path(basedir, paste(fn, "png", sep=".")), width=3072, height=2304, pointsize=40, res=300 )
         print(
-          aegis::aegis_map( xyz=toplot, cfa.regions=TRUE, depthcontours=TRUE, annot=annot, annot.cex=2.8, corners=corners)
+          aegis::aegis_map( xyz=toplot, depthcontours=TRUE, annot=annot, annot.cex=2.8, corners=corners, plotlines="cfa.regions" )
         )
         dev.off()
       }
     }
 
- 
+
     return ("Done" )
   }
-
-

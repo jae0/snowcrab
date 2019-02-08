@@ -1,9 +1,9 @@
 
 
 
-#TODO BC add functionality for pdf&kml outputs 
+#TODO BC add functionality for pdf&kml outputs
 
-map.set.information = function(p, outdir, variables, mapyears, interpolate.method='tps', theta=p$pres*25, ptheta=theta/2.3,  
+map.set.information = function(p, outdir, variables, mapyears, interpolate.method='tps', theta=p$pres*25, ptheta=theta/2.3,
                                idp=2, log.variable=TRUE, add.zeros=TRUE, minN=10, probs=c(0.025, 0.975) ) {
 
     set = snowcrab.db( DS="set.biologicals")
@@ -30,7 +30,7 @@ map.set.information = function(p, outdir, variables, mapyears, interpolate.metho
           names( set_xyz) = c("plon", "plat", "z")
           set_xyz = na.omit(subset(set_xyz,!duplicated(paste(plon,plat))))
           if(nrow(set_xyz)<minN)next() #skip to next variable if not enough data
-          
+
 
           offset = empirical.ranges( db="snowcrab", v, remove.zeros=T , probs=0)  # offset fot log transformation
           er = empirical.ranges( db="snowcrab", v, remove.zeros=T , probs=probs)  # range of all years
@@ -51,7 +51,7 @@ map.set.information = function(p, outdir, variables, mapyears, interpolate.metho
             ler=log(er+offset)
             #if(offset<1)if(shift) xyz$z = xyz$z + abs(log(offset))
           }
-          
+
           datarange = seq( ler[1], ler[2], length.out=50)
   #
           #if(logit.variable){
@@ -66,9 +66,9 @@ map.set.information = function(p, outdir, variables, mapyears, interpolate.metho
           #  datarange = seq( ler[1], ler[2], length.out=50)
           #}
           xyzi = na.omit(set_xyz)
-          
+
           if(nrow(xyzi)<minN||is.na(er[1]))next() #skip to next variable if not enough data
-          
+
           #!# because 0 in log space is actually 1 in real space, the next line adds the log of a small number (offset)
           #!# surrounding the data to mimic the effect of 0 beyond the range of the data
           if(add.zeros)  xyzi =na.omit( zeroInflate(set_xyz,corners=p$corners,type=2,type.scaler=0.5,eff=log(offset),blank.dist=20) )
@@ -89,7 +89,7 @@ map.set.information = function(p, outdir, variables, mapyears, interpolate.metho
           xyz = res
           names( xyz) = c("plon", "plat", "z")
           #if(shift)xyz$z = xyz$z - abs(log(offset))
-          
+
           cols = colorRampPalette(c("darkblue","cyan","green", "yellow", "orange","darkred", "black"), space = "Lab")
 
           xyz$z[xyz$z>ler[2]] = ler[2]
@@ -108,16 +108,14 @@ map.set.information = function(p, outdir, variables, mapyears, interpolate.metho
           filename=file.path(outloc, paste(outfn, "png", sep="."))
           print(filename)
           png( filename=filename, width=3072, height=2304, pointsize=40, res=300 )
-          lp = aegis::aegis_map( xyz, xyz.coords="planar", cfa.regions=T, depthcontours=T, pts=set_xyz[,c("plon","plat")], 
-            annot=annot, annot.cex=4, at=datarange , col.regions=cols(length(datarange)+1), 
-            colpts=F, corners=p$corners, display=F,colorkey=ckey)
+          lp = aegis::aegis_map( xyz, xyz.coords="planar", depthcontours=TRUE, pts=set_xyz[,c("plon","plat")], 
+            annot=annot, annot.cex=4, at=datarange , col.regions=cols(length(datarange)+1),
+            colpts=F, corners=p$corners, display=F, colorkey=ckey, plotlines="cfa.regions" )
           print(lp)
           dev.off()
- 
+
       }
     }
-    
+
     return("Done")
   }
-
-

@@ -698,9 +698,9 @@ snowcrab_stmv = function( DS=NULL, p=NULL, year=NULL, ret="mean", varnames=NULL,
         dir.create (projectdir, showWarnings=FALSE, recursive =TRUE)
         fn = file.path( projectdir, paste(outfn, "png", sep="." ) )
         png( filename=fn, width=3072, height=2304, pointsize=40, res=300 )
-        lp = aegis::aegis_map( xyz=xyz, cfa.regions=FALSE, depthcontours=TRUE, pts=NULL,
+        lp = aegis::aegis_map( xyz=xyz, depthcontours=TRUE, pts=NULL,
           annot=annot, annot.cex=annot.cex, at=datarange, col.regions=cols,
-          corners=p$corners, spatial.domain=p$spatial.domain )
+          corners=p$corners, spatial.domain=p$spatial.domain , plotlines="cfa.regions"  )
         print(lp)
         dev.off()
 
@@ -725,9 +725,9 @@ snowcrab_stmv = function( DS=NULL, p=NULL, year=NULL, ret="mean", varnames=NULL,
         dir.create (projectdir, showWarnings=FALSE, recursive =TRUE)
         fn = file.path( projectdir, paste(outfn, "png", sep="." ) )
         png( filename=fn, width=3072, height=2304, pointsize=40, res=300 )
-        lp = aegis::aegis_map( xyz=xyz, cfa.regions=FALSE, depthcontours=TRUE, pts=NULL,
+        lp = aegis::aegis_map( xyz=xyz, depthcontours=TRUE, pts=NULL,
           annot=annot, annot.cex=annot.cex, at=datarange, col.regions=cols,
-          corners=p$corners, spatial.domain=p$spatial.domain )
+          corners=p$corners, spatial.domain=p$spatial.domain , plotlines="cfa.regions" )
         print(lp)
         dev.off()
 
@@ -751,9 +751,9 @@ snowcrab_stmv = function( DS=NULL, p=NULL, year=NULL, ret="mean", varnames=NULL,
         dir.create (projectdir, showWarnings=FALSE, recursive =TRUE)
         fn = file.path( projectdir, paste(outfn, "png", sep="." ) )
         png( filename=fn, width=3072, height=2304, pointsize=40, res=300 )
-        lp = aegis::aegis_map( xyz=xyz, cfa.regions=FALSE, depthcontours=TRUE, pts=NULL,
+        lp = aegis::aegis_map( xyz=xyz, depthcontours=TRUE, pts=NULL,
               annot=annot, annot.cex=annot.cex, at=datarange , col.regions=cols,
-              corners=p$corners, spatial.domain=p$spatial.domain )
+              corners=p$corners, spatial.domain=p$spatial.domain , plotlines="cfa.regions" )
         print(lp)
         dev.off()
 
@@ -800,9 +800,9 @@ snowcrab_stmv = function( DS=NULL, p=NULL, year=NULL, ret="mean", varnames=NULL,
         dir.create (projectdir, showWarnings=FALSE, recursive =TRUE)
         fn = file.path( projectdir, paste(vn, "png", sep="." ) )
         png( filename=fn, width=3072, height=2304, pointsize=40, res=300 )
-        lp = aegis::aegis_map( xyz=xyz, cfa.regions=FALSE, depthcontours=TRUE, pts=NULL,
+        lp = aegis::aegis_map( xyz=xyz, depthcontours=TRUE, pts=NULL,
           annot=annot, annot.cex=annot.cex, at=datarange, col.regions=cols,
-          corners=p$corners, spatial.domain=p$spatial.domain )
+          corners=p$corners, spatial.domain=p$spatial.domain, plotlines="cfa.regions"  )
         print(lp)
         dev.off()
 
