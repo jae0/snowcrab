@@ -85,10 +85,6 @@ p = snowcrab_stmv( p=p, DS="parameters",
   ),
 
   DATA = 'snowcrab_stmv( p=p, DS="stmv_inputs" )',
-  stmv_Y_transform =list(
-        transf = function(x) {x/6675} ,
-        invers = function(x) {x*6675}
-  ), # transform data to unit interval to stabilize variance and speed up convergence
   stmv_global_modelengine ="gam",
   stmv_global_family = gaussian(link="log"),
   stmv_global_modelformula = formula( paste(
