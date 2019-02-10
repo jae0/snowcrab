@@ -237,15 +237,20 @@ p = snowcrab_stmv( p=p, DS="parameters",
   #   'snowcrab.large.males_abundance', '~ s(log(z), k=3, bs="ts") + s(plon, k=3, bs="ts") + s(plat, k=3, bs="ts") + s( log(z), plon, plat, k=27, bs="ts")  ') ),
 
   stmv_twostep_time = "gam",
+  # stmv_local_modelformula_time = formula( paste(
+  #   'snowcrab.large.males_presence_absence', ' ~ s(yr, k=10, bs="ts") + s(cos.w, k=3, bs="ts") + s(sin.w, k=3, bs="ts")  ',
+  #   '+ s( cos.w, sin.w, yr, k=45, bs="ts")') ),
   stmv_local_modelformula_time = formula( paste(
-    'snowcrab.large.males_abundance', ' ~ s(yr, k=10, bs="ts") + s(cos.w, k=3, bs="ts") + s(sin.w, k=3, bs="ts")  ',
-    '+ s( cos.w, sin.w, yr, k=45, bs="ts")') ),
+      'snowcrab.large.males_presence_absence', '~ s(yr, k=10, bs="ts") + s(cos.w, k=3, bs="ts") + s(sin.w, k=3, bs="ts") ',
+        ' + s(cos.w, sin.w, yr, bs="ts", k=20) ',
+        ' + s(plon, k=3, bs="ts") + s(plat, k=3, bs="ts") + s(plon, plat, k=20, bs="ts") ' ) ),
 
   stmv_gam_optimizer=c("outer", "bfgs"),
   stmv_distance_statsgrid = 4, # resolution (km) of data aggregation (i.e. generation of the ** statistics ** ),
   stmv_distance_prediction_fraction = 1.25, # stmv_distance_prediction = stmv_distance_statsgrid * XX ..this is a half window km
   stmv_distance_scale = c( 30, 40, 50, 60 ), #likely must be over 30km, so 50 +/- 20km, should likely match the setting in ~ line 256
   stmv_clusters = list( rep("localhost", 8), rep("localhost", 8), rep("localhost", 8), rep("localhost", 7) )  # no of cores used made explicit.. must be same length as )
+)
 
 
 # o = snowcrab_stmv(p=p, DS="stmv_inputs" )  # create fields for
@@ -321,8 +326,7 @@ p = snowcrab_stmv( p=p, DS="parameters",
   )
 )
 
-interpolation.db( DS="biomass.redo", p=p  )
-interpolation.db( DS="biomass.map", p=p  )
+interpolation.db( DS="biomass.redo", p=p  ) # combine habitat and abundance info and map
 
 K = interpolation.db( DS="timeseries", p=p  )
 str(K)

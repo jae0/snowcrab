@@ -16,12 +16,13 @@
 
 
       set = aegis::survey.db( p=p, DS="det.filter" ) # mature male > 95 mm
+      set$totmass = set$totwgt / set$sa
 
       ii = which( set$totmass > 0 )
       qs = quantile( set$totmass[ii], probs=p$stmv_quantile_bounds, na.rm=TRUE )
 
       bm = snowcrab_stmv( p=p, DS="baseline", ret="mean", varnames=varnames )
-      m = bm[[1]]  # biomass
+      m = bm[[1]]  # biomass (density)
       h = bm[[2]]  # habitat
       bm= NULL
 
@@ -130,6 +131,7 @@
           col.regions=cols, rez=c(p$pres,p$pres), plotlines="cfa.regions"  )
         print(lp)
         dev.off()
+        print (fn)
       }
 
 #      datarange = seq( 0, max(lb, na.rm=TRUE), length.out=150)
@@ -150,6 +152,7 @@
           col.regions=cols, rez=c(p$pres,p$pres), plotlines="cfa.regions"  )
         print(lp)
         dev.off()
+        print (fn)
       }
 
 
@@ -171,6 +174,7 @@
           col.regions=cols, rez=c(p$pres,p$pres), plotlines="cfa.regions"  )
         print(lp)
         dev.off()
+        print (fn)
       }
 
       return(fn)
