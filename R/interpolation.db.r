@@ -2,7 +2,7 @@
   interpolation.db = function( ip=NULL, DS=NULL, p=NULL,
     varnames = c("snowcrab.large.males_abundance", "snowcrab.large.males_presence_absence"), annot.cex=2 ) {
 
-    if (DS %in% c( "biomass", "biomass.redo" )) {
+    if (DS %in% c( "fishable.biomass", "fishable.biomass.redo" )) {
 
       outdir = file.path( project.datadirectory("bio.snowcrab"), "modelled", "biomass" )
       dir.create(path=outdir, recursive=T, showWarnings=F)
@@ -120,10 +120,10 @@
     # ------------------
 
 
-    if (DS %in% c( "map" )) {
+    if (DS %in% c( "fishable.biomass.map" )) {
 
       bs = bathymetry.db(p=p, DS="baseline")
-      bm = interpolation.db( p=p, DS="biomass" )
+      bm = interpolation.db( p=p, DS="fishable.biomass" )
 
       projectdir = file.path(p$data_root, "maps", "fishable.biomass", p$spatial.domain )
       dir.create (projectdir, showWarnings=FALSE, recursive =TRUE)
@@ -196,8 +196,8 @@
     # ------------------
 
 
-    if (DS=="timeseries") {
-      bm = interpolation.db(p=p, DS="biomass")
+    if (DS=="fishable.biomass.timeseries") {
+      bm = interpolation.db(p=p, DS="fishable.biomass")
       bm$m = (bm$m) / 10^3  # kg/km^2 to t/km^2  .. required for biomass.summary.db
       bm$lb =(bm$lb) / 10^3  # kg/km^2 to t/km^2  .. required for biomass.summary.db
       bm$ub =(bm$ub) / 10^3  # kg/km^2 to t/km^2  .. required for biomass.summary.db
@@ -244,7 +244,7 @@
       message(" only R0.mass is supported for now" )
 
       out = NULL
-      if ( p$vars.to.model == "R0.mass" ) out = interpolation.db( p=p, DS="timeseries" )
+      if ( p$vars.to.model == "R0.mass" ) out = interpolation.db( p=p, DS="fishable.biomass.timeseries" )
 
       return(out)
     }
@@ -255,7 +255,7 @@
 
     if (DS =="habitat.temperatures") {
 
-      bm = interpolation.db( p=p, DS="biomass" )
+      bm = interpolation.db( p=p, DS="fishable.biomass" )
       ps = snowcrab_stmv(p=p, DS="output_data" )
       bs = bathymetry.db( p=p, DS="baseline")
 

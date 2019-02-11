@@ -326,10 +326,10 @@ p = snowcrab_stmv( p=p, DS="parameters",
   )
 )
 
-interpolation.db( DS="biomass.redo", p=p  ) # combine habitat and abundance info and map
-interpolation.db( DS="map", p=p  )
+interpolation.db( DS="fishable.biomass.redo", p=p  ) # combine habitat and abundance info and map
+interpolation.db( DS="fishable.biomass.map", p=p  )
 
-K = interpolation.db( DS="timeseries", p=p  )
+K = interpolation.db( DS="fishable.biomass.timeseries", p=p  )
 
 str(K)
 
@@ -358,7 +358,7 @@ bb = array_map( "xy->1", bs, gridparams=p$gridparams )
 im = match(  ii, bb )
 it = match( set$yr, p$yrs )
 
-bm = interpolation.db( DS="biomass", p=p  )
+bm = interpolation.db( DS="fishable.biomass", p=p  )
 spred = bm$m[cbind(im, it)]  # approximate match (ignoring seasonality)
 
 summary ( lm(log(spred)~log(snowcrab.large.males_abundance), data=set, na.actio="na.omit" ) )
