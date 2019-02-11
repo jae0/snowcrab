@@ -46,18 +46,16 @@
       ub = snowcrab_stmv( p=p, DS="baseline", ret="ub", varnames=varnames )
 
       # range checks
-      lb = lb[[1]] * lb[[2]]  # x[[2]] is serving as weight/probabilities
-      ub = ub[[1]] * ub[[2]]  # x[[2]] is serving as weight/probabilities
+      lb = lb[[1]] * lb[[2]]  # x[[2]]==habitat lb is serving as weight/probabilities
+      ub = ub[[1]] * ub[[2]]  # x[[2]]==habitat ub is serving as weight/probabilities
 
       # sq = quantile(s, probs=p$stmv_quantile_bounds[2], na.rm=TRUE )
       # s[which(s > sq)] = sq  # cap upper bound of sd
 
-      # mm = which(( m - 1.96*s ) < 0 )
-      # if (length(mm)>0) {
+      # if lb overlaps zero/detection limit .. assume zero
+      mm = which( lb < qs[1] )
+      if (length(mm)>0) m[mm] = NA
 
-      #   m[mm] = NA
-      #   s[mm] = NA
-      # }
       # limit range of extrapolation to within a given distance from survey stations .. annual basis
       set = snowcrab.db( DS="set.clean")
       bs = bathymetry.db(p=p, DS="baseline")

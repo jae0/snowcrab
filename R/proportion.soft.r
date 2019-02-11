@@ -11,7 +11,7 @@ proportion.soft = function(odb, region, year) {
 
 # Remove CW's outside norms and remove production (pre-sorted) samples
   i = which( odb$sex==male & odb$fishyr==year )  # --- fishing year is used and not the actual year caught
-  r = aegis::polygon_inside(x=odb, region=aegis::polygon_internal_code(region), planar=F)
+  r = aegis::polygon_inside(x=odb, region=aegis::polygon_internal_code(region), planar=FALSE)
 
   c.r.y = unique( intersect (r, i) )
 
