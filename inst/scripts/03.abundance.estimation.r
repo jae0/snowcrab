@@ -34,11 +34,14 @@ require(aegis.env)
 # 02.#  system.file(package="aegis", "scripts", "10.surveys.r")
 
 
-# 03.#  system.file(package="aegis", "scripts", "11.speciescomposition.R") #January 2018 BZ-29 hours with following setting:
-      # stmv_distance_statsgrid = 2,
-      # stmv_diswatch -n 60 cat /home/ben/bio.data/aegis/speciescomposition/modelled/pca1/SSE/stmv_current_statustance_scale = 50,
-      # stmv_distance_prediction = 4,
-      # sampling = c( 1, 1.1, 1.25 )
+# 03.#  system.file(package="aegis", "scripts", "11.speciescomposition.R") #February 2018 BZ-~10 hours with following settings:
+#drastically reduced required time moving local spatial model to "fft" from GAM 
+#Needed to run PCA1, reset R, run PCA2, otherwise had a memory issue, didn't dump big.memory
+#stmv_rsquared_threshold = 0.2, # lower threshold
+#stmv_distance_statsgrid = 4, # resolution (km) of data aggregation (i.e. generation of the ** statistics ** )
+#stmv_distance_scale = c(50, 60, 80), # km ... approx guess of 95% AC range .. data tends to be sprse realtive to pure space models
+#stmv_distance_prediction_fraction = 1, # stmv_distance_prediction = stmv_distance_statsgrid * XX ..this is a half window km (default is 0.75)
+
 
 # 1. Define some additional starting parameters for debugging
 #    choose various over-rides: these are initially defined in parameters.r
