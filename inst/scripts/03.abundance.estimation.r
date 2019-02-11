@@ -327,8 +327,10 @@ p = snowcrab_stmv( p=p, DS="parameters",
 )
 
 interpolation.db( DS="biomass.redo", p=p  ) # combine habitat and abundance info and map
+interpolation.db( DS="map", p=p  )
 
 K = interpolation.db( DS="timeseries", p=p  )
+
 str(K)
 
 # table.view( K )

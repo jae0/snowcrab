@@ -14,7 +14,6 @@
         return (B)
       }
 
-
       set = aegis::survey.db( p=p, DS="det.filter" ) # mature male > 95 mm
       set$totmass = set$totwgt / set$sa
 
@@ -113,17 +112,31 @@
 
       B = list( m=m, lb=lb, ub=ub, h=h )
       save( B, file=fn, compress=TRUE )
-      B = NULL
+
+      return(fn)
+    }
+
+
+    # ------------------
+
+
+    if (DS %in% c( "map" )) {
+
+      bs = bathymetry.db(p=p, DS="baseline")
+      bm = interpolation.db( p=p, DS="biomass" )
 
       projectdir = file.path(p$data_root, "maps", "fishable.biomass", p$spatial.domain )
-      datarange = seq( log(qs[1])-0.1, log(qs[2])+0.1, length.out=150)
+      dir.create (projectdir, showWarnings=FALSE, recursive =TRUE)
+
+      qs = range(bm$m, na.rm=TRUE)
+      datarange = seq( qs[1], qs[2], length.out=150)
       cols = color.code( "seis", datarange )
-      m[which(!is.finite(m))] = qs[1]
+      bm$m[which(!is.finite(bm$m))] = qs[1]*0.9
+
       for (iy in 1:p$ny) {
         y = p$yrs[iy]
+        xyz = cbind( bs[, c("plon", "plat")], bm$m[,iy] )
         outfn = paste( "prediction.abundance.mean", y, sep=".")
-        xyz = cbind( bs[, c("plon", "plat")], log(m[,iy]) )
-        dir.create (projectdir, showWarnings=FALSE, recursive =TRUE)
         fn = file.path( projectdir, paste(outfn, "png", sep="." ) )
         png( filename=fn, width=3072, height=2304, pointsize=40, res=300 )
         lp = aegis::aegis_map( xyz=xyz, depthcontours=TRUE, pts=NULL, annot=y,
@@ -134,17 +147,16 @@
         print (fn)
       }
 
-#      datarange = seq( 0, max(lb, na.rm=TRUE), length.out=150)
+
+      qs = range(bm$lb, na.rm=TRUE)
+      datarange = seq( qs[1], qs[2], length.out=150)
       cols = color.code( "seis", datarange )
-      lb[which(!is.finite(lb))] = qs[1]
-      lb[which(lb < qs[1])] = qs[1]
-      lb[which(lb > qs[2])] = qs[2]
+      bm$lb[which(!is.finite(bm$lb))] = qs[1]*0.9
 
       for (iy in 1:p$ny) {
         y = p$yrs[iy]
+        xyz = cbind( bs[, c("plon", "plat")], bm$lb[,iy] )
         outfn = paste( "prediction.abundance.lb", y, sep=".")
-        xyz = cbind( bs[, c("plon", "plat")], log(lb[,iy]) )
-        dir.create (projectdir, showWarnings=FALSE, recursive =TRUE)
         fn = file.path( projectdir, paste(outfn, "png", sep="." ) )
         png( filename=fn, width=3072, height=2304, pointsize=40, res=300 )
         lp = aegis::aegis_map( xyz=xyz, depthcontours=TRUE, pts=NULL, annot=y,
@@ -156,17 +168,16 @@
       }
 
 
-#      datarange = seq( 0, max(qs[2]*1.15, na.rm=TRUE), length.out=150)
+
+      qs = range(bm$ub, na.rm=TRUE)
+      datarange = seq( qs[1], qs[2], length.out=150)
       cols = color.code( "seis", datarange )
-      ub[which(!is.finite(ub))] = qs[1]
-      ub[which(ub < qs[1])] = qs[1]
-      ub[which(ub > qs[2])] = qs[2]
+      bm$ub[which(!is.finite(bm$ub))] = qs[1]*0.9
 
       for (iy in 1:p$ny) {
         y = p$yrs[iy]
+        xyz = cbind( bs[, c("plon", "plat")], bm$ub[,iy] )
         outfn = paste( "prediction.abundance.ub", y, sep=".")
-        xyz = cbind( bs[, c("plon", "plat")], log(ub[,iy]) )
-        dir.create (projectdir, showWarnings=FALSE, recursive =TRUE)
         fn = file.path( projectdir, paste(outfn, "png", sep="." ) )
         png( filename=fn, width=3072, height=2304, pointsize=40, res=300 )
         lp = aegis::aegis_map( xyz=xyz, depthcontours=TRUE, pts=NULL, annot=y,
@@ -179,6 +190,7 @@
 
       return(fn)
     }
+
 
 
     # ------------------
