@@ -8,7 +8,7 @@
       dir.create(path=outdir, recursive=T, showWarnings=F)
       fn = file.path( outdir, "biomass.rdata" )
 
-      if (DS=="biomass") {
+      if (DS=="fishable.biomass") {
         B = NULL
         if ( file.exists( fn) ) load(fn)
         return (B)
@@ -207,9 +207,9 @@
       bq = min( bm$m[ bm$m > 0 ], na.rm=T )
 
       K = NULL
-      nreg = length(p$regions)
+      nreg = length(p$regions.to.model)
       for (r in 1:nreg ){
-        aoi = aegis::polygon_inside(x=bs[ , c("plon", "plat")], region=p$regions[r], planar=T)
+        aoi = aegis::polygon_inside(x=bs[ , c("plon", "plat")], region=p$regions.to.model[r], planar=TRUE, proj.type=p$internal.crs )
         aoi = intersect( aoi, which( bs$plon > 250 ) )
         out = matrix( NA, nrow=p$ny, ncol=4)
 
@@ -228,7 +228,7 @@
         ok$log.total = log(ok$total)
         ok$log.total.lb = log( ok$total.lb) # as above
         ok$log.total.ub = log( ok$total.ub) # as above
-        ok$region = p$regions[r]
+        ok$region = p$regions.to.model[r]
         ok$yr = p$yrs
 
         K = rbind(K, ok)
@@ -262,9 +262,9 @@
       temp = ps$t * bm$h
 
       K = NULL
-      nreg = length(p$regions)
+      nreg = length(p$regions.to.model)
       for (r in 1:nreg ){
-        aoi = aegis::polygon_inside(x=bs[ , c("plon", "plat")], region=p$regions[r], planar=T)
+        aoi = aegis::polygon_inside(x=bs[ , c("plon", "plat")], region=p$regions.to.model[r], planar=TRUE, proj.type=p$internal.crs )
         aoi = intersect( aoi, which( bs$plon > 250 ) )
         out = matrix( NA, nrow=p$ny, ncol=2)
 
@@ -277,7 +277,7 @@
 
         ok = as.data.frame( out )
         names( ok) = c("temperature", "temperature.sd")
-        ok$region = p$regions[r]
+        ok$region = p$regions.to.model[r]
         ok$yr = p$yrs
         ok$lbound = ok$temperature - ok$temperature.sd*1.96 # normal assumption
         ok$ubound = ok$temperature + ok$temperature.sd*1.96
