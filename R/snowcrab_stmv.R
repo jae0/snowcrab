@@ -1,5 +1,5 @@
 
-snowcrab_stmv = function( DS=NULL, p=NULL, year=NULL, ret="mean", varnames=NULL, ... ) {
+snowcrab_stmv = function( DS=NULL, p=NULL, year=NULL, ret="mean", varnames=NULL, coastline_source="eastcoast_gadm", ... ) {
 
   # deal with additional passed parameters
   # ---------------------
@@ -153,7 +153,7 @@ snowcrab_stmv = function( DS=NULL, p=NULL, year=NULL, ret="mean", varnames=NULL,
 
   if (DS=="stmv_inputs") {
     # mostly based on aegis_db( DS="stmv_inputs")
-    INP = snowcrab_stmv(p=p, DS="input_data" )
+    INP = snowcrab_stmv(p=p, DS="input_data", coastline_source=coastline_source )
     PS  = snowcrab_stmv(p=p, DS="output_data" )
     LOCS = bathymetry.db(p=p, DS="baseline")
     return (list(input=INP, output=list( LOCS=LOCS, COV=PS )) )
@@ -217,8 +217,7 @@ snowcrab_stmv = function( DS=NULL, p=NULL, year=NULL, ret="mean", varnames=NULL,
 
     set = set[ which(set$yr %in% p$yrs ), ]
 
-    coast = coastline.db( p=p, DS="eastcoast_gadm" )
-    # coast = aegis::coastline.db( p=p, DS="mapdata.coastPolygon" )
+    coast = coastline.db( p=p, DS=coastline_source )
     coast = spTransform( coast, CRS("+proj=longlat +datum=WGS84") )
     setcoord = SpatialPoints( as.matrix( set[, c("lon", "lat")]),  proj4string=CRS("+proj=longlat +datum=WGS84") )
     inside = sp::over( setcoord, coast )

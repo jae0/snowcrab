@@ -35,7 +35,7 @@ require(aegis.env)
 
 
 # 03.#  system.file(package="aegis", "scripts", "11.speciescomposition.R") #February 2018 BZ-~10 hours with following settings:
-#drastically reduced required time moving local spatial model to "fft" from GAM 
+#drastically reduced required time moving local spatial model to "fft" from GAM
 #Needed to run PCA1, reset R, run PCA2, otherwise had a memory issue, didn't dump big.memory
 #stmv_rsquared_threshold = 0.2, # lower threshold
 #stmv_distance_statsgrid = 4, # resolution (km) of data aggregation (i.e. generation of the ** statistics ** )
@@ -107,6 +107,9 @@ p = snowcrab_stmv( p=p, DS="parameters",
   stmv_distance_scale = c( 30, 40, 60, 80 ), #likely must be over 30km, so 50 +/- 20km, should likely match the setting in ~ line 256
   stmv_clusters = list( rep("localhost", 8), rep("localhost", 8), rep("localhost", 8), rep("localhost", 7) )  # no of cores used made explicit.. must be same length as "stmv_distance_scale"
 ) #End passing of parameters
+
+
+p$DATA = 'snowcrab_stmv( p=p, DS="stmv_inputs", coastline_source="mapdata.coastPolygon" )'
 
 
 # range( INP$snowcrab.large.males_abundance )
