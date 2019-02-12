@@ -207,8 +207,10 @@ snowcrab_stmv = function( DS=NULL, p=NULL, year=NULL, ret="mean", varnames=NULL,
         set = rbind( set[, nms], lgbk[,nms] )
       }
 
-      set = presence.absence( X=set, vname="zm", px=p$habitat.threshold.quantile )  # determine presence absence and weighting
-      names(set)[ which( names(set) =="Y")] = p$variables$Y
+      pa = presence.absence( X=set$zm, px=p$habitat.threshold.quantile )  # determine presence absence and weighting
+      set[, p$variables$Y] = pa$pa
+      set[, "wt"] = pa$probs
+      pa = NULL
       set$totmass = NULL
       set = set[ which(is.finite(set$plon + set$plat)),]
     }
