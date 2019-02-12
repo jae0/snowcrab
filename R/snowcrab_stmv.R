@@ -32,7 +32,7 @@ snowcrab_stmv = function( DS=NULL, p=NULL, year=NULL, ret="mean", varnames=NULL,
     if (!exists("stmv_quantile_bounds", p)) p$stmv_quantile_bounds = c(0.025, 0.975) # remove these extremes in interpolations
 
     if (!exists("stmv_rsquared_threshold", p)) p$stmv_rsquared_threshold = 0.2 # lower threshold
-    if (!exists("stmv_distance_statsgrid", p)) p$stmv_distance_statsgrid = 4 # resolution (km) of data aggregation (i.e. generation of the ** statistics ** )
+    if (!exists("stmv_distance_statsgrid", p)) p$stmv_distance_statsgrid = 3 # resolution (km) of data aggregation (i.e. generation of the ** statistics ** )
 #    if (!exists("stmv_distance_prediction", p)) p$stmv_distance_prediction = p$stmv_distance_statsgrid*0.75  # this is a half window km
     if (!exists("stmv_distance_scale", p)) p$stmv_distance_scale = c(25, 35, 45) # km ... approx guess of 95% AC range
 
