@@ -32,11 +32,11 @@ snowcrab_stmv = function( DS=NULL, p=NULL, year=NULL, ret="mean", varnames=NULL,
     if (!exists("stmv_quantile_bounds", p)) p$stmv_quantile_bounds = c(0.025, 0.975) # remove these extremes in interpolations
 
     if (!exists("stmv_rsquared_threshold", p)) p$stmv_rsquared_threshold = 0.2 # lower threshold
-    if (!exists("stmv_distance_statsgrid", p)) p$stmv_distance_statsgrid = 3 # resolution (km) of data aggregation (i.e. generation of the ** statistics ** )
+    if (!exists("stmv_distance_statsgrid", p)) p$stmv_distance_statsgrid = 4 # resolution (km) of data aggregation (i.e. generation of the ** statistics ** )
 #    if (!exists("stmv_distance_prediction", p)) p$stmv_distance_prediction = p$stmv_distance_statsgrid*0.75  # this is a half window km
-    if (!exists("stmv_distance_scale", p)) p$stmv_distance_scale = c(30, 40, 60, 80) # km ... approx guess of 95% AC range
+    if (!exists("stmv_distance_scale", p)) p$stmv_distance_scale = c(25, 35, 45) # km ... approx guess of 95% AC range
 
-    if (!exists("n.min", p)) p$n.min = 120 # n.min/n.max changes with resolution must be more than the number of knots/edf
+    if (!exists("n.min", p)) p$n.min = 200 # n.min/n.max changes with resolution must be more than the number of knots/edf
     # min number of data points req before attempting to model timeseries in a localized space
     if (!exists("n.max", p)) p$n.max = 6000 # actually can have a lot of data from logbooks ... this keeps things reasonable in terms of run-time
 
@@ -171,19 +171,21 @@ snowcrab_stmv = function( DS=NULL, p=NULL, year=NULL, ret="mean", varnames=NULL,
       set$totmass = set$totwgt / set$sa ## totmass is biomass density (kg/km^2)
 
       # robustify input data: .. upper bound trim
-      qq = quantile( set$totmass, probs=0.975, na.rm=TRUE )
-      set$totmass[ set$totmass > qq] = qq
+      highestpossible = quantile( set$totmass, probs=0.975, na.rm=TRUE )
+      set$totmass[ set$totmass > highestpossible ] = highestpossible
 
       # keep "zero's" to inform spatial processes but only as "lowestpossible" value
       jj = which( set$totmass > 0 )
       # set = set[jj,]
-      lowestpossible = min( set$totmass[jj] , na.rm=TRUE)
+      lowestpossible =  quantile( set$totmass, probs=0.025, na.rm=TRUE )
+#       lowestpossible = min( set$totmass[jj] , na.rm=TRUE)
       ii = which( set$totmass < lowestpossible )
-      set$totmass[ii] = lowestpossible / 4  ## arbitrary but close to detection limit
+      set$totmass[ii] = lowestpossible  ## arbitrary but close to detection limit
       names(set)[ which( names(set) =="totmass")] = p$variables$Y
       set$Y = NULL
       set$wt = set$sa
     }
+
 
     if ( p$selection$type=="presence_absence") {
       # must run here as we need the wgt from this for both PA and abundance

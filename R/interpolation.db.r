@@ -25,8 +25,8 @@
       h = bm[[2]]  # habitat
       bm= NULL
 
-      ll = which(h < p$habitat.threshold.quantile )
-      if (length(ll) > 0 ) h[ll] = 0
+      # ll = which(h < p$habitat.threshold.quantile )
+      # if (length(ll) > 0 ) h[ll] = 0
       m = m * h  # bm[[2]] is serving as weight/probabilities
       # #respect the bounds of input data (no extrapolation)
 
@@ -53,8 +53,8 @@
       # s[which(s > sq)] = sq  # cap upper bound of sd
 
       # if lb overlaps zero/detection limit .. assume zero
-      mm = which( lb < qs[1] )
-      if (length(mm)>0) m[mm] = NA
+      # mm = which( lb < qs[1] )
+      # if (length(mm)>0) m[mm] = NA
 
       # limit range of extrapolation to within a given distance from survey stations .. annual basis
       set = snowcrab.db( DS="set.clean")
