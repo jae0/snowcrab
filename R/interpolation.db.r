@@ -25,13 +25,9 @@
       h = bm[[2]]  # habitat
       bm= NULL
 
-      # ll = which(h < p$habitat.threshold.quantile )
-      # if (length(ll) > 0 ) h[ll] = 0
-      m = m * h  # bm[[2]] is serving as weight/probabilities
-      # #respect the bounds of input data (no extrapolation)
-
+      # respect the bounds of input data (no extrapolation)
       qq = which( m < qs[1] )
-      if (length(qq) > 0 ) m[qq] = NA
+      if (length(qq) > 0 ) m[qq] = 0
       rr = which( m > qs[2] )
       if (length(rr) > 0 ) m[rr] = qs[2]
 
@@ -42,19 +38,8 @@
       }
 
       # more range checks
-      lb = snowcrab_stmv( p=p, DS="baseline", ret="lb", varnames=varnames )
-      ub = snowcrab_stmv( p=p, DS="baseline", ret="ub", varnames=varnames )
-
-      # range checks
-      lb = lb[[1]] * lb[[2]]  # x[[2]]==habitat lb is serving as weight/probabilities
-      ub = ub[[1]] * ub[[2]]  # x[[2]]==habitat ub is serving as weight/probabilities
-
-      # sq = quantile(s, probs=p$stmv_quantile_bounds[2], na.rm=TRUE )
-      # s[which(s > sq)] = sq  # cap upper bound of sd
-
-      # if lb overlaps zero/detection limit .. assume zero
-      # mm = which( lb < qs[1] )
-      # if (length(mm)>0) m[mm] = NA
+      lb = snowcrab_stmv( p=p, DS="baseline", ret="lb", varnames=varnames )[[1]]
+      ub = snowcrab_stmv( p=p, DS="baseline", ret="ub", varnames=varnames )[[1]]
 
       # limit range of extrapolation to within a given distance from survey stations .. annual basis
       set = snowcrab.db( DS="set.clean")
@@ -212,8 +197,10 @@
         out = matrix( NA, nrow=p$ny, ncol=4)
 
         for (y in 1:p$ny) {
-          iHabitat = which( bm$h[,y] > p$habitat.threshold.quantile ) # any area with biomass > lowest threshold
-          iHabitatRegion = intersect( aoi, iHabitat )
+          # iHabitat = which(  {bm$lb > 0} ) # any area with biomass > lowest threshold
+          # iHabitat = which(  {bm$h >= p$habitat.threshold.quantile } ) # any area with biomass > lowest threshold
+          # iHabitatRegion = intersect( aoi, iHabitat )
+          iHabitatRegion =  aoi
           out[ y, 1] = sum( bm$m[iHabitatRegion,y] , na.rm=TRUE ) # abundance weighted by Pr
           out[ y, 2] = sum( bm$lb[iHabitatRegion,y] , na.rm=TRUE )
           out[ y, 3] = sum( bm$ub[iHabitatRegion,y] , na.rm=TRUE )
