@@ -83,6 +83,8 @@ p = snowcrab_stmv( p=p, DS="parameters",
       ranged_data="len"
     ),
     survey=list(
+      data.source = c("snowcrab"),
+      yr = p$yrs,      # time frame for comparison specified above
       drop.groundfish.data=TRUE # esp from 1970 to 1999 measurement of invertebrates was sporatic .. zero-values are dropped as they are unreliable
     )
   ),
@@ -218,6 +220,8 @@ p = snowcrab_stmv( p=p, DS="parameters",
       ranged_data="len"
     ),
     survey=list(
+      data.source = c("snowcrab"),
+      yr = p$yrs,      # time frame for comparison specified above
       drop.groundfish.data=TRUE # esp from 1970 to 1999 measurement of invertebrates was sporatic .. zero-values are dropped as they are unreliable
     )
   ),
@@ -309,6 +313,8 @@ p = snowcrab_stmv( p=p, DS="parameters",
       ranged_data="len"
     ),
     survey=list(
+      data.source = c("snowcrab"),
+      yr = p$yrs,      # time frame for comparison specified above
       drop.groundfish.data=TRUE # esp from 1970 to 1999 measurement of invertebrates was sporatic .. zero-values are dropped as they are unreliable
     )
   )
