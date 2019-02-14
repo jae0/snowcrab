@@ -18,18 +18,21 @@
       set$totmass = set$totwgt / set$sa
 
       ii = which( set$totmass > 0 )
-      qs = quantile( set$totmass[ii], probs=p$stmv_quantile_bounds, na.rm=TRUE )
 
       bm = snowcrab_stmv( p=p, DS="baseline", ret="mean", varnames=varnames )
       m = bm[[1]]  # biomass (density)
       h = bm[[2]]  # habitat
       bm= NULL
 
-      # respect the bounds of input data (no extrapolation)
-      qq = which( m < qs[1] )
+      # these are assumed to be below detection limit
+      qh = quantile( set$totmass[ii], probs=p$habitat.threshold.quantile , na.rm=TRUE )
+      qq = which( m < qh )
       if (length(qq) > 0 ) m[qq] = 0
-      rr = which( m > qs[2] )
-      if (length(rr) > 0 ) m[rr] = qs[2]
+
+      # respect the bounds of input data (no extrapolation)
+      # qs = quantile( set$totmass[ii], probs=p$stmv_quantile_bounds, na.rm=TRUE )
+      # rr = which( m > qs[2] )
+      # if (length(rr) > 0 ) m[rr] = qs[2]
 
       if(0) {
         bs = bathymetry.db(p=p, DS="baseline")
@@ -187,8 +190,6 @@
 
       bs = bathymetry.db( p=p, DS="baseline")
 
-      bq = min( bm$m[ bm$m > 0 ], na.rm=T )
-
       K = NULL
       nreg = length(p$regions.to.model)
       for (r in 1:nreg ){
@@ -197,10 +198,8 @@
         out = matrix( NA, nrow=p$ny, ncol=4)
 
         for (y in 1:p$ny) {
-          # iHabitat = which(  {bm$lb > 0} ) # any area with biomass > lowest threshold
-          # iHabitat = which(  {bm$h >= p$habitat.threshold.quantile } ) # any area with biomass > lowest threshold
-          # iHabitatRegion = intersect( aoi, iHabitat )
-          iHabitatRegion =  aoi
+          iHabitat = which(  {bm$h >= p$habitat.threshold.quantile } ) # any area with biomass > lowest threshold, by definition
+          iHabitatRegion = intersect( aoi, iHabitat )
           out[ y, 1] = sum( bm$m[iHabitatRegion,y] , na.rm=TRUE ) # abundance weighted by Pr
           out[ y, 2] = sum( bm$lb[iHabitatRegion,y] , na.rm=TRUE )
           out[ y, 3] = sum( bm$ub[iHabitatRegion,y] , na.rm=TRUE )
