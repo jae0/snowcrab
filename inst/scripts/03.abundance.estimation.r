@@ -8,16 +8,18 @@ require(aegis.env)
 # --------------------------------------------------------------
 #  Ensure the following scripts complete without error:
 #  these external dependencies permit lookup of data, for this script
+
 #Require the following:
 #snowcrab.db("complete.redo")
 
-#Run aegis::(inst/scripts/10.surveys.r), need to update year within or run next line
-  #system.file(package="aegis", "scripts", "10.surveys.r")
-
-#Run aegis::(inst/scripts/05.temperature.r), need to update year within
-  #system.file(package="aegis", "scripts", "05.temperature.R") or run next line
-
-#Substrate and bathymetry can be run (as below) if suspect significant changes in one or both of these datasets
+#BZ Feb 2019- Indented lines can likely be removed as they are repeated with additoinal details below.
+            #Run aegis::(inst/scripts/10.surveys.r), need to update year within or run next line
+              #system.file(package="aegis", "scripts", "10.surveys.r")
+            
+            #Run aegis::(inst/scripts/05.temperature.r), need to update year within
+              #system.file(package="aegis", "scripts", "05.temperature.R") or run next line
+            
+            #Substrate and bathymetry can be run (as below) if suspect significant changes in one or both of these datasets
 
 
 #BZ- Jan 2019 Run the following steps before moving to stmv abundance estimation step
