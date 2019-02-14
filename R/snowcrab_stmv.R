@@ -101,7 +101,7 @@ snowcrab_stmv = function( DS=NULL, p=NULL, year=NULL, ret="mean", varnames=NULL,
         if (!exists("stmv_local_modelformula_time", p))  p$stmv_local_modelformula_time = formula( paste(
           p$variables$Y, '~ s(yr, bs="ts") + s(cos.w, k=3, bs="ts") + s(sin.w, k=3, bs="ts") ',
             ' + s(cos.w, sin.w, yr, bs="ts", k=25)  ',
-            ' + s(plon, k=3, bs="ts") + s(plat, k=3, bs="ts") + s(log(z), k=3, bs="ts") + s(plon, plat, log(z), k=25, bs="ts") ' ) )
+            ' + s(plon, k=3, bs="ts") + s(plat, k=3, bs="ts") + s(plon, plat, k=25, bs="ts") ' ) )
       }
 
       # this is the spatial component
