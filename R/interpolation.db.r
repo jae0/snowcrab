@@ -111,14 +111,14 @@
       projectdir = file.path(p$data_root, "maps", "fishable.biomass", p$spatial.domain )
       dir.create (projectdir, showWarnings=FALSE, recursive =TRUE)
 
-      qs = range(bm$m, na.rm=TRUE)
-      datarange = seq( qs[1], qs[2], length.out=150)
+      qs = range(bm$m[bm$m>0], na.rm=TRUE)
+      datarange = seq( log(qs[1]), log(qs[2]), length.out=150)
       cols = color.code( "seis", datarange )
       bm$m[which(!is.finite(bm$m))] = qs[1]*0.9
 
       for (iy in 1:p$ny) {
         y = p$yrs[iy]
-        xyz = cbind( bs[, c("plon", "plat")], bm$m[,iy] )
+        xyz = cbind( bs[, c("plon", "plat")], log(bm$m[,iy]) )
         outfn = paste( "prediction.abundance.mean", y, sep=".")
         fn = file.path( projectdir, paste(outfn, "png", sep="." ) )
         png( filename=fn, width=3072, height=2304, pointsize=40, res=300 )
@@ -131,14 +131,14 @@
       }
 
 
-      qs = range(bm$lb, na.rm=TRUE)
-      datarange = seq( qs[1], qs[2], length.out=150)
+      qs = range(bm$lb[bm$lb>0], na.rm=TRUE)
+      datarange = seq( log(qs[1]), log(qs[2]), length.out=150)
       cols = color.code( "seis", datarange )
       bm$lb[which(!is.finite(bm$lb))] = qs[1]*0.9
 
       for (iy in 1:p$ny) {
         y = p$yrs[iy]
-        xyz = cbind( bs[, c("plon", "plat")], bm$lb[,iy] )
+        xyz = cbind( bs[, c("plon", "plat")], log(bm$lb[,iy]) )
         outfn = paste( "prediction.abundance.lb", y, sep=".")
         fn = file.path( projectdir, paste(outfn, "png", sep="." ) )
         png( filename=fn, width=3072, height=2304, pointsize=40, res=300 )
@@ -152,14 +152,14 @@
 
 
 
-      qs = range(bm$ub, na.rm=TRUE)
-      datarange = seq( qs[1], qs[2], length.out=150)
+      qs = range(bm$ub[bm$ub>0], na.rm=TRUE)
+      datarange = seq( log(qs[1]), log(qs[2]), length.out=150)
       cols = color.code( "seis", datarange )
       bm$ub[which(!is.finite(bm$ub))] = qs[1]*0.9
 
       for (iy in 1:p$ny) {
         y = p$yrs[iy]
-        xyz = cbind( bs[, c("plon", "plat")], bm$ub[,iy] )
+        xyz = cbind( bs[, c("plon", "plat")], log(bm$ub[,iy]) )
         outfn = paste( "prediction.abundance.ub", y, sep=".")
         fn = file.path( projectdir, paste(outfn, "png", sep="." ) )
         png( filename=fn, width=3072, height=2304, pointsize=40, res=300 )
