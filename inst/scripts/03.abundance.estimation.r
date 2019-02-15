@@ -87,8 +87,7 @@ p = snowcrab_stmv( p=p, DS="parameters",
     ),
     survey=list(
       data.source = c("snowcrab"),
-      yr = p$yrs,      # time frame for comparison specified above
-      drop.groundfish.data=TRUE # esp from 1970 to 1999 measurement of invertebrates was sporatic .. zero-values are dropped as they are unreliable
+      yr = p$yrs      # time frame for comparison specified above
     )
   ),
 
@@ -96,7 +95,7 @@ p = snowcrab_stmv( p=p, DS="parameters",
   stmv_global_modelengine ="gam",
   stmv_global_family = gaussian(link="log"),
   stmv_global_modelformula = formula( paste(
-    'snowcrab.large.males_abundance', '~ s(t, k=3, bs="ts") + s(tmean.climatology, k=3, bs="ts") + s(tsd.climatology, k=3, bs="ts")  ',
+    'snowcrab.large.males_abundance', '~ s( t, k = 3, bs = "ts") + s( tsd, k = 3, bs = "ts") + s( tmax, k = 3, bs = "ts") + s( degreedays, k = 3, bs = "ts")  ',
     ' + s( log(z), k=3, bs="ts") + s( log(dZ), k=3, bs="ts") + s( log(ddZ), k=3, bs="ts") ',
     ' + s(log(substrate.grainsize), k=3, bs="ts") + s(pca1, k=3, bs="ts") + s(pca2, k=3, bs="ts")   ' )),  # no space
 
@@ -225,9 +224,9 @@ p = snowcrab_stmv( p=p, DS="parameters",
       ranged_data="len"
     ),
     survey=list(
-      data.source = c("snowcrab"),
-      yr = p$yrs,      # time frame for comparison specified above
-      drop.groundfish.data=TRUE # esp from 1970 to 1999 measurement of invertebrates was sporatic .. zero-values are dropped as they are unreliable
+      data.source = c("snowcrab", "groundfish"),  # add groundfish data too
+      drop.unreliable.zeros.groundfish.data=TRUE, # esp from 1970 to 1999 measurement of invertebrates was sporatic .. zero-values are dropped as they are unreliable
+      yr = p$yrs      # time frame for comparison specified above
     )
   ),
   DATA = 'snowcrab_stmv( p=p, DS="stmv_inputs" )',
@@ -236,7 +235,7 @@ p = snowcrab_stmv( p=p, DS="parameters",
   stmv_global_family = binomial( link="logit" ),
   stmv_global_modelengine ="gam",
   stmv_stmv_global_modelformula = formula( paste(
-    ' snowcrab.large.males_presence_absence ~ s(t, k=3, bs="ts") + s(tmean.climatology, k=3, bs="ts") + s(tsd.climatology, k=3, bs="ts")  ',
+    ' snowcrab.large.males_presence_absence ~ s( t, k = 3, bs = "ts") + s( tsd, k = 3, bs = "ts") + s( tmax, k = 3, bs = "ts") + s( degreedays, k = 3, bs = "ts") ',
     ' + s( log(z), k=3, bs="ts") + s( log(dZ), k=3, bs="ts") + s( log(ddZ), k=3, bs="ts") ',
     ' + s(log(substrate.grainsize), k=3, bs="ts") + s(pca1, k=3, bs="ts") + s(pca2, k=3, bs="ts")   ' )),
 
@@ -323,7 +322,7 @@ p = snowcrab_stmv( p=p, DS="parameters",
     survey=list(
       data.source = c("snowcrab"),
       yr = p$yrs,      # time frame for comparison specified above
-      drop.groundfish.data=TRUE # esp from 1970 to 1999 measurement of invertebrates was sporatic .. zero-values are dropped as they are unreliable
+      drop.unreliable.zeros.groundfish.data=TRUE # esp from 1970 to 1999 measurement of invertebrates was sporatic .. zero-values are dropped as they are unreliable
     )
   )
 )
@@ -392,3 +391,61 @@ cor(log(spred),log(set$snowcrab.large.males_abundance), use="complete.obs")
 # determine presence absence(Y) and weighting(wt)
 #      set$weekno = floor(set$julian / 365 * 52) + 1
 #      set$dyear = floor(set$julian / 365 ) + 1
+
+
+### ______________ TESTING __________________
+
+  # currently supported:
+  # z = depth (m)
+  # dZ = bottom slope (m/km)
+  # ddZ = bottom curvature (m/km^2)
+  # substrate.grainsize = mean grain size of bottom substrate (mm)
+  # t = temperature (C) – subannual
+  # tlb = temperature lower 95% bound (C) –subannual
+  # tub = temperature upper 95% bound (C) –subannual
+  # tmean = mean annual temperature
+  # tsd = standard deviation of the mean annual temperature
+  # tmin = minimum value of temperature in a given year – annual
+  # tmax = maximum value of temperature in a given year – annual
+  # tamplitude = amplitude of temperature swings in a year (tmax-tmin) – annual
+  # degreedays = number of degree days in a given year – annual
+
+p$variables$COV = c(
+  "t", "tub", "tsd", "tmin", "tmax", "tamplitde", "degreedays",
+  "tmean.climatology", "tsd.climatology",
+  "z", "dZ", "ddZ",
+  "substrate.grainsize", "pca1", "pca2"    )
+
+u = snowcrab_stmv(p=p, DS="input_data", alldata=TRUE )
+u$Y = u$snowcrab.large.males_abundance
+
+
+qn = quantile( u$Y[u$Y > 0], probs=p$habitat.threshold.quantile, na.rm=TRUE )
+u$Y[ u$Y < qn ] = qn/10
+
+v = gam( Y ~ s( t, k = 3, bs = "ts") + s( tsd, k = 3, bs = "ts") + s( tmax, k = 3, bs = "ts") + s( degreedays, k = 3, bs = "ts")
+    + s(log(z), k = 3, bs = "ts") + s(log(dZ), k = 3, bs = "ts") + s(log(ddZ), k = 3, bs = "ts")
+    + s(log(substrate.grainsize), k = 3, bs = "ts")
+    + s(pca1, k = 3, bs = "ts") + s(pca2, k = 3, bs = "ts"),
+      data = u,
+      family=gaussian(link="log")
+    )
+
+summary(v)
+
+
+
+u$Y = u$snowcrab.large.males_presence_absence
+
+v = gam( Y ~ s( t, k = 3, bs = "ts") + s( tsd, k = 3, bs = "ts") + s( tmax, k = 3, bs = "ts") + s( degreedays, k = 3, bs = "ts")
+    + s(log(z), k = 3, bs = "ts") + s(log(dZ), k = 3, bs = "ts") + s(log(ddZ), k = 3, bs = "ts")
+    + s(log(substrate.grainsize), k = 3, bs = "ts")
+    + s(pca1, k = 3, bs = "ts") + s(pca2, k = 3, bs = "ts"),
+      data = u,
+      family=binomial(link="logit")
+    )
+
+summary(v)
+
+
+## END
