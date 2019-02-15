@@ -1,5 +1,6 @@
 require(aegis.env)
 
+#Pick whichever year reference below is correct (most often year.assessment...-1) 
   if (!exists("year.assessment")) {
     year.assessment=lubridate::year(Sys.Date()) -1
     year.assessment=lubridate::year(Sys.Date())
@@ -113,7 +114,7 @@ p = snowcrab_stmv( p=p, DS="parameters",
   stmv_clusters = list( rep("localhost", 8), rep("localhost", 8), rep("localhost", 8) )  # no of cores used made explicit.. must be same length as "stmv_distance_scale"
 ) #End passing of parameters
 
-
+#Run the following line if you want to use maptools rather than GADMTools for mapping coastline
 # p$DATA = 'snowcrab_stmv( p=p, DS="stmv_inputs", coastline_source="mapdata.coastPolygon" )'
 
 
@@ -136,6 +137,8 @@ snowcrab_stmv( p=p, DS="map.all" )
 
 global_model = stmv_db( p=p, DS="global_model")
 summary( global_model )
+
+par(mar=c(1,1,1,1)) #change plot margins for Rstudio
 plot(global_model)
 
 #Below lines are just model outputs for comparison sake
@@ -245,7 +248,7 @@ p = snowcrab_stmv( p=p, DS="parameters",
   stmv_distance_scale = c( 25, 35, 45 ), #likely must be over 30km, so 50 +/- 20km, should likely match the setting in ~ line 256
   stmv_clusters = list( rep("localhost", 8), rep("localhost", 8), rep("localhost", 8) )  # no of cores used made explicit.. must be same length as )
 )
-
+p$DATA = 'snowcrab_stmv( p=p, DS="stmv_inputs", coastline_source="mapdata.coastPolygon" )'
 
 # o = snowcrab_stmv(p=p, DS="stmv_inputs" )  # create fields for
 stmv( p=p, runmode=c("globalmodel", "interpolate" ) ) # no global_model and force a clean restart
@@ -261,6 +264,9 @@ snowcrab_stmv( p=p, DS="map.all" )
 
 global_model = stmv_db( p=p, DS="global_model")
 summary( global_model )
+
+
+par(mar=c(1,1,1,1)) #change plot margins for Rstudio
 plot(global_model, all.terms=TRUE, trans=bio.snowcrab::inverse.logit, seWithMean=TRUE, jit=TRUE, rug=TRUE )
 
 # Below is model output for comparison??? BZ Jan 2019

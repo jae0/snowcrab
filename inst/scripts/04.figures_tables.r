@@ -1,7 +1,8 @@
 
   # figures and tables related to fishery indices
 
-  if (!exists("year.assessment")) {
+#Pick whichever year reference below is correct (most often year.assessment...-1) 
+if (!exists("year.assessment")) {
     year.assessment=lubridate::year(Sys.Date())
     year.assessment=lubridate::year(Sys.Date()) - 1
   }

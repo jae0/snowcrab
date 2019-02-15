@@ -2,7 +2,7 @@
 ## --------- 
 #### final estimation of biomass via fishery models and associated figures and tables:
 
-
+#Pick whichever year reference below is correct (most often year.assessment...-1) 
 if (!exists("year.assessment")) {
   # year.assessment=lubridate::year(Sys.Date())
   # year.assessment=lubridate::year(Sys.Date()) - 1
