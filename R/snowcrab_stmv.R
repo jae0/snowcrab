@@ -1,5 +1,5 @@
 
-snowcrab_stmv = function( DS=NULL, p=NULL, year=NULL, ret="mean", varnames=NULL, coastline_source="eastcoast_gadm", ... ) {
+snowcrab_stmv = function( DS=NULL, p=NULL, year=NULL, ret="mean", varnames=NULL, coastline_source="eastcoast_gadm", alldata=FALSE, ... ) {
 
   # deal with additional passed parameters
   # ---------------------
@@ -177,11 +177,9 @@ snowcrab_stmv = function( DS=NULL, p=NULL, year=NULL, ret="mean", varnames=NULL,
 
       # keep "zero's" to inform spatial processes but only as "lowestpossible" value
       jj = which( set$totmass > 0 )
-      # set = set[jj,]
-      lowestpossible =  quantile( set$totmass, probs=0.025, na.rm=TRUE )
-#       lowestpossible = min( set$totmass[jj] , na.rm=TRUE)
+      lowestpossible =  quantile( set$totmass[jj], probs=0.025, na.rm=TRUE )
       ii = which( set$totmass < lowestpossible )
-      set$totmass[ii] = lowestpossible  ## arbitrary but close to detection limit
+      set$totmass[ii] = lowestpossible / 10 ## arbitrary but close to detection limit
       names(set)[ which( names(set) =="totmass")] = p$variables$Y
       set$Y = NULL
       set$wt = set$sa
@@ -190,11 +188,6 @@ snowcrab_stmv = function( DS=NULL, p=NULL, year=NULL, ret="mean", varnames=NULL,
 
     if ( p$selection$type=="presence_absence") {
       # must run here as we need the wgt from this for both PA and abundance
-      if (p$selection$survey$drop.groundfish.data) {
-          todrop = which(set$data.source == "groundfish")
-          if (length(todrop)> 0 ) set = set[ -todrop, ]
-      }
-
       if ( grepl( "snowcrab.large.males", p$variables$Y ) ) {
         # add commerical fishery data --
         # depth data is problematic ... drop for now
@@ -202,7 +195,15 @@ snowcrab_stmv = function( DS=NULL, p=NULL, year=NULL, ret="mean", varnames=NULL,
         lgbk = lgbk[ which( is.finite( lgbk$landings)), ]
         lgbk = lgbk[ which( lgbk$year > 2005), ]  # previous to this all sorts of traps were used
         lgbk = lgbk[ which( as.numeric(lgbk$soak.time) >= 12 & as.numeric(lgbk$soak.time) <= 48), ]   # avoid nonlinearity in catch with time
-        lgbk$zm = lgbk$cpue / as.numeric(lgbk$soak.time)  # approx with realtive catch rate in time
+        lgbk$cpue_time = lgbk$cpue / as.numeric(lgbk$soak.time)  # approx with realtive catch rate in time
+
+        lgbk$qm = NA   # default when no data
+        oo = which( lgbk$cpue_time == 0 )  # retain as zero values
+        if (length(oo)>0 ) lgbk$qm[oo] = 0
+        ii = which( lgbk$cpue_time != 0 )
+        lgbk$qm[ii] = quantile_estimate( lgbk$cpue_time[ii]  )  # convert to quantiles
+        lgbk$zm = quantile_to_normal( lgbk$qm )
+
         lgbk$totmass = NA # dummy to bring in mass as well
         lgbk$data.source = "logbooks"
         lgbk$z = exp( lgbk$z )
@@ -219,8 +220,6 @@ snowcrab_stmv = function( DS=NULL, p=NULL, year=NULL, ret="mean", varnames=NULL,
     }
 
     set = set[ which(is.finite(set[, p$variables$Y])),]
-
-    set = set[ which(set$yr %in% p$yrs ), ]
 
     coast = coastline.db( p=p, DS=coastline_source )
     coast = spTransform( coast, CRS("+proj=longlat +datum=WGS84") )
@@ -242,13 +241,15 @@ snowcrab_stmv = function( DS=NULL, p=NULL, year=NULL, ret="mean", varnames=NULL,
 
     set$lon = set$lat = NULL
 
-    set = set[, which(names(set) %in% c( p$variables$LOCS, p$variables$COV, p$variables$Y, p$variables$TIME, "dyear", "yr",  "wt") ) ]  # a data frame
-    oo = setdiff( c( p$variables$LOCS, p$variables$COV ), names(set))
-    if (length(oo) > 0 ) {
-      print(oo )
-      warning("Some variables are missing in the input data")
+    if (!alldata) {
+      set = set[, which(names(set) %in% c( p$variables$LOCS, p$variables$COV, p$variables$Y, p$variables$TIME, "dyear", "yr",  "wt") ) ]  # a data frame
+      oo = setdiff( c( p$variables$LOCS, p$variables$COV ), names(set))
+      if (length(oo) > 0 ) {
+        print(oo )
+        warning("Some variables are missing in the input data")
+      }
+      set = na.omit(set)
     }
-    set = na.omit(set)
 
     # cap quantiles of dependent vars
     dr = list()
