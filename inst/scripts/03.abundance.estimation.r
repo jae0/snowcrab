@@ -306,9 +306,14 @@ interpolation.db( DS="fishable.biomass.map", p=p  )
 
 K = interpolation.db( DS="fishable.biomass.timeseries", p=p  )
 
-str(K)
 
-# table.view( K )
+if (0){
+  str(K)
+  table.view( K )
+  plot( total ~ yr, K[K$region=="cfanorth", ], type="b")
+  plot( total ~ yr, K[K$region=="cfasouth", ], type="b")
+  plot( total ~ yr, K[K$region=="cfa4x", ], type="b")
+}
 
 figure.timeseries.snowcrab.habitat(p=p) # /bio.data/bio.snowcrab/assessments/2016/timeseries/interpolated/snowcrab.habitat.sa.png
 
