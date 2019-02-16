@@ -95,7 +95,8 @@ p = snowcrab_stmv( p=p, DS="parameters",
   stmv_global_modelengine ="gam",
   stmv_global_family = gaussian(link="log"),
   stmv_global_modelformula = formula( paste(
-    'snowcrab.large.males_abundance', '~ s( t, k = 3, bs = "ts") + s( tsd, k = 3, bs = "ts") + s( tmax, k = 3, bs = "ts") + s( degreedays, k = 3, bs = "ts")  ',
+    'snowcrab.large.males_abundance',
+    ' ~ s( t, k = 3, bs = "ts") + s( tsd, k = 3, bs = "ts") + s( tmax, k = 3, bs = "ts") + s( degreedays, k = 3, bs = "ts")  ',
     ' + s( log(z), k=3, bs="ts") + s( log(dZ), k=3, bs="ts") + s( log(ddZ), k=3, bs="ts") ',
     ' + s(log(substrate.grainsize), k=3, bs="ts") + s(pca1, k=3, bs="ts") + s(pca2, k=3, bs="ts")   ' )),  # no space
 
@@ -179,7 +180,7 @@ plot(global_model)
 
 #presence-absence
 # this takes about 40 hrs ... and 5-6 GB /process
-# year.assessment = 2017
+# year.assessment = 2018
 
 p = bio.snowcrab::load.environment( year.assessment=year.assessment )
 p = snowcrab_stmv( p=p, DS="parameters",
@@ -205,7 +206,8 @@ p = snowcrab_stmv( p=p, DS="parameters",
   stmv_global_family = binomial( link="logit" ),
   stmv_global_modelengine ="gam",
   stmv_stmv_global_modelformula = formula( paste(
-    ' snowcrab.large.males_presence_absence ~ s( t, k = 3, bs = "ts") + s( tsd, k = 3, bs = "ts") + s( tmax, k = 3, bs = "ts") + s( degreedays, k = 3, bs = "ts") ',
+    ' snowcrab.large.males_presence_absence',
+    ' ~ s( t, k = 3, bs = "ts") + s( tsd, k = 3, bs = "ts") + s( tmax, k = 3, bs = "ts") + s( degreedays, k = 3, bs = "ts") ',
     ' + s( log(z), k=3, bs="ts") + s( log(dZ), k=3, bs="ts") + s( log(ddZ), k=3, bs="ts") ',
     ' + s(log(substrate.grainsize), k=3, bs="ts") + s(pca1, k=3, bs="ts") + s(pca2, k=3, bs="ts")   ' )),
 
@@ -217,7 +219,8 @@ p = snowcrab_stmv( p=p, DS="parameters",
   stmv_distance_scale = c( 25, 35, 45 ), #likely must be over 30km, so 50 +/- 20km, should likely match the setting in ~ line 256
   stmv_clusters = list( rep("localhost", 8), rep("localhost", 8), rep("localhost", 8) )  # no of cores used made explicit.. must be same length as )
 )
-p$DATA = 'snowcrab_stmv( p=p, DS="stmv_inputs", coastline_source="mapdata.coastPolygon" )'
+
+# p$DATA = 'snowcrab_stmv( p=p, DS="stmv_inputs", coastline_source="mapdata.coastPolygon" )'
 
 # o = snowcrab_stmv(p=p, DS="stmv_inputs" )  # create fields for
 stmv( p=p, runmode=c("globalmodel", "interpolate" ) ) # no global_model and force a clean restart
@@ -268,7 +271,7 @@ plot(global_model, all.terms=TRUE, trans=bio.snowcrab::inverse.logit, seWithMean
 #
 # R-sq.(adj) =  0.586   Deviance explained = 52.2%
 # UBRE = -0.52714  Scale est. = 1         n = 35869
- 
+
 
 # collect all predictions into a single file and return:
 # year.assessment=2017
