@@ -82,10 +82,10 @@ snowcrab_stmv = function( DS=NULL, p=NULL, year=NULL, ret="mean", varnames=NULL,
     if (!exists("stmv_global_family", p)) p$stmv_global_family = gaussian(link="log")
 
     # using covariates as a first pass essentially makes it ~ kriging with external drift .. no time or space here
-    # if (!exists("stmv_global_modelformula", p)) p$stmv_global_modelformula = formula( paste(
-    #   p$variables$Y, ' ~ s(t, k=3, bs="ts") + s(tmean.climatology, k=3, bs="ts") + s(tsd.climatology, k=3, bs="ts")  ',
-    #   ' + s( log(z), k=3, bs="ts") + s( log(dZ), k=3, bs="ts") + s( log(ddZ), k=3, bs="ts") ',
-    #   ' + s(log(substrate.grainsize), k=3, bs="ts") + s(pca1, k=3, bs="ts") + s(pca2, k=3, bs="ts")   ' ))  # no space
+    if (!exists("stmv_global_modelformula", p)) p$stmv_global_modelformula = formula( paste(
+      p$variables$Y, ' ~ s(t, k=3, bs="ts") + s(tmean.climatology, k=3, bs="ts") + s(tsd.climatology, k=3, bs="ts")  ',
+      ' + s( log(z), k=3, bs="ts") + s( log(dZ), k=3, bs="ts") + s( log(ddZ), k=3, bs="ts") ',
+      ' + s(log(substrate.grainsize), k=3, bs="ts") + s(pca1, k=3, bs="ts") + s(pca2, k=3, bs="ts")   ' ))  # no space
 
     if (p$stmv_local_modelengine =="twostep") {
       # this is the time component (mostly) .. space enters as a rough constraint
