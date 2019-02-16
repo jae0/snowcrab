@@ -241,13 +241,12 @@ summary( global_model )
 par(mar=c(1,1,1,1)) #change plot margins for Rstudio
 plot(global_model, all.terms=TRUE, trans=bio.snowcrab::inverse.logit, seWithMean=TRUE, jit=TRUE, rug=TRUE )
 
-#
-# Family: binomial
+#Family: binomial
 # Link function: logit
 #
 # Formula:
 # snowcrab.large.males_presence_absence ~ s(t, k = 3, bs = "ts") +
-#     s(tmean.climatology, k = 3, bs = "ts") + s(tsd.climatology,
+#     s(tsd, k = 3, bs = "ts") + s(tmax, k = 3, bs = "ts") + s(degreedays,
 #     k = 3, bs = "ts") + s(log(z), k = 3, bs = "ts") + s(log(dZ),
 #     k = 3, bs = "ts") + s(log(ddZ), k = 3, bs = "ts") + s(log(substrate.grainsize),
 #     k = 3, bs = "ts") + s(pca1, k = 3, bs = "ts") + s(pca2, k = 3,
@@ -255,22 +254,24 @@ plot(global_model, all.terms=TRUE, trans=bio.snowcrab::inverse.logit, seWithMean
 #
 # Parametric coefficients:
 #             Estimate Std. Error z value Pr(>|z|)
-# (Intercept)  -1.4181     0.0592   -23.9   <2e-16
+# (Intercept)  -1.2864     0.0573   -22.4   <2e-16
 #
 # Approximate significance of smooth terms:
-#                                edf Ref.df Chi.sq p-value
-# s(t)                        1.9994      2 1137.9  <2e-16
-# s(tmean.climatology)        1.9940      2  378.6  <2e-16
-# s(tsd.climatology)          1.3987      2  140.8  <2e-16
-# s(log(z))                   1.9986      2 2604.9  <2e-16
-# s(log(dZ))                  0.0109      2    0.0     0.6
-# s(log(ddZ))                 1.9894      2  164.2  <2e-16
-# s(log(substrate.grainsize)) 1.9910      2  123.3  <2e-16
-# s(pca1)                     1.9476      2   78.8  <2e-16
-# s(pca2)                     1.9465      2 1494.3  <2e-16
+#                                 edf Ref.df Chi.sq p-value
+# s(t)                        1.99999      2 1462.3  <2e-16
+# s(tsd)                      1.99204      2  101.8  <2e-16
+# s(tmax)                     1.09332      2   30.9   5e-09
+# s(degreedays)               1.99370      2  516.7  <2e-16
+# s(log(z))                   1.99999      2 2431.4  <2e-16
+# s(log(dZ))                  0.00205      2    0.0    0.55
+# s(log(ddZ))                 1.99998      2  168.3  <2e-16
+# s(log(substrate.grainsize)) 1.97548      2   77.2  <2e-16
+# s(pca1)                     1.95921      2  409.9  <2e-16
+# s(pca2)                     1.95763      2 1492.1  <2e-16
 #
-# R-sq.(adj) =  0.586   Deviance explained = 52.2%
-# UBRE = -0.52714  Scale est. = 1         n = 35869
+# R-sq.(adj) =  0.621   Deviance explained = 55.8%
+# UBRE = -0.56254  Scale est. = 1         n = 35868
+#
 
 
 # collect all predictions into a single file and return:
