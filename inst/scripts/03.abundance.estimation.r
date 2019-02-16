@@ -103,8 +103,8 @@ p = snowcrab_stmv( p=p, DS="parameters",
   stmv_local_modelengine = "twostep",
 
   stmv_twostep_time = "gam",
-  stmv_twostep_space = "fft", #  fft==spatial.process, krige (very slow), lowpass, lowpass_spatial.process
-  stmv_fft_filter="spatial.process",  #  fft==spatial.process, krige (very slow), lowpass, lowpass_spatial.process
+  stmv_twostep_space = "fft",
+  stmv_fft_filter="matern",  #  matern, krige (very slow), lowpass, lowpass_matern
 
   stmv_gam_optimizer=c("outer", "bfgs") ,
   stmv_variogram_method = "gstat",
@@ -212,7 +212,7 @@ p = snowcrab_stmv( p=p, DS="parameters",
     ' + s(log(substrate.grainsize), k=3, bs="ts") + s(pca1, k=3, bs="ts") + s(pca2, k=3, bs="ts")   ' )),
 
   stmv_local_modelengine = "twostep",
-  stmv_twostep_space = "fft", #  fft==spatial.process, krige (very slow), lowpass, lowpass_spatial.process
+  stmv_twostep_space = "fft",
   stmv_twostep_time = "gam",
   stmv_distance_statsgrid = 3, # resolution (km) of data aggregation (i.e. generation of the ** statistics ** ),
   stmv_distance_prediction_fraction = 1, # stmv_distance_prediction = stmv_distance_statsgrid * XX ..this is a half window km
