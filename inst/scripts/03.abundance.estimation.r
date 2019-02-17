@@ -390,7 +390,7 @@ cor(log(spred),log(set$snowcrab.large.males_abundance), use="complete.obs")
   # degreedays = number of degree days in a given year – annual
 
 p$variables$COV = c(
-  "t", "tub", "tsd", "tmin", "tmax", "tamplitde", "degreedays",
+  "t", "tub", "tsd", "tmin", "tmax", "tamplitude", "degreedays",
   "tmean.climatology", "tsd.climatology",
   "z", "dZ", "ddZ",
   "substrate.grainsize", "pca1", "pca2"    )
