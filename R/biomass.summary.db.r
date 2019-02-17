@@ -1,7 +1,7 @@
 
   biomass.summary.db = function( DS="complete", p=NULL ) {
     #browser()
-    
+
     sum_outdir = file.path( project.datadirectory("bio.snowcrab"), "output", "timeseries" )
 
     if (DS=="surplusproduction" ){
@@ -22,10 +22,10 @@
         bpmin=rep(0,3),
         bpmax=rep(5,3),
         recmax= c( 10^3, 10^4, 10^2 ),
-        Kmu = c( 1.831139,4.170013,0.784308), #for ln
-        Ksd = c(0.06,0.06,0.04), #for ln
-        rmu = rep(0.96,3),
-        rsd = rep(0.01041271,3),
+        Kmu = log( c( 4, 40, 1), #for ln
+        Ksd = c(0.06 ,0.06, 0.04), #for ln
+        rmu = rep(0.96, 3),
+        rsd = rep(0.01041271, 3),
         b0min = c(0.5, 0.5, 0.2),  # prior: mean value possible in  N,S,4X
         b0max = c(0.8, 0.8, 0.6),  # prior: mean value possible in  N,S,4X
         cvnormalmin = 0.05, # upper limit of CV for normally distributed variables ~ 0.5 covers a reasonably large range, try:   curve( dnorm(x, mean=1, sd=0.5), from=0.1, to=4  )
@@ -145,7 +145,7 @@
       }
 
       # biomass data: post-fishery biomass are determined by survey B)
-        
+
         K = interpolation.db( DS="interpolation.simulation", p=p, varnames="R0.mass" )
         areas=c("cfanorth", "cfasouth", "cfa4x")
         td = K[ which( K$region %in% areas) ,]
@@ -222,7 +222,7 @@
         if (file.exists(fn)) load(fn)
         return(Bx)
       }
-      
+
       lookup.table = snowcrab.db( p=p, DS="data.transforms" )
 
       v = "R0.mass"
@@ -253,7 +253,7 @@
         if (file.exists(fn)) load(fn)
         return(Bx)
       }
-      
+
       lookup.table = snowcrab.db( p=p, DS="data.transforms" )
 
       v = "R0.mass"
@@ -284,7 +284,7 @@
         if (file.exists(fn)) load(fn)
         return(Bx)
       }
-     
+
       lookup.table = snowcrab.db( p=p, DS="data.transforms" )
 
       v = "R1.no"
@@ -343,7 +343,7 @@
       message ("not available right now")
 
       stop()
-      
+
       K = interpolation.db( DS="interpolation.simulation", p=p, varnames="R1.no" )
       areas=c("cfanorth", "cfasouth", "cfa4x")
       td = K[ which(K$vars=="R1.no" & K$region %in% areas) ,]
@@ -362,6 +362,3 @@
     }
 
   }
-
-
-

@@ -1,7 +1,7 @@
 
   # figures and tables related to fishery indices
 
-#Pick whichever year reference below is correct (most often year.assessment...-1) 
+#Pick whichever year reference below is correct (most often year.assessment...-1)
 if (!exists("year.assessment")) {
     year.assessment=lubridate::year(Sys.Date())
     year.assessment=lubridate::year(Sys.Date()) - 1
@@ -15,7 +15,7 @@ if (!exists("year.assessment")) {
 # ------------------------------------------
 # Time-series: all interpolated data estimated from interpolated analysis
 # BZ R0.mass is likely the only variable required
-  
+
   figure.interpolated.results( p, outdir=file.path( p$annual.results, "timeseries",  "interpolated" ), alt.zero.y=T )
 
 # ------------------------------------------
@@ -83,8 +83,8 @@ figure.timeseries.snowcrab.habitat.temperatures( p=p)
   vv = c( "totno.male.com.CC1", "totno.male.com.CC2", "totno.male.com.CC3",
           "totno.male.com.CC4", "totno.male.com.CC5" )
 
-  p$runindex = list(y=yy, v=vv ) 
-  
+  p$runindex = list(y=yy, v=vv )
+
   L = interpolation.db( DS="interpolation.simulation", p=p )
 
   L$vars = as.character(L$vars)
@@ -132,7 +132,7 @@ figure.timeseries.snowcrab.habitat.temperatures( p=p)
   vv = c( "totmass.male.com", "R0.mass", "R0.no", "R1.no", "R2.no", "R3.no", "totno.male.imm", "totno.male.com.CC1to2", "totno.male.com.CC3to4",
           "totno.male.com.CC5" )
 
-  p$runindex = list(y=yy, v=vv ) 
+  p$runindex = list(y=yy, v=vv )
 
   L = interpolation.db( DS="interpolation.simulation", p=p )
   # L = K[K$yr %in% yy & K$vars %in% vv & K$region %in% rr, outvars]
