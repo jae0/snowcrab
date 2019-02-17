@@ -22,7 +22,7 @@
         bpmin=rep(0,3),
         bpmax=rep(5,3),
         recmax= c( 10^3, 10^4, 10^2 ),
-        Kmu = log( c( 4, 40, 1), #for ln
+        Kmu = log( c( 4, 40, 1)), #for ln
         Ksd = c(0.06 ,0.06, 0.04), #for ln
         rmu = rep(0.96, 3),
         rsd = rep(0.01041271, 3),
