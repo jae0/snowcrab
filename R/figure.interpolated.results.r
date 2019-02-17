@@ -1,6 +1,6 @@
 
   figure.interpolated.results = function( p, outdir, all.areas=T, alt.zero.y=F ) {
-    
+
     varstoplot = matrix(ncol=3, byrow=T, data=
       c( "R0.mass", "Fishable biomass", "B"  #,
 #       "R0.no", "Number of fishable crab", "N",
@@ -51,7 +51,7 @@
     p$vars.to.model = varstoplot[,1]
 #     p$yrs = 1998:p$year.assessment
     p$runindex = list(y=p$yrs, v=p$vars.to.model )
-    
+
     K = interpolation.db( DS="interpolation.simulation", p=p )
 
     year.assessment = p$year.assessment
@@ -69,9 +69,9 @@
 
     n.regions = length(regions)
     K$region = factor(as.character(K$region), levels=areas, labels=regions)
-    K$ubound = K$total.lb
-    K$lbound = K$total.ub
-    
+    K$ubound = K$total.ub
+    K$lbound = K$total.lb
+
     zero.value = K[1,]
     zero.value$yr = year.assessment
     zero.value$total = 0
@@ -82,8 +82,8 @@
     xlim=range(K$yr, na.rm=T)
     xlim[1]=xlim[1]-0.5
     xlim[2]=xlim[2]+0.5
-  
-  
+
+
     nvarstoplot = dim(varstoplot)[1]
 
     for (i in c(1:nvarstoplot)) {
@@ -93,10 +93,10 @@
 
       # td = K[ which(as.character(K$vars)==v) ,]
       td = K
-      
+
       if (varstoplot[i,3] == "B") {
         yy = expression(paste( "Biomass (X ", 10^3, " t)"))
-        convert = 10^3 # from t to kt 
+        convert = 10^3 # from t to kt
         eps = 1e-6
       } else if (varstoplot[i,3] == "N") {
         yy = expression(paste( "Number (X ", 10^6, " )"))
@@ -136,33 +136,33 @@
           td = rbind( td, mm)
           qq = 1
         } else {
-          qq = max(td$ubound[pp], na.rm=T) 
+          qq = max(td$ubound[pp], na.rm=T)
         }
         limits[[rr]] = c(0, qq )
       }
-     
+
       dir.create( outdir, recursive=T, showWarnings=F  )
       fn = file.path( outdir, paste(v, "png", sep=".") )
-      print (fn) 
+      print (fn)
 
       png( filename=fn, width=3072, height=2304, pointsize=30, res=300 )
 
       setup.lattice.options()
-     
+
       scales=list()
-      if (alt.zero.y) { 
+      if (alt.zero.y) {
         scales = list(y = list(relation="free", limits=limits  ))
       }
 
       pl = xyplot( total~yr|region, data=td, ub=td$ubound, lb=td$lbound,
         layout=c(1,n.regions), xlim=xlim, scales=scales,
         par.strip.text = list(cex=1),
-        par.settings=list(  
-          axis.text=list(cex=1.5), 
+        par.settings=list(
+          axis.text=list(cex=1.5),
           par.main.text = list(cex=1.5),
-          layout.heights=list(strip=1, panel=1, main=0.5 ) 
+          layout.heights=list(strip=1, panel=1, main=0.5 )
         ),
-        main=list(label=tt), xlab=list(label="Survey year", cex=2), ylab=list(label=yy, cex=2), 
+        main=list(label=tt), xlab=list(label="Survey year", cex=2), ylab=list(label=yy, cex=2),
         panel = function(x, y, subscripts, ub, lb, ...) {
           larrows(x, lb[subscripts],
                   x, ub[subscripts],
@@ -173,11 +173,9 @@
           panel.abline(h=mean(y,na.rm=TRUE), col="gray", lty=2, lwd=3, ...)
        }
      )
-     
+
      print(pl)
      dev.off()
     }
     return("Done")
-  }  
-
-
+  }
