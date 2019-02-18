@@ -20,7 +20,8 @@
       ii = which( set$totmass > 0 )
 
       bm = snowcrab_stmv( p=p, DS="baseline", ret="mean", varnames=varnames )
-      m = bm[[1]]  # biomass (density)
+      # m = bm[[1]] * bm[[2]]  # biomass (density)
+      m = bm[[1]]
       h = bm[[2]]  # habitat
       bm= NULL
 
@@ -43,6 +44,11 @@
       # more range checks
       lb = snowcrab_stmv( p=p, DS="baseline", ret="lb", varnames=varnames )[[1]]
       ub = snowcrab_stmv( p=p, DS="baseline", ret="ub", varnames=varnames )[[1]]
+  #    lb = snowcrab_stmv( p=p, DS="baseline", ret="lb", varnames=varnames )
+      # ub = snowcrab_stmv( p=p, DS="baseline", ret="ub", varnames=varnames )
+      #
+      # lb = lb[[1]] * lb[[2]]
+      # ub = ub[[1]] * ub[[2]]
 
       # limit range of extrapolation to within a given distance from survey stations .. annual basis
       set = snowcrab.db( DS="set.clean")
@@ -219,6 +225,15 @@
       }
 
       return( K )
+
+      if (0){
+        str(K)
+        table.view( K )
+        plot( total ~ yr, K[K$region=="cfanorth", ], type="b")
+        plot( total ~ yr, K[K$region=="cfasouth", ], type="b")
+        plot( total ~ yr, K[K$region=="cfa4x", ], type="b")
+      }
+
     }
 
 
