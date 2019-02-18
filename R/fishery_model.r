@@ -265,6 +265,9 @@ fishery_model = function(  p, DS="stan", plotresults=TRUE, ... ) {
     sb$missing_ntot = sum(sb$missing_n)
     sb$IOA[  which(!is.finite(sb$IOA)) ] = 0  # reset NAs to 0 as stan does not take NAs
 
+    ii = which(!is.finite(sb$CAT))
+    sb$CAT[ii] = 0.001 # remove NA's
+    
     return(sb)
   }
 
