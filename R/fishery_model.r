@@ -283,7 +283,7 @@ fishery_model = function(  p, DS="stan", plotresults=TRUE, ... ) {
           # chains = 5,             # number of Markov chains
           # cores = 5              # number of cores (using 2 just for the vignette)
 
-    res = list( mcmc=extract(f), sb=p$fishery_model$standata, p=p)
+    res = list( mcmc=extract(f), p=p)
     save(res, file=p$fishery_model$fnres, compress=T)
     return(res)
 
