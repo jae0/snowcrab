@@ -10,9 +10,7 @@ fishery_model = function(  p, DS="stan", plotresults=TRUE, ... ) {
 
   }
 
-  message( "Output location is: ", p$fishery_model$outdir )
 
-  dir.create( p$fishery_model$outdir, recursive=T, showWarnings=F )
 
   if (DS=="stan_surplus_production") {
     return( "
@@ -267,7 +265,7 @@ fishery_model = function(  p, DS="stan", plotresults=TRUE, ... ) {
 
     ii = which(!is.finite(sb$CAT))
     sb$CAT[ii] = 0.001 # remove NA's
-    
+
     return(sb)
   }
 
@@ -277,6 +275,10 @@ fishery_model = function(  p, DS="stan", plotresults=TRUE, ... ) {
     library(rstan)
     rstan_options(auto_write = TRUE)
     options(mc.cores = parallel::detectCores())
+
+    message( "Output location is: ", p$fishery_model$outdir )
+
+    dir.create( p$fishery_model$outdir, recursive=T, showWarnings=F )
 
     f = sampling( p$fishery_model$stancode_compiled, data=p$fishery_model$standata, ... )
           # warmup = 200,          # number of warmup iterations per chain

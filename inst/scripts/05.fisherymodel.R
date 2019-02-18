@@ -26,8 +26,12 @@ p$fishery_model$stancode_compiled = rstan::stan_model( model_code=p$fishery_mode
 # later:::ensureInitialized()  # solve mode error
 
 res = fishery_model( p=p, DS="stan",
-  chains=4, iter=10000, warmup=4000, refresh = 1000,
-  control = list(adapt_delta = 0.96, max_treedepth=15) )
+  chains=4,
+  iter=1000,
+  warmup=400,
+  refresh = 100,
+  control = list(adapt_delta = 0.96, max_treedepth=15)
+)
   # warmup = 200,          # number of warmup iterations per chain
   # control = list(adapt_delta = 0.9),
   # # refresh = 500,          # show progress every 'refresh' iterations
