@@ -27,9 +27,9 @@ p$fishery_model$stancode_compiled = rstan::stan_model( model_code=p$fishery_mode
 
 res = fishery_model( p=p, DS="stan",
   chains=4,
-  iter=1000,
-  warmup=400,
-  refresh = 100,
+  iter=10000,
+  warmup=4000,
+  refresh = 1000,
   control = list(adapt_delta = 0.96, max_treedepth=15)
 )
   # warmup = 200,          # number of warmup iterations per chain
