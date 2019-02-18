@@ -15,12 +15,13 @@ p$fishery_model = list()
 p$fishery_model$method = "stan"  # "jags", etc.
 p$fishery_model$outdir = file.path(project.datadirectory('bio.snowcrab'), "assessments", p$year.assessment )
 p$fishery_model$fnres  = file.path(p$fishery_model$outdir, paste( "surplus.prod.mcmc", p$year.assessment, p$fishery_model$method, "rdata", sep=".") )
+p$fishery_model$standata = fishery_model( p=p, DS="stan_data" )
 p$fishery_model$stancode = fishery_model( p=p, DS="stan_surplus_production" )
-p$fishery_model$stancode_compiled = rstan::stan_model( model_code=surplus.stan )
+p$fishery_model$stancode_compiled = rstan::stan_model( model_code=p$fishery_model$stancode )
 
 # later:::ensureInitialized()  # solve mode error
 
-res = fishery_model( p=p, DS=p$fishery_model$method,
+res = fishery_model( p=p, DS="stan",
   chains=4, iter=10000, warmup=4000, refresh = 1000,
   control = list(adapt_delta = 0.96, max_treedepth=15) )
   # warmup = 200,          # number of warmup iterations per chain

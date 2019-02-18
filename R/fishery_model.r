@@ -244,7 +244,7 @@ fishery_model = function(  p, DS="stan", plotresults=TRUE, ... ) {
     )
   }
 
-  if (DS=="stan" ) {
+  if (DS=="stan_data" ) {
 
     library(rstan)
     rstan_options(auto_write = TRUE)
@@ -265,7 +265,17 @@ fishery_model = function(  p, DS="stan", plotresults=TRUE, ... ) {
     sb$missing_ntot = sum(sb$missing_n)
     sb$IOA[  which(!is.finite(sb$IOA)) ] = 0  # reset NAs to 0 as stan does not take NAs
 
-    f = sampling( p$fishery_model$stancode_compiled, data=sb, ... )
+    return(sb)
+  }
+
+
+  if (DS=="stan" ) {
+
+    library(rstan)
+    rstan_options(auto_write = TRUE)
+    options(mc.cores = parallel::detectCores())
+
+    f = sampling( p$fishery_model$stancode_compiled, data=p$fishery_model$standata, ... )
           # warmup = 200,          # number of warmup iterations per chain
           # control = list(adapt_delta = 0.9),
           # # refresh = 500,          # show progress every 'refresh' iterations
@@ -273,7 +283,7 @@ fishery_model = function(  p, DS="stan", plotresults=TRUE, ... ) {
           # chains = 5,             # number of Markov chains
           # cores = 5              # number of cores (using 2 just for the vignette)
 
-    res = list( mcmc=extract(f), sb=sb, p=p)
+    res = list( mcmc=extract(f), sb=p$fishery_model$standata, p=p)
     save(res, file=p$fishery_model$fnres, compress=T)
     return(res)
 
