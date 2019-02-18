@@ -1,8 +1,8 @@
 
-## --------- 
+## ---------
 #### final estimation of biomass via fishery models and associated figures and tables:
 
-#Pick whichever year reference below is correct (most often year.assessment...-1) 
+#Pick whichever year reference below is correct (most often year.assessment...-1)
 if (!exists("year.assessment")) {
   # year.assessment=lubridate::year(Sys.Date())
   # year.assessment=lubridate::year(Sys.Date()) - 1
@@ -15,9 +15,21 @@ p$fishery_model = list()
 p$fishery_model$method = "stan"  # "jags", etc.
 p$fishery_model$outdir = file.path(project.datadirectory('bio.snowcrab'), "assessments", p$year.assessment )
 p$fishery_model$fnres  = file.path(p$fishery_model$outdir, paste( "surplus.prod.mcmc", p$year.assessment, p$fishery_model$method, "rdata", sep=".") )
+p$fishery_model$stancode = fishery_model( p=p, DS="stan_surplus_production" )
+p$fishery_model$stancode_compiled = rstan::stan_model( model_code=surplus.stan )
 
+# later:::ensureInitialized()  # solve mode error
 
-res = fishery_model( p=p, DS=p$fishery_model$method )
+res = fishery_model( p=p, DS=p$fishery_model$method,
+  chains=4, iter=10000, warmup=4000, refresh = 1000,
+  control = list(adapt_delta = 0.96, max_treedepth=15) )
+  # warmup = 200,          # number of warmup iterations per chain
+  # control = list(adapt_delta = 0.9),
+  # # refresh = 500,          # show progress every 'refresh' iterations
+  # iter = 1000,            # total number of iterations per chain
+  # chains = 5,             # number of Markov chains
+  # cores = 5              # number of cores (using 2 just for the vignette)
+
 # load( p$fishery_model$fnres )
 
 
@@ -42,7 +54,7 @@ figure.mcmc( type="diagnostic.production", res=res, fn=file.path(p$fishery_model
 figure.mcmc( type="diagnostic.errors", res=res, fn=file.path(p$fishery_model$outdir, "diagnostic.errors.png" ) )
 figure.mcmc( type="diagnostic.phase", res=res, fn=file.path(p$fishery_model$outdir, "diagnostic.phase.png" ) )
 
-# K 
+# K
 plot.new()
 layout( matrix(c(1,2,3), 3, 1 ))
 par(mar = c(4.4, 4.4, 0.65, 0.75))
@@ -103,7 +115,3 @@ for (i in 1:3) plot(density(  res$mcmc$F[,res$sb$N-1,i] ), xlim=c(0.01, 0.6), ma
 
 # F for table ---
 summary( res$mcmc$F, median)
-
-
-
-

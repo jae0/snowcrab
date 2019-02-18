@@ -1,8 +1,8 @@
 
-fishery_model = function(  p, DS="stan", plotresults=TRUE ) {
+fishery_model = function(  p, DS="stan", plotresults=TRUE, ... ) {
 
   if (0) {
-    
+
     year.assessment=2016
     p = bio.snowcrab::load.environment( year.assessment=year.assessment)
     p$fishery_model = list()
@@ -13,33 +13,11 @@ fishery_model = function(  p, DS="stan", plotresults=TRUE ) {
   message( "Output location is: ", p$fishery_model$outdir )
 
   dir.create( p$fishery_model$outdir, recursive=T, showWarnings=F )
- 
 
-  if (DS=="stan" ) {
-
-    library(rstan)
-    rstan_options(auto_write = TRUE)
-    options(mc.cores = parallel::detectCores())
-
-    sb = biomass.summary.db(p=p, DS="surplusproduction" )
-
-    # ----------------------------------
-    # these are already on log-scale
-    sb$Kmu =  exp(sb$Kmu)
-    sb$Ksd =  c(0.25, 0.25, 0.25) * sb$Kmu
-
-    sb$rsd =  c(0.25, 0.25, 0.25) * sb$rmu 
-    sb$qsd =  c(0.25, 0.25, 0.25) * sb$qmu
-
-    sb$missing = ifelse(is.finite(sb$IOA),0,1)
-    sb$missing_n = colSums(sb$missing)
-    sb$missing_ntot = sum(sb$missing_n)
-    sb$IOA[  which(!is.finite(sb$IOA)) ] = 0  # reset NAs to 0 as stan does not take NAs
-
-
-    surplus.stan = "
+  if (DS=="stan_surplus_production") {
+    return( "
       data {
-     
+
         int<lower=0> N; // no. years
         int<lower=0> U; // no. regions
         int<lower=0> M; // no. years to project
@@ -53,7 +31,7 @@ fishery_model = function(  p, DS="stan", plotresults=TRUE ) {
         vector[U] rmu ;
         vector[U] qmu ;
         matrix[N,U] CAT;
-        matrix[N,U] IOA; 
+        matrix[N,U] IOA;
         matrix[N,U] missing;
         int missing_n[U];
         int missing_ntot;
@@ -77,9 +55,9 @@ fishery_model = function(  p, DS="stan", plotresults=TRUE ) {
         vector <lower=eps>[missing_ntot] IOAmissing;
         matrix <lower=eps>[M+N,U] bm;
       }
-      
+
       transformed parameters {
-        matrix[N,U] Y;  // index of abundance 
+        matrix[N,U] Y;  // index of abundance
         matrix[N,U] Ymu;  // collator used to force positive values for lognormal
         matrix[MN,U] bmmu; // collator used to force positive values for lognormal
         matrix[MN,U] rem;  // observed catch
@@ -99,23 +77,23 @@ fishery_model = function(  p, DS="stan", plotresults=TRUE ) {
           }
         }
 
-        // -------------------  
+        // -------------------
         // removals (catch) observation model, standardized to K (assuming no errors in observation of catch!)
         for (j in 1:U) {
           rem[1:N,j] =  CAT[1:N,j]/K[j] ;
           rem[(N+1):MN,j] =  er*bm[ N:(MN-1),j] ;  // forecasts
         }
 
-        // -------------------  
-        // observation model calcs and contraints: 
+        // -------------------
+        // observation model calcs and contraints:
         // Ymu = 'surveyed/observed' residual biomass at time of survey (Bsurveyed)
         // cfanorth(1) and cfasouth(2)
         //   This is slightly complicated because a fall / spring survey correction is required:
         //   B represents the total fishable biomass available in fishing year y
-        //     in fall surveys:    Btot(t) = Bsurveyed(t) + removals(t) 
-        //     in spring surveys:  Btot(t) = Bsurveyed(t) + removals(t-1) 
+        //     in fall surveys:    Btot(t) = Bsurveyed(t) + removals(t)
+        //     in spring surveys:  Btot(t) = Bsurveyed(t) + removals(t-1)
         // spring surveys from 1998 to 2003
-        //   this is conceptualized in the following time line: 
+        //   this is conceptualized in the following time line:
         //     '|' == start/end of each new fishing year
         //     Sf = Survey in fall
         //     Ss = Survey in spring
@@ -125,20 +103,20 @@ fishery_model = function(  p, DS="stan", plotresults=TRUE ) {
         //    Btot(t) = Bsurveyed(t)+ removals(t-1)
         //    NOTE: year designation in 4X is for the terminal year: ie. 2001-2002 => 2002
 
-        for (j in 1:2) {  
+        for (j in 1:2) {
           Ymu[1,j]        = qs[j] * bm[1,j] - rem[1,j] ; // starting year approximation
           Ymu[2:(ty-1),j] = qs[j] * bm[2:(ty-1),j] - rem[1:(ty-2),j] ; //spring surveys
           Ymu[ty,j]       = q[j]  * bm[ty,j] - (rem[(ty-1),j] + rem[ty,j] )/2.0  ; // transition year .. approximation
-          Ymu[(ty+1):N,j] = q[j]  * bm[(ty+1):N,j] - rem[(ty+1):N,j] ;   // fall surveys    
+          Ymu[(ty+1):N,j] = q[j]  * bm[(ty+1):N,j] - rem[(ty+1):N,j] ;   // fall surveys
         }
         {
           int k;
           k=3;
           Ymu[1,k]        = qs[k] * bm[1,k]   - rem[1,k] ; // starting year approximation
-          Ymu[2:(ty-1),k] = qs[k] * bm[2:(ty-1),k] - rem[1:(ty-2),k]; 
-          Ymu[ty:N,k]     = q[k]  * bm[ty:N,k] - rem[(ty-1):(N-1),k]; 
+          Ymu[2:(ty-1),k] = qs[k] * bm[2:(ty-1),k] - rem[1:(ty-2),k];
+          Ymu[ty:N,k]     = q[k]  * bm[ty:N,k] - rem[(ty-1):(N-1),k];
         }
-        
+
         for (j in 1:U) {
           for (i in 1:N) {
             Ymu[i,j] = K[j] * fmax( Ymu[i,j], eps); // force positive value
@@ -146,7 +124,7 @@ fishery_model = function(  p, DS="stan", plotresults=TRUE ) {
         }
 
 
-        // -------------------  
+        // -------------------
         // process model calcs and constraints
         for (j in 1:U) {
           bmmu[1,j] = b0[j] ; // biomass at first year
@@ -165,28 +143,28 @@ fishery_model = function(  p, DS="stan", plotresults=TRUE ) {
 
       model {
 
-        // -------------------  
+        // -------------------
         // priors for parameters
         K ~ normal( Kmu, Ksd )  ;
         r ~ normal( rmu, rsd )  ;
         q ~ normal( qmu, qsd )  ;
         qs ~ normal( qmu, qsd )  ;
-        b0 ~ beta( 8, 2 ) ; // starting b prior to first catch event 
+        b0 ~ beta( 8, 2 ) ; // starting b prior to first catch event
         bosd ~ cauchy( 0, 0.5 ) ;  // slightly informative .. center of mass between (0,1)
         bpsd ~ cauchy( 0, 0.5 ) ;
 
 
-        // -------------------  
-        // biomass observation model 
-        for (j in 1:U) {  
+        // -------------------
+        // biomass observation model
+        for (j in 1:U) {
           log(Y[1:N,j]) ~ normal( log(Ymu[1:N,j]), bosd[j] ) ;  // stan thinks Y is being transformed due to attempt to impute missing values .. ignore
         }
- 
 
-        // -------------------  
-        // biomass process model 
+
+        // -------------------
+        // biomass process model
         for (j in 1:U) {
-          log(bm[1:MN,j]) ~ normal( log(bmmu[1:MN,j]), bpsd[j] ) ;     
+          log(bm[1:MN,j]) ~ normal( log(bmmu[1:MN,j]), bpsd[j] ) ;
         }
 
         // could have used lognormal but this parameterization is 10X faster and more stable
@@ -203,12 +181,12 @@ fishery_model = function(  p, DS="stan", plotresults=TRUE ) {
         matrix[MN,U] B;
         matrix[MN,U] P;
         matrix[MN,U] C;
-        
+
         matrix[MN,U] F;
         matrix[M,U] TAC;
 
 
-        // -------------------  
+        // -------------------
         // annual production
          for(j in 1:U) {
            pd[1,j] = bm[2,j]- bm[1,j] + rem[1,j] ; // approximation
@@ -221,9 +199,9 @@ fishery_model = function(  p, DS="stan", plotresults=TRUE ) {
            pd[MN,j] = (bm[MN,j]- bm[(MN-1),j]) + er * bm[(MN-1),j]  ; // approximation
          }
 
-        // -------------------  
+        // -------------------
         // fishing mortality
-        // force first year estimate assuming catches in year 0 to be similar to year 1 
+        // force first year estimate assuming catches in year 0 to be similar to year 1
 
          for (j in 1:U) {
            F[1,j] =  1.0 - rem[1,j] / bm[1,j] ;
@@ -236,16 +214,16 @@ fishery_model = function(  p, DS="stan", plotresults=TRUE ) {
              F[i,j] =  -log( fmax( F[i,j], eps) )  ;
            }
          }
-     
-        // -------------------  
+
+        // -------------------
         // parameter estimates for output
-        
+
         for(j in 1:U) {
            MSY[j]    = r[j]* exp(K[j]) / 4 ; // maximum height of of the latent productivity (yield)
            BMSY[j]   = exp(K[j])/2 ; // biomass at MSY
            FMSY[j]   = 2.0 * MSY[j] / exp(K[j]) ; // fishing mortality at MSY
       //    BX2MSY[j] = 1.0 - step( bm[N1,j]-0.25 ) ; // test if bm >= 1/2 bmY
-      //    Bdrop[j]  = 1.0 - step( bm[N1,j]-bm[N,j] ) ; // test if bm(t) >= bm(t-1) 
+      //    Bdrop[j]  = 1.0 - step( bm[N1,j]-bm[N,j] ) ; // test if bm(t) >= bm(t-1)
       //    Fcrash[j] = 4.0 * MSY[j] / exp(K[j]) ; // fishing mortality at which the stock will crash
         }
 
@@ -262,14 +240,32 @@ fishery_model = function(  p, DS="stan", plotresults=TRUE ) {
          }
 
       }
-
     "
+    )
+  }
 
+  if (DS=="stan" ) {
 
-    stanmodel = rstan::stan_model( model_code=surplus.stan )
+    library(rstan)
+    rstan_options(auto_write = TRUE)
+    options(mc.cores = parallel::detectCores())
 
-    f = sampling(stanmodel, data=sb, chains=4, iter=8000, warmup=3000, refresh = 1000,
-      control = list(adapt_delta = 0.9, max_treedepth=15) )
+    sb = biomass.summary.db(p=p, DS="surplusproduction" )
+
+    # ----------------------------------
+    # these are already on log-scale
+    sb$Kmu =  exp(sb$Kmu)
+    sb$Ksd =  c(0.25, 0.25, 0.25) * sb$Kmu
+
+    sb$rsd =  c(0.25, 0.25, 0.25) * sb$rmu
+    sb$qsd =  c(0.25, 0.25, 0.25) * sb$qmu
+
+    sb$missing = ifelse(is.finite(sb$IOA),0,1)
+    sb$missing_n = colSums(sb$missing)
+    sb$missing_ntot = sum(sb$missing_n)
+    sb$IOA[  which(!is.finite(sb$IOA)) ] = 0  # reset NAs to 0 as stan does not take NAs
+
+    f = sampling( p$fishery_model$stancode_compiled, data=sb, ... )
           # warmup = 200,          # number of warmup iterations per chain
           # control = list(adapt_delta = 0.9),
           # # refresh = 500,          # show progress every 'refresh' iterations
@@ -277,7 +273,6 @@ fishery_model = function(  p, DS="stan", plotresults=TRUE ) {
           # chains = 5,             # number of Markov chains
           # cores = 5              # number of cores (using 2 just for the vignette)
 
-   
     res = list( mcmc=extract(f), sb=sb, p=p)
     save(res, file=p$fishery_model$fnres, compress=T)
     return(res)
@@ -296,16 +291,16 @@ fishery_model = function(  p, DS="stan", plotresults=TRUE ) {
           pred=rstan::extract(f)
 
           est=colMeans(pred)
-        
+
           prob=apply(pred,2,function(x) I(length(x[x>0.10])/length(x) > 0.8)*1)
       }
- 
+
   }
 
 
 
   # --------------------------
-  
+
 
 
   if (DS=="jags") {
@@ -317,41 +312,41 @@ fishery_model = function(  p, DS="stan", plotresults=TRUE ) {
     rjags::load.module("glm")
 
     if (!exists("fishery_model", p)) p$fishery_model = list()
-    if (!exists("n.adapt", p$fishery_model)) p$fishery_model$n.adapt  = 5000  # burn-in  .. 4000 is enough for the full model 
+    if (!exists("n.adapt", p$fishery_model)) p$fishery_model$n.adapt  = 5000  # burn-in  .. 4000 is enough for the full model
     if (!exists("n.iter ", p$fishery_model)) p$fishery_model$n.iter   = 10000  #  n.iter = 30000,
     if (!exists("n.chains", p$fishery_model)) p$fishery_model$n.chains  = 8  #  n.chains = 8 ,
-    if (!exists("n.thin", p$fishery_model)) p$fishery_model$n.thin  = 100  # high autocorrelations 
-    
+    if (!exists("n.thin", p$fishery_model)) p$fishery_model$n.thin  = 100  # high autocorrelations
+
     n.iter.total = p$fishery_model$n.iter * p$fishery_model$n.thin
 
     sb = biomass.summary.db(p=p, DS="surplusproduction" )
 
-    sb$tomonitor = c( "r", "K", "q", "qs", "rmu", "rsd", "b","bpsd", "bosd","b0", "b0sd", "rem", "remsd", "remmu","REM", "MSY", "BMSY", "FMSY", "Fcrash", "Bdrop", "BX2MSY", "F", "TAC", 
+    sb$tomonitor = c( "r", "K", "q", "qs", "rmu", "rsd", "b","bpsd", "bosd","b0", "b0sd", "rem", "remsd", "remmu","REM", "MSY", "BMSY", "FMSY", "Fcrash", "Bdrop", "BX2MSY", "F", "TAC",
       "C", "P", "B" )
 
     sb$jagsmodelname = "biomassdynamic_nonhyper_2016.bugs"
-    sb$jagsmodel = 
+    sb$jagsmodel =
     "
 model {
 
-  # -------------------  
+  # -------------------
   # define some marginally informative variance priors using CV's (coefficients of variation) as a simple approach
   # uniform distribution seems most stable .. too uninformative?
   # NOTE: eps = a small number non-zero number (essentially equivalent to zero but used to prevent infinity values)
-  # uninformative CV's associated with process (bp.) and observation (bo.) errors 
- 
+  # uninformative CV's associated with process (bp.) and observation (bo.) errors
+
   # NOTE for lognormals: CV = sqrt(exp( SD ^2) - 1)  and CV ~ SD where SD ~ < 0.5
   # of SD = sqrt(log(1+CV^2)) and therefore, in terms of precision:
   # TAU = 1/SD^2 = 1/log(1+CV^2)
 
 
   for (j in 1:U) {
-    r[j] ~ dnorm( rmu[j], pow( rsd[j], -2 ) ) 
+    r[j] ~ dnorm( rmu[j], pow( rsd[j], -2 ) )
   }
 
 
   for (j in 1:U) {
-    #qmu[j]  ~ dunif( qmin, qmax ) 
+    #qmu[j]  ~ dunif( qmin, qmax )
     #qsd[j]  ~ dunif( qmu[j] * cvnormalmin, qmu[j] *cvnormalmax )  # catchability coefficient (normal scale)
     q[j] ~ dnorm( qmu[j], pow( qsd[j], -2 ) )  T(qmin, qmax)
     #q[j] ~ dunif( qmin[j] , qmax[j] )
@@ -363,7 +358,7 @@ model {
   }
 
 
-  # -------------------  
+  # -------------------
   # removals (catch) observation model, standardized to K (assuming no errors in observation of catch!)
     for (j in 1:U) {
       for (i in 1:N){
@@ -372,13 +367,13 @@ model {
     }
 
 
-  # -------------------  
-  # biomass observation model 
+  # -------------------
+  # biomass observation model
   #   This is slightly complicated because a fall / spring survey correction is required:
   #   B represents the total fishable biomass available in fishing year y
-  #     in fall surveys:    Btot(t) = Bsurveyed(t) + removals(t) 
-  #     in spring surveys:  Btot(t) = Bsurveyed(t) + removals(t-1) 
-  #   this is conceptualized in the following time line: 
+  #     in fall surveys:    Btot(t) = Bsurveyed(t) + removals(t)
+  #     in spring surveys:  Btot(t) = Bsurveyed(t) + removals(t-1)
+  #   this is conceptualized in the following time line:
   #     '|' == start/end of each new fishing year
   #     Sf = Survey in fall
   #     Ss = Survey in spring
@@ -386,7 +381,7 @@ model {
 
     for (j in 1:(U)) {
       #botau[j] ~ dunif( pow( log( 1 + pow( cvlognormalmax, 2) ), -1 ), pow( log( 1 + pow( cvlognormalmin, 2) ), -1 ) )  # min/max inverted because it is an inverse scale
-      #bosd[j] ~ dunif( bomin[j], bomax[j] )  
+      #bosd[j] ~ dunif( bomin[j], bomax[j] )
       bosd[j] ~ dlnorm(bomup[j],pow(bosdp[j],-1))
       botau[j]  <- pow( bosd[j], -2 )
     }
@@ -394,12 +389,12 @@ model {
     for (j in 1:(U-1)) {
       # spring surveys from 1998 to 2003
       IOA[1,j] ~ dlnorm( log( max( q[j] * K[j] * (bm[1,j] - rem[1,j]) , eps)), botau[j] )  # approximation
-      for (i in 2:(ty-1)) { 
+      for (i in 2:(ty-1)) {
         IOA[i,j] ~ dlnorm( log( max( q[j] * K[j] * (bm[i,j]- rem[(i-1),j]), eps)), botau[j] )  ;
       }
       # transition year
       IOA[ty,j] ~ dlnorm( log( max( q[j] * K[j] * (bm[ty,j] - (rem[(ty-1),j] + rem[ty,j] )/2 ), eps)), botau[j] ) ;  # approximation
-      # fall surveys    
+      # fall surveys
       for (i in (ty+1):N) {
         IOA[i,j] ~ dlnorm( log( max( q[j] * K[j] * (bm[i,j] - rem[i,j]), eps)), botau[j] ) ;
       }
@@ -409,30 +404,30 @@ model {
     # assume similar to a spring fishery but no need for separate q's
     #    Btot(t) = Bsurveyed(t)+ removals(t-1)
     #    NOTE: year designation in 4X is for the terminal year: ie. 2001-2002 => 2002
-    
+
     IOA[1,cfa4x] ~ dlnorm( log( max( q[cfa4x] * K[cfa4x] * (bm[1,cfa4x] - rem[1,cfa4x]), eps)), botau[cfa4x] ) ;  # approximation
-    for (i in 2:N) { 
+    for (i in 2:N) {
       IOA[i,cfa4x] ~ dlnorm( log( max( q[cfa4x] * K[cfa4x] * (bm[i,cfa4x]- rem[(i-1),cfa4x]), eps)), botau[cfa4x] ) ;
     }
 
 
 
-  # -------------------  
-  # biomass process model 
-        
+  # -------------------
+  # biomass process model
+
     for (j in 1:U) {
-      #bptau[j] ~ dunif( pow( log( 1 + pow( cvlognormalmax, 2) ), -1 ), pow( log( 1 + pow( cvlognormalmin, 2) ), -1 ) )  
-      bpsd[j] ~ dunif( bpmin[j], bpmax[j] )  
+      #bptau[j] ~ dunif( pow( log( 1 + pow( cvlognormalmax, 2) ), -1 ), pow( log( 1 + pow( cvlognormalmin, 2) ), -1 ) )
+      bpsd[j] ~ dunif( bpmin[j], bpmax[j] )
       bptau[j]  <- pow( bpsd[j], -2 )
     }
 
     for(j in 1:U) {
-      b0[j] ~ dunif( b0min[j], b0max[j] ) # starting b prior to first catch event 
-      bm[1,j] ~ dlnorm( log( max( b0[j], eps)), bptau[j] ) T(bmin, bmax ) ;  # biomass at first year   
+      b0[j] ~ dunif( b0min[j], b0max[j] ) # starting b prior to first catch event
+      bm[1,j] ~ dlnorm( log( max( b0[j], eps)), bptau[j] ) T(bmin, bmax ) ;  # biomass at first year
       for(i in 2:(N+M)) {
         bm[i,j] ~ dlnorm( log( max(bm[i-1,j]*( 1 + r[j]*(1-bm[i-1,j])) - rem[i-1,j] , eps)), bptau[j] ) T(bmin, bmax) ;
       }
-      
+
       # forecasts
       for(i in 1:M) {
         rem[N+i,j] <- er*bm[N+i-1,j]
@@ -440,10 +435,10 @@ model {
     }
 
 
-  # -------------------  
+  # -------------------
   # monitoring nodes and parameter estimates for output
     for(j in 1:U) {
-      Bdrop[j]  <- 1 - step( bm[N+1,j]-bm[N,j] ) ; # test if bm(t) >= bm(t-1) 
+      Bdrop[j]  <- 1 - step( bm[N+1,j]-bm[N,j] ) ; # test if bm(t) >= bm(t-1)
       BX2MSY[j] <- 1 - step( bm[N+1,j]-0.25 ) ; # test if bm >= 1/2 bmY
       MSY[j]    <- r[j]* exp(K[j]) / 4  # maximum height of of the latent productivity (yield)
       BMSY[j]   <- exp(K[j])/2  # biomass at MSY
@@ -452,20 +447,20 @@ model {
     }
 
 
-    # -------------------  
+    # -------------------
     # fishing mortality
-    # force first year estimate assuming catches in year 0 to be similar to year 1 
+    # force first year estimate assuming catches in year 0 to be similar to year 1
     for(j in 1:U) {
       for(i in 1:N) {
-        F[i,j] <- -log( max(1 - rem[i,j] / bm[i,j], eps))  
+        F[i,j] <- -log( max(1 - rem[i,j] / bm[i,j], eps))
       }
       for(i in (N+1):(N+M)) {
-        F[i,j] <- -log( max(1 - er * bm[i-1,j] / bm[i,j], eps)) 
+        F[i,j] <- -log( max(1 - er * bm[i-1,j] / bm[i,j], eps))
       }
     }
 
 
-    # -------------------  
+    # -------------------
     # annual production
     for(j in 1:U) {
       pd[1,j] <- bm[2,j]- bm[1,j] + rem[1,j] # approximation
@@ -477,12 +472,12 @@ model {
       }
       pd[(N+M),j] <- (bm[(N+M),j]- bm[(N+M-1),j]) + er * bm[(N+M-1),j]   # approximation
     }
-  
 
 
-    # -------------------  
+
+    # -------------------
     # recaled estimates
-  
+
     for(j in 1:U) {
       for(i in 1:(N+M)) {
         B[i,j] <- (bm[i,j] - rem[i,j]) * K[j]
@@ -502,11 +497,11 @@ model {
     cat( sb$jagsmodel, file=fn )
 
     m = jags.model( file=fn, data=sb, n.chains=p$fishery_model$n.chains, n.adapt=p$fishery_model$n.adapt ) # recruitment + spring/summer q's + all observed CVs
-    
+
     tomonitor = intersect( variable.names (m), sb$tomonitor )
-    
+
     y = jags.samples(m, variable.names=tomonitor, n.iter=n.iter.total, thin=p$fishery_model$n.thin) # sample from posterior
-    
+
     jags2stan = function(x){
       # merge chains together
       print(attr(x, "varname"))
@@ -558,10 +553,10 @@ model {
         # final sampling from the posteriors
         #  y = jags.samples(m, variable.names=tomonitor, n.iter=10000, thin=20) # sample from posterior
         y = jags.samples(m, variable.names=tomonitor, n.iter=n.iter.total, thin=p$fishery_model$n.thin) # sample from posterior
-        
-        
 
-        ## 
+
+
+        ##
         b1=apply( y$B[,1,,], 1,quantile , probs=c(0.025,0.5,0.975), na.rm=T  )
         f1=apply( y$F[,1,,], 1,quantile , probs=c(0.5), na.rm=T  )
         NENS=data.frame(t(b1),F=f1,row.names=1999:2019)
@@ -605,23 +600,23 @@ model {
     warning( "LaplacesDemon method is not yet complete")
 
     require(LaplacesDemonCpp)
-      
+
 
     sb = biomass.summary.db(p=p, DS="surplusproduction" )
 
     debug.region="cfa4x"
     debug.region="cfasouth"
-    debug.region="cfanorth" 
+    debug.region="cfanorth"
 
     # single region test
     K0est =list()
     K0est[["cfanorth"]] = 5
     K0est[["cfasouth"]] = 65
     K0est[["cfa4x"]] = 5
-        
+
     yrs = as.numeric(rownames( res$B))
     nforecasts = 5
-    
+
 
     Data = list(
       Ndata = length(yrs),
@@ -639,26 +634,26 @@ model {
       S0= 0.6, # normalised
       cv = 0.4,
       smax =1.25,
-      eps = 1e-6, 
+      eps = 1e-6,
       eps_1 = 1 - 1e-6
     )
 
 
 
     # set up the model
-  # set up model for a simple surplus production model 
-  # to be solved by the Rlibrary: LaplacesDemon (or alternately via penalized Maximum Likelihood) 
+  # set up model for a simple surplus production model
+  # to be solved by the Rlibrary: LaplacesDemon (or alternately via penalized Maximum Likelihood)
 
-  
+
 
       # ----------------------------------
       # Identify location and number of missing values -- prediction locations are treated the same way
 
       # compute a few things here that are constant in the model
       Data$N = Data$Ndata + Data$Nforecasts # no years with data + projections
-      Data$q0 = exp( Data$log_q0) 
-      Data$r0 = exp( Data$log_r0) 
-      Data$K0 = exp( Data$log_K0) 
+      Data$q0 = exp( Data$log_q0)
+      Data$r0 = exp( Data$log_r0)
+      Data$K0 = exp( Data$log_K0)
       Data$R0 = exp(Data$log_R0)
       Data$O0 = exp(Data$log_O0)
       Data$O_range = range( Data$O, na.rm=TRUE)
@@ -671,9 +666,9 @@ model {
         Data$Missing = list(
           O = mO,
           nO = length(mO) ,
-          removals = mr , 
+          removals = mr ,
           nremovals = length( mr ),
-          n = length( mO) + length(mr) 
+          n = length( mO) + length(mr)
         )
       }
 
@@ -685,7 +680,7 @@ model {
           q=rnorm(1, Data$q0, sd=Data$cv )
           S_sd=runif( 1 )
           O_sd=runif( 1 )
-          S=rnorm( Data$N, log(Data$S0), sd=Data$cv ) # log scale 
+          S=rnorm( Data$N, log(Data$S0), sd=Data$cv ) # log scale
           S0=rnorm(1, log(Data$S0), sd=Data$cv ) # log scale
           out = c(r, K, q, S_sd, O_sd, S, S0)
           if (Data$Missing$nO > 0) {
@@ -741,7 +736,7 @@ model {
 
       if (is.null( Data$Model )) {
         Data$Model = function(parm, Data) {
-          
+
           Spred = Opred = rep(0, Data$N )   # initialize a few storage vectors
 
           # constraints:
@@ -756,7 +751,7 @@ model {
 
           # these are SD's on log scale (0,1) is sufficient
           # continue with SD priors as these are now on correct scale
-          
+
           loglik = c()
           loglik[Data$parm.names] = 0
           loglik[Data$idx$q] = LaplacesDemonCpp::dhalfcauchy( parm[Data$idx$q], Data$cv,  TRUE ) ;
@@ -777,10 +772,10 @@ model {
           R = Data$removals/K ;
           if (exists( "Missing", Data ) ) {
             if (Data$Missing$nremovals > 0) {
-              R[Data$Missing$removals ] = rlnorm( Data$Missing$nremovals, 
+              R[Data$Missing$removals ] = rlnorm( Data$Missing$nremovals,
                 parm[Data$idx$removalsmissing], sd=Data$cv )
               R = .Internal(pmax(na.rm=TRUE, R, Data$eps )) ;
-              loglik[Data$idx$removalsmissing] = dnorm( parm[Data$idx$removalsmissing], 
+              loglik[Data$idx$removalsmissing] = dnorm( parm[Data$idx$removalsmissing],
                 log(R[Data$Missing$removals ]), Data$cv )
             }
           }
@@ -806,34 +801,34 @@ model {
           ll_obs = dnorm( log(Data$O), log(Opred), O_sd, TRUE )
 
           Smon = Rmon = ER = F = B = C = rep(0, Data$MN )
-          
+
           Smon[1:Data$N] = S
           Rmon[1:Data$N] = R
           for( i in (Data$N+1):Data$MN ){
             Smon[i] = Smon[i-1] * (1.0 + r*(1.0-Smon[i-1]) ) - Rmon[i-1]
-            Rmon[i] = Smon[i-1] * Data$er 
+            Rmon[i] = Smon[i-1] * Data$er
           }
           Smon = .Internal(pmax( na.rm=TRUE, Smon, Data$eps ) )
           Rmon = .Internal(pmax( na.rm=TRUE, Rmon, Data$eps ) )
-          
+
           # monitoring
           ER = Rmon / Smon ;
           B = Smon*K
           C = Rmon*K
           F = -log( 1 - ER) ; # fishing mortality
-                
+
           LL = sum( ll_obs )  # log likelihood (of the data)
           LP = LL + sum( loglik )  # log posterior
           out = list( LP=LP, Dev=-2*LL, Monitor=c(LP, r, K, q), yhat=S*K, parm=parm )
           return( out  )
         }
         Data$Model.ML  = compiler::cmpfun( function(...) (Data$Model(...)$Dev / 2) )  # i.e. - log likelihood
-        Data$Model.PML = compiler::cmpfun( function(...) (- Data$Model(...)$LP) ) #i.e., - log posterior 
+        Data$Model.PML = compiler::cmpfun( function(...) (- Data$Model(...)$LP) ) #i.e., - log posterior
         Data$Model = compiler::cmpfun(Data$Model) #  byte-compiling for more speed .. use RCPP if you want more speed
       }
 
       print (Data$Model( parm=Data$PGF(Data), Data=Data ) ) # test to see if return values are sensible
-     
+
 
 
     # 2. maximum likelihood solution
@@ -851,9 +846,9 @@ model {
 
 
 
-    f = LaplacesDemon(sb$Model, Data=sb, Initial.Values=sb$PGF(sb), Iterations=1000, Status=100, Thinning=10) # 
+    f = LaplacesDemon(sb$Model, Data=sb, Initial.Values=sb$PGF(sb), Iterations=1000, Status=100, Thinning=10) #
 
-    f = LaplacesDemon(sb$Model, Data=sb, Initial.Values=as.initial.values(f), Iterations=1000, Status=100, Thinning=10) # 
+    f = LaplacesDemon(sb$Model, Data=sb, Initial.Values=as.initial.values(f), Iterations=1000, Status=100, Thinning=10) #
 
     f = LaplacesDemon(sb$Model, Data=sb, Initial.Values=as.initial.values(f), Iterations=5000, Status=10, Thinning=20, Method="NUTS") #
 
@@ -864,7 +859,7 @@ model {
          Algorithm="CHARM", Specs=NULL)
 
 
-    f = LaplacesDemon(sb$Model, Data=sb, Initial.Values=as.initial.values(f), Iterations=5000, Status=100, Thinning=25, Covar=f$Covar)  
+    f = LaplacesDemon(sb$Model, Data=sb, Initial.Values=as.initial.values(f), Iterations=5000, Status=100, Thinning=25, Covar=f$Covar)
 
 
 
@@ -880,28 +875,28 @@ model {
     f0 = LaplacesDemon(sb$Model, Data=sb, Initial.Values=sb$PGF(sb), Iterations=1000, Status=100, Thinning=1)
 
 
-    f = LaplaceApproximation(sb$Model, Data=sb, parm=as.initial.values(f0), Method="HAR", Iterations=1000  ) 
+    f = LaplaceApproximation(sb$Model, Data=sb, parm=as.initial.values(f0), Method="HAR", Iterations=1000  )
 
-    f = LaplaceApproximation(sb$Model, Data=sb, parm=as.initial.values(f0), Method="SR1", Iterations=1000  ) 
+    f = LaplaceApproximation(sb$Model, Data=sb, parm=as.initial.values(f0), Method="SR1", Iterations=1000  )
 
-    f = LaplaceApproximation(sb$Model, Data=sb, parm=as.initial.values(f0), Method="TR", Iterations=10000  ) 
-
-
-    f = LaplaceApproximation(sb$Model, Data=sb, parm=as.initial.values(f0), Method="BFGS", Iterations=1000  ) 
+    f = LaplaceApproximation(sb$Model, Data=sb, parm=as.initial.values(f0), Method="TR", Iterations=10000  )
 
 
-    f = LaplaceApproximation(sb$Model, Data=sb, parm=as.initial.values(f0), Method="PSO", Iterations=10000  ) 
+    f = LaplaceApproximation(sb$Model, Data=sb, parm=as.initial.values(f0), Method="BFGS", Iterations=1000  )
 
 
-    f = LaplaceApproximation(sb$Model, Data=sb, parm=as.initial.values(f0), Method="SPG", Iterations=10000  ) 
+    f = LaplaceApproximation(sb$Model, Data=sb, parm=as.initial.values(f0), Method="PSO", Iterations=10000  )
+
+
+    f = LaplaceApproximation(sb$Model, Data=sb, parm=as.initial.values(f0), Method="SPG", Iterations=10000  )
 
 
 
 
     # 4. quick solution: acts as "burn-in" .. do a few times in case solution is unstable
-    f = LaplaceApproximation(sb$Model, Data=sb, parm=sb$PGF(sb), Iterations=100 ) 
-    f = LaplaceApproximation(sb$Model, Data=sb, parm=as.initial.values(f), Iterations=1000 ) 
-    f = LaplaceApproximation(sb$Model, Data=sb, parm=as.initial.values(f), Method="BFGS", Stop.Tolerance=1e-8, Iterations=1000  ) 
+    f = LaplaceApproximation(sb$Model, Data=sb, parm=sb$PGF(sb), Iterations=100 )
+    f = LaplaceApproximation(sb$Model, Data=sb, parm=as.initial.values(f), Iterations=1000 )
+    f = LaplaceApproximation(sb$Model, Data=sb, parm=as.initial.values(f), Method="BFGS", Stop.Tolerance=1e-8, Iterations=1000  )
 
 
     f = LaplacesDemon(sb$Model, Data=sb, Initial.Values=sb$PGF(sb), Iterations=5000, Status=10, Thinning=10, Algorithm="NUTS", Covar=f$Covar, Specs=list(A=100, delta=0.6, epsilon=NULL, Lmax=Inf))  # A=burnin, delta=target acceptance rate
@@ -918,7 +913,7 @@ model {
 
 
     f = LaplaceApproximation(sb$Model, Data=sb, parm=as.initial.values(f)  ) # fast spin up of paramters
-    f = LaplaceApproximation(sb$Model, Data=sb, parm=as.initial.values(f), Method="BFGS", Stop.Tolerance=1e-8  ) 
+    f = LaplaceApproximation(sb$Model, Data=sb, parm=as.initial.values(f), Method="BFGS", Stop.Tolerance=1e-8  )
 
 
     # NOTES: NM is slow
@@ -932,14 +927,14 @@ model {
       ft = try( LaplaceApproximation(sb$Model, Data=sb, parm=as.initial.values(f), Method=a, Stop.Tolerance=1e-9, Iterations=5000 ) )
       if (! class(ft) %in% "try-error" ) if (ft$Converged) if( ft$LP.Final > f$LP.Final )  {
         f = ft
-        f$Method = a 
+        f$Method = a
       }
     }
     str(f)
     plot(f, Data=sb)
 
     # MCMC ... look at ACF
-    f = LaplacesDemon(sb$Model, Data=sb, Initial.Values=as.initial.values(f), Covar=f$Covar, 
+    f = LaplacesDemon(sb$Model, Data=sb, Initial.Values=as.initial.values(f), Covar=f$Covar,
       Iterations=1000, Status=100, Thinning=1, Algorithm="CHARM" )
     Consort(f)
     plot(f, Data=sb)
@@ -968,15 +963,15 @@ model {
       Covar=f$Covar , Iterations=50000, Status=10204, Thinning=1000, Algorithm="CHARM", Specs=list(alpha.star=0.44))
 
 
-    f = LaplacesDemon(sb$Model, Data=sb, 
+    f = LaplacesDemon(sb$Model, Data=sb,
       Initial.Values=as.initial.values(f), Covar=f$Covar, Iterations=10000, Status=1000, Thinning=100)
 
-    f = LaplacesDemon(sb$Model, Data=sb, 
-      Initial.Values=as.initial.values(f), Covar=f$Covar, Iterations=30000, Status=1000, Thinning=35, 
+    f = LaplacesDemon(sb$Model, Data=sb,
+      Initial.Values=as.initial.values(f), Covar=f$Covar, Iterations=30000, Status=1000, Thinning=35,
       Algorithm="AMWG", Specs=list(B=NULL, n=1000, Periodicity=35 ) )
 
     f <- LaplacesDemon(sb$Model, Data=sb,
-      Initial.Values=as.initial.values(f), Covar=f$Covar, Iterations=10000, Status=1000, Thinning=105, 
+      Initial.Values=as.initial.values(f), Covar=f$Covar, Iterations=10000, Status=1000, Thinning=105,
       Algorithm="AFSS", Specs=list(A=Inf, B=NULL, m=100, n=0, w=1))
 
     # medium speed .. increase Iterations til convergence
@@ -997,13 +992,13 @@ model {
     warning( "TMB method is not yet complete")
 
     require(aegis.env)
-      
+
 
     sb = biomass.summary.db(p=p, DS="surplusproduction" )
 
 
     debug.region="cfa4x"
-    debug.region="cfanorth" 
+    debug.region="cfanorth"
     debug.region="cfasouth"
 
 
@@ -1041,7 +1036,7 @@ model {
     ###########################################################################
 
     # The objective function
-    obj <- MakeADFun(data, parameters,  random="log_P", DLL="biomassdynamic")  
+    obj <- MakeADFun(data, parameters,  random="log_P", DLL="biomassdynamic")
 
     # Optimize the objective function
     opt <- nlminb(obj$par,obj$fn,obj$gr)
@@ -1050,8 +1045,8 @@ model {
     rep <- sdreport(obj)
 
     MLE <- list(year=1:data$N,B=rep$value[1:data$N], Bsd=rep$sd[1:data$N],predI=rep$value[1:data$N+data$N], predIsd=rep$sd[1:data$N+data$N], K=rep$value[data$N*2+1], Ksd=rep$sd[data$N*2+1], r=rep$value[data$N*2+2],rsd=rep$sd[data$N*2+2],Q=rep$value[data$N*2+3],Qsd=rep$sd[data$N*2+3],sigma=rep$value[data$N*2+4],sigmasd=rep$sd[data$N*2+4],tau=rep$value[data$N*2+5],tausd=rep$sd[data$N*2+5],nll=rep$value[data$N*2+6],nllsd=rep$sd[data$N*2+6])
-      
-      
+
+
     ###########################################################################
     # Results plots
     ###########################################################################
@@ -1066,7 +1061,7 @@ model {
 
   if (DS=="delay.difference_jags") {
 
-    warning( "This is not yet complete .. will eventually convert to Stan for speed and stability ..")    
+    warning( "This is not yet complete .. will eventually convert to Stan for speed and stability ..")
 
     require(rjags)
     rjags::load.module("dic")
@@ -1278,5 +1273,3 @@ model {
 
 
 }
-
-
