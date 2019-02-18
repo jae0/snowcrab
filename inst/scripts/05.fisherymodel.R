@@ -10,6 +10,10 @@ if (!exists("year.assessment")) {
 p = bio.snowcrab::load.environment( year.assessment=year.assessment )
 
 
+# update data summaries
+p$vars.tomodel="R0.mass"
+biomass.summary.db("complete.redo", p=p) #Uses the model results to create a habitat area expanded survey index
+
 
 p$fishery_model = list()
 p$fishery_model$method = "stan"  # "jags", etc.

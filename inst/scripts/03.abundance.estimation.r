@@ -321,10 +321,6 @@ figure.timeseries.snowcrab.habitat.temperatures(p=p) # /bio.data/bio.snowcrab/as
 
 
 
-# update data summaries of the above results
-p$vars.tomodel="R0.mass"
-biomass.summary.db("complete.redo", p=p) #Uses the model results to create a habitat area expanded survey index
-
 
 
 ### --------- prediction success:

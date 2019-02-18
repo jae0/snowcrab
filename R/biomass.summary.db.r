@@ -34,7 +34,7 @@
         cvlognormalmax = 0.4, #  curve( dlnorm(x, meanlog=log(1), sdlog=0.25), from=0.01, to=2 )
       # for lognormal: cv = sqrt(exp(sigma^2) - 1); or sigma = sqrt(log(cv^2+ 1) ) ==> sigma = sqrt( log(0.25^2 + 1)) = 0.246 ~ cv -- i.e. cv ~ sd
         IOA = as.matrix(res$B), # observed index of abundance
-        IOAcv = as.matrix( log(res$B.sd )), # observed index of log abundance SD estimates ~ CV
+        IOAcv = as.matrix( log(res$Bsd )), # observed index of log abundance SD estimates ~ CV
         #IREC = as.matrix(res$R), # observed index of abundance
         #IRECcv = as.matrix(res$Rsd ), # observed index of log abundance SD estimates ~CV
         CAT = as.matrix(res$L) , # catches  , assume 20% handling mortality and illegal landings
