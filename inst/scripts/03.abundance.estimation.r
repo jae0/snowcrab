@@ -103,6 +103,12 @@ p = snowcrab_stmv( p=p, DS="parameters",
   stmv_local_modelengine = "twostep",
 
   stmv_twostep_time = "gam",
+  stmv_local_modelformula_time = formula( paste(
+    'snowcrab.large.males_abundance',
+    '~ s(yr, k=10, bs="ts") + s(cos.w, k=3, bs="ts") + s(sin.w, k=3, bs="ts") ',
+    ' + s(cos.w, sin.w, yr, bs="ts", k=30)  ',
+    ' + s(plon, k=3, bs="ts") + s(plat, k=3, bs="ts") + s(plon, plat, k=10, bs="ts") ' ) ),
+
   stmv_twostep_space = "fft",
   stmv_fft_filter="matern",  #  matern, krige (very slow), lowpass, lowpass_matern
 
@@ -212,8 +218,18 @@ p = snowcrab_stmv( p=p, DS="parameters",
     ' + s(log(substrate.grainsize), k=3, bs="ts") + s(pca1, k=3, bs="ts") + s(pca2, k=3, bs="ts")   ' )),
 
   stmv_local_modelengine = "twostep",
-  stmv_twostep_space = "fft",
   stmv_twostep_time = "gam",
+  stmv_local_modelformula_time = formula( paste(
+    'snowcrab.large.males_abundance',
+    '~ s(yr, k=10, bs="ts") + s(cos.w, k=3, bs="ts") + s(sin.w, k=3, bs="ts") ',
+    ' + s(cos.w, sin.w, yr, bs="ts", k=30)  ',
+    ' + s(plon, k=3, bs="ts") + s(plat, k=3, bs="ts") + s(plon, plat, k=10, bs="ts") ' ) ),
+
+  stmv_twostep_space = "fft",
+  stmv_fft_filter="matern",  #  matern, krige (very slow), lowpass, lowpass_matern
+
+  stmv_gam_optimizer=c("outer", "bfgs") ,
+  stmv_variogram_method = "gstat",
   stmv_distance_statsgrid = 3, # resolution (km) of data aggregation (i.e. generation of the ** statistics ** ),
   stmv_distance_prediction_fraction = 1, # stmv_distance_prediction = stmv_distance_statsgrid * XX ..this is a half window km
   stmv_distance_scale = c( 25, 35, 45 ), #likely must be over 30km, so 50 +/- 20km, should likely match the setting in ~ line 256
