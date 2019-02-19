@@ -97,15 +97,17 @@ p = snowcrab_stmv( p=p, DS="parameters",
   stmv_global_modelformula = formula( paste(
     'snowcrab.large.males_abundance',
     ' ~ s( t, k = 3, bs = "ts") + s( tsd, k = 3, bs = "ts") + s( tmax, k = 3, bs = "ts") + s( degreedays, k = 3, bs = "ts")  ',
+    ' + s( tmean.climatology, k = 3, bs = "ts") + s( tsd.climatology, k = 3, bs = "ts")',
+    ' + s( t.range, k=3, bs="ts") + s( b.range, k=3, bs="ts") ',
     ' + s( log(z), k=3, bs="ts") + s( log(dZ), k=3, bs="ts") + s( log(ddZ), k=3, bs="ts") ',
-    ' + s(log(substrate.grainsize), k=3, bs="ts") + s(pca1, k=3, bs="ts") + s(pca2, k=3, bs="ts")   ' )),  # no space
+    ' + s( log(substrate.grainsize), k=3, bs="ts") + s(pca1, k=3, bs="ts") + s(pca2, k=3, bs="ts")   ' )),  # no space
 
   stmv_local_modelengine = "twostep",
 
   stmv_twostep_time = "gam",
   stmv_local_modelformula_time = formula( paste(
     'snowcrab.large.males_abundance',
-    '~ s(yr, k=10, bs="ts") + s(cos.w, k=3, bs="ts") + s(sin.w, k=3, bs="ts") ',
+    '~ s(yr, k=12, bs="ts") + s(cos.w, k=3, bs="ts") + s(sin.w, k=3, bs="ts") ',
     ' + s(cos.w, sin.w, yr, bs="ts", k=30)  ',
     ' + s(plon, k=3, bs="ts") + s(plat, k=3, bs="ts") + s(plon, plat, k=10, bs="ts") ' ) ),
 
@@ -221,7 +223,7 @@ p = snowcrab_stmv( p=p, DS="parameters",
   stmv_twostep_time = "gam",
   stmv_local_modelformula_time = formula( paste(
     'snowcrab.large.males_abundance',
-    '~ s(yr, k=10, bs="ts") + s(cos.w, k=3, bs="ts") + s(sin.w, k=3, bs="ts") ',
+    '~ s(yr, k=12, bs="ts") + s(cos.w, k=3, bs="ts") + s(sin.w, k=3, bs="ts") ',
     ' + s(cos.w, sin.w, yr, bs="ts", k=30)  ',
     ' + s(plon, k=3, bs="ts") + s(plat, k=3, bs="ts") + s(plon, plat, k=10, bs="ts") ' ) ),
 
