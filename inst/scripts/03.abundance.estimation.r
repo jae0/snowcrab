@@ -74,6 +74,8 @@ p = bio.snowcrab::load.environment( year.assessment=year.assessment )
 #----------------------------------------
 
 # 11 hrs with these settings
+ncpus = parallel::detectCores()
+
 p = snowcrab_stmv( p=p, DS="parameters",
   variables=list(Y="snowcrab.large.males_abundance"),
   selection=list(
@@ -102,7 +104,7 @@ p = snowcrab_stmv( p=p, DS="parameters",
   stmv_distance_statsgrid = 3, # resolution (km) of data aggregation (i.e. generation of the ** statistics ** ),
   stmv_distance_prediction_fraction = 1, # stmv_distance_prediction = stmv_distance_statsgrid * XX ..this is a half window km
   stmv_distance_scale = c( 25, 35, 45 ), #likely must be over 30km, so 50 +/- 20km, should likely match the setting in ~ line 256
-  stmv_clusters = list( rep("localhost", 8), rep("localhost", 8), rep("localhost", 8) )  # no of cores used made explicit.. must be same length as "stmv_distance_scale"
+  stmv_clusters = list( rep("localhost", ncpus), rep("localhost", ncpus), rep("localhost", ncpus) )  # no of cores used made explicit.. must be same length as "stmv_distance_scale"
 ) #End passing of parameters
 
 
@@ -192,6 +194,7 @@ plot(global_model)
 # year.assessment = 2018
 
 p = bio.snowcrab::load.environment( year.assessment=year.assessment )
+ncpus = parallel::detectCores()
 
 p = snowcrab_stmv( p=p, DS="parameters",
   variables=list(Y="snowcrab.large.males_presence_absence"),
@@ -223,7 +226,7 @@ p = snowcrab_stmv( p=p, DS="parameters",
   stmv_distance_statsgrid = 3, # resolution (km) of data aggregation (i.e. generation of the ** statistics ** ),
   stmv_distance_prediction_fraction = 1, # stmv_distance_prediction = stmv_distance_statsgrid * XX ..this is a half window km
   stmv_distance_scale = c( 25, 35, 45 ), #likely must be over 30km, so 50 +/- 20km, should likely match the setting in ~ line 256
-  stmv_clusters = list( rep("localhost", 8), rep("localhost", 8), rep("localhost", 8) )  # no of cores used made explicit.. must be same length as )
+  stmv_clusters = list( rep("localhost", ncpus), rep("localhost", ncpus), rep("localhost", ncpus) )  # no of cores used made explicit.. must be same length as )
 )
 
 if (0) {
