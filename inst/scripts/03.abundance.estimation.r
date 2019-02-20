@@ -189,7 +189,7 @@ plot(global_model)
 # STEP TWO commercial presence /absence
 #--------------------------------------------------------------------------------------
 
-#presence-absence
+# presence-absence
 # this takes about 40 hrs ... and 5-6 GB /process
 # year.assessment = 2018
 
