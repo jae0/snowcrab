@@ -257,37 +257,41 @@ summary( global_model )
 par(mar=c(1,1,1,1)) #change plot margins for Rstudio
 plot(global_model, all.terms=TRUE, trans=bio.snowcrab::inverse.logit, seWithMean=TRUE, jit=TRUE, rug=TRUE )
 
-#Family: binomial
+
+
+# Family: binomial
 # Link function: logit
 #
 # Formula:
 # snowcrab.large.males_presence_absence ~ s(t, k = 3, bs = "ts") +
 #     s(tsd, k = 3, bs = "ts") + s(tmax, k = 3, bs = "ts") + s(degreedays,
-#     k = 3, bs = "ts") + s(log(z), k = 3, bs = "ts") + s(log(dZ),
-#     k = 3, bs = "ts") + s(log(ddZ), k = 3, bs = "ts") + s(log(substrate.grainsize),
-#     k = 3, bs = "ts") + s(pca1, k = 3, bs = "ts") + s(pca2, k = 3,
-#     bs = "ts")
+#     k = 3, bs = "ts") + s(tmean.climatology, k = 3, bs = "ts") +
+#     s(tsd.climatology, k = 3, bs = "ts") + s(log(z), k = 3, bs = "ts") +
+#     s(log(dZ), k = 3, bs = "ts") + s(log(ddZ), k = 3, bs = "ts") +
+#     s(log(substrate.grainsize), k = 3, bs = "ts") + s(pca1, k = 3,
+#     bs = "ts") + s(pca2, k = 3, bs = "ts")
 #
 # Parametric coefficients:
 #             Estimate Std. Error z value Pr(>|z|)
-# (Intercept)  -1.2864     0.0573   -22.4   <2e-16
+# (Intercept)  -1.5210     0.0619   -24.6   <2e-16
 #
 # Approximate significance of smooth terms:
-#                                 edf Ref.df Chi.sq p-value
-# s(t)                        1.99999      2 1462.3  <2e-16
-# s(tsd)                      1.99204      2  101.8  <2e-16
-# s(tmax)                     1.09332      2   30.9   5e-09
-# s(degreedays)               1.99370      2  516.7  <2e-16
-# s(log(z))                   1.99999      2 2431.4  <2e-16
-# s(log(dZ))                  0.00205      2    0.0    0.55
-# s(log(ddZ))                 1.99998      2  168.3  <2e-16
-# s(log(substrate.grainsize)) 1.97548      2   77.2  <2e-16
-# s(pca1)                     1.95921      2  409.9  <2e-16
-# s(pca2)                     1.95763      2 1492.1  <2e-16
+#                                  edf Ref.df Chi.sq p-value
+# s(t)                        2.00e+00      2 1446.6 < 2e-16
+# s(tsd)                      1.99e+00      2   79.2 < 2e-16
+# s(tmax)                     1.98e+00      2   98.7 < 2e-16
+# s(degreedays)               2.00e+00      2  324.7 < 2e-16
+# s(tmean.climatology)        1.94e-07      2    0.0    0.51
+# s(tsd.climatology)          1.21e+00      2   32.1 4.3e-09
+# s(log(z))                   2.00e+00      2 2195.6 < 2e-16
+# s(log(dZ))                  1.05e+00      2   19.4 3.3e-06
+# s(log(ddZ))                 2.00e+00      2  273.0 < 2e-16
+# s(log(substrate.grainsize)) 1.96e+00      2  211.8 < 2e-16
+# s(pca1)                     2.00e+00      2  518.3 < 2e-16
+# s(pca2)                     1.99e+00      2 1229.1 < 2e-16
 #
-# R-sq.(adj) =  0.621   Deviance explained = 55.8%
-# UBRE = -0.56254  Scale est. = 1         n = 35868
-#
+# R-sq.(adj) =  0.622   Deviance explained = 55.8%
+# UBRE = -0.56211  Scale est. = 1         n = 35868
 
 
 # collect all predictions into a single file and return:
