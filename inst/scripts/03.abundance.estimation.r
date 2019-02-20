@@ -90,30 +90,13 @@ p = snowcrab_stmv( p=p, DS="parameters",
       yr = p$yrs      # time frame for comparison specified above
     )
   ),
-
   DATA = 'snowcrab_stmv( p=p, DS="stmv_inputs" )',
   stmv_global_modelengine ="gam",
   stmv_global_family = gaussian(link="log"),
-  stmv_global_modelformula = formula( paste(
-    'snowcrab.large.males_abundance',
-    ' ~ s( t, k = 3, bs = "ts") + s( tsd, k = 3, bs = "ts") + s( tmax, k = 3, bs = "ts") + s( degreedays, k = 3, bs = "ts")  ',
-    ' + s( tmean.climatology, k = 3, bs = "ts") + s( tsd.climatology, k = 3, bs = "ts")',
-    ' + s( t.range, k=3, bs="ts") + s( b.range, k=3, bs="ts") ',
-    ' + s( log(z), k=3, bs="ts") + s( log(dZ), k=3, bs="ts") + s( log(ddZ), k=3, bs="ts") ',
-    ' + s( log(substrate.grainsize), k=3, bs="ts") + s(pca1, k=3, bs="ts") + s(pca2, k=3, bs="ts")   ' )),  # no space
-
   stmv_local_modelengine = "twostep",
-
   stmv_twostep_time = "gam",
-  stmv_local_modelformula_time = formula( paste(
-    'snowcrab.large.males_abundance',
-    '~ s(yr, k=12, bs="ts") + s(cos.w, k=3, bs="ts") + s(sin.w, k=3, bs="ts") ',
-    ' + s(cos.w, sin.w, yr, bs="ts", k=30)  ',
-    ' + s(plon, k=3, bs="ts") + s(plat, k=3, bs="ts") + s(plon, plat, k=10, bs="ts") ' ) ),
-
   stmv_twostep_space = "fft",
   stmv_fft_filter="matern",  #  matern, krige (very slow), lowpass, lowpass_matern
-
   stmv_gam_optimizer=c("outer", "bfgs") ,
   stmv_variogram_method = "gstat",
   stmv_distance_statsgrid = 3, # resolution (km) of data aggregation (i.e. generation of the ** statistics ** ),
@@ -122,9 +105,20 @@ p = snowcrab_stmv( p=p, DS="parameters",
   stmv_clusters = list( rep("localhost", 8), rep("localhost", 8), rep("localhost", 8) )  # no of cores used made explicit.. must be same length as "stmv_distance_scale"
 ) #End passing of parameters
 
+
+if (0) {
+  p$stmv_global_modelformula = formula( paste(
+    ' snowcrab.large.males_abundance',
+    ' ~ s( t, k = 3, bs = "ts") + s( tsd, k = 3, bs = "ts") + s( tmax, k = 3, bs = "ts") + s( degreedays, k = 3, bs = "ts") ',
+    ' + s( tmean.climatology, k = 3, bs = "ts") + s( tsd.climatology, k = 3, bs = "ts")',
+    ' + s( t.range, k=3, bs="ts") + s( b.range, k=3, bs="ts") ',
+    ' + s( log(z), k=3, bs="ts") + s( log(dZ), k=3, bs="ts") + s( log(ddZ), k=3, bs="ts") ',
+    ' + s( log(substrate.grainsize), k=3, bs="ts") + s(pca1, k=3, bs="ts") + s(pca2, k=3, bs="ts")   '
+  ))
+}
+
 #Run the following line if you want to use maptools rather than GADMTools for mapping coastline
 # p$DATA = 'snowcrab_stmv( p=p, DS="stmv_inputs", coastline_source="mapdata.coastPolygon" )'
-
 
 # range( INP$snowcrab.large.males_abundance )
 # [1]   14.3 6675.0
@@ -149,37 +143,46 @@ summary( global_model )
 par(mar=c(1,1,1,1)) #change plot margins for Rstudio
 plot(global_model)
 
+
 # 2018 results
+
 # Family: gaussian
 # Link function: log
 #
 # Formula:
 # snowcrab.large.males_abundance ~ s(t, k = 3, bs = "ts") + s(tsd,
 #     k = 3, bs = "ts") + s(tmax, k = 3, bs = "ts") + s(degreedays,
-#     k = 3, bs = "ts") + s(log(z), k = 3, bs = "ts") + s(log(dZ),
-#     k = 3, bs = "ts") + s(log(ddZ), k = 3, bs = "ts") + s(log(substrate.grainsize),
-#     k = 3, bs = "ts") + s(pca1, k = 3, bs = "ts") + s(pca2, k = 3,
-#     bs = "ts")
+#     k = 3, bs = "ts") + s(tmean.climatology, k = 3, bs = "ts") +
+#     s(tsd.climatology, k = 3, bs = "ts") + s(t.range, k = 3,
+#     bs = "ts") + s(b.range, k = 3, bs = "ts") + s(log(z), k = 3,
+#     bs = "ts") + s(log(dZ), k = 3, bs = "ts") + s(log(ddZ), k = 3,
+#     bs = "ts") + s(log(substrate.grainsize), k = 3, bs = "ts") +
+#     s(pca1, k = 3, bs = "ts") + s(pca2, k = 3, bs = "ts")
 #
 # Parametric coefficients:
 #             Estimate Std. Error t value Pr(>|t|)
-# (Intercept)   6.6454     0.0236     281   <2e-16
+# (Intercept)   6.6260     0.0244     271   <2e-16
 #
 # Approximate significance of smooth terms:
 #                              edf Ref.df      F p-value
-# s(t)                        1.92      2  64.25 < 2e-16
-# s(tsd)                      1.85      2  12.92 9.6e-07
-# s(tmax)                     2.00      2  37.98 < 2e-16
-# s(degreedays)               1.88      2  67.14 < 2e-16
-# s(log(z))                   1.47      2 228.11 < 2e-16
-# s(log(dZ))                  1.67      2   8.59 5.0e-05
-# s(log(ddZ))                 1.89      2  37.70 < 2e-16
-# s(log(substrate.grainsize)) 1.70      2  43.58 < 2e-16
-# s(pca1)                     1.99      2  89.16 < 2e-16
-# s(pca2)                     1.99      2 292.99 < 2e-16
+# s(t)                        1.90      2  60.26 < 2e-16
+# s(tsd)                      1.80      2   3.40   0.023
+# s(tmax)                     1.88      2  21.68 4.9e-11
+# s(degreedays)               1.93      2  10.56 1.2e-05
+# s(tmean.climatology)        1.85      2  33.19 2.6e-16
+# s(tsd.climatology)          1.96      2  47.03 < 2e-16
+# s(t.range)                  1.55      2   1.39   0.164
+# s(b.range)                  2.00      2  13.77 9.7e-07
+# s(log(z))                   1.70      2 158.80 < 2e-16
+# s(log(dZ))                  1.95      2  31.10 1.4e-14
+# s(log(ddZ))                 1.87      2  28.48 6.0e-14
+# s(log(substrate.grainsize)) 1.99      2  38.53 < 2e-16
+# s(pca1)                     1.99      2  91.15 < 2e-16
+# s(pca2)                     1.98      2  81.12 < 2e-16
 #
-# R-sq.(adj) =  0.238   Deviance explained =   24%
-# GCV = 6450.8  Scale est. = 6434.5    n = 7640
+# R-sq.(adj) =  0.243   Deviance explained = 24.5%
+# GCV = 6423.2  Scale est. = 6400.2    n = 7640
+
 
 
 # -------------------------------------------------------------------------------------
@@ -191,6 +194,7 @@ plot(global_model)
 # year.assessment = 2018
 
 p = bio.snowcrab::load.environment( year.assessment=year.assessment )
+
 p = snowcrab_stmv( p=p, DS="parameters",
   variables=list(Y="snowcrab.large.males_presence_absence"),
   selection=list(
@@ -209,27 +213,13 @@ p = snowcrab_stmv( p=p, DS="parameters",
     )
   ),
   DATA = 'snowcrab_stmv( p=p, DS="stmv_inputs" )',
-  # aegis_project_datasources = c("speciescomposition", "speciesarea", "sizespectrum", "condition", "metabolism", "biochem"),
-  aegis_project_datasources = c("speciescomposition" ),
+  aegis_project_datasources = c("speciescomposition" ), # c("speciescomposition", "speciesarea", "sizespectrum", "condition", "metabolism", "biochem")
   stmv_global_family = binomial( link="logit" ),
   stmv_global_modelengine ="gam",
-  stmv_global_modelformula = formula( paste(
-    ' snowcrab.large.males_presence_absence',
-    ' ~ s( t, k = 3, bs = "ts") + s( tsd, k = 3, bs = "ts") + s( tmax, k = 3, bs = "ts") + s( degreedays, k = 3, bs = "ts") ',
-    ' + s( log(z), k=3, bs="ts") + s( log(dZ), k=3, bs="ts") + s( log(ddZ), k=3, bs="ts") ',
-    ' + s(log(substrate.grainsize), k=3, bs="ts") + s(pca1, k=3, bs="ts") + s(pca2, k=3, bs="ts")   ' )),
-
   stmv_local_modelengine = "twostep",
   stmv_twostep_time = "gam",
-  stmv_local_modelformula_time = formula( paste(
-    'snowcrab.large.males_abundance',
-    '~ s(yr, k=12, bs="ts") + s(cos.w, k=3, bs="ts") + s(sin.w, k=3, bs="ts") ',
-    ' + s(cos.w, sin.w, yr, bs="ts", k=30)  ',
-    ' + s(plon, k=3, bs="ts") + s(plat, k=3, bs="ts") + s(plon, plat, k=10, bs="ts") ' ) ),
-
   stmv_twostep_space = "fft",
   stmv_fft_filter="matern",  #  matern, krige (very slow), lowpass, lowpass_matern
-
   stmv_gam_optimizer=c("outer", "bfgs") ,
   stmv_variogram_method = "gstat",
   stmv_distance_statsgrid = 3, # resolution (km) of data aggregation (i.e. generation of the ** statistics ** ),
@@ -238,13 +228,21 @@ p = snowcrab_stmv( p=p, DS="parameters",
   stmv_clusters = list( rep("localhost", 8), rep("localhost", 8), rep("localhost", 8) )  # no of cores used made explicit.. must be same length as )
 )
 
+if (0) {
+  p$stmv_global_modelformula = formula( paste(
+    ' snowcrab.large.males_presence_absence',
+    ' ~ s( t, k = 3, bs = "ts") + s( tsd, k = 3, bs = "ts") + s( tmax, k = 3, bs = "ts") + s( degreedays, k = 3, bs = "ts") ',
+    ' + s( tmean.climatology, k = 3, bs = "ts") + s( tsd.climatology, k = 3, bs = "ts")',
+    ' + s( t.range, k=3, bs="ts") + s( b.range, k=3, bs="ts") ',
+    ' + s( log(z), k=3, bs="ts") + s( log(dZ), k=3, bs="ts") + s( log(ddZ), k=3, bs="ts") ',
+    ' + s( log(substrate.grainsize), k=3, bs="ts") + s(pca1, k=3, bs="ts") + s(pca2, k=3, bs="ts")   '
+  ))
+}
+
 # p$DATA = 'snowcrab_stmv( p=p, DS="stmv_inputs", coastline_source="mapdata.coastPolygon" )'
-
 # o = snowcrab_stmv(p=p, DS="stmv_inputs" )  # create fields for
-stmv( p=p, runmode=c("globalmodel", "interpolate" ) ) # no global_model and force a clean restart
 
-# stmv_db( p=p, DS="stmv.results" ) # save to disk for use outside stmv*, returning to user scale
-# if (really.finished) stmv_db( p=p, DS="cleanup.all" )
+stmv( p=p, runmode=c("globalmodel", "interpolate" ) ) # no global_model and force a clean restart
 
 snowcrab_stmv( p=p, DS="predictions.redo" ) # warp predictions to other grids
 snowcrab_stmv( p=p, DS="stmv.stats.redo" ) # warp stats to other grids
