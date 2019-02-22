@@ -34,6 +34,8 @@
         cvlognormalmax = 0.4, #  curve( dlnorm(x, meanlog=log(1), sdlog=0.25), from=0.01, to=2 )
       # for lognormal: cv = sqrt(exp(sigma^2) - 1); or sigma = sqrt(log(cv^2+ 1) ) ==> sigma = sqrt( log(0.25^2 + 1)) = 0.246 ~ cv -- i.e. cv ~ sd
         IOA = as.matrix(res$B), # observed index of abundance
+        IOCPUE = as.matrix(res$CPUE), # observed index of catch rate
+        IOAG = as.matrix(res$Bg), # observed index of abundance as geometric mean catches
         IOAcv = as.matrix( log(res$Bsd )), # observed index of log abundance SD estimates ~ CV
         #IREC = as.matrix(res$R), # observed index of abundance
         #IRECcv = as.matrix(res$Rsd ), # observed index of log abundance SD estimates ~CV
@@ -87,6 +89,7 @@
       L = biomass.summary.db( DS="L.redo", p=p  )  # must go first as part of biomass estimates
       B = biomass.summary.db( DS="B.redo", p=p )  # rename to avoid confusion below as B is also used
       Bsd = biomass.summary.db( DS="Bsd.redo", p=p )  # rename to avoid confusion below as B is also used
+      CPUE=biomass.summary.db(DS="CPUE.redo") #brings in catch rate estimates in kg
      #  R = biomass.summary.db( DS="R.redo", p=p  )  # rename to avoid confusion below as B is also used
      #  Rsd = biomass.summary.db( DS="Rsd.redo", p=p  )  # rename to avoid confusion below as B is also used
 
@@ -103,6 +106,7 @@
       B[ib,3] = NA
 
       L = L[ which(rownames(L) %in% rownames(B) ),  ]
+      CPUE = CPUE[ which(rownames(CPUE) %in% rownames(B) ),  ]
       Bsd = Bsd[ which(rownames(Bsd) %in% rownames(B) ),  ]
     #  R = R[ which(rownames(R) %in% rownames(B) ),  ]
     #  Rsd = Rsd[ which(rownames(Rsd) %in% rownames(B) ),  ]
@@ -111,7 +115,7 @@
     #  Rg = Rg[ which(rownames(Rg) %in% rownames(B) ),  ]
     #  Rgsd = Rgsd[ which(rownames(Rgsd) %in% rownames(B) ),  ]
 
-     out = list( L=L, B=B, Bsd=Bsd,Bg=Bg, Bgsd=Bgsd )
+     out = list( L=L, B=B, Bsd=Bsd,Bg=Bg, Bgsd=Bgsd, CPUE=CPUE )
 
     #  out = list( L=L, B=B, R=R, Bsd=Bsd, Rsd=Rsd, Bg=Bg, Bgsd=Bgsd, Rg=Rg, Rgsd=Rgsd )
 
@@ -135,6 +139,20 @@
       return (L)
     }
 
+    if (DS %in% c("CPUE", "CPUE.redo" ) ) {
+      fn = file.path( sum_outdir, "CPUE_ts.rdata" )
+      CPUE=NULL
+      if (DS=="CPUE") {
+        if (file.exists(fn)) load(fn)
+        return(CPUE)
+      }
+      CPUE = cpue.aggregate( format="bugs" )
+      CPUE = CPUE[ , c("cfanorth", "cfasouth", "cfa4x") ]
+      CPUE = as.data.frame(CPUE)
+      save( CPUE, file=fn, compress=T )
+      return (CPUE)
+    }
+    
 
     if (DS %in% c("B", "B.redo" )) {
       fn = file.path( sum_outdir, "B_ts.rdata" )
