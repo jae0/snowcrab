@@ -4,8 +4,8 @@
 
 #Pick whichever year reference below is correct (most often year.assessment...-1)
 if (!exists("year.assessment")) {
-  # year.assessment=lubridate::year(Sys.Date())
-  # year.assessment=lubridate::year(Sys.Date()) - 1
+   year.assessment=lubridate::year(Sys.Date())
+   year.assessment=lubridate::year(Sys.Date()) - 1
 }
 p = bio.snowcrab::load.environment( year.assessment=year.assessment )
 
@@ -15,12 +15,23 @@ p$vars.tomodel="R0.mass"
 biomass.summary.db("complete.redo", p=p) #Uses the model results to create a habitat area expanded survey index
 
 
+#Choose one of the below  model runs 
+##stmv biomass estimates only
 p$fishery_model = list()
 p$fishery_model$method = "stan"  # "jags", etc.
 p$fishery_model$outdir = file.path(project.datadirectory('bio.snowcrab'), "assessments", p$year.assessment )
 p$fishery_model$fnres  = file.path(p$fishery_model$outdir, paste( "surplus.prod.mcmc", p$year.assessment, p$fishery_model$method, "rdata", sep=".") )
 p$fishery_model$standata = fishery_model( p=p, DS="stan_data" )
 p$fishery_model$stancode = fishery_model( p=p, DS="stan_surplus_production" )
+p$fishery_model$stancode_compiled = rstan::stan_model( model_code=p$fishery_model$stancode )
+
+##stmv biomass estimates with cpue
+p$fishery_model = list()
+p$fishery_model$method = "stan"  # "jags", etc.
+p$fishery_model$outdir = file.path(project.datadirectory('bio.snowcrab'), "assessments", p$year.assessment )
+p$fishery_model$fnres  = file.path(p$fishery_model$outdir, paste( "surplus.prod.mcmc", p$year.assessment, p$fishery_model$method, "rdata", sep=".") )
+p$fishery_model$standata = fishery_model( p=p, DS="stan_data" )
+p$fishery_model$stancode = fishery_model( p=p, DS="stan_surplus_production_stmv_CPUE" )
 p$fishery_model$stancode_compiled = rstan::stan_model( model_code=p$fishery_model$stancode )
 
 # later:::ensureInitialized()  # solve mode error
@@ -35,8 +46,10 @@ res = fishery_model( p=p, DS="stan",
   # chains = 5,             # number of Markov chains
   # cores = 5              # number of cores (using 2 just for the vignette)
 
-# load( p$fishery_model$fnres )
+#below figure code best run in R terminal rather than RStudio
 
+#uncomment to reload fishery model for plotting
+# load( p$fishery_model$fnres ) 
 
 # frequency density of key parameters
 figure.mcmc( "K", res=res, fn=file.path(p$fishery_model$outdir, "K.density.png" ) )

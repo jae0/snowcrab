@@ -315,6 +315,12 @@
           # abline (v=Bhistorical, lty="dashed")
           # text( Bhistorical-0.01*K[i], yl, "Mean" , srt=90, pos=3,  lwd=2)
 
+#Enable below to see the annual F estimates for inclusion in the document          
+Print(F[hdat,1] )
+Print(F[hdat,2] )
+Print(F[hdat,3] )
+
+
         }
       }
 
