@@ -168,10 +168,24 @@ snowcrab_stmv = function( DS=NULL, p=NULL, year=NULL, ret="mean", varnames=NULL,
   if (DS %in% c("input_data") ) {
     set = aegis::survey.db( p=p, DS="filter" ) # mature male > 95 mm
 
-    if ( p$selection$type=="abundance") {
-      # snowcrab survey data only
-      set = set[ which(set$data.source == "snowcrab"), ]
-      
+    if ( p$selection$type=="number") {
+      # should be snowcrab survey data only taken care of p$selection$survey = "snowcrab"
+      # robustify input data: .. upper bound trim
+      highestpossible = quantile( set$totno_adjusted, probs=0.975, na.rm=TRUE )
+      set$totno_adjusted[ set$totno_adjusted > highestpossible ] = highestpossible
+
+      # keep "zero's" to inform spatial processes but only as "lowestpossible" value
+      jj = which( set$totno_adjusted > 0 )
+      lowestpossible =  quantile( set$totno_adjusted[jj], probs=0.025, na.rm=TRUE )
+      ii = which( set$totno_adjusted < lowestpossible )
+      set$totno_adjusted[ii] = lowestpossible / 10 ## arbitrary but close to detection limit
+      names(set)[ which( names(set) =="totno_adjusted")] = p$variables$Y
+      set$Y = NULL
+      set$wt = 1 / set$cf_set_no
+    }
+
+    if ( p$selection$type=="biomass") {
+      # should be snowcrab survey data only taken care of p$selection$survey = "snowcrab"
       # robustify input data: .. upper bound trim
       highestpossible = quantile( set$totwgt_adjusted, probs=0.975, na.rm=TRUE )
       set$totwgt_adjusted[ set$totwgt_adjusted > highestpossible ] = highestpossible
@@ -183,7 +197,7 @@ snowcrab_stmv = function( DS=NULL, p=NULL, year=NULL, ret="mean", varnames=NULL,
       set$totwgt_adjusted[ii] = lowestpossible / 10 ## arbitrary but close to detection limit
       names(set)[ which( names(set) =="totwgt_adjusted")] = p$variables$Y
       set$Y = NULL
-      set$wt = set$sa
+      set$wt = 1 / set$cf_set_wgt
     }
 
 

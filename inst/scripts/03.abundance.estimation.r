@@ -79,7 +79,7 @@ ncpus = parallel::detectCores()
 p = snowcrab_stmv( p=p, DS="parameters",
   variables=list(Y="snowcrab.large.males_abundance"),
   selection=list(
-    type = "abundance",
+    type = "biomass",
     biologicals=list(
       sex=0, # male
       mat=1, # do not use maturity status in groundfish data as it is suspect ..
@@ -304,7 +304,7 @@ p = bio.snowcrab::load.environment( year.assessment=year.assessment )
 p = snowcrab_stmv( p=p, DS="parameters",
   variables = list(Y="snowcrab.large.males_abundance"),
   selection=list(
-    type = "abundance",
+    type = "biomass",
     biologicals=list(
       sex=0, # male
       mat=1, # do not use maturity status in groundfish data as it is suspect ..

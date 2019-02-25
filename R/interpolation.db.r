@@ -14,11 +14,6 @@ interpolation.db = function( ip=NULL, DS=NULL, p=NULL,
       return (B)
     }
 
-    set = aegis::survey.db( p=p, DS="filter" ) # mature male > 95 mm
-    set$totmass = set$totwgt / set$sa
-
-    ii = which( set$totmass > 0 )
-
     bm = snowcrab_stmv( p=p, DS="baseline", ret="mean", varnames=varnames )
     bl = snowcrab_stmv( p=p, DS="baseline", ret="lb", varnames=varnames )
     bu = snowcrab_stmv( p=p, DS="baseline", ret="ub", varnames=varnames )
@@ -29,6 +24,11 @@ interpolation.db = function( ip=NULL, DS=NULL, p=NULL,
     ub = bu[[1]]
 
     bm=bu=bl = NULL
+
+    # set = aegis::survey.db( p=p, DS="filter" ) # mature male > 95 mm
+    # set$totmass = set$totwgt / set$sa
+
+    # ii = which( set$totmass > 0 )
 
     # these are assumed to be below detection limit
     # qh = quantile( set$totmass[ii], probs=p$habitat.threshold.quantile , na.rm=TRUE )
@@ -201,12 +201,12 @@ interpolation.db = function( ip=NULL, DS=NULL, p=NULL,
       out = matrix( NA, nrow=p$ny, ncol=4)
 
       for (y in 1:p$ny) {
-        iHabitat = which(  {bm$h >= p$habitat.threshold.quantile } & {bm$lb >=0} ) # any area with biomass > lowest threshold, by definition
+        iHabitat = which(  {bm$h >= p$habitat.threshold.quantile }  ) # any area with biomass > lowest threshold, by definition
         iHabitatRegion = intersect( aoi, iHabitat )
         out[ y, 1] = sum( bm$m[iHabitatRegion,y] , na.rm=TRUE ) # abundance weighted by Pr
         out[ y, 2] = sum( bm$lb[iHabitatRegion,y] , na.rm=TRUE )
         out[ y, 3] = sum( bm$ub[iHabitatRegion,y] , na.rm=TRUE )
-        out[ y, 4] = sum( bm$h[iHabitatRegion,y] ) * (p$pres*p$pres)
+        out[ y, 4] = length( iHabitatRegion ) * (p$pres*p$pres)
       }
 
       ok = as.data.frame( out )
@@ -255,8 +255,8 @@ interpolation.db = function( ip=NULL, DS=NULL, p=NULL,
     ps = snowcrab_stmv(p=p, DS="output_data" )
     bs = bathymetry.db( p=p, DS="baseline")
 
-    temp = ps$t * bm$h
-
+    temp = ps$t 
+  
     K = NULL
     nreg = length(p$regions.to.model)
     for (r in 1:nreg ){
@@ -265,7 +265,7 @@ interpolation.db = function( ip=NULL, DS=NULL, p=NULL,
       out = matrix( NA, nrow=p$ny, ncol=2)
 
       for (y in 1:p$ny) {
-        iHabitat = which( bm$h[,y] > p$habitat.threshold.quantile ) # any area with bm > lowest threshold
+        iHabitat = which( bm$h[,y] >= p$habitat.threshold.quantile ) # any area with bm > lowest threshold
         iHabitatRegion = intersect( aoi, iHabitat )
         out[ y, 1] = mean( temp[iHabitatRegion,y] , na.rm=TRUE ) # temperature weighted by Pr
         out[ y, 2] = sd( temp[iHabitatRegion,y] , na.rm=TRUE ) # temperature weighted by Pr
