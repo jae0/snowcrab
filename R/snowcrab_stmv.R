@@ -171,14 +171,15 @@ snowcrab_stmv = function( DS=NULL, p=NULL, year=NULL, ret="mean", varnames=NULL,
     if ( p$selection$type=="number") {
       # should be snowcrab survey data only taken care of p$selection$survey = "snowcrab"
       # robustify input data: .. upper bound trim
-      highestpossible = quantile( set$totno_adjusted, probs=0.975, na.rm=TRUE )
+      highestpossible = quantile( set$totno_adjusted, probs=p$stmv_quantile_bounds[2], na.rm=TRUE )
       set$totno_adjusted[ set$totno_adjusted > highestpossible ] = highestpossible
 
       # keep "zero's" to inform spatial processes but only as "lowestpossible" value
       jj = which( set$totno_adjusted > 0 )
-      lowestpossible =  quantile( set$totno_adjusted[jj], probs=0.025, na.rm=TRUE )
+      lowestpossible =  quantile( set$totno_adjusted[jj], probs=p$stmv_quantile_bounds[1], na.rm=TRUE )
+      lowerbound =  quantile( set$totno_adjusted[jj], probs=p$stmv_quantile_bounds[1]/10, na.rm=TRUE )
       ii = which( set$totno_adjusted < lowestpossible )
-      set$totno_adjusted[ii] = lowestpossible / 10 ## arbitrary but close to detection limit
+      set$totno_adjusted[ii] = lowerbound ## arbitrary but close to detection limit
       names(set)[ which( names(set) =="totno_adjusted")] = p$variables$Y
       set$Y = NULL
       set$wt = 1 / set$cf_set_no
@@ -187,14 +188,15 @@ snowcrab_stmv = function( DS=NULL, p=NULL, year=NULL, ret="mean", varnames=NULL,
     if ( p$selection$type=="biomass") {
       # should be snowcrab survey data only taken care of p$selection$survey = "snowcrab"
       # robustify input data: .. upper bound trim
-      highestpossible = quantile( set$totwgt_adjusted, probs=0.975, na.rm=TRUE )
+      highestpossible = quantile( set$totwgt_adjusted, probs=p$stmv_quantile_bounds[2], na.rm=TRUE )
       set$totwgt_adjusted[ set$totwgt_adjusted > highestpossible ] = highestpossible
 
       # keep "zero's" to inform spatial processes but only as "lowestpossible" value
       jj = which( set$totwgt_adjusted > 0 )
-      lowestpossible =  quantile( set$totwgt_adjusted[jj], probs=0.025, na.rm=TRUE )
+      lowestpossible =  quantile( set$totwgt_adjusted[jj], probs=p$stmv_quantile_bounds[1], na.rm=TRUE )
+      lowerbound =  quantile( set$totno_adjusted[jj], probs=p$stmv_quantile_bounds[1]/10, na.rm=TRUE )
       ii = which( set$totwgt_adjusted < lowestpossible )
-      set$totwgt_adjusted[ii] = lowestpossible / 10 ## arbitrary but close to detection limit
+      set$totwgt_adjusted[ii] = lowerbound ## arbitrary but close to detection limit
       names(set)[ which( names(set) =="totwgt_adjusted")] = p$variables$Y
       set$Y = NULL
       set$wt = 1 / set$cf_set_wgt
@@ -254,10 +256,9 @@ snowcrab_stmv = function( DS=NULL, p=NULL, year=NULL, ret="mean", varnames=NULL,
       time_var="timestamp"
     )
 
-    set$lon = set$lat = NULL
-
+ 
     if (!alldata) {
-      set = set[, which(names(set) %in% c( p$variables$LOCS, p$variables$COV, p$variables$Y, p$variables$TIME, "dyear", "yr",  "wt") ) ]  # a data frame
+     set = set[, which(names(set) %in% c( p$variables$LOCS, p$variables$COV, p$variables$Y, p$variables$TIME, "dyear", "yr",  "wt") ) ]  # a data frame
       oo = setdiff( c( p$variables$LOCS, p$variables$COV ), names(set))
       if (length(oo) > 0 ) {
         print(oo )
