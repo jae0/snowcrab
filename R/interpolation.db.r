@@ -14,7 +14,7 @@ interpolation.db = function( ip=NULL, DS=NULL, p=NULL,
       return (B)
     }
 
-    set = aegis::survey.db( p=p, DS="det.filter" ) # mature male > 95 mm
+    set = aegis::survey.db( p=p, DS="filter" ) # mature male > 95 mm
     set$totmass = set$totwgt / set$sa
 
     ii = which( set$totmass > 0 )
