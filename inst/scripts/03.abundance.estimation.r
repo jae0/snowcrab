@@ -250,41 +250,37 @@ par(mar=c(1,1,1,1)) #change plot margins for Rstudio
 plot(global_model, all.terms=TRUE, trans=bio.snowcrab::inverse.logit, seWithMean=TRUE, jit=TRUE, rug=TRUE )
 
 
-
-# Family: binomial
+# Family: binomial 
 # Link function: logit
 #
 # Formula:
 # snowcrab.large.males_presence_absence ~ s(t, k = 3, bs = "ts") +
 #     s(tsd, k = 3, bs = "ts") + s(tmax, k = 3, bs = "ts") + s(degreedays,
-#     k = 3, bs = "ts") + s(tmean.climatology, k = 3, bs = "ts") +
-#     s(tsd.climatology, k = 3, bs = "ts") + s(log(z), k = 3, bs = "ts") +
-#     s(log(dZ), k = 3, bs = "ts") + s(log(ddZ), k = 3, bs = "ts") +
-#     s(log(substrate.grainsize), k = 3, bs = "ts") + s(pca1, k = 3,
-#     bs = "ts") + s(pca2, k = 3, bs = "ts")
+#     k = 3, bs = "ts") + s(log(z), k = 3, bs = "ts") + s(log(dZ),
+#     k = 3, bs = "ts") + s(log(ddZ), k = 3, bs = "ts") + s(log(substrate.grainsize),
+#     k = 3, bs = "ts") + s(pca1, k = 3, bs = "ts") + s(pca2, k = 3,
+#     bs = "ts")
 #
 # Parametric coefficients:
 #             Estimate Std. Error z value Pr(>|z|)
-# (Intercept)  -1.5210     0.0619   -24.6   <2e-16
+# (Intercept)   0.0302     0.0349    0.87     0.39
 #
 # Approximate significance of smooth terms:
-#                                  edf Ref.df Chi.sq p-value
-# s(t)                        2.00e+00      2 1446.6 < 2e-16
-# s(tsd)                      1.99e+00      2   79.2 < 2e-16
-# s(tmax)                     1.98e+00      2   98.7 < 2e-16
-# s(degreedays)               2.00e+00      2  324.7 < 2e-16
-# s(tmean.climatology)        1.94e-07      2    0.0    0.51
-# s(tsd.climatology)          1.21e+00      2   32.1 4.3e-09
-# s(log(z))                   2.00e+00      2 2195.6 < 2e-16
-# s(log(dZ))                  1.05e+00      2   19.4 3.3e-06
-# s(log(ddZ))                 2.00e+00      2  273.0 < 2e-16
-# s(log(substrate.grainsize)) 1.96e+00      2  211.8 < 2e-16
-# s(pca1)                     2.00e+00      2  518.3 < 2e-16
-# s(pca2)                     1.99e+00      2 1229.1 < 2e-16
+#                              edf Ref.df Chi.sq p-value
+# s(t)                        1.99      2  336.7 < 2e-16
+# s(tsd)                      2.00      2   35.3 2.0e-08
+# s(tmax)                     1.98      2   59.9 7.0e-14
+# s(degreedays)               1.99      2  188.4 < 2e-16
+# s(log(z))                   2.00      2 1282.7 < 2e-16
+# s(log(dZ))                  1.99      2   68.7 9.1e-16
+# s(log(ddZ))                 1.98      2  224.4 < 2e-16
+# s(log(substrate.grainsize)) 1.98      2  394.4 < 2e-16
+# s(pca1)                     2.00      2  932.6 < 2e-16
+# s(pca2)                     2.00      2 1291.8 < 2e-16
 #
-# R-sq.(adj) =  0.622   Deviance explained = 55.8%
-# UBRE = -0.56211  Scale est. = 1         n = 35868
-
+# R-sq.(adj) =   0.62   Deviance explained = 56.2%
+# UBRE = -0.58807  Scale est. = 1         n = 36031
+#
 
 # collect all predictions into a single file and return:
 # year.assessment=2017
