@@ -125,7 +125,7 @@ interpolation.db = function( ip=NULL, DS=NULL, p=NULL,
     fu = bm$ub  / 10^3  # kg/km^2 to t/km^2  .. required for biomass.summary.db
     h  = bm$h
 
-    qs = range(fb[fb>0], na.rm=TRUE)
+    qs = quantile(fb[fb>0], probs=p$stmv_quantile_bounds, na.rm=TRUE)
     datarange = seq( (qs[1]), (qs[2]), length.out=150)
     cols = color.code( "seis", datarange )
     fb[which(!is.finite(fb))] = qs[1]*0.99
@@ -145,6 +145,7 @@ interpolation.db = function( ip=NULL, DS=NULL, p=NULL,
     }
 
 
+    qs = quantile(fl[fl>0], probs=p$stmv_quantile_bounds, na.rm=TRUE)
     qs = range(fl[fl>0], na.rm=TRUE)
     datarange = seq( (qs[1]), (qs[2]), length.out=150)
     cols = color.code( "seis", datarange )
@@ -165,8 +166,7 @@ interpolation.db = function( ip=NULL, DS=NULL, p=NULL,
     }
 
 
-
-    qs = range(fu[fu>0], na.rm=TRUE)
+    qs = quantile(fu[fu>0], probs=p$stmv_quantile_bounds, na.rm=TRUE)
     datarange = seq( (qs[1]), (qs[2]), length.out=150)
     cols = color.code( "seis", datarange )
     fu[which(!is.finite(fu))] = qs[1]*0.99

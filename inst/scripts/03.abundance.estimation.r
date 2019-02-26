@@ -250,7 +250,7 @@ par(mar=c(1,1,1,1)) #change plot margins for Rstudio
 plot(global_model, all.terms=TRUE, trans=bio.snowcrab::inverse.logit, seWithMean=TRUE, jit=TRUE, rug=TRUE )
 
 
-# Family: binomial 
+# Family: binomial
 # Link function: logit
 #
 # Formula:
