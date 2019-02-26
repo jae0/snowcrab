@@ -145,43 +145,36 @@ plot(global_model)
 
 
 # 2018 results
-
 # Family: gaussian
 # Link function: log
 #
 # Formula:
 # snowcrab.large.males_abundance ~ s(t, k = 3, bs = "ts") + s(tsd,
 #     k = 3, bs = "ts") + s(tmax, k = 3, bs = "ts") + s(degreedays,
-#     k = 3, bs = "ts") + s(tmean.climatology, k = 3, bs = "ts") +
-#     s(tsd.climatology, k = 3, bs = "ts") + s(t.range, k = 3,
-#     bs = "ts") + s(b.range, k = 3, bs = "ts") + s(log(z), k = 3,
-#     bs = "ts") + s(log(dZ), k = 3, bs = "ts") + s(log(ddZ), k = 3,
-#     bs = "ts") + s(log(substrate.grainsize), k = 3, bs = "ts") +
-#     s(pca1, k = 3, bs = "ts") + s(pca2, k = 3, bs = "ts")
+#     k = 3, bs = "ts") + s(log(z), k = 3, bs = "ts") + s(log(dZ),
+#     k = 3, bs = "ts") + s(log(ddZ), k = 3, bs = "ts") + s(log(substrate.grainsize),
+#     k = 3, bs = "ts") + s(pca1, k = 3, bs = "ts") + s(pca2, k = 3,
+#     bs = "ts")
 #
 # Parametric coefficients:
 #             Estimate Std. Error t value Pr(>|t|)
-# (Intercept)   6.6260     0.0244     271   <2e-16
+# (Intercept)   6.7468     0.0204     330   <2e-16
 #
 # Approximate significance of smooth terms:
-#                              edf Ref.df      F p-value
-# s(t)                        1.90      2  60.26 < 2e-16
-# s(tsd)                      1.80      2   3.40   0.023
-# s(tmax)                     1.88      2  21.68 4.9e-11
-# s(degreedays)               1.93      2  10.56 1.2e-05
-# s(tmean.climatology)        1.85      2  33.19 2.6e-16
-# s(tsd.climatology)          1.96      2  47.03 < 2e-16
-# s(t.range)                  1.55      2   1.39   0.164
-# s(b.range)                  2.00      2  13.77 9.7e-07
-# s(log(z))                   1.70      2 158.80 < 2e-16
-# s(log(dZ))                  1.95      2  31.10 1.4e-14
-# s(log(ddZ))                 1.87      2  28.48 6.0e-14
-# s(log(substrate.grainsize)) 1.99      2  38.53 < 2e-16
-# s(pca1)                     1.99      2  91.15 < 2e-16
-# s(pca2)                     1.98      2  81.12 < 2e-16
+#                              edf Ref.df     F p-value
+# s(t)                        1.91      2  73.0 < 2e-16
+# s(tsd)                      2.00      2  14.0 8.3e-07
+# s(tmax)                     1.91      2  11.7 1.4e-06
+# s(degreedays)               1.36      2  45.4 < 2e-16
+# s(log(z))                   1.91      2 174.7 < 2e-16
+# s(log(dZ))                  1.93      2  20.9 3.8e-10
+# s(log(ddZ))                 1.95      2  61.5 < 2e-16
+# s(log(substrate.grainsize)) 1.99      2  51.0 < 2e-16
+# s(pca1)                     2.00      2 100.4 < 2e-16
+# s(pca2)                     1.94      2  95.3 < 2e-16
 #
-# R-sq.(adj) =  0.243   Deviance explained = 24.5%
-# GCV = 6423.2  Scale est. = 6400.2    n = 7640
+# R-sq.(adj) =  0.232   Deviance explained = 23.4%
+# GCV = 6198.2  Scale est. = 6182      n = 7640
 
 
 
@@ -321,11 +314,7 @@ p = snowcrab_stmv( p=p, DS="parameters",
 )
 
 interpolation.db( DS="fishable.biomass.redo", p=p  ) # combine habitat and abundance info and map
-interpolation.db( DS="fishable.biomass.map", p=p  )
-
 K = interpolation.db( DS="fishable.biomass.timeseries", p=p  )
-
-
 if (0){
   str(K)
   table.view( K )
@@ -333,6 +322,8 @@ if (0){
   plot( total ~ yr, K[K$region=="cfasouth", ], type="b")
   plot( total ~ yr, K[K$region=="cfa4x", ], type="b")
 }
+
+interpolation.db( DS="fishable.biomass.map", p=p  )
 
 figure.timeseries.snowcrab.habitat(p=p) # /bio.data/bio.snowcrab/assessments/2016/timeseries/interpolated/snowcrab.habitat.sa.png
 

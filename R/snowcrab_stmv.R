@@ -29,15 +29,15 @@ snowcrab_stmv = function( DS=NULL, p=NULL, year=NULL, ret="mean", varnames=NULL,
 
     if (!exists("boundary", p)) p$boundary = FALSE
     if (!exists("depth.filter", p)) p$depth.filter = 0 # depth (m) stats locations with elevation > 0 m as being on land (and so ignore)
-    if (!exists("stmv_quantile_bounds", p)) p$stmv_quantile_bounds = c(0.025, 0.975) # remove these extremes in interpolations
+    if (!exists("stmv_quantile_bounds", p)) p$stmv_quantile_bounds = c(0.015, 0.995) # remove these extremes in interpolations
 
-    if (!exists("stmv_rsquared_threshold", p)) p$stmv_rsquared_threshold = 0.2 # lower threshold
+    if (!exists("stmv_rsquared_threshold", p)) p$stmv_rsquared_threshold = 0.25 # lower threshold
     if (!exists("stmv_distance_statsgrid", p)) p$stmv_distance_statsgrid = 4 # resolution (km) of data aggregation (i.e. generation of the ** statistics ** )
 #    if (!exists("stmv_distance_prediction", p)) p$stmv_distance_prediction = p$stmv_distance_statsgrid*0.75  # this is a half window km
     if (!exists("stmv_distance_scale", p)) p$stmv_distance_scale = c(25, 35, 45) # km ... approx guess of 95% AC range
-    if (!exists("stmv_distance_upsampling_fraction", p)) p$stmv_distance_upsampling_fraction = c(1, 1.1, 1.3)  # upsample to determine input data .. do not want to make it too large for snowcrab as this can bias up estimates
+    if (!exists("stmv_distance_upsampling_fraction", p)) p$stmv_distance_upsampling_fraction = c(1, 1.1, 1.25)  # upsample to determine input data .. do not want to make it too large for snowcrab as this can bias up estimates
 
-    if (!exists("n.min", p)) p$n.min = 200 # n.min/n.max changes with resolution must be more than the number of knots/edf
+    if (!exists("n.min", p)) p$n.min = 250 # n.min/n.max changes with resolution must be more than the number of knots/edf
     # min number of data points req before attempting to model timeseries in a localized space
     if (!exists("n.max", p)) p$n.max = 6000 # actually can have a lot of data from logbooks ... this keeps things reasonable in terms of run-time
 
@@ -106,7 +106,7 @@ snowcrab_stmv = function( DS=NULL, p=NULL, year=NULL, ret="mean", varnames=NULL,
         if (!exists("stmv_local_modelformula_time", p)) {
           p$stmv_local_modelformula_time = formula( paste(
             p$variables$Y,
-            ' ~ s(yr, k=10, bs="ts") + s(cos.w, k=3, bs="ts") + s(sin.w, k=3, bs="ts") ',
+            ' ~ s(yr, k=12, bs="ts") + s(cos.w, k=3, bs="ts") + s(sin.w, k=3, bs="ts") ',
             ' + s(cos.w, sin.w, yr, bs="ts", k=30) ',
             ' + s( log(z), k=3, bs="ts" ) + s(plon, k=3, bs="ts") + s(plat, k=3, bs="ts") + s(log(z), plon, plat, k=30, bs="ts") '
           ) )
