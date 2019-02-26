@@ -171,37 +171,37 @@ snowcrab_stmv = function( DS=NULL, p=NULL, year=NULL, ret="mean", varnames=NULL,
     if ( p$selection$type=="number") {
       # should be snowcrab survey data only taken care of p$selection$survey = "snowcrab"
       # robustify input data: .. upper bound trim
-      highestpossible = quantile( set$totno_adjusted, probs=p$stmv_quantile_bounds[2], na.rm=TRUE )
-      set$totno_adjusted[ set$totno_adjusted > highestpossible ] = highestpossible
-
-      # keep "zero's" to inform spatial processes but only as "lowestpossible" value
-      jj = which( set$totno_adjusted > 0 )
-      lowestpossible =  quantile( set$totno_adjusted[jj], probs=p$stmv_quantile_bounds[1], na.rm=TRUE )
-      lowerbound =  quantile( set$totno_adjusted[jj], probs=p$stmv_quantile_bounds[1]/10, na.rm=TRUE )
-      ii = which( set$totno_adjusted < lowestpossible )
-      set$totno_adjusted[ii] = lowerbound ## arbitrary but close to detection limit
-      names(set)[ which( names(set) =="totno_adjusted")] = p$variables$Y
-      set$Y = NULL
+      if (exists("stmv_quantile_bounds", p)) {
+        highestpossible = quantile( set$totno_adjusted, probs=p$stmv_quantile_bounds[2], na.rm=TRUE )
+        set$totno_adjusted[ set$totno_adjusted > highestpossible ] = highestpossible
+        # keep "zero's" to inform spatial processes but only as "lowestpossible" value
+        jj = which( set$totno_adjusted > 0 )
+        lowestpossible =  quantile( set$totno_adjusted[jj], probs=p$stmv_quantile_bounds[1], na.rm=TRUE )
+        lowerbound =  quantile( set$totno_adjusted[jj], probs=p$stmv_quantile_bounds[1]/10, na.rm=TRUE )
+        ii = which( set$totno_adjusted < lowestpossible )
+        set$totno_adjusted[ii] = lowerbound ## arbitrary but close to detection limit
+      }
+      set[, p$variables$Y] = set$totno_adjusted 
       set$wt = 1 / set$cf_set_no
     }
 
     if ( p$selection$type=="biomass") {
       # should be snowcrab survey data only taken care of p$selection$survey = "snowcrab"
       # robustify input data: .. upper bound trim
-      highestpossible = quantile( set$totwgt_adjusted, probs=p$stmv_quantile_bounds[2], na.rm=TRUE )
-      set$totwgt_adjusted[ set$totwgt_adjusted > highestpossible ] = highestpossible
+      if (exists("stmv_quantile_bounds", p)) {
+        highestpossible = quantile( set$totwgt_adjusted, probs=p$stmv_quantile_bounds[2], na.rm=TRUE )
+        set$totwgt_adjusted[ set$totwgt_adjusted > highestpossible ] = highestpossible
 
-      # keep "zero's" to inform spatial processes but only as "lowestpossible" value
-      jj = which( set$totwgt_adjusted > 0 )
-      lowestpossible =  quantile( set$totwgt_adjusted[jj], probs=p$stmv_quantile_bounds[1], na.rm=TRUE )
-      lowerbound =  quantile( set$totno_adjusted[jj], probs=p$stmv_quantile_bounds[1]/10, na.rm=TRUE )
-      ii = which( set$totwgt_adjusted < lowestpossible )
-      set$totwgt_adjusted[ii] = lowerbound ## arbitrary but close to detection limit
-      names(set)[ which( names(set) =="totwgt_adjusted")] = p$variables$Y
-      set$Y = NULL
+        # keep "zero's" to inform spatial processes but only as "lowestpossible" value
+        jj = which( set$totwgt_adjusted > 0 )
+        lowestpossible =  quantile( set$totwgt_adjusted[jj], probs=p$stmv_quantile_bounds[1], na.rm=TRUE )
+        lowerbound =  quantile( set$totno_adjusted[jj], probs=p$stmv_quantile_bounds[1]/10, na.rm=TRUE )
+        ii = which( set$totwgt_adjusted < lowestpossible )
+        set$totwgt_adjusted[ii] = lowerbound ## arbitrary but close to detection limit
+      }
+      set[, p$variables$Y] = set$totwgt_adjusted 
       set$wt = 1 / set$cf_set_mass
     }
-
 
     if ( p$selection$type=="presence_absence") {
       # must run here as we need the wgt from this for both PA and abundance
@@ -232,7 +232,6 @@ snowcrab_stmv = function( DS=NULL, p=NULL, year=NULL, ret="mean", varnames=NULL,
       set[, p$variables$Y] = pa$pa
       set[, "wt"] = pa$probs
       pa = NULL
-      set$totmass = NULL
       set = set[ which(is.finite(set$plon + set$plat)),]
     }
 
@@ -268,15 +267,16 @@ snowcrab_stmv = function( DS=NULL, p=NULL, year=NULL, ret="mean", varnames=NULL,
     }
 
     # cap quantiles of dependent vars
-    dr = list()
-    for (pvn in p$variables$COV) {
-      dr[[pvn]] = quantile( set[,pvn], probs=p$stmv_quantile_bounds, na.rm=TRUE ) # use 95%CI
-      il = which( set[,pvn] < dr[[pvn]][1] )
-      if ( length(il) > 0 ) set[il,pvn] = dr[[pvn]][1]
-      iu = which( set[,pvn] > dr[[pvn]][2] )
-      if ( length(iu) > 0 ) set[iu,pvn] = dr[[pvn]][2]
+    if (exists("stmv_quantile_bounds", p)) {
+      dr = list()
+      for (pvn in p$variables$COV) {
+        dr[[pvn]] = quantile( set[,pvn], probs=p$stmv_quantile_bounds, na.rm=TRUE ) # use 95%CI
+        il = which( set[,pvn] < dr[[pvn]][1] )
+        if ( length(il) > 0 ) set[il,pvn] = dr[[pvn]][1]
+        iu = which( set[,pvn] > dr[[pvn]][2] )
+        if ( length(iu) > 0 ) set[iu,pvn] = dr[[pvn]][2]
+      }
     }
-
     return (set)
 
   }
