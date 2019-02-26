@@ -199,7 +199,7 @@ snowcrab_stmv = function( DS=NULL, p=NULL, year=NULL, ret="mean", varnames=NULL,
       set$totwgt_adjusted[ii] = lowerbound ## arbitrary but close to detection limit
       names(set)[ which( names(set) =="totwgt_adjusted")] = p$variables$Y
       set$Y = NULL
-      set$wt = 1 / set$cf_set_wgt
+      set$wt = 1 / set$cf_set_mass
     }
 
 
@@ -256,7 +256,7 @@ snowcrab_stmv = function( DS=NULL, p=NULL, year=NULL, ret="mean", varnames=NULL,
       time_var="timestamp"
     )
 
- 
+
     if (!alldata) {
      set = set[, which(names(set) %in% c( p$variables$LOCS, p$variables$COV, p$variables$Y, p$variables$TIME, "dyear", "yr",  "wt") ) ]  # a data frame
       oo = setdiff( c( p$variables$LOCS, p$variables$COV ), names(set))
