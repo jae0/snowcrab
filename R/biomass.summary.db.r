@@ -152,7 +152,7 @@
       save( CPUE, file=fn, compress=T )
       return (CPUE)
     }
-    
+
 
     if (DS %in% c("B", "B.redo" )) {
       fn = file.path( sum_outdir, "B_ts.rdata" )

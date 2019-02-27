@@ -245,7 +245,7 @@ fishery_model = function(  p, DS="stan", plotresults=TRUE, ... ) {
   if (DS=="stan_surplus_production_stmv_survey_expanded") {
     return( "
             data {
-            
+
             int<lower=0> N; // no. years
             int<lower=0> U; // no. regions
             int<lower=0> M; // no. years to project
@@ -265,14 +265,14 @@ fishery_model = function(  p, DS="stan", plotresults=TRUE, ... ) {
             int missing_n[U];
             int missing_ntot;
             }
-            
+
             transformed data {
             int MN;
             int N1;
             MN = M+N ;
             N1 = N+1;
             }
-            
+
             parameters {
             vector <lower=eps>[U] K;
             vector <lower=eps,upper=3>[U] r;
@@ -289,14 +289,14 @@ fishery_model = function(  p, DS="stan", plotresults=TRUE, ... ) {
             vector <lower=eps>[missing_ntot] IOAGmissing;
             matrix <lower=eps>[M+N,U] bm;
             }
-            
+
             transformed parameters {
             matrix[N,U] Y;  // index of abundance stmv
             matrix[N,U] Y2;  // index of abundance geomean
             matrix[N,U] Ymu;  // collator used to force positive values for lognormal
             matrix[MN,U] bmmu; // collator used to force positive values for lognormal
             matrix[MN,U] rem;  // observed catch
-            
+
             // copy parameters to a new variable (Y) with imputed missing values
             {
             int ii;
@@ -324,14 +324,14 @@ fishery_model = function(  p, DS="stan", plotresults=TRUE, ... ) {
             }
             }
             }
-          
+
             // -------------------
             // removals (catch) observation model, standardized to K (assuming no errors in observation of catch!)
             for (j in 1:U) {
             rem[1:N,j] =  CAT[1:N,j]/K[j] ;
             rem[(N+1):MN,j] =  er*bm[ N:(MN-1),j] ;  // forecasts
             }
-            
+
             // -------------------
             // observation model calcs and contraints:
             // Ymu = 'surveyed/observed' residual biomass at time of survey (Bsurveyed)
@@ -350,7 +350,7 @@ fishery_model = function(  p, DS="stan", plotresults=TRUE, ... ) {
             // assume similar to a spring fishery but no need for separate q's
             //    Btot(t) = Bsurveyed(t)+ removals(t-1)
             //    NOTE: year designation in 4X is for the terminal year: ie. 2001-2002 => 2002
-            
+
             for (j in 1:2) {
               Ymu[1,j]        = qs[j] * bm[1,j] - rem[1,j] ; // starting year approximation
               Ymu[2:(ty-1),j] = qs[j] * bm[2:(ty-1),j] - rem[1:(ty-2),j] ; //spring surveys
@@ -379,14 +379,14 @@ fishery_model = function(  p, DS="stan", plotresults=TRUE, ... ) {
               Ymu[ty:N,k]     = q1[k]  * bm[ty:N,k] - rem[(ty-1):(N-1),k];
             }
 
-            
+
             for (j in 1:U) {
             for (i in 1:N) {
             Ymu[i,j] = K[j] * fmax( Ymu[i,j], eps); // force positive value
             }
             }
-            
-            
+
+
             // -------------------
             // process model calcs and constraints
             for (j in 1:U) {
@@ -400,12 +400,12 @@ fishery_model = function(  p, DS="stan", plotresults=TRUE, ... ) {
             bmmu[i,j] = fmax(bmmu[i,j], eps);  // force positive value
             }
             }
-            
-            
+
+
             }
-            
+
             model {
-            
+
             // -------------------
             // priors for parameters
             K ~ normal( Kmu, Ksd )  ;
@@ -418,27 +418,27 @@ fishery_model = function(  p, DS="stan", plotresults=TRUE, ... ) {
             bosd ~ cauchy( 0, 0.5 ) ;  // slightly informative .. center of mass between (0,1)
             bpsd ~ cauchy( 0, 0.5 ) ;
             bossd ~ cauchy( 0, 0.5 );
-            
+
             // -------------------
             // biomass observation model
             for (j in 1:U) {
             log(Y[1:N,j]) ~ normal( log(Ymu[1:N,j]), bosd[j] ) ;  // stan thinks Y is being transformed due to attempt to impute missing values .. ignore
             log(Y2[1:N,j]) ~ normal( log(Ymu[1:N,j]), bossd[j] ) ;  // stan thinks Y is being transformed due to attempt to impute missing values .. ignore
             }
-            
-            
+
+
             // -------------------
             // biomass process model
             for (j in 1:U) {
             log(bm[1:MN,j]) ~ normal( log(bmmu[1:MN,j]), bpsd[j] ) ;
             }
-            
+
             // could have used lognormal but this parameterization is 10X faster and more stable
             target += - log(fabs(Y));  // required due to log transf above
             target += - log(fabs(bm));
             target += - log(fabs(Y2));  // required due to log transf above
             }
-            
+
             generated quantities {
             matrix[MN,U] pd;
             vector[U] MSY;
@@ -447,11 +447,11 @@ fishery_model = function(  p, DS="stan", plotresults=TRUE, ... ) {
             matrix[MN,U] B;
             matrix[MN,U] P;
             matrix[MN,U] C;
-            
+
             matrix[MN,U] F;
             matrix[M,U] TAC;
-            
-            
+
+
             // -------------------
             // annual production
             for(j in 1:U) {
@@ -464,11 +464,11 @@ fishery_model = function(  p, DS="stan", plotresults=TRUE, ... ) {
             }
             pd[MN,j] = (bm[MN,j]- bm[(MN-1),j]) + er * bm[(MN-1),j]  ; // approximation
             }
-            
+
             // -------------------
             // fishing mortality
             // force first year estimate assuming catches in year 0 to be similar to year 1
-            
+
             for (j in 1:U) {
             F[1,j] =  1.0 - rem[1,j] / bm[1,j] ;
             for (i in 2:MN) {
@@ -480,10 +480,10 @@ fishery_model = function(  p, DS="stan", plotresults=TRUE, ... ) {
             F[i,j] =  -log( fmax( F[i,j], eps) )  ;
             }
             }
-            
+
             // -------------------
             // parameter estimates for output
-            
+
             for(j in 1:U) {
             MSY[j]    = r[j]* exp(K[j]) / 4 ; // maximum height of of the latent productivity (yield)
             BMSY[j]   = exp(K[j])/2 ; // biomass at MSY
@@ -492,7 +492,7 @@ fishery_model = function(  p, DS="stan", plotresults=TRUE, ... ) {
             //    Bdrop[j]  = 1.0 - step( bm[N1,j]-bm[N,j] ) ; // test if bm(t) >= bm(t-1)
             //    Fcrash[j] = 4.0 * MSY[j] / exp(K[j]) ; // fishing mortality at which the stock will crash
             }
-            
+
             // recaled estimates
             for(j in 1:U) {
             for(i in 1:MN) {
@@ -504,13 +504,13 @@ fishery_model = function(  p, DS="stan", plotresults=TRUE, ... ) {
             TAC[i,j] = rem[N+i,j]*K[j] ;
             }
             }
-            
+
             }
             "
   )
 }
 
-  
+
   if (DS=="stan_data" ) {
 
     library(rstan)
@@ -1555,29 +1555,29 @@ model {
 
 
 if (DS=="stan_data" ) {
-  
+
   library(rstan)
   rstan_options(auto_write = TRUE)
   options(mc.cores = parallel::detectCores())
-  
+
   sb = biomass.summary.db(p=p, DS="surplusproduction" )
-  
+
   # ----------------------------------
   # these are already on log-scale
   sb$Kmu =  exp(sb$Kmu)
   sb$Ksd =  c(0.25, 0.25, 0.25) * sb$Kmu
-  
+
   sb$rsd =  c(0.25, 0.25, 0.25) * sb$rmu
   sb$qsd =  c(0.25, 0.25, 0.25) * sb$qmu
-  
+
   sb$missing = ifelse(is.finite(sb$IOA),0,1)
   sb$missing_n = colSums(sb$missing)
   sb$missing_ntot = sum(sb$missing_n)
   sb$IOA[  which(!is.finite(sb$IOA)) ] = 0  # reset NAs to 0 as stan does not take NAs
-  
+
   ii = which(!is.finite(sb$CAT))
   sb$CAT[ii] = 0.001 # remove NA's
-  
+
   return(sb)
 }
 
