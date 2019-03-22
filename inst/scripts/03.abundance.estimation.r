@@ -75,6 +75,12 @@ p = bio.snowcrab::load.environment( year.assessment=year.assessment )
 
 # 11 hrs with these settings
 ncpus = parallel::detectCores()
+if (0) {
+  ram_required_main_process = ? # GB
+  ram_required_per_process  = ?  # about 1.2GB on average ..in 2018, for twostep / fft
+  ncpu = min( parallel::detectCores(), floor( (ram_local()-ram_required_main_process) / ram_required_per_process ) )
+}
+
 
 p = snowcrab_stmv( p=p, DS="parameters",
   variables=list(Y="snowcrab.large.males_abundance"),
@@ -109,12 +115,54 @@ p = snowcrab_stmv( p=p, DS="parameters",
 
 
 if (0) {
+  
   p$stmv_global_modelformula = formula( paste(
     ' snowcrab.large.males_abundance',
-    ' ~ s( t, k = 3, bs = "ts") + s( tsd, k = 3, bs = "ts") + s( tmax, k = 3, bs = "ts") + s( degreedays, k = 3, bs = "ts") ',
+    ' ~ s( t, k=3, bs="ts") + s( tsd, k=3, bs="ts") + s( tmin, k=3, bs="ts") + s( tmax, k=3, bs="ts") + s( degreedays, k=3, bs="ts") ',
+    ' + s( t, tsd, tmin, tmax, degreedays, k=30, bs="ts")  ',
     ' + s( log(z), k=3, bs="ts") + s( log(dZ), k=3, bs="ts") + s( log(ddZ), k=3, bs="ts") ',
-    ' + s( log(substrate.grainsize), k=3, bs="ts") + s(pca1, k=3, bs="ts") + s(pca2, k=3, bs="ts")   '
+    ' + s( log(z), log(dZ), log(ddZ), k=12, bs="ts") ',
+    ' + s( log(substrate.grainsize), k=3, bs="ts")  ',
+    ' + s(pca1, k=3, bs="ts") + s(pca2, k=3, bs="ts") + s(pca1, pca2, k=8, bs="ts")     '
   ))
+
+  p$stmv_global_modelformula = formula( paste(
+    ' snowcrab.large.males_abundance',
+    ' ~ s( t, k = 4, bs="ts") + s( tmax, k = 4, bs="ts") + s( degreedays, k = 4, bs="ts") ',
+    ' + s( log(z), k=4, bs="ts") + s( log(dZ), k=4, bs="ts") + s( log(ddZ), k=4, bs="ts") ',
+    ' + s( log(substrate.grainsize), k=4, bs="ts") + s(pca1, k=4, bs="ts") + s(pca2, k=4, bs="ts")   '
+  ))
+
+  o = snowcrab_stmv(p=p, DS="input_data" )  # create fields for
+  
+  global_model = gam( 
+    formula=p$stmv_global_modelformula, 
+    family=p$stmv_global_family,  
+    data = o,
+    optimizer= p$stmv_gam_optimizer,
+    na.action="na.omit"
+  )
+
+  global_model2 = gam( 
+    formula=p$stmv_global_modelformula, 
+    family=p$stmv_global_family,  
+    data = o,
+    weights=o$wt,
+    optimizer= p$stmv_gam_optimizer,
+    na.action="na.omit"
+  )
+
+  global_model3 = bam( 
+    formula=p$stmv_global_modelformula, 
+    family=p$stmv_global_family,  
+    data = o,
+    weights=o$wt,
+    method="fREML", 
+    use.chol=TRUE, 
+    gc.level=2, 
+    na.action="na.omit"
+  )
+
 }
 
 #Run the following line if you want to use maptools rather than GADMTools for mapping coastline
@@ -149,12 +197,12 @@ plot(global_model)
 # Link function: log
 #
 # Formula:
-# snowcrab.large.males_abundance ~ s(t, k = 3, bs = "ts") + s(tsd,
-#     k = 3, bs = "ts") + s(tmax, k = 3, bs = "ts") + s(degreedays,
-#     k = 3, bs = "ts") + s(log(z), k = 3, bs = "ts") + s(log(dZ),
-#     k = 3, bs = "ts") + s(log(ddZ), k = 3, bs = "ts") + s(log(substrate.grainsize),
-#     k = 3, bs = "ts") + s(pca1, k = 3, bs = "ts") + s(pca2, k = 3,
-#     bs = "ts")
+# snowcrab.large.males_abundance ~ s(t, k=3, bs="ts") + s(tsd,
+#     k=3, bs="ts") + s(tmax, k=3, bs="ts") + s(degreedays,
+#     k=3, bs="ts") + s(log(z), k=3, bs="ts") + s(log(dZ),
+#     k=3, bs="ts") + s(log(ddZ), k=3, bs="ts") + s(log(substrate.grainsize),
+#     k=3, bs="ts") + s(pca1, k=3, bs="ts") + s(pca2, k=3,
+#     bs="ts")
 #
 # Parametric coefficients:
 #             Estimate Std. Error t value Pr(>|t|)
@@ -222,13 +270,56 @@ p = snowcrab_stmv( p=p, DS="parameters",
   stmv_clusters = list( rep("localhost", ncpus), rep("localhost", ncpus), rep("localhost", ncpus) )  # no of cores used made explicit.. must be same length as )
 )
 
+
 if (0) {
+  
   p$stmv_global_modelformula = formula( paste(
-    ' snowcrab.large.males_presence_absence',
-    ' ~ s( t, k = 3, bs = "ts") + s( tsd, k = 3, bs = "ts") + s( tmax, k = 3, bs = "ts") + s( degreedays, k = 3, bs = "ts") ',
+    ' snowcrab.large.males_abundance',
+    ' ~ s( t, k=3, bs="ts") + s( tsd, k=3, bs="ts") + s( tmin, k=3, bs="ts") + s( tmax, k=3, bs="ts") + s( degreedays, k=3, bs="ts") ',
+    ' + s( t, tsd, tmin, tmax, degreedays, k=30, bs="ts")  ',
     ' + s( log(z), k=3, bs="ts") + s( log(dZ), k=3, bs="ts") + s( log(ddZ), k=3, bs="ts") ',
-    ' + s( log(substrate.grainsize), k=3, bs="ts") + s(pca1, k=3, bs="ts") + s(pca2, k=3, bs="ts")   '
+    ' + s( log(z), log(dZ), log(ddZ), k=12, bs="ts") ',
+    ' + s( log(substrate.grainsize), k=3, bs="ts")  ',
+    ' + s(pca1, k=3, bs="ts") + s(pca2, k=3, bs="ts") + s(pca1, pca2, k=8, bs="ts")     '
   ))
+
+  p$stmv_global_modelformula = formula( paste(
+    ' snowcrab.large.males_abundance',
+    ' ~ s( t, k = 4, bs="ts") + s( tmax, k = 4, bs="ts") + s( degreedays, k = 4, bs="ts") ',
+    ' + s( log(z), k=4, bs="ts") + s( log(dZ), k=4, bs="ts") + s( log(ddZ), k=4, bs="ts") ',
+    ' + s( log(substrate.grainsize), k=4, bs="ts") + s(pca1, k=4, bs="ts") + s(pca2, k=4, bs="ts")   '
+  ))
+
+  o = snowcrab_stmv(p=p, DS="input_data" )  # create fields for
+  
+  global_model = gam( 
+    formula=p$stmv_global_modelformula, 
+    family=p$stmv_global_family,  
+    data = o,
+    optimizer= p$stmv_gam_optimizer,
+    na.action="na.omit"
+  )
+
+  global_model2 = gam( 
+    formula=p$stmv_global_modelformula, 
+    family=p$stmv_global_family,  
+    data = o,
+    weights=o$wt,
+    optimizer= p$stmv_gam_optimizer,
+    na.action="na.omit"
+  )
+
+  global_model3 = bam( 
+    formula=p$stmv_global_modelformula, 
+    family=p$stmv_global_family,  
+    data = o,
+    weights=o$wt,
+    method="fREML", 
+    use.chol=TRUE, 
+    gc.level=2, 
+    na.action="na.omit"
+  )
+
 }
 
 # p$DATA = 'snowcrab_stmv( p=p, DS="stmv_inputs", coastline_source="mapdata.coastPolygon" )'
@@ -254,12 +345,12 @@ plot(global_model, all.terms=TRUE, trans=bio.snowcrab::inverse.logit, seWithMean
 # Link function: logit
 #
 # Formula:
-# snowcrab.large.males_presence_absence ~ s(t, k = 3, bs = "ts") +
-#     s(tsd, k = 3, bs = "ts") + s(tmax, k = 3, bs = "ts") + s(degreedays,
-#     k = 3, bs = "ts") + s(log(z), k = 3, bs = "ts") + s(log(dZ),
-#     k = 3, bs = "ts") + s(log(ddZ), k = 3, bs = "ts") + s(log(substrate.grainsize),
-#     k = 3, bs = "ts") + s(pca1, k = 3, bs = "ts") + s(pca2, k = 3,
-#     bs = "ts")
+# snowcrab.large.males_presence_absence ~ s(t, k=3, bs="ts") +
+#     s(tsd, k=3, bs="ts") + s(tmax, k=3, bs="ts") + s(degreedays,
+#     k=3, bs="ts") + s(log(z), k=3, bs="ts") + s(log(dZ),
+#     k=3, bs="ts") + s(log(ddZ), k=3, bs="ts") + s(log(substrate.grainsize),
+#     k=3, bs="ts") + s(pca1, k=3, bs="ts") + s(pca2, k=3,
+#     bs="ts")
 #
 # Parametric coefficients:
 #             Estimate Std. Error z value Pr(>|z|)
@@ -367,66 +458,13 @@ cor(log(spred),log(set$snowcrab.large.males_abundance), use="complete.obs")
 #
 # R> plot(log(spred)~log(snowcrab.large.males_abundance), data=set )
 # R> cor(log(spred),log(set$snowcrab.large.males_abundance), use="complete.obs")
-# [1] 0.409
+# [1]  0.4269
 
 # determine presence absence(Y) and weighting(wt)
 #      set$weekno = floor(set$julian / 365 * 52) + 1
 #      set$dyear = floor(set$julian / 365 ) + 1
 
 
-### ______________ TESTING __________________
-
-  # currently supported:
-  # z = depth (m)
-  # dZ = bottom slope (m/km)
-  # ddZ = bottom curvature (m/km^2)
-  # substrate.grainsize = mean grain size of bottom substrate (mm)
-  # t = temperature (C) – subannual
-  # tlb = temperature lower 95% bound (C) –subannual
-  # tub = temperature upper 95% bound (C) –subannual
-  # tmean = mean annual temperature
-  # tsd = standard deviation of the mean annual temperature
-  # tmin = minimum value of temperature in a given year – annual
-  # tmax = maximum value of temperature in a given year – annual
-  # tamplitude = amplitude of temperature swings in a year (tmax-tmin) – annual
-  # degreedays = number of degree days in a given year – annual
-
-p$variables$COV = c(
-  "t", "tub", "tsd", "tmin", "tmax", "tamplitude", "degreedays",
-  "tmean.climatology", "tsd.climatology",
-  "z", "dZ", "ddZ",
-  "substrate.grainsize", "pca1", "pca2"    )
-
-u = snowcrab_stmv(p=p, DS="input_data", alldata=TRUE )
-u$Y = u$snowcrab.large.males_abundance
-
-
-qn = quantile( u$Y[u$Y > 0], probs=p$habitat.threshold.quantile, na.rm=TRUE )
-u$Y[ u$Y < qn ] = qn/10
-
-v = gam( Y ~ s( t, k = 3, bs = "ts") + s( tsd, k = 3, bs = "ts") + s( tmax, k = 3, bs = "ts") + s( degreedays, k = 3, bs = "ts")
-    + s(log(z), k = 3, bs = "ts") + s(log(dZ), k = 3, bs = "ts") + s(log(ddZ), k = 3, bs = "ts")
-    + s(log(substrate.grainsize), k = 3, bs = "ts")
-    + s(pca1, k = 3, bs = "ts") + s(pca2, k = 3, bs = "ts"),
-      data = u,
-      family=gaussian(link="log")
-    )
-
-summary(v)
-
-
-
-u$Y = u$snowcrab.large.males_presence_absence
-
-v = gam( Y ~ s( t, k = 3, bs = "ts") + s( tsd, k = 3, bs = "ts") + s( tmax, k = 3, bs = "ts") + s( degreedays, k = 3, bs = "ts")
-    + s(log(z), k = 3, bs = "ts") + s(log(dZ), k = 3, bs = "ts") + s(log(ddZ), k = 3, bs = "ts")
-    + s(log(substrate.grainsize), k = 3, bs = "ts")
-    + s(pca1, k = 3, bs = "ts") + s(pca2, k = 3, bs = "ts"),
-      data = u,
-      family=binomial(link="logit")
-    )
-
-summary(v)
 
 
 ## END
