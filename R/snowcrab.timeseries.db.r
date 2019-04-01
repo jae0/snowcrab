@@ -220,8 +220,9 @@ snowcrab.timeseries.db = function( DS="default", p=NULL, regions=c( "cfa4x", "cf
     }
 
     dat = observer.db( DS="odb" )
+    dat$yr=dat$fishyr #Bz March 2019- We want the fishing year (2018/19= 2018), not the calendar year of catch
     dat$year = as.character(dat$yr)
-    dat = dat[ which( dat$cw >= 95),]
+    #dat = dat[ which( dat$cw >= 95),] #BZ March 2019- We want to keep all observed animals, not just cw>95
     vn = c( "cw", "totmass", "abdomen", "chela", "shell", "durometer",  "cpue.kg.trap", "mass", "mat" )
     yrs = sort(unique(dat$yr))
 
