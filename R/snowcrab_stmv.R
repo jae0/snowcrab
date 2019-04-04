@@ -34,7 +34,6 @@ snowcrab_stmv = function( DS=NULL, p=NULL, year=NULL, ret="mean", varnames=NULL,
     if (!exists("stmv_distance_statsgrid", p)) p$stmv_distance_statsgrid = 4 # resolution (km) of data aggregation (i.e. generation of the ** statistics ** )
 #    if (!exists("stmv_distance_prediction", p)) p$stmv_distance_prediction = p$stmv_distance_statsgrid*0.75  # this is a half window km
     if (!exists("stmv_distance_scale", p)) p$stmv_distance_scale = c(25, 35, 45) # km ... approx guess of 95% AC range
-    if (!exists("stmv_distance_upsampling_fraction", p)) p$stmv_distance_upsampling_fraction = c(1, 1.1, 1.25)  # upsample to determine input data .. do not want to make it too large for snowcrab as this can bias up estimates
 
     if (!exists("n.min", p)) p$n.min = 250 # n.min/n.max changes with resolution must be more than the number of knots/edf
     # min number of data points req before attempting to model timeseries in a localized space
@@ -74,9 +73,7 @@ snowcrab_stmv = function( DS=NULL, p=NULL, year=NULL, ret="mean", varnames=NULL,
       if (length(pz_vars) > 0) p$aegis_variables[[id]] = pz_vars
     }
 
-    if (!exists("stmv_variogram_method", p)) p$stmv_variogram_method = "gstat"
     if (!exists("stmv_local_modelengine", p)) p$stmv_local_modelengine ="gam"
-
     if (!exists("stmv_global_modelengine", p)) p$stmv_global_modelengine ="gam"
     if (!exists("stmv_global_family", p)) p$stmv_global_family = gaussian(link="log")
 
@@ -182,7 +179,7 @@ snowcrab_stmv = function( DS=NULL, p=NULL, year=NULL, ret="mean", varnames=NULL,
         ii = which( set$totno_adjusted < lowestpossible )
         set$totno_adjusted[ii] = lowerbound ## arbitrary but close to detection limit
       }
-      set[, p$variables$Y] = set$totno_adjusted 
+      set[, p$variables$Y] = set$totno_adjusted
       set$wt = 1 / set$cf_set_no
     }
 
@@ -200,7 +197,7 @@ snowcrab_stmv = function( DS=NULL, p=NULL, year=NULL, ret="mean", varnames=NULL,
         ii = which( set$totwgt_adjusted < lowestpossible )
         set$totwgt_adjusted[ii] = lowerbound ## arbitrary but close to detection limit
       }
-      set[, p$variables$Y] = set$totwgt_adjusted 
+      set[, p$variables$Y] = set$totwgt_adjusted
       set$wt = 1 / set$cf_set_mass
     }
 
