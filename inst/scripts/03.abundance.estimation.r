@@ -106,7 +106,6 @@ p = snowcrab_stmv( p=p, DS="parameters",
   stmv_twostep_space = "fft",
   stmv_fft_filter="matern",  #  matern, krige (very slow), lowpass, lowpass_matern
   stmv_gam_optimizer=c("outer", "bfgs") ,
-  stmv_variogram_method = "gstat",
   stmv_distance_statsgrid = 3, # resolution (km) of data aggregation (i.e. generation of the ** statistics ** ),
   stmv_distance_prediction_fraction = 1, # stmv_distance_prediction = stmv_distance_statsgrid * XX ..this is a half window km
   stmv_distance_scale = c( 25, 35, 45 ), #likely must be over 30km, so 50 +/- 20km, should likely match the setting in ~ line 256
@@ -115,53 +114,35 @@ p = snowcrab_stmv( p=p, DS="parameters",
 
 
 if (0) {
-  
+
   p$stmv_global_modelformula = formula( paste(
     ' snowcrab.large.males_abundance',
-    ' ~ s( t, k=3, bs="ts") + s( tsd, k=3, bs="ts") + s( tmin, k=3, bs="ts") + s( tmax, k=3, bs="ts") + s( degreedays, k=3, bs="ts") ',
-    ' + s( t, tsd, tmin, tmax, degreedays, k=30, bs="ts")  ',
+    ' ~ s( t, k=3, bs="ts") + s( tsd, k=3, bs="ts") + s( degreedays, k=3, bs="ts") ',
     ' + s( log(z), k=3, bs="ts") + s( log(dZ), k=3, bs="ts") + s( log(ddZ), k=3, bs="ts") ',
-    ' + s( log(z), log(dZ), log(ddZ), k=12, bs="ts") ',
-    ' + s( log(substrate.grainsize), k=3, bs="ts")  ',
-    ' + s(pca1, k=3, bs="ts") + s(pca2, k=3, bs="ts") + s(pca1, pca2, k=8, bs="ts")     '
+    ' + s( substrate.grainsize, k=3, bs="ts")  ',
+    ' + s(pca1, bs="ts") + s(pca2, bs="ts")  '
   ))
 
   p$stmv_global_modelformula = formula( paste(
     ' snowcrab.large.males_abundance',
     ' ~ s( t, k = 4, bs="ts") + s( tmax, k = 4, bs="ts") + s( degreedays, k = 4, bs="ts") ',
     ' + s( log(z), k=4, bs="ts") + s( log(dZ), k=4, bs="ts") + s( log(ddZ), k=4, bs="ts") ',
-    ' + s( log(substrate.grainsize), k=4, bs="ts") + s(pca1, k=4, bs="ts") + s(pca2, k=4, bs="ts")   '
+    ' + s( substrate.grainsize, k=4, bs="ts") + s(pca1, k=4, bs="ts") + s(pca2, k=4, bs="ts")   '
   ))
 
+  p = stmv_variablelist(p=p)  # decompose into covariates, etc
+
   o = snowcrab_stmv(p=p, DS="input_data" )  # create fields for
-  
-  global_model = gam( 
-    formula=p$stmv_global_modelformula, 
-    family=p$stmv_global_family,  
-    data = o,
-    optimizer= p$stmv_gam_optimizer,
-    na.action="na.omit"
-  )
 
-  global_model2 = gam( 
-    formula=p$stmv_global_modelformula, 
-    family=p$stmv_global_family,  
+  global_model = gam(
+    formula=p$stmv_global_modelformula,
+    family=p$stmv_global_family,
     data = o,
     weights=o$wt,
     optimizer= p$stmv_gam_optimizer,
     na.action="na.omit"
   )
 
-  global_model3 = bam( 
-    formula=p$stmv_global_modelformula, 
-    family=p$stmv_global_family,  
-    data = o,
-    weights=o$wt,
-    method="fREML", 
-    use.chol=TRUE, 
-    gc.level=2, 
-    na.action="na.omit"
-  )
 
 }
 
@@ -200,7 +181,7 @@ plot(global_model)
 # snowcrab.large.males_abundance ~ s(t, k=3, bs="ts") + s(tsd,
 #     k=3, bs="ts") + s(tmax, k=3, bs="ts") + s(degreedays,
 #     k=3, bs="ts") + s(log(z), k=3, bs="ts") + s(log(dZ),
-#     k=3, bs="ts") + s(log(ddZ), k=3, bs="ts") + s(log(substrate.grainsize),
+#     k=3, bs="ts") + s(log(ddZ), k=3, bs="ts") + s(substrate.grainsize,
 #     k=3, bs="ts") + s(pca1, k=3, bs="ts") + s(pca2, k=3,
 #     bs="ts")
 #
@@ -217,7 +198,7 @@ plot(global_model)
 # s(log(z))                   1.91      2 174.7 < 2e-16
 # s(log(dZ))                  1.93      2  20.9 3.8e-10
 # s(log(ddZ))                 1.95      2  61.5 < 2e-16
-# s(log(substrate.grainsize)) 1.99      2  51.0 < 2e-16
+# s(substrate.grainsize) 1.99      2  51.0 < 2e-16
 # s(pca1)                     2.00      2 100.4 < 2e-16
 # s(pca2)                     1.94      2  95.3 < 2e-16
 #
@@ -263,7 +244,6 @@ p = snowcrab_stmv( p=p, DS="parameters",
   stmv_twostep_space = "fft",
   stmv_fft_filter="matern",  #  matern, krige (very slow), lowpass, lowpass_matern
   stmv_gam_optimizer=c("outer", "bfgs") ,
-  stmv_variogram_method = "gstat",
   stmv_distance_statsgrid = 3, # resolution (km) of data aggregation (i.e. generation of the ** statistics ** ),
   stmv_distance_prediction_fraction = 1, # stmv_distance_prediction = stmv_distance_statsgrid * XX ..this is a half window km
   stmv_distance_scale = c( 25, 35, 45 ), #likely must be over 30km, so 50 +/- 20km, should likely match the setting in ~ line 256
@@ -272,14 +252,14 @@ p = snowcrab_stmv( p=p, DS="parameters",
 
 
 if (0) {
-  
+
   p$stmv_global_modelformula = formula( paste(
     ' snowcrab.large.males_abundance',
-    ' ~ s( t, k=3, bs="ts") + s( tsd, k=3, bs="ts") + s( tmin, k=3, bs="ts") + s( tmax, k=3, bs="ts") + s( degreedays, k=3, bs="ts") ',
-    ' + s( t, tsd, tmin, tmax, degreedays, k=30, bs="ts")  ',
+    ' ~ s( t, k=3, bs="ts") + s( tsd, k=3, bs="ts") + s( degreedays, k=3, bs="ts") ',
+    ' + s( t, tsd, degreedays, bs="ts")  ',
     ' + s( log(z), k=3, bs="ts") + s( log(dZ), k=3, bs="ts") + s( log(ddZ), k=3, bs="ts") ',
-    ' + s( log(z), log(dZ), log(ddZ), k=12, bs="ts") ',
-    ' + s( log(substrate.grainsize), k=3, bs="ts")  ',
+    ' + s( log(z), log(dZ), log(ddZ),  bs="ts") ',
+    ' + s( substrate.grainsize, k=3, bs="ts")  ',
     ' + s(pca1, k=3, bs="ts") + s(pca2, k=3, bs="ts") + s(pca1, pca2, k=8, bs="ts")     '
   ))
 
@@ -287,36 +267,17 @@ if (0) {
     ' snowcrab.large.males_abundance',
     ' ~ s( t, k = 4, bs="ts") + s( tmax, k = 4, bs="ts") + s( degreedays, k = 4, bs="ts") ',
     ' + s( log(z), k=4, bs="ts") + s( log(dZ), k=4, bs="ts") + s( log(ddZ), k=4, bs="ts") ',
-    ' + s( log(substrate.grainsize), k=4, bs="ts") + s(pca1, k=4, bs="ts") + s(pca2, k=4, bs="ts")   '
+    ' + s( substrate.grainsize, k=4, bs="ts") + s(pca1, k=4, bs="ts") + s(pca2, k=4, bs="ts")   '
   ))
 
   o = snowcrab_stmv(p=p, DS="input_data" )  # create fields for
-  
-  global_model = gam( 
-    formula=p$stmv_global_modelformula, 
-    family=p$stmv_global_family,  
-    data = o,
-    optimizer= p$stmv_gam_optimizer,
-    na.action="na.omit"
-  )
 
-  global_model2 = gam( 
-    formula=p$stmv_global_modelformula, 
-    family=p$stmv_global_family,  
+  global_model = gam(
+    formula=p$stmv_global_modelformula,
+    family=p$stmv_global_family,
     data = o,
     weights=o$wt,
     optimizer= p$stmv_gam_optimizer,
-    na.action="na.omit"
-  )
-
-  global_model3 = bam( 
-    formula=p$stmv_global_modelformula, 
-    family=p$stmv_global_family,  
-    data = o,
-    weights=o$wt,
-    method="fREML", 
-    use.chol=TRUE, 
-    gc.level=2, 
     na.action="na.omit"
   )
 
@@ -348,7 +309,7 @@ plot(global_model, all.terms=TRUE, trans=bio.snowcrab::inverse.logit, seWithMean
 # snowcrab.large.males_presence_absence ~ s(t, k=3, bs="ts") +
 #     s(tsd, k=3, bs="ts") + s(tmax, k=3, bs="ts") + s(degreedays,
 #     k=3, bs="ts") + s(log(z), k=3, bs="ts") + s(log(dZ),
-#     k=3, bs="ts") + s(log(ddZ), k=3, bs="ts") + s(log(substrate.grainsize),
+#     k=3, bs="ts") + s(log(ddZ), k=3, bs="ts") + s(substrate.grainsize,
 #     k=3, bs="ts") + s(pca1, k=3, bs="ts") + s(pca2, k=3,
 #     bs="ts")
 #
@@ -365,7 +326,7 @@ plot(global_model, all.terms=TRUE, trans=bio.snowcrab::inverse.logit, seWithMean
 # s(log(z))                   2.00      2 1282.7 < 2e-16
 # s(log(dZ))                  1.99      2   68.7 9.1e-16
 # s(log(ddZ))                 1.98      2  224.4 < 2e-16
-# s(log(substrate.grainsize)) 1.98      2  394.4 < 2e-16
+# s(substrate.grainsize) 1.98      2  394.4 < 2e-16
 # s(pca1)                     2.00      2  932.6 < 2e-16
 # s(pca2)                     2.00      2 1291.8 < 2e-16
 #
