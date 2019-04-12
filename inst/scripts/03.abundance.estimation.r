@@ -109,7 +109,7 @@ p = snowcrab_stmv( p=p, DS="parameters",
   stmv_distance_statsgrid = 3, # resolution (km) of data aggregation (i.e. generation of the ** statistics ** ),
   stmv_distance_prediction_fraction = 1, # stmv_distance_prediction = stmv_distance_statsgrid * XX ..this is a half window km
   stmv_distance_scale = c( 25, 35, 45 ), #likely must be over 30km, so 50 +/- 20km, should likely match the setting in ~ line 256
-  stmv_clusters = list( rep("localhost", ncpus), rep("localhost", ncpus), rep("localhost", ncpus) )  # no of cores used made explicit.. must be same length as "stmv_distance_scale"
+  stmv_clusters = list( scale=rep("localhost", ncpus), interpolate=rep("localhost", ncpus) )
 ) #End passing of parameters
 
 
@@ -247,7 +247,7 @@ p = snowcrab_stmv( p=p, DS="parameters",
   stmv_distance_statsgrid = 3, # resolution (km) of data aggregation (i.e. generation of the ** statistics ** ),
   stmv_distance_prediction_fraction = 1, # stmv_distance_prediction = stmv_distance_statsgrid * XX ..this is a half window km
   stmv_distance_scale = c( 25, 35, 45 ), #likely must be over 30km, so 50 +/- 20km, should likely match the setting in ~ line 256
-  stmv_clusters = list( rep("localhost", ncpus), rep("localhost", ncpus), rep("localhost", ncpus) )  # no of cores used made explicit.. must be same length as )
+  stmv_clusters = list( scale=rep("localhost", ncpus), interpolate=rep("localhost", ncpus) )
 )
 
 

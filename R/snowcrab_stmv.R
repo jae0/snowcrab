@@ -1,5 +1,5 @@
 
-snowcrab_stmv = function( DS=NULL, p=NULL, year=NULL, ret="mean", varnames=NULL, coastline_source="eastcoast_gadm", alldata=FALSE, ... ) {
+snowcrab_stmv = function( DS=NULL, p=NULL, year=NULL, ret="mean", varnames=NULL, coastline_source="eastcoast_gadm", alldata=FALSE, redo=FALSE, ... ) {
 
   # deal with additional passed parameters
   # ---------------------
@@ -162,9 +162,17 @@ snowcrab_stmv = function( DS=NULL, p=NULL, year=NULL, ret="mean", varnames=NULL,
   # --------------------------
 
   if (DS %in% c("input_data") ) {
-    set = aegis::survey.db( p=p, DS="filter" ) # mature male > 95 mm
 
-# i = which( abs(set$snowcrab.large.males_abundance - 159.1) < .1 )
+
+    fn = file.path( project.datadirectory("bio.snowcrab", "snowcrab_stmv" ), paste( "input_data", p$selection$type, "rdata", sep="." ) )
+    set = NULL
+
+    if (!redo) {
+      if (file.exists(fn)) load(fn)
+      if( !is.null(set) ) return(set)
+    }
+
+    set = aegis::survey.db( p=p, DS="filter" ) # mature male > 95 mm
 
     if ( p$selection$type=="number") {
       # should be snowcrab survey data only taken care of p$selection$survey = "snowcrab"
@@ -253,7 +261,6 @@ snowcrab_stmv = function( DS=NULL, p=NULL, year=NULL, ret="mean", varnames=NULL,
       time_var="timestamp"
     )
 
-
     if (!alldata) {
      set = set[, which(names(set) %in% c( p$variables$LOCS, p$variables$COV, p$variables$Y, p$variables$TIME, "dyear", "yr",  "wt") ) ]  # a data frame
       oo = setdiff( c( p$variables$LOCS, p$variables$COV ), names(set))
@@ -275,8 +282,9 @@ snowcrab_stmv = function( DS=NULL, p=NULL, year=NULL, ret="mean", varnames=NULL,
         if ( length(iu) > 0 ) set[iu,pvn] = dr[[pvn]][2]
       }
     }
-    return (set)
 
+    save(set, file=fn, compress=TRUE)
+    return (set)
   }
 
 
