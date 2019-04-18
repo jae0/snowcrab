@@ -35,9 +35,9 @@ snowcrab_stmv = function( DS=NULL, p=NULL, year=NULL, ret="mean", varnames=NULL,
 #    if (!exists("stmv_distance_prediction", p)) p$stmv_distance_prediction = p$stmv_distance_statsgrid*0.75  # this is a half window km
     if (!exists("stmv_distance_scale", p)) p$stmv_distance_scale = c(25, 35, 45) # km ... approx guess of 95% AC range
 
-    if (!exists("n.min", p)) p$n.min = 250 # n.min/n.max changes with resolution must be more than the number of knots/edf
+    if (!exists("stmv_nmin", p)) p$stmv_nmin = 250 # stmv_nmin/stmv_nmax changes with resolution must be more than the number of knots/edf
     # min number of data points req before attempting to model timeseries in a localized space
-    if (!exists("n.max", p)) p$n.max = 6000 # actually can have a lot of data from logbooks ... this keeps things reasonable in terms of run-time
+    if (!exists("stmv_nmax", p)) p$stmv_nmax = 6000 # actually can have a lot of data from logbooks ... this keeps things reasonable in terms of run-time
 
     p$stmv_dimensionality="space-year"
 
