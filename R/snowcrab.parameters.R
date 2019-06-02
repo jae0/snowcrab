@@ -14,7 +14,7 @@ snowcrab.parameters = function( p=NULL, year.assessment=NULL, ... ) {
   p$libs = c( p$libs, RLibrary ( "colorspace",  "geosphere", "lattice",
     "maps", "mapdata", "maptools", "parallel",  "rgdal", "rgeos",  "sp", "splancs", "rgeos", "bigmemory", "numDeriv", "lubridate", "parallel", "fields", "mgcv" ) )
   p$libs = c( p$libs, project.library (
-    "aegis.env", "bio.taxonomy", "stmv", "aegis",  "netmensuration", "bio.snowcrab" ) )
+    "aegis.base", "bio.taxonomy", "stmv", "aegis",  "netmensuration", "bio.snowcrab" ) )
   p$libs = unique( p$libs )
 
 

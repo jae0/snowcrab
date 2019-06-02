@@ -1,4 +1,4 @@
-require(aegis.env)
+require(aegis.base)
 
 #Pick whichever year reference below is correct (most often year.assessment...-1)
   if (!exists("year.assessment")) {
@@ -78,7 +78,7 @@ ncpus = parallel::detectCores()
 if (0) {
   ram_required_main_process = ? # GB
   ram_required_per_process  = ?  # about 1.2GB on average ..in 2018, for twostep / fft
-  ncpu = min( parallel::detectCores(), floor( (ram_local()-ram_required_main_process) / ram_required_per_process ) )
+  ncpu = min( parallel::detectCores(), trunc( (ram_local()-ram_required_main_process) / ram_required_per_process ) )
 }
 
 
@@ -422,8 +422,8 @@ cor(log(spred),log(set$snowcrab.large.males_abundance), use="complete.obs")
 # [1]  0.4269
 
 # determine presence absence(Y) and weighting(wt)
-#      set$weekno = floor(set$julian / 365 * 52) + 1
-#      set$dyear = floor(set$julian / 365 ) + 1
+#      set$weekno = trunc(set$julian / 365 * 52) + 1
+#      set$dyear = trunc(set$julian / 365 ) + 1
 
 
 
