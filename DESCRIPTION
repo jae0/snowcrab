@@ -29,10 +29,10 @@ Imports:
   ROracle,
   sp,
   vegan,
-  aegis.base,
+  aegis,
   netmensuration,
   stmv
 Suggests:  gstat, geosphere, maptools, maps, mapdata, Hmisc, RColorBrewer
 License: MIT
 LazyData: true
-URL: https://bitbucket.org/ecomod/bio.snowcrab
+URL: https://github.com/jae0/bio.snowcrab

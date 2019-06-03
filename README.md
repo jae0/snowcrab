@@ -8,13 +8,13 @@ Installation:
 
 ```
   install.packages( "devtools", ask=F, dependencies=TRUE ) # to inter-operate with github
-  devtools::install_bitbucket( "ecomod/aegis.base" ) # to bootstrap by installing directly from github
-  aegis.base::project.libraryInstall(DS="snowcrab") # install bio.snowcrab and other required packages
+  devtools::install_github( "jae0/aegis" ) # to bootstrap by installing directly from github
+  aegis::project.libraryInstall(DS="snowcrab") # install bio.snowcrab and other required packages
 ```
 
 
 
-2. Then, you need to have an Rprofile set up properly. Use the following, being careful to define the required R-global variables (see also: https://bitbucket.org/ecomod/aegis.base/src/master/R/project.Rprofile.example.r):
+2. Then, you need to have an Rprofile set up properly. Use the following, being careful to define the required R-global variables (see also: https://github.com/jae0/aegis/src/master/R/project.Rprofile.example.r):
 
 
 ```.
@@ -29,14 +29,14 @@ data_root = file.path( homedir, "bio.data" )   ### replace with correct path to 
 passwords = file.path( homedir, ".passwords" )
 if (file.exists(passwords)) source( passwords )
 
-require( aegis.base )
+require( aegis )
 ```
 
 
 If you have a local git clone of the required packages, you can install with:
 
 ```
-  aegis.base::project.libraryInstall(DS="snowcrab", local=TRUE)
+  aegis::project.libraryInstall(DS="snowcrab", local=TRUE)
 
 ```
 

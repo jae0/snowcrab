@@ -1275,7 +1275,7 @@ model {
 
     warning( "TMB method is not yet complete")
 
-    require(aegis.base)
+    require(aegis)
 
 
     sb = biomass.summary.db(p=p, DS="surplusproduction" )

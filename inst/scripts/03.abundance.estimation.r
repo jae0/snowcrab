@@ -1,4 +1,4 @@
-require(aegis.base)
+require(aegis)
 
 #Pick whichever year reference below is correct (most often year.assessment...-1)
   if (!exists("year.assessment")) {

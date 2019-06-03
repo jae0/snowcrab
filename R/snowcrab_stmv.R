@@ -68,6 +68,7 @@ snowcrab_stmv = function( DS=NULL, p=NULL, year=NULL, ret="mean", varnames=NULL,
     # p$aegis_project_datasources = c("speciescomposition", "speciesarea", "sizespectrum", "condition", "metabolism", "biochem")
     if (!exists("aegis_project_datasources", p)) p$aegis_project_datasources = "speciescomposition"
     for (id in p$aegis_project_datasources ) {
+
       pz = aegis::aegis_parameters( p=p, DS=id )
       pz_vars = intersect( pz$varstomodel, p$variables$COV )  # these are aegis vars to model
       if (length(pz_vars) > 0) p$aegis_variables[[id]] = pz_vars

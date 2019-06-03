@@ -169,7 +169,7 @@ snowcrab.db = function( DS, p=NULL, yrs=NULL) {
 
   # The following section were "on the fly" fixes to minor problems before data base corrections can be made
   # 2018- BZ. These have all been corrected in the database. One "debug" is left as an example in case needed in the future
-    
+
     #dbug.2011 = T
     #if ( dbug.2011 ) {
       # one-off error corrections until database gets refreshed
@@ -179,7 +179,7 @@ snowcrab.db = function( DS, p=NULL, yrs=NULL) {
       #i = which(set$trip=="S21092007" & set$set==12)
       #if (length(i)==1) set$towquality[i] = 1
     #}
-    
+
     set = set[,setvars]
     set$sa[ which(set$sa==0) ] = NA
     set$sa = set$sa / 10^6    # convert to km2 ... sa was stored as m2
@@ -303,11 +303,11 @@ snowcrab.db = function( DS, p=NULL, yrs=NULL) {
     abdomen.e <- det[which(det$abdomen < 1 | det$abdomen > 66 ),]
     #abdomen.e$error <- 'abdomen.e' #BZ 2018 no abdomen lengths met "error" condition, broke script #
     if ( !is.na(abdomen.e$trip[1]))  abdomen.e$test='abdomen.e' #replaced above statement
-    
+
     #Mass.e: Mass less than 1 or greater than 1500
     mass.e <- det[which( det$mass < 1 | det$mass > 1500  ),]
     if ( !is.na(mass.e$trip[1]))  mass.e$error <- 'mass.e'
-    
+
     #Sex.a: Indeterminate sex based on measurements taken (abdomen values where sex=male)
     sex.a <- det[which(is.finite( det$abdomen ) & det$sex==male),]
     sex.a$error <- 'sex.a'
@@ -360,7 +360,7 @@ snowcrab.db = function( DS, p=NULL, yrs=NULL) {
     det$fecundity[ which(det$fecundity> 250000) ] = NA
 
     save(det, file=fn, compress=T)
-    
+
     # do only after the above save
 
     allometry.snowcrab( "cw.mass", "male", redo=T )
@@ -386,7 +386,7 @@ snowcrab.db = function( DS, p=NULL, yrs=NULL) {
     print("Current Year Morphology Errors saved to file")
     print(outfile.e)
 }
-    
+
     write.csv(errors, file=outfile.e2)
     print("All Years Morphology Errors saved to file")
     print(outfile.e2)
@@ -522,8 +522,8 @@ snowcrab.db = function( DS, p=NULL, yrs=NULL) {
 		mw = mw[which(is.finite(mw$meanweight)) ,]
 
 		# add groundfish data if it does not exist already
-    gp = aegis_parameters( DS="groundfish", year.assessment=p$year.assessment )
-    gs = aegis::groundfish.db( p=gp, DS="gscat" )  # raw data .. does not need vessel corrections
+    gp = aegis.survey::groundfish_parameters( year.assessment=p$year.assessment )
+    gs = aegis.survey::groundfish.db( p=gp, DS="gscat" )  # raw data .. does not need vessel corrections
 		meanwgt = gs$totwgt / gs$totno
 		good = which( is.finite( meanwgt) & is.finite( 1/meanwgt ) )
 		mw2 = as.data.frame( unlist( (tapply( log( meanwgt[good]), gs$spec[good], mean )) ))
