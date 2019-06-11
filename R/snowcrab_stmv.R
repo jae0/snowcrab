@@ -69,7 +69,7 @@ snowcrab_stmv = function( DS=NULL, p=NULL, year=NULL, ret="mean", varnames=NULL,
     if (!exists("aegis_project_datasources", p)) p$aegis_project_datasources = "speciescomposition"
     for (id in p$aegis_project_datasources ) {
 
-      pz = aegis::aegis_parameters( p=p, DS=id )
+      pz = aegis_parameters( p=p, DS=id )
       pz_vars = intersect( pz$varstomodel, p$variables$COV )  # these are aegis vars to model
       if (length(pz_vars) > 0) p$aegis_variables[[id]] = pz_vars
     }
@@ -173,7 +173,7 @@ snowcrab_stmv = function( DS=NULL, p=NULL, year=NULL, ret="mean", varnames=NULL,
       if( !is.null(set) ) return(set)
     }
 
-    set = aegis::survey.db( p=p, DS="filter" ) # mature male > 95 mm
+    set = aegis.survey::survey.db( p=p, DS="filter" ) # mature male > 95 mm
 
     if ( p$selection$type=="number") {
       # should be snowcrab survey data only taken care of p$selection$survey = "snowcrab"
@@ -572,7 +572,7 @@ snowcrab_stmv = function( DS=NULL, p=NULL, year=NULL, ret="mean", varnames=NULL,
         dir.create (projectdir, showWarnings=FALSE, recursive =TRUE)
         fn = file.path( projectdir, paste(outfn, "png", sep="." ) )
         png( filename=fn, width=3072, height=2304, pointsize=40, res=300 )
-        lp = aegis::aegis_map( xyz=xyz, depthcontours=TRUE, pts=NULL,
+        lp = aegis_map( xyz=xyz, depthcontours=TRUE, pts=NULL,
           annot=annot, annot.cex=annot.cex, at=datarange, col.regions=cols,
           corners=p$corners, spatial.domain=p$spatial.domain , plotlines="cfa.regions"  )
         print(lp)
@@ -599,7 +599,7 @@ snowcrab_stmv = function( DS=NULL, p=NULL, year=NULL, ret="mean", varnames=NULL,
         dir.create (projectdir, showWarnings=FALSE, recursive =TRUE)
         fn = file.path( projectdir, paste(outfn, "png", sep="." ) )
         png( filename=fn, width=3072, height=2304, pointsize=40, res=300 )
-        lp = aegis::aegis_map( xyz=xyz, depthcontours=TRUE, pts=NULL,
+        lp = aegis_map( xyz=xyz, depthcontours=TRUE, pts=NULL,
           annot=annot, annot.cex=annot.cex, at=datarange, col.regions=cols,
           corners=p$corners, spatial.domain=p$spatial.domain , plotlines="cfa.regions" )
         print(lp)
@@ -625,7 +625,7 @@ snowcrab_stmv = function( DS=NULL, p=NULL, year=NULL, ret="mean", varnames=NULL,
         dir.create (projectdir, showWarnings=FALSE, recursive =TRUE)
         fn = file.path( projectdir, paste(outfn, "png", sep="." ) )
         png( filename=fn, width=3072, height=2304, pointsize=40, res=300 )
-        lp = aegis::aegis_map( xyz=xyz, depthcontours=TRUE, pts=NULL,
+        lp = aegis_map( xyz=xyz, depthcontours=TRUE, pts=NULL,
               annot=annot, annot.cex=annot.cex, at=datarange , col.regions=cols,
               corners=p$corners, spatial.domain=p$spatial.domain , plotlines="cfa.regions" )
         print(lp)
@@ -674,7 +674,7 @@ snowcrab_stmv = function( DS=NULL, p=NULL, year=NULL, ret="mean", varnames=NULL,
         dir.create (projectdir, showWarnings=FALSE, recursive =TRUE)
         fn = file.path( projectdir, paste(vn, "png", sep="." ) )
         png( filename=fn, width=3072, height=2304, pointsize=40, res=300 )
-        lp = aegis::aegis_map( xyz=xyz, depthcontours=TRUE, pts=NULL,
+        lp = aegis_map( xyz=xyz, depthcontours=TRUE, pts=NULL,
           annot=annot, annot.cex=annot.cex, at=datarange, col.regions=cols,
           corners=p$corners, spatial.domain=p$spatial.domain, plotlines="cfa.regions"  )
         print(lp)

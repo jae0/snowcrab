@@ -4,9 +4,9 @@
     if (type=="lonlat") planar=F
     if (type=="planar") planar=T
 
-    icfa4x = aegis::polygon_inside( x, "cfa4x", planar=planar)
-    icfanorth = aegis::polygon_inside( x, "cfanorth", planar=planar)
-    icfasouth = aegis::polygon_inside( x, "cfasouth", planar=planar)
+    icfa4x = polygon_inside( x, "cfa4x", planar=planar)
+    icfanorth = polygon_inside( x, "cfanorth", planar=planar)
+    icfasouth = polygon_inside( x, "cfasouth", planar=planar)
     G = rep( NA, nrow( x ) )
     G[icfa4x] = "cfa4x"
     G[icfanorth] = "cfanorth"

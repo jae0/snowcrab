@@ -257,7 +257,7 @@ l$tripset=paste(l$TRIP, l$SET_NO, sep=":")
 # Remove CW's outside norms and remove production (pre-sorted) samples
 a = l[l$FISH_LENGTH>50 & l$FISH_LENGTH<170,]
 
-# convert lat's and long's to recognizable format for aegis::polygon_internal_code
+# convert lat's and long's to recognizable format for aegis.polygons::polygon_internal_code
 	h=names(a)
 	h[h=="LATITUDE"] = "lat"
 	h[h=="LONGITUDE"] = "lon"
@@ -270,7 +270,7 @@ a = l[l$FISH_LENGTH>50 & l$FISH_LENGTH<170,]
 
 #----------------------------------------
 # create columns for area and CFA
-a = a[aegis::polygon_inside(a,'cfa4x'),]
+a = a[polygon_inside(a,'cfa4x'),]
   yu = p$year.assessment
   yrs=(yu-8):(yu-1)
 

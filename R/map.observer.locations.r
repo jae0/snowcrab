@@ -23,7 +23,7 @@
         dir.create (basedir, showWarnings=FALSE, recursive =TRUE)
         fn = file.path( basedir, paste(outfn, "png", sep="." ) )
         png( filename=fn, width=3072, height=2304, pointsize=40, res=300 )
-        lp = aegis::aegis_map( xyz=toplot,  depthcontours=TRUE, annot=annot, annot.cex=2.8, corners=corners, plotlines="cfa.regions" )
+        lp = aegis_map( xyz=toplot,  depthcontours=TRUE, annot=annot, annot.cex=2.8, corners=corners, plotlines="cfa.regions" )
         print(lp)
         dev.off()
       }

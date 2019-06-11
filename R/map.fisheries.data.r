@@ -2,7 +2,7 @@ map.fisheries.data = function(p, outdir,  FUN, yrs, variable='effort',probs=c(0,
 
   x = logbook.db( DS="logbook" )
 
-  x = x [aegis::polygon_inside( x, region="isobath1000m"),]
+  x = x [polygon_inside( x, region="isobath1000m"),]
   x = x[ which(x$effort <= 300) ,]
   x = x[ which(x$cpue < 500),]
   x$year=x$yr #this creates proper offset for 4X, 2017-18 season =2017
@@ -49,7 +49,7 @@ map.fisheries.data = function(p, outdir,  FUN, yrs, variable='effort',probs=c(0,
     dir.create (outloc, showWarnings=FALSE, recursive =TRUE)
     fn = file.path( outloc, paste(outfn, "png", sep="." ) )
     png( filename=fn, width=3072, height=2304, pointsize=40, res=300 )
-      lp = aegis::aegis_map( xyz[[i]], xyz.coords="planar", depthcontours=TRUE,
+      lp = aegis_map( xyz[[i]], xyz.coords="planar", depthcontours=TRUE,
         pts=NULL, annot=yrs[i], annot.cex=4, at=datarange, colorkey=NULL,
         col.regions=cols(length(datarange)+1), colpts=FALSE, corners=p$corners, display=FALSE, rez=c(pres,pres), plotlines="cfa.regions")
     print(lp)

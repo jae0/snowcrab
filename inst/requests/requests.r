@@ -83,7 +83,7 @@ p = bio.snowcrab::load.environment( year.assessment=year.assessment )
   pcoords = c("plon", "plat")
 
   # new method: directly computed averages of core areas
-  i = aegis::polygon_inside(x=set[, pcoords], region=p$regions.to.model, planar=T, proj.type=p$internal.crs )
+  i = polygon_inside(x=set[, pcoords], region=p$regions.to.model, planar=T, proj.type=p$internal.crs )
   xs = set[ i, ]
   xs$dummy = 1
 
@@ -206,7 +206,7 @@ p = bio.snowcrab::load.environment()
   cols = c("gray40", "gray100" )
 
   for (a in 1:(ncols)) {
-    set0 = set[aegis::polygon_inside(set, areas[a]),]
+    set0 = set[polygon_inside(set, areas[a]),]
     for (y in 1:nrows) {
       set1 = set0[ which(set0$yr==years[y]) , ]
       sids = sort(unique(set1$sid))
@@ -269,7 +269,7 @@ p = bio.snowcrab::load.environment()
   cols = c("gray40", "gray100" )
 
   for (a in 1:(ncols)) {
-    set0 = set[aegis::polygon_inside(set, areas[a]),]
+    set0 = set[polygon_inside(set, areas[a]),]
     for (y in 1:nrows) {
       set1 = set0[ which(set0$yr==years[y]) , ]
       sids = sort(unique(set1$sid))
@@ -328,13 +328,13 @@ p = bio.snowcrab::load.environment()
   # starting locations from within glace bay ( "cfa22outer" )
   x$lon = x$lon0
   x$lat = x$lat0
-  i = aegis::polygon_inside( x, region="cfa22outer" )
+  i = polygon_inside( x, region="cfa22outer" )
 
   x = move
   # recaps in glace bay ( "cfa22outer" )
   x$lon = x$lon1
   x$lat = x$lat1
-  i = aegis::polygon_inside( x, region="cfa22outer" )
+  i = polygon_inside( x, region="cfa22outer" )
 
 
 # ---------------------
@@ -649,7 +649,7 @@ write.table( out, file="temp.csv", sep =";")
 p = bio.snowcrab::load.environment()
 
   set = snowcrab.db("setInitial")
-  ii = aegis::polygon_inside(set, region="cfa4x")
+  ii = polygon_inside(set, region="cfa4x")
   set = set[ ii, ]
   set = set[ , c("yr", "lon", "lat") ]
   (set)
@@ -710,7 +710,7 @@ write.csv( Y, file="~/tmp/jim.csv" )
 p = bio.snowcrab::load.environment()
 set = snowcrab.db("set.biologicals")
 set = set[,c( "yr", "lon", "lat", "t", "sa", "R0.mass", "totmass.female.mat", "totmass.male.imm", "totmass.female.imm" )]
-nens = aegis::polygon_inside( set, region="cfanorth" )
+nens = polygon_inside( set, region="cfanorth" )
 innergutter = intersect( nens, which(set$lon < -59.8 ) )
 nensdata = set[innergutter,]
 

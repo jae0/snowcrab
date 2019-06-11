@@ -272,7 +272,7 @@ hl=68
  
  
 # --------------------------------------
-# convert lat's and long's to recognizable format for aegis::polygon_internal_code
+# convert lat's and long's to recognizable format for aegis.polygons::polygon_internal_code
 a=setsobs
 h=names(a)
 h[h=="LATITUDE"] = "lat"
@@ -425,7 +425,7 @@ cfa=c("cfanorth", "cfa23", "cfa24", "cfa4x")
  
 x$cfa=NA
 for  (a in cfa){
-     rowindex= aegis::polygon_inside(x,aegis::polygon_internal_code(a))
+     rowindex= polygon_inside(x,aegis.polygons::polygon_internal_code(a))
      x$cfa[rowindex]=a
 }
  
@@ -433,11 +433,11 @@ area=c("cfanorth", "cfasouth", "cfa4x")
  
 x$area=NA
 for (a in area){
-rowindex= aegis::polygon_inside(x,aegis::polygon_internal_code(a))
+rowindex= polygon_inside(x,aegis.polygons::polygon_internal_code(a))
 x$area[rowindex]=a
 }
  
-#4X fishing activity on 4X line doesn't get recoded properly by aegis::polygon_internal_code
+#4X fishing activity on 4X line doesn't get recoded properly by aegis.polygons::polygon_internal_code
 #force thes into 4X
 x$long=NA
 x$long=-(as.numeric(x$lon))

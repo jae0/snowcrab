@@ -94,10 +94,10 @@
       h = which( !is.na( lgbk$lon + lgbk$lat ) )
       lgbk = lgbk[h,]
 
-      i = aegis::polygon_inside( lgbk[, c("lon", "lat")], region="cfaall")
+      i = polygon_inside( lgbk[, c("lon", "lat")], region="cfaall")
       lgbk = lgbk[i,]
 
-      j = aegis::polygon_inside( lgbk[, c("lon", "lat")], region="isobath1000m")
+      j = polygon_inside( lgbk[, c("lon", "lat")], region="isobath1000m")
       lgbk = lgbk[j,]
 
       # additional constraint ..
@@ -106,11 +106,11 @@
       proj4strvalue=CRS("+proj=longlat +datum=WGS84")
       V = SpatialPoints( lgbk[,c("lon", "lat")], proj4strvalue )
 
-      coastlineSp =  aegis::coastline.db( p=p, DS="mapdata.coastPolygon", crs="+proj=longlat +datum=WGS84" )
+      coastlineSp =  aegis.coastline::coastline.db( p=p, DS="mapdata.coastPolygon", crs="+proj=longlat +datum=WGS84" )
 
       # coastline = maps::map( database="worldHires", regions=c("Canada", "US"), fill=TRUE, plot=FALSE )
       # coastlineSp = maptools::map2SpatialPolygons( coastline, IDs=coastline$names, proj4string=proj4strvalue  )
-      bboxSP = aegis::boundingbox(p$corners$lon, p$corners$lat)
+      bboxSP = boundingbox(p$corners$lon, p$corners$lat)
       keep <- rgeos::gContains( bboxSP, coastlineSp, byid=TRUE ) | rgeos::gOverlaps( bboxSP, coastlineSp, byid=TRUE )
 
       stopifnot( ncol(keep)==1 )
@@ -131,10 +131,10 @@
 
 
       # only accept "correctly" positioned data within each subarea ... in case miscoded data have a large effect
-      icfa4x = aegis::polygon_inside( lgbk[, c("lon", "lat")], "cfa4x")
-      icfanorth = aegis::polygon_inside( lgbk[, c("lon", "lat")], "cfanorth")
-      icfa23 = aegis::polygon_inside( lgbk[, c("lon", "lat")], "cfa23")
-      icfa24 = aegis::polygon_inside( lgbk[, c("lon", "lat")], "cfa24")
+      icfa4x = polygon_inside( lgbk[, c("lon", "lat")], "cfa4x")
+      icfanorth = polygon_inside( lgbk[, c("lon", "lat")], "cfanorth")
+      icfa23 = polygon_inside( lgbk[, c("lon", "lat")], "cfa23")
+      icfa24 = polygon_inside( lgbk[, c("lon", "lat")], "cfa24")
 
       gooddata = sort( unique( c(icfa4x, icfanorth, icfa23, icfa24 ) ) )
       lgbk = lgbk[gooddata, ]

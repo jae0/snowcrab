@@ -21,7 +21,7 @@ d[,c(9:ncol(d))]=round(d[,c(9:ncol(d))]*d$sa, digits=0)#Convert density estimate
 d$yr = lubridate::year( d$timestamp )#add year
 
 #Define SAB polygon
-pp = read.csv(aegis::polygon_file('StAnnsMPA.csv'))
+pp = read.csv(aegis.polygons::polygon_file('StAnnsMPA.csv'))
 require(PBSmapping)
 d$X = d$lon
 d$Y = d$lat

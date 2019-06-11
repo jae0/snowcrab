@@ -35,7 +35,7 @@
   #     if (!is.null(overlay)) {
   #     if ( length(overlay)>0 & overlay != "" ) {
   #       for (o in overlay) {
-  #         cmd( "psxy", aegis::polygon_file(o), region, gmtproj, append, polygon.options, ">>", outfile ) # polygons
+  #         cmd( "psxy", aegis.polygons::polygon_file(o), region, gmtproj, append, polygon.options, ">>", outfile ) # polygons
   #     }}}
   #     cmd( "pscoast", region, gmtproj, coast.options, "-O >>", outfile ) # coastline
   #     remove.files ( c( grid, bin, clip, indat, blocked, annotations ))

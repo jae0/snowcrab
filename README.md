@@ -9,7 +9,7 @@ Installation:
 ```
   install.packages( "devtools", ask=F, dependencies=TRUE ) # to inter-operate with github
   devtools::install_github( "jae0/aegis" ) # to bootstrap by installing directly from github
-  aegis::project.libraryInstall(DS="snowcrab") # install bio.snowcrab and other required packages
+  project.libraryInstall(DS="snowcrab") # install bio.snowcrab and other required packages
 ```
 
 
@@ -36,7 +36,7 @@ require( aegis )
 If you have a local git clone of the required packages, you can install with:
 
 ```
-  aegis::project.libraryInstall(DS="snowcrab", local=TRUE)
+  project.libraryInstall(DS="snowcrab", local=TRUE)
 
 ```
 
