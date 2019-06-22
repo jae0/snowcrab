@@ -5,7 +5,7 @@
     if (type=="stations") {
       set <- snowcrab.db( DS="setInitial" )
       must.be.unique = paste( set$yr, set$station, sep="~" )
-      dups = duplicates.toremove( must.be.unique )
+      dups = which(must.be.unique %in% must.be.unique[which(duplicated(must.be.unique))]) # all dups
       x = set[ dups, c( "trip", "set", "station" ) ]
       x = x[ is.finite(x$station), ]
       dup.stations = x[ order(x$station) ,]
@@ -143,7 +143,7 @@
     if(type=="minilog") {
       set <- snowcrab.db( DS="set.clean" )
       must.be.unique = set$t0
-      dups = duplicates.toremove( must.be.unique )
+      dups = which(must.be.unique %in% must.be.unique[which(duplicated(must.be.unique))]) # all dups
       x = set[ dups, c( "trip", "set", "station", "t0" ) ]
       dup.t0 = x[ is.finite(x$t0), ]
       print( "Duplicated minilog times:" )
