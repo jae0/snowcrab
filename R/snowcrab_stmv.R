@@ -143,7 +143,7 @@ snowcrab_stmv = function( DS=NULL, p=NULL, year=NULL, ret="mean", varnames=NULL,
       message( "The specified stmv_local_modelengine is not tested/supported ... you are on your own ;) ..." )
     }
 
-    p = stmv_variablelist(p=p)  # decompose into covariates, etc
+    # p = stmv_variablelist(p=p)  # decompose into covariates, etc
 
     return(p)
   }
