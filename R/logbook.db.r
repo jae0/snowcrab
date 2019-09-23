@@ -1,4 +1,4 @@
-  
+
 
   logbook.db = function( DS, prorate=T, p=NULL, yrs=NULL ) {
 
@@ -103,13 +103,12 @@
       # additional constraint ..
       # remove data that are strange in location .. land
 
-      proj4strvalue=CRS("+proj=longlat +datum=WGS84")
-      V = SpatialPoints( lgbk[,c("lon", "lat")], proj4strvalue )
+      V = SpatialPoints( lgbk[,c("lon", "lat")], projection_proj4string("lonlat_wgs84") )
 
       coastlineSp =  aegis.coastline::coastline.db( p=p, DS="mapdata.coastPolygon", crs="+proj=longlat +datum=WGS84" )
 
       # coastline = maps::map( database="worldHires", regions=c("Canada", "US"), fill=TRUE, plot=FALSE )
-      # coastlineSp = maptools::map2SpatialPolygons( coastline, IDs=coastline$names, proj4string=proj4strvalue  )
+      # coastlineSp = maptools::map2SpatialPolygons( coastline, IDs=coastline$names, proj4string=projection_proj4string("lonlat_wgs84")  )
       bboxSP = boundingbox(p$corners$lon, p$corners$lat)
       keep <- rgeos::gContains( bboxSP, coastlineSp, byid=TRUE ) | rgeos::gOverlaps( bboxSP, coastlineSp, byid=TRUE )
 
@@ -171,7 +170,7 @@
 
       names( x ) = tolower( names( x ) )
       names( x ) = rename.bio.snowcrab.variables(names( x ))
-      to.char = c( "cfa", "licence_id_old", "licence", "date.fished", 
+      to.char = c( "cfa", "licence_id_old", "licence", "date.fished",
                    "captain", "vessel", "doc_id", "doc_type")
       for (i in to.char) x[,i] = as.character(x[,i])
 
@@ -246,7 +245,7 @@
       pp = which ( x$effort > 240 ) # small traps were used at times with large 240 trap compliments
       if ( length(pp) > 0 ) x$effort[pp] = NA
 
-      x = lonlat2planar( x,  proj.type=p$internal.crs )
+      x = lonlat2planar( x,  proj.type=p$aegis_proj4string_planar_km )
       logbook = x
 
       save (logbook, file=filename, compress=T )  # this is for plotting maps, etc

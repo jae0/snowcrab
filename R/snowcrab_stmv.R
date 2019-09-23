@@ -25,7 +25,7 @@ snowcrab_stmv = function( DS=NULL, p=NULL, year=NULL, ret="mean", varnames=NULL,
   # ---------------------
   if (DS=="parameters") {
 
-    if (!exists("storage.backend", p)) p$storage.backend="bigmemory.ram"
+    if (!exists("storage_backend", p)) p$storage_backend="bigmemory.ram"
 
     if (!exists("boundary", p)) p$boundary = FALSE
     if (!exists("stmv_filter_depth_m", p)) p$stmv_filter_depth_m = 0 # depth (m) stats locations with elevation > 0 m as being on land (and so ignore)
@@ -294,7 +294,7 @@ snowcrab_stmv = function( DS=NULL, p=NULL, year=NULL, ret="mean", varnames=NULL,
 
   if (DS %in% c("output_data") ) {
 
-    PS = aegis_db_extract( vars=p$variables$COV, yrs=p$yrs, spatial.domain=p$spatial.domain, dyear=p$prediction.dyear )
+    PS = aegis_db_extract( vars=p$variables$COV, yrs=p$yrs, spatial_domain=p$spatial_domain, dyear=p$prediction_dyear )
 
     return (PS)
   }
@@ -305,11 +305,11 @@ snowcrab_stmv = function( DS=NULL, p=NULL, year=NULL, ret="mean", varnames=NULL,
   if ( DS %in% c("predictions", "predictions.redo" ) ) {
     # NOTE: the primary interpolated data were already created by stmv.
     # This routine points to this data and also creates
-    # subsets of the data where required, determined by "spatial.domain.subareas"
+    # subsets of the data where required, determined by "spatial_domain_subareas"
     # not strictly required for snow crab data analysis as there are no sub-areas that are analysed
     # at present, but in case there are small-area analysis in future, this is a mechnanism
 
-    projectdir = file.path(p$data_root, "modelled", p$variables$Y, p$spatial.domain )
+    projectdir = file.path(p$data_root, "modelled", p$variables$Y, p$spatial_domain )
 
     if (DS %in% c("predictions")) {
       P = Pl = Pu = NULL
@@ -320,7 +320,7 @@ snowcrab_stmv = function( DS=NULL, p=NULL, year=NULL, ret="mean", varnames=NULL,
       if (ret=="ub") return( Pu)
     }
 
-    sreg = setdiff( p$spatial.domain.subareas, p$spatial.domain ) # see  note above
+    sreg = setdiff( p$spatial_domain_subareas, p$spatial_domain ) # see  note above
     if (is.null(sreg)) return
     if (length(sreg) < 1 ) return
 
@@ -336,13 +336,13 @@ snowcrab_stmv = function( DS=NULL, p=NULL, year=NULL, ret="mean", varnames=NULL,
       WW0 = stmv_db( p=p, DS="stmv.prediction", yr=year, ret="ub")
 
       for ( gr in sreg ) {
-        p1 = spatial_parameters( p=p, spatial.domain=gr ) # 'warping' from p -> p1
+        p1 = spatial_parameters( p=p, spatial_domain=gr ) # 'warping' from p -> p1
         L1 = bathymetry.db( p=p1, DS="baseline" )
         L1i = stmv::array_map( "xy->2", L1[, c("plon", "plat")], gridparams=p1$gridparams )
-        L1 = planar2lonlat( L1, proj.type=p1$internal.crs )
+        L1 = planar2lonlat( L1, proj.type=p1$aegis_proj4string_planar_km )
         L1$plon_1 = L1$plon # store original coords
         L1$plat_1 = L1$plat
-        L1 = lonlat2planar( L1, proj.type=p0$internal.crs )
+        L1 = lonlat2planar( L1, proj.type=p0$aegis_proj4string_planar_km )
         p1$wght = fields::setup.image.smooth( nrow=p1$nplons, ncol=p1$nplats, dx=p1$pres, dy=p1$pres,
           theta=p1$pres/3, xwidth=4*p1$pres, ywidth=4*p1$pres )
         # theta=p1$pres/3 assume at pres most of variance is accounted ... correct if dense pre-intepolated matrices .. if not can be noisy
@@ -350,7 +350,7 @@ snowcrab_stmv = function( DS=NULL, p=NULL, year=NULL, ret="mean", varnames=NULL,
         P = spatial_warp( PP0[], L0, L1, p0, p1, "fast", L0i, L1i )
         Pl = spatial_warp( VV0[], L0, L1, p0, p1, "fast", L0i, L1i )
         Pu = spatial_warp( WW0[], L0, L1, p0, p1, "fast", L0i, L1i )
-        projectdir_p1 = file.path(p$data_root, "modelled", p1$variables$Y, p1$spatial.domain )
+        projectdir_p1 = file.path(p$data_root, "modelled", p1$variables$Y, p1$spatial_domain )
         dir.create( projectdir_p1, recursive=T, showWarnings=F )
         fn1_sg = file.path( projectdir_p1, paste("stmv.prediction.mean",  year, "rdata", sep=".") )
         fn2_sg = file.path( projectdir_p1, paste("stmv.prediction.lb",  year, "rdata", sep=".") )
@@ -377,13 +377,13 @@ snowcrab_stmv = function( DS=NULL, p=NULL, year=NULL, ret="mean", varnames=NULL,
 
     if (DS %in% c("stmv.stats")) {
       stats = NULL
-      projectdir = file.path(p$data_root, "modelled", p$variables$Y, p$spatial.domain )
+      projectdir = file.path(p$data_root, "modelled", p$variables$Y, p$spatial_domain )
       fn = file.path( projectdir, paste( "stmv.statistics", "rdata", sep=".") )
       if (file.exists(fn) ) load(fn)
       return( stats )
     }
 
-    sreg = setdiff( p$spatial.domain.subareas, p$spatial.domain )
+    sreg = setdiff( p$spatial_domain_subareas, p$spatial_domain )
     if (is.null(sreg)) return
     if (length(sreg) < 1 ) return
 
@@ -394,13 +394,13 @@ snowcrab_stmv = function( DS=NULL, p=NULL, year=NULL, ret="mean", varnames=NULL,
     L0i = stmv::array_map( "xy->2", L0[, c("plon", "plat")], gridparams=p0$gridparams )
 
     for ( gr in sreg ) {
-      p1 = spatial_parameters( p=p, spatial.domain=gr ) # 'warping' from p -> p1
+      p1 = spatial_parameters( p=p, spatial_domain=gr ) # 'warping' from p -> p1
       L1 = bathymetry.db( p=p1, DS="baseline" )
       L1i = stmv::array_map( "xy->2", L1[, c("plon", "plat")], gridparams=p1$gridparams )
-      L1 = planar2lonlat( L1, proj.type=p1$internal.crs )
+      L1 = planar2lonlat( L1, proj.type=p1$aegis_proj4string_planar_km )
       L1$plon_1 = L1$plon # store original coords
       L1$plat_1 = L1$plat
-      L1 = lonlat2planar( L1, proj.type=p0$internal.crs )
+      L1 = lonlat2planar( L1, proj.type=p0$aegis_proj4string_planar_km )
       p1$wght = fields::setup.image.smooth( nrow=p1$nplons, ncol=p1$nplats, dx=p1$pres, dy=p1$pres,
         theta=p1$pres/3, xwidth=4*p1$pres, ywidth=4*p1$pres )
       # theta=p1$pres/3 assume at pres most of variance is accounted ... correct if dense pre-intepolated matrices .. if not can be noisy
@@ -410,7 +410,7 @@ snowcrab_stmv = function( DS=NULL, p=NULL, year=NULL, ret="mean", varnames=NULL,
         stats[,i] = spatial_warp( S0[,i], L0, L1, p0, p1, "fast", L0i, L1i )
       }
       colnames(stats) = Snames
-      projectdir_p1 = file.path(p$data_root, "modelled", p$variables$Y, p1$spatial.domain )
+      projectdir_p1 = file.path(p$data_root, "modelled", p$variables$Y, p1$spatial_domain )
       dir.create( projectdir_p1, recursive=T, showWarnings=F )
       fn1_sg = file.path( projectdir_p1, paste("stmv.statistics", "rdata", sep=".") )
       save( stats, file=fn1_sg, compress=T )
@@ -429,9 +429,9 @@ snowcrab_stmv = function( DS=NULL, p=NULL, year=NULL, ret="mean", varnames=NULL,
     # assemble data for use by other projects
     if (DS=="complete") {
       IC = NULL
-      projectdir = file.path(p$data_root, "modelled", p$variables$Y, p$spatial.domain )
+      projectdir = file.path(p$data_root, "modelled", p$variables$Y, p$spatial_domain )
       dir.create(projectdir, recursive=T, showWarnings=F)
-      outfile =  file.path( projectdir, paste( "snowcrab", "complete", p$spatial.domain, "rdata", sep= ".") )
+      outfile =  file.path( projectdir, paste( "snowcrab", "complete", p$spatial_domain, "rdata", sep= ".") )
       if ( file.exists( outfile ) ) load( outfile )
       Inames = names(IC)
       if (is.null(varnames)) varnames=Inames
@@ -441,7 +441,7 @@ snowcrab_stmv = function( DS=NULL, p=NULL, year=NULL, ret="mean", varnames=NULL,
       return(IC)
     }
 
-    grids = unique( c(p$spatial.domain.subareas , p$spatial.domain ) ) # operate upon every domain
+    grids = unique( c(p$spatial_domain_subareas , p$spatial_domain ) ) # operate upon every domain
 
     # if ( p$variables$Y=="snowcrab.large.males_abundance" ) {
     #   # copied from  snowcrab_stmv(p=p, DS="input_data" )
@@ -451,7 +451,7 @@ snowcrab_stmv = function( DS=NULL, p=NULL, year=NULL, ret="mean", varnames=NULL,
     # }
 
     for (gr in grids ) {
-      p1 = spatial_parameters( p=p, spatial.domain=gr ) #target projection
+      p1 = spatial_parameters( p=p, spatial_domain=gr ) #target projection
       # p1$variables$Y = p$variables$Y # need to send this to get the correct results
       L1 = bathymetry.db(p=p1, DS="baseline")
       BS = snowcrab_stmv( p=p1, DS="stmv.stats" )
@@ -472,9 +472,9 @@ snowcrab_stmv = function( DS=NULL, p=NULL, year=NULL, ret="mean", varnames=NULL,
       colnames(CL) = paste( p1$variables$Y, c("mean", "lb", "ub"), "climatology", sep=".")
       IC = cbind( IC, CL )
       PS = PSlb = PSub = NULL
-      projectdir = file.path(p$data_root, "modelled", p1$variables$Y, p1$spatial.domain )
+      projectdir = file.path(p$data_root, "modelled", p1$variables$Y, p1$spatial_domain )
       dir.create( projectdir, recursive=T, showWarnings=F )
-      outfile =  file.path( projectdir, paste( "snowcrab", "complete", p1$spatial.domain, "rdata", sep= ".") )
+      outfile =  file.path( projectdir, paste( "snowcrab", "complete", p1$spatial_domain, "rdata", sep= ".") )
       save( IC, file=outfile, compress=T )
       print( outfile )
     }
@@ -488,8 +488,8 @@ snowcrab_stmv = function( DS=NULL, p=NULL, year=NULL, ret="mean", varnames=NULL,
     if ( DS=="baseline" ) {
       BL = list()
       for (bvn in varnames ) {
-        projectdir = file.path(p$data_root, "modelled", bvn, p$spatial.domain )
-        outfile =  file.path( projectdir, paste( "snowcrab", "baseline", ret, p$spatial.domain, "rdata", sep= ".") )
+        projectdir = file.path(p$data_root, "modelled", bvn, p$spatial_domain )
+        outfile =  file.path( projectdir, paste( "snowcrab", "baseline", ret, p$spatial_domain, "rdata", sep= ".") )
         TS = NULL
         load( outfile)
         BL[[bvn]] = TS
@@ -497,12 +497,12 @@ snowcrab_stmv = function( DS=NULL, p=NULL, year=NULL, ret="mean", varnames=NULL,
       return (BL)
     }
 
-    grids = unique( c(p$spatial.domain.subareas , p$spatial.domain ) ) # operate upon every domain
+    grids = unique( c(p$spatial_domain_subareas , p$spatial_domain ) ) # operate upon every domain
 
     for (gr in grids) {
         print(gr)
-        p1 = spatial_parameters( p=p, spatial.domain=gr ) #target projection
-        projectdir = file.path(p$data_root, "modelled", p$variables$Y, p1$spatial.domain )
+        p1 = spatial_parameters( p=p, spatial_domain=gr ) #target projection
+        projectdir = file.path(p$data_root, "modelled", p$variables$Y, p1$spatial_domain )
         dir.create( projectdir, recursive=T, showWarnings=F )
         L1 = bathymetry.db(p=p1, DS="baseline")
         nL1 = nrow(L1)
@@ -510,19 +510,19 @@ snowcrab_stmv = function( DS=NULL, p=NULL, year=NULL, ret="mean", varnames=NULL,
         for (i in 1:p$ny ) {
           TS[,i] = stmv_db( p=p1, DS="stmv.prediction", yr=p$yrs[i], ret="mean")
         }
-        outfile =  file.path( projectdir, paste( "snowcrab", "baseline", "mean", p1$spatial.domain, "rdata", sep= ".") )
+        outfile =  file.path( projectdir, paste( "snowcrab", "baseline", "mean", p1$spatial_domain, "rdata", sep= ".") )
         save( TS, file=outfile, compress=T )
         TS = TS[] * NA
         for (i in 1:p$ny ) {
           TS[,i] = stmv_db( p=p1, DS="stmv.prediction", yr=p$yrs[i], ret="lb")
         }
-        outfile =  file.path( projectdir, paste( "snowcrab", "baseline", "lb", p1$spatial.domain, "rdata", sep= ".") )
+        outfile =  file.path( projectdir, paste( "snowcrab", "baseline", "lb", p1$spatial_domain, "rdata", sep= ".") )
         save( TS, file=outfile, compress=T )
         TS = TS[] * NA
         for (i in 1:p$ny ) {
           TS[,i] = stmv_db( p=p1, DS="stmv.prediction", yr=p$yrs[i], ret="ub")
         }
-        outfile =  file.path( projectdir, paste( "snowcrab", "baseline", "ub", p1$spatial.domain, "rdata", sep= ".") )
+        outfile =  file.path( projectdir, paste( "snowcrab", "baseline", "ub", p1$spatial_domain, "rdata", sep= ".") )
         save( TS, file=outfile, compress=T )
       }
     return( "Complete" )
@@ -533,10 +533,10 @@ snowcrab_stmv = function( DS=NULL, p=NULL, year=NULL, ret="mean", varnames=NULL,
 
   if ( DS=="map.all" ) {
 
-    allgrids = unique(c( p$spatial.domain.subareas, p$spatial.domain) )
+    allgrids = unique(c( p$spatial_domain_subareas, p$spatial_domain) )
     for ( gr in allgrids ) {
       print (gr)
-      p1 = spatial_parameters(  p=p, spatial.domain= gr )
+      p1 = spatial_parameters(  p=p, spatial_domain= gr )
       snowcrab_stmv( p=p1, DS="map.climatology" ) # no parallel option .. just a few
       snowcrab_stmv( p=p1, DS="map.annual" )
     }
@@ -552,7 +552,7 @@ snowcrab_stmv = function( DS=NULL, p=NULL, year=NULL, ret="mean", varnames=NULL,
     eps = 0.001
 
     for ( year in p$yrs ) {
-        projectdir = file.path(p$data_root, "maps", p$variables$Y, p$spatial.domain, "annual" )
+        projectdir = file.path(p$data_root, "maps", p$variables$Y, p$spatial_domain, "annual" )
         dir.create( projectdir, recursive=T, showWarnings=F )
         loc = bathymetry.db(p=p, DS="baseline" )
 
@@ -580,7 +580,7 @@ snowcrab_stmv = function( DS=NULL, p=NULL, year=NULL, ret="mean", varnames=NULL,
         png( filename=fn, width=3072, height=2304, pointsize=40, res=300 )
         lp = aegis_map( xyz=xyz, depthcontours=TRUE, pts=NULL,
           annot=annot, annot.cex=annot.cex, at=datarange, col.regions=cols,
-          corners=p$corners, spatial.domain=p$spatial.domain , plotlines="cfa.regions"  )
+          corners=p$corners, spatial_domain=p$spatial_domain , plotlines="cfa.regions"  )
         print(lp)
         dev.off()
 
@@ -607,7 +607,7 @@ snowcrab_stmv = function( DS=NULL, p=NULL, year=NULL, ret="mean", varnames=NULL,
         png( filename=fn, width=3072, height=2304, pointsize=40, res=300 )
         lp = aegis_map( xyz=xyz, depthcontours=TRUE, pts=NULL,
           annot=annot, annot.cex=annot.cex, at=datarange, col.regions=cols,
-          corners=p$corners, spatial.domain=p$spatial.domain , plotlines="cfa.regions" )
+          corners=p$corners, spatial_domain=p$spatial_domain , plotlines="cfa.regions" )
         print(lp)
         dev.off()
 
@@ -633,7 +633,7 @@ snowcrab_stmv = function( DS=NULL, p=NULL, year=NULL, ret="mean", varnames=NULL,
         png( filename=fn, width=3072, height=2304, pointsize=40, res=300 )
         lp = aegis_map( xyz=xyz, depthcontours=TRUE, pts=NULL,
               annot=annot, annot.cex=annot.cex, at=datarange , col.regions=cols,
-              corners=p$corners, spatial.domain=p$spatial.domain , plotlines="cfa.regions" )
+              corners=p$corners, spatial_domain=p$spatial_domain , plotlines="cfa.regions" )
         print(lp)
         dev.off()
 
@@ -656,7 +656,7 @@ snowcrab_stmv = function( DS=NULL, p=NULL, year=NULL, ret="mean", varnames=NULL,
     H = NULL
 
     for (vn in vnames) {
-        projectdir = file.path(p$data_root, "maps", p$variables$Y, p$spatial.domain, "climatology" )
+        projectdir = file.path(p$data_root, "maps", p$variables$Y, p$spatial_domain, "climatology" )
         dir.create( projectdir, recursive=T, showWarnings=F )
         loc = bathymetry.db(p=p, DS="baseline" )
         H = snowcrab_stmv( p=p, DS="complete" )
@@ -682,7 +682,7 @@ snowcrab_stmv = function( DS=NULL, p=NULL, year=NULL, ret="mean", varnames=NULL,
         png( filename=fn, width=3072, height=2304, pointsize=40, res=300 )
         lp = aegis_map( xyz=xyz, depthcontours=TRUE, pts=NULL,
           annot=annot, annot.cex=annot.cex, at=datarange, col.regions=cols,
-          corners=p$corners, spatial.domain=p$spatial.domain, plotlines="cfa.regions"  )
+          corners=p$corners, spatial_domain=p$spatial_domain, plotlines="cfa.regions"  )
         print(lp)
         dev.off()
 

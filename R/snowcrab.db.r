@@ -690,7 +690,7 @@ snowcrab.db = function( DS, p=NULL, yrs=NULL) {
     ilat = which( is.finite( set$slat) )
     set$lat[ilat] = set$slat[ilat]
 
-    set = lonlat2planar(set, proj.type=p$internal.crs) # get planar projections of lon/lat in km
+    set = lonlat2planar(set, proj.type=p$aegis_proj4string_planar_km) # get planar projections of lon/lat in km
 
     grid = spatial_grid(p=p, DS="planar.coords")
 
@@ -993,7 +993,7 @@ snowcrab.db = function( DS, p=NULL, yrs=NULL) {
     }
 
     # return planar coords to correct resolution
-    set = lonlat2planar( set, proj.type=p$internal.crs )
+    set = lonlat2planar( set, proj.type=p$aegis_proj4string_planar_km )
 
     # set2015 = set[which(set$yr ==2015), ]
     # print(head(set2015))

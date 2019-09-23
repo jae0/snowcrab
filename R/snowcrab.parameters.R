@@ -19,10 +19,10 @@ snowcrab.parameters = function( p=NULL, year.assessment=NULL, ... ) {
 
 
   # ---------------------
-  if (!exists("project.name", p)) p$project.name = "bio.snowcrab"
-  if (!exists("data_root", p)) p$data_root = project.datadirectory( p$project.name )
+  if (!exists("project_name", p)) p$project_name = "bio.snowcrab"
+  if (!exists("data_root", p)) p$data_root = project.datadirectory( p$project_name )
 
-  p$project.outputdir = project.datadirectory( p$project.name, "output" ) #required for interpolations and mapping
+  p$project.outputdir = project.datadirectory( p$project_name, "output" ) #required for interpolations and mapping
   p$transform_lookup = file.path( p$project.outputdir, "transform.lookup.rdata" ) # local storage of transforms for timeseries plots
 
   # ---------------------
@@ -50,14 +50,14 @@ snowcrab.parameters = function( p=NULL, year.assessment=NULL, ... ) {
   p$dyears = (c(1:p$nw)-1)  / p$nw # intervals of decimal years... fractional year breaks
   p$dyear_centre = p$dyears[ round(p$nw/2) ] + p$tres/2
   # used for creating timeslices and predictions  .. needs to match the values in aegis_parameters()
-  p$prediction.dyear = lubridate::decimal_date( lubridate::ymd("0000/Sep/01"))
+  p$prediction_dyear = lubridate::decimal_date( lubridate::ymd("0000/Sep/01"))
   # output timeslices for predictions in decimla years, yes all of them here
-  p$prediction.ts = p$yrs + p$prediction.dyear
+  p$prediction_ts = p$yrs + p$prediction_dyear
 
-  p = spatial_parameters( p=p, spatial.domain="snowcrab" )  # data are from this domain .. so far
+  p = spatial_parameters( p=p, spatial_domain="snowcrab" )  # data are from this domain .. so far
 
-  p$spatial.domain.subareas = NULL # add cfa's as subareas .. TODO
-  p$data.sources = c("groundfish", "snowcrab")
+  p$spatial_domain_subareas = NULL # add cfa's as subareas .. TODO
+  p$data_sources = c("groundfish", "snowcrab")
 
   # output location for year-specific results
   p$annual.results = project.datadirectory("bio.snowcrab", "assessments", p$year.assessment )

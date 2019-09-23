@@ -48,7 +48,7 @@ p = bio.snowcrab::load.environment( year.assessment=year.assessment )
   # Roger Pettipas .. bottom temperatures of Scotian shelf
   set = snowcrab.db( "set.biologicals" )
  varstoextract = c("t0", "lon", "lat", "z", "zsd", "t", "tsd")
- yiq=2017 #year in question 
+ yiq=2017 #year in question
   t = set[ which(set$yr==yiq), varstoextract]
 
   write.table(t, file=paste("~/bio.data/bio.snowcrab/requests/", yiq, ".pettipas.csv", sep=''), col.names = T, row.names=F, quote=F, sep=" ; ")
@@ -56,17 +56,17 @@ p = bio.snowcrab::load.environment( year.assessment=year.assessment )
   # ----------------------------------------------------------
   # extract raw catch information for any species of bycatch
   set = snowcrab.db( "set.biologicals" )
-  species="2211" #change to desired species code 
+  species="2211" #change to desired species code
   bc.vars = c(paste("ms.mass",species,sep='.'),paste("ms.no",species,sep='.'), paste("ms.size",species,sep='.'))
   varstoextract = c("t0", "lon", "lat", "surfacearea", bc.vars)
   #yiq=year.assessment #year in question
   #yiq=c(2015:year.assessment) #or years in question
   t = set[ which(set$yr %in% yiq), varstoextract]
-  
-  write.table(t, file=paste("~/bio.data/bio.snowcrab/requests/", year.assessment, ".speciesinfo.",species, ".csv", sep=''), col.names = T, row.names=F, quote=F, sep=",") 
+
+  write.table(t, file=paste("~/bio.data/bio.snowcrab/requests/", year.assessment, ".speciesinfo.",species, ".csv", sep=''), col.names = T, row.names=F, quote=F, sep=",")
 
   # ----------------------------------------------------------
-  # Shrimp assessment uses this as a recruitment index of snow crab 
+  # Shrimp assessment uses this as a recruitment index of snow crab
   # -- N immature male > 56 mm CW in areas 23ab and 24ab
   #  == R2 + R3 + R4
 
@@ -83,7 +83,7 @@ p = bio.snowcrab::load.environment( year.assessment=year.assessment )
   pcoords = c("plon", "plat")
 
   # new method: directly computed averages of core areas
-  i = polygon_inside(x=set[, pcoords], region=p$regions.to.model, planar=T, proj.type=p$internal.crs )
+  i = polygon_inside(x=set[, pcoords], region=p$regions.to.model, planar=TRUE, proj.type=p$aegis_proj4string_planar_km )
   xs = set[ i, ]
   xs$dummy = 1
 

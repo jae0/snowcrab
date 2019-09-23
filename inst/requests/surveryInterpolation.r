@@ -48,7 +48,7 @@ if(do.interpolation) {
       print(lp)
       dev.off()
 
-    ras 			<- rasterFromXYZ(fp[,c('plon','plat','z')],crs=p$internal.crs)
+    ras 			<- rasterFromXYZ(fp[,c('plon','plat','z')], crs=p$aegis_proj4string_planar_km)
 
     writeRaster(ras,filename=file.path(fo,paste(gps[i],".asc",sep="")), format="ascii", overwrite=TRUE)
     }

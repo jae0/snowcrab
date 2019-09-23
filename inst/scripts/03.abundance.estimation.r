@@ -43,7 +43,7 @@ require(aegis)
 #stmv_rsquared_threshold = 0.2, # lower threshold
 #stmv_distance_statsgrid = 4, # resolution (km) of data aggregation (i.e. generation of the ** statistics ** )
 #stmv_distance_scale = c(50, 60, 80), # km ... approx guess of 95% AC range .. data tends to be sprse realtive to pure space models
-#  stmv_distance_prediction_fraction = 0.95 , # upper limit in distnace to predict upon (just over the grid size of statsgrid) .. in timeseries can become very slow so try to be small
+
 
 
 # 1. Define some additional starting parameters for debugging
@@ -107,7 +107,6 @@ p = snowcrab_stmv( p=p, DS="parameters",
   stmv_fft_filter="matern",  #  matern, krige (very slow), lowpass, lowpass_matern
   stmv_gam_optimizer=c("outer", "bfgs") ,
   stmv_distance_statsgrid = 3, # resolution (km) of data aggregation (i.e. generation of the ** statistics ** ),
-  stmv_distance_prediction_fraction = 0.95 , # upper limit in distnace to predict upon (just over the grid size of statsgrid) .. in timeseries can become very slow so try to be small
   stmv_distance_scale = c( 25, 35, 45 ), #likely must be over 30km, so 50 +/- 20km, should likely match the setting in ~ line 256
   stmv_clusters = list( scale=rep("localhost", ncpus), interpolate=rep("localhost", ncpus) )
 ) #End passing of parameters
@@ -245,7 +244,6 @@ p = snowcrab_stmv( p=p, DS="parameters",
   stmv_fft_filter="matern",  #  matern, krige (very slow), lowpass, lowpass_matern
   stmv_gam_optimizer=c("outer", "bfgs") ,
   stmv_distance_statsgrid = 3, # resolution (km) of data aggregation (i.e. generation of the ** statistics ** ),
-  stmv_distance_prediction_fraction = 0.95 , # upper limit in distnace to predict upon (just over the grid size of statsgrid) .. in timeseries can become very slow so try to be small
   stmv_distance_scale = c( 25, 35, 45 ), #likely must be over 30km, so 50 +/- 20km, should likely match the setting in ~ line 256
   stmv_clusters = list( scale=rep("localhost", ncpus), interpolate=rep("localhost", ncpus) )
 )

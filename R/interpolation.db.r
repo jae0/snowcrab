@@ -114,7 +114,7 @@ interpolation.db = function( ip=NULL, DS=NULL, p=NULL,
 
   if (DS %in% c( "fishable.biomass.map" )) {
 
-    projectdir = file.path(p$data_root, "maps", "fishable.biomass", p$spatial.domain )
+    projectdir = file.path(p$data_root, "maps", "fishable.biomass", p$spatial_domain )
     dir.create (projectdir, showWarnings=FALSE, recursive =TRUE)
 
     bs = bathymetry.db(p=p, DS="baseline")
@@ -206,7 +206,7 @@ interpolation.db = function( ip=NULL, DS=NULL, p=NULL,
     K = NULL
     nreg = length(p$regions.to.model)
     for (r in 1:nreg ){
-      aoi = polygon_inside(x=bs[ , c("plon", "plat")], region=p$regions.to.model[r], planar=TRUE, proj.type=p$internal.crs )
+      aoi = polygon_inside(x=bs[ , c("plon", "plat")], region=p$regions.to.model[r], planar=TRUE, proj.type=p$aegis_proj4string_planar_km )
       aoi = intersect( aoi, which( bs$plon > 250 ) )
       out = matrix( NA, nrow=p$ny, ncol=5)
 
@@ -283,7 +283,7 @@ interpolation.db = function( ip=NULL, DS=NULL, p=NULL,
     K = NULL
     nreg = length(p$regions.to.model)
     for (r in 1:nreg ){
-      aoi = polygon_inside(x=bs[ , c("plon", "plat")], region=p$regions.to.model[r], planar=TRUE, proj.type=p$internal.crs )
+      aoi = polygon_inside(x=bs[ , c("plon", "plat")], region=p$regions.to.model[r], planar=TRUE, proj.type=p$aegis_proj4string_planar_km )
       aoi = intersect( aoi, which( bs$plon > 250 ) )
       out = matrix( NA, nrow=p$ny, ncol=2)
 
