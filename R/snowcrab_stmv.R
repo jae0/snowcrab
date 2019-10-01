@@ -39,7 +39,7 @@ snowcrab_stmv = function( DS=NULL, p=NULL, year=NULL, ret="mean", varnames=NULL,
     # min number of data points req before attempting to model timeseries in a localized space
     if (!exists("stmv_nmax", p)) p$stmv_nmax = 6000 # actually can have a lot of data from logbooks ... this keeps things reasonable in terms of run-time
 
-    p$stmv_dimensionality="space-year"
+    p$aegis_dimensionality="space-year"
 
     # due to formulae being potentially created on the fly, these are required params
     if (!exists("Y", p$variables)) {
