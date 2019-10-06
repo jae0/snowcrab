@@ -238,7 +238,7 @@ snowcrab_parameters = function( p=NULL, year.assessment=NULL, project_class="def
     if ( !exists("areal_units_proj4string_planar_km", p)) p$areal_units_proj4string_planar_km = projection_proj4string("utm20")  # coord system to use for areal estimation and gridding for carstm
     # if ( !exists("areal_units_proj4string_planar_km", p)) p$areal_units_proj4string_planar_km = projection_proj4string("omerc_nova_scotia")  # coord system to use for areal estimation and gridding for carstm
     p$inputdata_spatial_discretization_planar_km = p$pres  # 1 km .. requires 32 GB RAM and limit of speed -- controls resolution of data prior to modelling to reduce data set and speed up modelling
-    p$inputdata_temporal_discretization_yr = 1/12,  # ie., monthly .. controls resolution of data prior to modelling to reduce data set and speed up modelling }
+    p$inputdata_temporal_discretization_yr = 1/12  # ie., monthly .. controls resolution of data prior to modelling to reduce data set and speed up modelling }
 
     if ( !exists("carstm_modelengine", p)) p$carstm_modelengine = "inla.default"  # {model engine}.{label to use to store}
 
