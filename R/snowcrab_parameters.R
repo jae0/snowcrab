@@ -242,12 +242,10 @@ snowcrab_parameters = function( p=NULL, year.assessment=NULL, project_class="def
 
     if ( !exists("carstm_modelengine", p)) p$carstm_modelengine = "inla.default"  # {model engine}.{label to use to store}
 
-    if (!exists("variabletomodel", p)) stop( "The dependent variable, p$variabletomodel needs to be defined")
-
     if ( !exists("carstm_modelcall", p)) {
       if ( grepl("inla", p$carstm_modelengine) ) {
         p$carstm_modelcall = paste(
-          'inla( formula = ', p$variabletomodel,
+          'inla( formula = Y ',
           ' ~ 1
             + f(tiyr2, model="seasonal", season.length=10 )
             + f(ti, model="rw2", scale.model=TRUE, diagonal=1e-6, hyper=H$rw2)
