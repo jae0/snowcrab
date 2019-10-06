@@ -26,7 +26,7 @@ load.environment = function( year.assessment=NULL, libs=NULL, p=NULL, ... ) {
     }
   }
 
-  p = bio.snowcrab::snowcrab.parameters( p=p, year.assessment=year.assessment, ... ) 
+  p = bio.snowcrab::snowcrab_parameters( p=p, year.assessment=year.assessment, ... ) 
 
   return(p)
 }

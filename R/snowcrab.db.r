@@ -1011,7 +1011,7 @@ snowcrab.db = function( DS, p=NULL, yrs=NULL) {
 
   if (DS %in% c("data.transforms", "data.transforms.redo") ) {
     REPOS = NULL
-    if (is.null(p)) p = bio.snowcrab::snowcrab.parameters()
+    if (is.null(p)) p = bio.snowcrab::snowcrab_parameters()
 
     if (DS=="data.transforms") {
       if (file.exists( p$transform_lookup ) ) load (p$transform_lookup)

@@ -2,7 +2,7 @@
 
 snowcrab.timeseries.db = function( DS="default", p=NULL, regions=c( "cfa4x", "cfanorth", "cfasouth", "cfaall" ), trim=0, vn=NULL, sdci=F ) {
 
-  if (is.null(p)) p = bio.snowcrab::snowcrab.parameters()
+  if (is.null(p)) p = bio.snowcrab::snowcrab_parameters()
   
   tsoutdir = file.path( p$project.outputdir, "timeseries" )
   dir.create(tsoutdir, showWarnings=FALSE, recursive=TRUE)
