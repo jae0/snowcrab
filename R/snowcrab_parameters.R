@@ -93,7 +93,7 @@ snowcrab_parameters = function( p=NULL, year.assessment=NULL, project_class="def
     if (!exists("TIME", p$variables)) p$variables$TIME="tiyr"
 
     p$inputdata_spatial_discretization_planar_km = p$pres  # 1 km .. requires 32 GB RAM and limit of speed -- controls resolution of data prior to modelling to reduce data set and speed up modelling
-    p$inputdata_temporal_discretization_yr = 1/12,  # ie., monthly .. controls resolution of data prior to modelling to reduce data set and speed up modelling }
+    p$inputdata_temporal_discretization_yr = 1/12  # ie., monthly .. controls resolution of data prior to modelling to reduce data set and speed up modelling }
 
     if (!exists("storage_backend", p)) p$storage_backend="bigmemory.ram"
 
