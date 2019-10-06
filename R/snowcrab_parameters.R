@@ -78,6 +78,7 @@ snowcrab_parameters = function( p=NULL, year.assessment=NULL, project_class="def
   p$habitat.threshold.quantile = 0.05 # quantile at which to consider zero-valued abundance
   p$threshold.distance = 5 # predict no farther than this distance km from survey stations
 
+
   if (project_class=="default") {
     return(p)
   }
