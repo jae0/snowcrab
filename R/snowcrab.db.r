@@ -1066,42 +1066,7 @@ snowcrab.db = function( DS, p=NULL, yrs=NULL) {
 
   if ( DS=="biological_data") {
 
-p = aegis.survey::survey_parameters(
-  p=p,
-  speciesname = "Snow crab",
-  groundfish_species_code = 2526,
-  polygon_source = "pre2014",   # "pre2014" for older
-  boundingbox = list( xlim = c(-70.5, -56.5), ylim=c(39.5, 47.5)), # bounding box for plots using spplot
-  trawlable_units = "towdistance",  # <<<<<<<<<<<<<<<<<< also:  "standardtow", "sweptarea" (for groundfish surveys)
-  libs = RLibrary ( "sp", "spdep", "rgeos", "INLA", "raster", "aegis", "aegis.polygons", "aegis.coastline", "aegis.survey", "bio.taxonomy", "carstm" )
-)
-
-# biologicals selection
-p$selection=list(
-  type = p$runtype,
-  biologicals=list(
-    spec_bio=bio.taxonomy::taxonomy.recode( from="spec", to="parsimonious", tolookup=p$groundfish_species_code ),
-    sex=0, # male
-    mat=1, # do not use maturity status in groundfish data as it is suspect ..
-    len= c( 95, 200 )/10, #  mm -> cm ; aegis_db in cm
-    ranged_data="len"
-  ),
-  survey=list(
-    data.source = ifelse (p$runtype=="number", c("snowcrab"), c("snowcrab", "groundfish")),
-    yr = p$yrs,      # time frame for comparison specified above
-    settype = 1, # same as geartype in groundfish db
-    polygon_enforce=TRUE,  # make sure mis-classified stations or incorrectly entered positions get filtered out
-    strata_toremove = NULL,  # emphasize that all data enters analysis initially ..
-    ranged_data = c("dyear")  # not used .. just to show how to use range_data
-  )
-)
-
-p$variables$Y = "Y"  # name to give variable in extraction and model
-
-p$lookupvars = c("t", "tsd", "tmax", "tmin",  "z",  "zsd"  )
-
-
-set = aegis.survey::survey.db( p=p, DS="filter" ) # mature male > 95 mm
+    set = aegis.survey::survey.db( p=p, DS="filter" ) # mature male > 95 mm
 
     if ( p$selection$type=="number") {
       # should be snowcrab survey data only taken care of p$selection$survey = "snowcrab"
@@ -1181,8 +1146,7 @@ set = aegis.survey::survey.db( p=p, DS="filter" ) # mature male > 95 mm
 
     set$tiyr = lubridate::decimal_date( set$timestamp )
 
-
-  ## lookup data
+    ## lookup data
 
     # set = aegis_db_lookup(
     #   X=set,
@@ -1213,10 +1177,9 @@ set = aegis.survey::survey.db( p=p, DS="filter" ) # mature male > 95 mm
     #   }
     # }
 
-  set$Y = set$totno  # unadjusted value is used as we are usinmg offsets ...
-  set$data_offset  = 1 / set[, ifelse( p$runtype=="number", "cf_set_no", "cf_set_wgt")]  # as "sa"
-  set$data_offset[which(!is.finite(set$data_offset))] = median(set$data_offset, na.rm=TRUE )  # just in case missing data
-  set$tag = "observations"
+    set$Y = set$totno  # unadjusted value is used as we are usinmg offsets ...
+    set$data_offset  = 1 / set[, ifelse( p$runtype=="number", "cf_set_no", "cf_set_wgt")]  # as "sa"
+    set$data_offset[which(!is.finite(set$data_offset))] = median(set$data_offset, na.rm=TRUE )  # just in case missing data
 
     return( set )
   }

@@ -229,7 +229,6 @@ snowcrab_parameters = function( p=NULL, year.assessment=NULL, project_class="def
 
     if ( !exists("project_name", p)) p$project_name = "speciescomposition"
 
-    p = aegis_parameters( p=p, DS="carstm" )  #generics
 
     if ( !exists("areal_units_strata_type", p)) p$areal_units_strata_type = "lattice" # "stmv_lattice" to use ageis fields instead of carstm fields ... note variables are not the same
 
@@ -292,6 +291,9 @@ snowcrab_parameters = function( p=NULL, year.assessment=NULL, project_class="def
         )
       }
     }
+
+    p = aegis_parameters( p=p, DS="carstm" )  #generics
+
     return(p)
   }
 
