@@ -31,16 +31,17 @@ snowcrab_carstm = function( p=NULL, DS=NULL, sppoly=NULL, redo=FALSE, ... ) {
     message( "Generating carstm_inputs ... ")
 
     # prediction surface
-    sppoly = areal_units( p=p )  # will redo if not found
 
-    crs_lonlat = sp::CRS(projection_proj4string("lonlat_wgs84"))
 
     # do this immediately to reduce storage for sppoly (before adding other variables)
-    M = snowcrab.db( p=p, DS="aggregated_data", redo=TRUE )  # will redo if not found .. not used here but used for data matching/lookup in other aegis projects that use bathymetry
+    M = snowcrab.db( p=p, DS="biological_data", redo=TRUE )  # will redo if not found .. not used here but used for data matching/lookup in other aegis projects that use bathymetry
 
     # reduce size
     M = M[ which( M$lon > p$corners$lon[1] & M$lon < p$corners$lon[2]  & M$lat > p$corners$lat[1] & M$lat < p$corners$lat[2] ), ]
     # levelplot(z.mean~plon+plat, data=M, aspect="iso")
+
+    sppoly = areal_units( p=p )  # will redo if not found
+    crs_lonlat = sp::CRS(projection_proj4string("lonlat_wgs84"))
 
     M$StrataID = over( SpatialPoints( M[, c("lon", "lat")], crs_lonlat ), spTransform(sppoly, crs_lonlat ) )$StrataID # match each datum to an area
     M$lon = NULL

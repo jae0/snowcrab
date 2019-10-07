@@ -37,7 +37,7 @@ snowcrab.db = function( DS, p=NULL, yrs=NULL) {
 			SNCRABSETS = NULL
 			SNCRABSETS = ROracle::dbGetQuery(con,
 								paste("select * from SNCRABSETS where EXTRACT(YEAR from BOARD_DATE) = ", YR) )
-			save( SNCRABSETS, file=fny, compress=T)
+			save( SNCRABSETS, file=fny, compress=TRUE)
 			gc()  # garbage collection
 			print(YR)
 		}
@@ -56,7 +56,7 @@ snowcrab.db = function( DS, p=NULL, yrs=NULL) {
 
     if (DS=="det.rawdata") {
 			out = NULL
-      fl = list.files( path=fn.root, pattern="*.rdata", full.names=T )
+      fl = list.files( path=fn.root, pattern="*.rdata", full.names=TRUE )
 			for ( fny in fl ) {
 				load (fny)
 				out = rbind( out, SNCRABDETAILS )
@@ -72,7 +72,7 @@ snowcrab.db = function( DS, p=NULL, yrs=NULL) {
 			#in following line replaced sqlQuery (Rrawdata) with  ROracle::dbGetQuery (ROracle)
 			SNCRABDETAILS = ROracle::dbGetQuery(con,
                 paste("select * from SNCRABDETAILS where EXTRACT(YEAR from BOARD_DATE) = ", YR) )
-			save( SNCRABDETAILS, file=fny, compress=T)
+			save( SNCRABDETAILS, file=fny, compress=TRUE)
 			gc()  # garbage collection
 			print(YR)
 		}
@@ -91,7 +91,7 @@ snowcrab.db = function( DS, p=NULL, yrs=NULL) {
 
     if (DS=="cat.rawdata") {
 			out = NULL
-      fl = list.files( path=fn.root, pattern="*.rdata", full.names=T )
+      fl = list.files( path=fn.root, pattern="*.rdata", full.names=TRUE )
 			for ( fny in fl ) {
 				load (fny)
 				out = rbind( out, SNTRAWLBYCATCH )
@@ -107,7 +107,7 @@ snowcrab.db = function( DS, p=NULL, yrs=NULL) {
 			#in following line replaced sqlQuery (Rrawdata) with  ROracle::dbGetQuery (ROracle)
 			SNTRAWLBYCATCH = ROracle::dbGetQuery(con,
                 paste("select * from SNTRAWLBYCATCH where EXTRACT(YEAR from BOARD_DATE) = ", YR) )
-			save( SNTRAWLBYCATCH, file=fny, compress=T)
+			save( SNTRAWLBYCATCH, file=fny, compress=TRUE)
 			gc()  # garbage collection
 			print(YR)
 		}
@@ -170,7 +170,7 @@ snowcrab.db = function( DS, p=NULL, yrs=NULL) {
   # The following section were "on the fly" fixes to minor problems before data base corrections can be made
   # 2018- BZ. These have all been corrected in the database. One "debug" is left as an example in case needed in the future
 
-    #dbug.2011 = T
+    #dbug.2011 = TRUE
     #if ( dbug.2011 ) {
       # one-off error corrections until database gets refreshed
      # i = which(set$trip=="S15092006" & set$set==3)
@@ -198,10 +198,10 @@ snowcrab.db = function( DS, p=NULL, yrs=NULL) {
 
     # ---------------------
     # local lookuptable for netmind/minilog data (historical data only)
-    sntows = read.table(file.path( project.datadirectory("bio.snowcrab"), "data", "lookuptables", "sntow.csv"),  sep=";", as.is=T, colClasses="character", header=T)
+    sntows = read.table(file.path( project.datadirectory("bio.snowcrab"), "data", "lookuptables", "sntow.csv"),  sep=";", as.is=TRUE, colClasses="character", header=TRUE)
     sntow.vars = c("trip",  "set", "patchtime", "netmind", "minilog")
 
-    set = merge(set, sntows[,sntow.vars], by=c("trip", "set"), all.x=T, all.y=F, sort=F)
+    set = merge(set, sntows[,sntow.vars], by=c("trip", "set"), all.x=TRUE, all.y=FALSE, sort=FALSE)
     if ( nrow( set) != nset0 ) { print("Merge error"); stop() }
 
     set$lon = -set$lon # the data are stored as degress West convert to standard degrees E notation
@@ -257,14 +257,14 @@ snowcrab.db = function( DS, p=NULL, yrs=NULL) {
                  "shell", "gonad", "eggcol", "eggPr", "durometer", "legs")
     det=det[is.finite(det$crabno),]
     # merge in the sa which is used as a weighting factor of most analyses
-    det = merge(x=det[,detvars], y=X[,c("trip","set","sa")], by=c("trip", "set"), all.x=T, all.y=F)
+    det = merge(x=det[,detvars], y=X[,c("trip","set","sa")], by=c("trip", "set"), all.x=TRUE, all.y=FALSE)
 
     # Trips and sets with no matching SA ...
     ii = which( !is.finite(det$sa) )
     #print ("DET without matching SA ... due to bad tows? ... check these ")
     #print (det[ii, c("trip","set")])
     #print (det[ii,])
-    det$sa[ii] = median(det$sa, na.rm=T )
+    det$sa[ii] = median(det$sa, na.rm=TRUE )
 
     i.mat = which(det$mat==1)
     i.imm = which(det$mat==2)
@@ -286,7 +286,7 @@ snowcrab.db = function( DS, p=NULL, yrs=NULL) {
     #Identify morphology errors and print, save to CSV
     yr.e <- p$year.assessment
     fn.e = file.path(project.datadirectory("bio.snowcrab"), "output", "morphology.errors")
-    dir.create(fn.e, recursive=T, showWarnings=F)
+    dir.create(fn.e, recursive=TRUE, showWarnings=F)
     outfile.e =  file.path( fn.e, paste("morphologyerrors", yr.e, ".csv", sep=""))
     outfile.e2 =  file.path( fn.e, paste("morphologyerrors.allyears", yr.e, ".csv", sep=""))
 
@@ -359,7 +359,7 @@ snowcrab.db = function( DS, p=NULL, yrs=NULL) {
     det$fecundity[multiparous] = fecundity.allometric( cw=det$cw[multiparous], method="moncton.multiparous" )
     det$fecundity[ which(det$fecundity> 250000) ] = NA
 
-    save(det, file=fn, compress=T)
+    save(det, file=fn, compress=TRUE)
 
     # do only after the above save
 
@@ -1064,24 +1064,12 @@ snowcrab.db = function( DS, p=NULL, yrs=NULL) {
   # ----------------------
 
 
-  if ( DS=="aggregated_data") {
-
-
-    fn = file.path( loc.bottom, paste( "snowcrab", "aggregated_data", p$inputdata_spatial_discretization_planar_km, round(p$inputdata_temporal_discretization_yr,6), "rdata", sep=".") )
-    if (!redo)  {
-      if (file.exists(fn)) {
-        load( fn)
-        return( M )
-      }
-    }
-    warning( "Generating aggregated data ... ")
-
+  if ( DS=="biological_data") {
 
 p = aegis.survey::survey_parameters(
   p=p,
   speciesname = "Snow crab",
   groundfish_species_code = 2526,
-  yrs = 1999:assessment.year,
   polygon_source = "pre2014",   # "pre2014" for older
   boundingbox = list( xlim = c(-70.5, -56.5), ylim=c(39.5, 47.5)), # bounding box for plots using spplot
   trawlable_units = "towdistance",  # <<<<<<<<<<<<<<<<<< also:  "standardtow", "sweptarea" (for groundfish surveys)
@@ -1090,7 +1078,7 @@ p = aegis.survey::survey_parameters(
 
 # biologicals selection
 p$selection=list(
-  type = runtype,
+  type = p$runtype,
   biologicals=list(
     spec_bio=bio.taxonomy::taxonomy.recode( from="spec", to="parsimonious", tolookup=p$groundfish_species_code ),
     sex=0, # male
@@ -1099,7 +1087,7 @@ p$selection=list(
     ranged_data="len"
   ),
   survey=list(
-    data.source = ifelse (runtype=="number", c("snowcrab"), c("snowcrab", "groundfish")),
+    data.source = ifelse (p$runtype=="number", c("snowcrab"), c("snowcrab", "groundfish")),
     yr = p$yrs,      # time frame for comparison specified above
     settype = 1, # same as geartype in groundfish db
     polygon_enforce=TRUE,  # make sure mis-classified stations or incorrectly entered positions get filtered out
@@ -1109,6 +1097,7 @@ p$selection=list(
 )
 
 p$variables$Y = "Y"  # name to give variable in extraction and model
+
 p$lookupvars = c("t", "tsd", "tmax", "tmin",  "z",  "zsd"  )
 
 
@@ -1182,11 +1171,10 @@ set = aegis.survey::survey.db( p=p, DS="filter" ) # mature male > 95 mm
     }
 
     set = set[ which(is.finite(set[, p$variables$Y])),]
-
+    crs = projection_proj4string("lonlat_wgs84")
     coastline_source="eastcoast_gadm"
-    coast = coastline.db( p=p, DS=coastline_source )
-    coast = spTransform( coast, CRS("+proj=longlat +datum=WGS84") )
-    setcoord = SpatialPoints( as.matrix( set[, c("lon", "lat")]),  proj4string=CRS(projection_proj4string("lonlat_wgs84")) )
+    coast = coastline.db( p=p, DS=coastline_source, crs=crs )
+    setcoord = SpatialPoints( as.matrix( set[, c("lon", "lat")]), proj4string=CRS(crs) )
     inside = sp::over( setcoord, coast )
     onland = which (is.finite(inside))
     if (length(onland)>0) set = set[-onland, ]
@@ -1225,78 +1213,12 @@ set = aegis.survey::survey.db( p=p, DS="filter" ) # mature male > 95 mm
     #   }
     # }
 
-
-
   set$Y = set$totno  # unadjusted value is used as we are usinmg offsets ...
-  set$data_offset  = 1 / set[, ifelse( runtype=="number", "cf_set_no", "cf_set_wgt")]  # as "sa"
+  set$data_offset  = 1 / set[, ifelse( p$runtype=="number", "cf_set_no", "cf_set_wgt")]  # as "sa"
   set$data_offset[which(!is.finite(set$data_offset))] = median(set$data_offset, na.rm=TRUE )  # just in case missing data
   set$tag = "observations"
 
-
-
-
-    # M = snowcrab.db( p=p, DS="bottom.all"  )
-    # M = M[ which(M$yr %in% p$yrs), ]
-    # M$tiyr = lubridate::decimal_date ( M$date )
-
-    # # globally remove all unrealistic data
-    # keep = which( M$t >= -3 & M$t <= 25 ) # hard limits
-    # if (length(keep) > 0 ) M = M[ keep, ]
-    # TR = quantile(M$t, probs=c(0.0005, 0.9995), na.rm=TRUE ) # this was -1.7, 21.8 in 2015
-    # keep = which( M$t >=  TR[1] & M$t <=  TR[2] )
-    # if (length(keep) > 0 ) M = M[ keep, ]
-    # keep = which( M$z >=  2 ) # ignore very shallow areas ..
-    # if (length(keep) > 0 ) M = M[ keep, ]
-
-    # M$plon = round(M$plon / p$inputdata_spatial_discretization_planar_km + 1 ) * p$inputdata_spatial_discretization_planar_km
-    # M$plat = round(M$plat / p$inputdata_spatial_discretization_planar_km + 1 ) * p$inputdata_spatial_discretization_planar_km
-
-    # M$dyear = M$tiyr - M$yr
-    # M$dyear = discretize_data( M$dyear, seq(0, 1, by=p$inputdata_temporal_discretization_yr), digits=6 )
-
-    # bb = as.data.frame( t( simplify2array(
-    #   tapply( X=M$t, INDEX=list(paste( M$plon, M$plat, M$yr, M$dyear, sep="_") ),
-    #     FUN = function(w) { c(
-    #       mean(w, na.rm=TRUE),
-    #       sd(w, na.rm=TRUE),
-    #       length( which(is.finite(w)) )
-    #     ) }, simplify=TRUE )
-    # )))
-    # colnames(bb) = c("temperature.mean", "temperature.sd", "temperature.n")
-    # bb$id = rownames(bb)
-    # out = bb
-
-    # # keep depth at collection .. potentially the biochem data as well (at least until biochem is usable)
-    # bb = as.data.frame( t( simplify2array(
-    #   tapply( X=M$z, INDEX=list(paste( M$plon, M$plat, M$yr, M$dyear, sep="_") ),
-    #     FUN = function(w) { c(
-    #       mean(w, na.rm=TRUE),
-    #       sd(w, na.rm=TRUE),
-    #       length( which(is.finite(w)) )
-    #     ) }, simplify=TRUE )
-    # )))
-    # colnames(bb) = c("z.mean", "z.sd", "z.n")
-    # bb$id = rownames(bb)
-
-    # ii = match( out$id, bb$id )
-    # out$z = bb$z.mean[ii]
-
-    # bb = NULL
-    # labs = matrix( as.numeric( unlist(strsplit( rownames(out), "_", fixed=TRUE))), ncol=4, byrow=TRUE)
-
-    # out$plon = labs[,1]
-    # out$plat = labs[,2]
-    # out$yr = labs[,3]
-    # out$dyear = labs[,4]
-    # labs = NULL
-
-    # M = out[ which( is.finite( out$temperature.mean )) ,]
-    # out =NULL
-    # gc()
-    # M = planar2lonlat( M, p$aegis_proj4string_planar_km)
-
-    save( M, file=fn, compress=TRUE )
-    return( M )
+    return( set )
   }
 
 
