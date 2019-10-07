@@ -1,63 +1,193 @@
 
 
-# Snow crab --- Areal unit modelling of habitat  -- no reliance upon stmv fields --> which mean we require carstm based fields or crude data
+# Snow crab --- Areal unit modelling of habitat  -- no reliance upon stmv fields
 
 
-
-# --------------------------------
 # construct basic parameter list defining the main characteristics of the study
-# and some plotting parameters (bounding box, projection, bathymetry layout, coastline)
-# NOTE: the data selection is the same as in (01_cod_comparisons_basic_stranal.R)
 
-# runtype="biomass"
-# runtype="presence_absence"
-runtype="number"
-assessment.year = 2018
+# areal units definitions
+  assessment.year = 2018
+  REDO = FALSE
 
-# survevy related params
-p = aegis.survey::survey_parameters(
-  speciesname = "Snow crab",
-  groundfish_species_code = 2526,
-  spatial_domain="snowcrab",
-  yrs = 1999:assessment.year,
-  areal_units_resolution_km = 20, # km
-  polygon_source = "pre2014",   # "pre2014" for older
-  areal_units_proj4string_planar_km = projection_proj4string("utm20"), # "omerc_nova_scotia"
-  boundingbox = list( xlim = c(-70.5, -56.5), ylim=c(39.5, 47.5)), # bounding box for plots using spplot
-  trawlable_units = "towdistance",  # <<<<<<<<<<<<<<<<<< also:  "standardtow", "sweptarea" (for groundfish surveys)
-  libs = RLibrary ( "sp", "spdep", "rgeos", "INLA", "raster", "aegis", "aegis.polygons", "aegis.coastline", "aegis.survey", "bio.taxonomy", "carstm" )
-)
-
-# biologicals selection
-p$selection=list(
-  type = runtype,
-  biologicals=list(
-    spec_bio=bio.taxonomy::taxonomy.recode( from="spec", to="parsimonious", tolookup=p$groundfish_species_code ),
-    sex=0, # male
-    mat=1, # do not use maturity status in groundfish data as it is suspect ..
-    len= c( 95, 200 )/10, #  mm -> cm ; aegis_db in cm
-    ranged_data="len"
-  ),
-  survey=list(
-    data.source = ifelse (runtype=="number", c("snowcrab"), c("snowcrab", "groundfish")),
-    yr = p$yrs,      # time frame for comparison specified above
-    settype = 1, # same as geartype in groundfish db
-    polygon_enforce=TRUE,  # make sure mis-classified stations or incorrectly entered positions get filtered out
-    strata_toremove = NULL,  # emphasize that all data enters analysis initially ..
-    ranged_data = c("dyear")  # not used .. just to show how to use range_data
+  # survey (set-level) parameters
+  p = aegis.survey::survey_parameters(
+    project_class = "carstm",
+    speciesname = "Snow crab",
+    groundfish_species_code = 2526,
+    runtype = "number",  # "biomass", "presence_absence", "number"
+    spatial_domain = "snowcrab",  # defines spatial area, currenty: "snowcrab" or "SSE"
+    yrs = 1999:assessment.year,
+    boundingbox = list( xlim = c(-70.5, -56.5), ylim=c(39.5, 47.5)), # bounding box for plots using spplot
+    # polygon_source = "pre2014",   # "pre2014" for older  ... groundfish related
+    auid = "snowcrab_assessment_25",  # identifyer for areal units polygon filename
+    areal_units_resolution_km = 25, # km dim of lattice ~ 1 hr
+    areal_units_proj4string_planar_km = projection_proj4string("utm20"),  # coord system to use for areal estimation and gridding for carstm
+    trawlable_units = "towdistance",  # <<<<<<<<<<<<<<<<<< also:  "standardtow", "sweptarea" (for groundfish surveys)
+    quantile_bounds =c(0, 0.99), # trim upper bounds
+    libs = RLibrary ( "sp", "spdep", "rgeos", "INLA", "raster", "aegis", "aegis.polygons", "aegis.coastline", "aegis.survey", "bio.taxonomy", "carstm" )
   )
-)
 
-p$variables$Y = "Y"  # name to give variable in extraction and model
-p$lookupvars = c("t", "tsd", "tmax", "tmin",  "z",  "zsd"  )
+  # biologicals selection
+  p$selection=list(
+    type = p$runtype,
+    biologicals=list(
+      spec_bio=bio.taxonomy::taxonomy.recode( from="spec", to="parsimonious", tolookup=p$groundfish_species_code ),
+      sex=0, # male
+      mat=1, # do not use maturity status in groundfish data as it is suspect ..
+      len= c( 95, 200 )/10, #  mm -> cm ; aegis_db in cm
+      ranged_data="len"
+    ),
+    survey=list(
+      data.source = ifelse (p$runtype=="number", c("snowcrab"), c("snowcrab", "groundfish")),
+      yr = p$yrs,      # time frame for comparison specified above
+      settype = 1, # same as geartype in groundfish db
+      polygon_enforce=TRUE,  # make sure mis-classified stations or incorrectly entered positions get filtered out
+      strata_toremove = NULL,  # emphasize that all data enters analysis initially ..
+      ranged_data = c("dyear")  # not used .. just to show how to use range_data
+    )
+  )
 
-p = aegis_parameters( p=p, DS="carstm" )  # generics
+  p$variables$Y = "Y"  # name to give variable in extraction and model
+  p$lookupvars = c("t", "tsd", "tmax", "tmin",  "z",  "zsd"  )
 
 
-# set up default map projection
-p = c(p, coastline_layout( p=p) )
-p$mypalette = RColorBrewer::brewer.pal(9, "YlOrRd")
 
+# the underlying observations/data
+  M = snowcrab.db( p=p, DS="biological_data"  )
+
+
+# carstm parameters
+  p = bio.snowcrab::snowcrab_parameters( p=p, project_class = "carstm" ) # defines which parameter set to load .. needs to repeated
+
+# ensure if polys exist and create if required
+  sppoly = areal_units( p=p )
+  if (REDO) {
+    for (au in c("cfanorth", "cfasouth", "cfa4x", "cfaall" )) plot(polygons_managementarea( species="snowcrab", au))
+    sppoly = areal_units( p=p, areal_units_constraint=M[, c("lon", "lat")], redo=TRUE )
+    #  sppoly = neighbourhood_structure( sppoly=sppoly )
+  }
+
+
+# now do all covariate fields on the above polygons
+
+# bathymetry -- ensure the data assimilation in bathymetry is first completed :: 01.bathymetry_data.R
+# about 8 hrs to redo
+  p$p_bathymetry = aegis.bathymetry::bathymetry_parameters(
+    project_class = "carstm", # defines which parameter class / set to load
+    project_name = "bathymetry",
+    spatial_domain = p$spatial_domain,  # defines spatial area, currenty: "snowcrab" or "SSE"
+    inputdata_spatial_discretization_planar_km = 1,  # 1 km .. some thinning .. requires 32 GB RAM and limit of speed -- controls resolution of data prior to modelling to reduce data set and speed up modelling
+    areal_units_resolution_km = p$areal_units_resolution_km, # km dim of lattice ~ 1 hr
+    areal_units_proj4string_planar_km = p$areal_units_proj4string_planar_km,  # coord system to use for areal estimation and gridding for carstm
+    auid = p$auid
+  )
+  if (REDO) {
+    M = bathymetry.db( p=p$p_bathymetry, DS="aggregated_data" )  # will redo if not found .. not used here but used for data matching/lookup in other aegis projects that use bathymetry
+    M = bathymetry_carstm( p=p$p_bathymetry, DS="carstm_inputs" )  # will redo if not found
+    res = bathymetry_carstm( p=p$p_bathymetry, DS="carstm_modelled"  ) # run model and obtain predictions
+  }
+
+
+# substrate -- ensure the data assimilation in substrate is first completed :: 01.substrate_data.R
+  p$p_substrate = aegis.substrate::substrate_parameters(
+    project_class = "carstm", # defines which parameter class / set to load
+    project_name = "substrate",
+    spatial_domain = p$spatial_domain,  # defines spatial area, currenty: "snowcrab" or "SSE"
+    inputdata_spatial_discretization_planar_km = 1,  # 1 km .. some thinning .. requires 32 GB RAM and limit of speed -- controls resolution of data prior to modelling to reduce data set and speed up modelling
+    areal_units_resolution_km = p$areal_units_resolution_km, # km dim of lattice ~ 1 hr
+    areal_units_proj4string_planar_km = p$areal_units_proj4string_planar_km,  # coord system to use for areal estimation and gridding for carstm
+    auid = p$auid
+  )
+  if (REDO) {
+    M = substrate.db( p=p$p_substrate, DS="aggregated_data" )  # will redo if not found .. not used here but used for data matching/lookup in other aegis projects that use substrate
+    M = substrate_carstm( p=p$p_substrate, DS="carstm_inputs" )  # will redo if not found
+    res = substrate_carstm( p=p$p_substrate, DS="carstm_modelled"  ) # run model and obtain predictions
+  }
+
+
+# temperature -- ensure the data assimilation in temperature is first completed :: 01.temperature_data.R
+  p$p_temperature = aegis.temperature::temperature_parameters(
+    project_class = "carstm", # defines which parameter class / set to load
+    project_name = "temperature",
+    spatial_domain = p$spatial_domain,  # defines spatial area, currenty: "snowcrab" or "SSE"
+    inputdata_spatial_discretization_planar_km = 1,  # 1 km .. some thinning .. requires 32 GB RAM and limit of speed -- controls resolution of data prior to modelling to reduce data set and speed up modelling
+    areal_units_resolution_km = p$areal_units_resolution_km, # km dim of lattice ~ 1 hr
+    areal_units_proj4string_planar_km = p$areal_units_proj4string_planar_km,  # coord system to use for areal estimation and gridding for carstm
+    auid = p$auid
+  )
+  if (REDO) {
+    M = temperature.db( p=p$p_substrate, DS="aggregated_data" )  # will redo if not found .. not used here but used for data matching/lookup in other aegis projects that use temperature
+    M = temperature_carstm( p=p$p_substrate, DS="carstm_inputs" )  # will redo if not found
+    res = temperature_carstm( p=p$p_substrate, DS="carstm_modelled"  ) # run model and obtain predictions
+  }
+
+
+# species composition -- ensure that survey data is assimilated : bio.snowcrab::01snowcb_data.R, aegis.survey::01.surveys.data.R , etc.
+  p$p_pca1 = speciescomposition::speciescomposition_parameters(
+    project_class = "carstm", # defines which parameter class / set to load
+    project_name = "speciescomposition",
+    variabletomodel = "pca1",
+    spatial_domain = p$spatial_domain,  # defines spatial area, currenty: "snowcrab" or "SSE"
+    inputdata_spatial_discretization_planar_km = 1,  # 1 km .. some thinning .. requires 32 GB RAM and limit of speed -- controls resolution of data prior to modelling to reduce data set and speed up modelling
+    areal_units_resolution_km = p$areal_units_resolution_km, # km dim of lattice ~ 1 hr
+    areal_units_proj4string_planar_km = p$areal_units_proj4string_planar_km,  # coord system to use for areal estimation and gridding for carstm
+    auid = p$auid
+  )
+  if (REDO) {
+    M = speciescomposition.db( p=p$p_pca1, DS="aggregated_data" )  # will redo if not found .. not used here but used for data matching/lookup in other aegis projects that use speciescomposition
+    M = speciescomposition_carstm( p=p$p_pca1, DS="carstm_inputs" )  # will redo if not found
+    res = speciescomposition_carstm( p=p$p_pca1, DS="carstm_modelled"  ) # run model and obtain predictions
+  }
+
+  p$p_pca2 = speciescomposition::speciescomposition_parameters(
+    project_class = "carstm", # defines which parameter class / set to load
+    project_name = "speciescomposition",
+    variabletomodel = "pca2",
+    spatial_domain = p$spatial_domain,  # defines spatial area, currenty: "snowcrab" or "SSE"
+    inputdata_spatial_discretization_planar_km = 1,  # 1 km .. some thinning .. requires 32 GB RAM and limit of speed -- controls resolution of data prior to modelling to reduce data set and speed up modelling
+    areal_units_resolution_km = p$areal_units_resolution_km, # km dim of lattice ~ 1 hr
+    areal_units_proj4string_planar_km = p$areal_units_proj4string_planar_km,  # coord system to use for areal estimation and gridding for carstm
+    auid = p$auid
+  )
+  if (REDO) {
+    M = speciescomposition.db( p=p$p_pca2, DS="aggregated_data" )  # will redo if not found .. not used here but used for data matching/lookup in other aegis projects that use speciescomposition
+    M = speciescomposition_carstm( p=p$p_pca2, DS="carstm_inputs" )  # will redo if not found
+    res = speciescomposition_carstm( p=p$p_pca2, DS="carstm_modelled"  ) # run model and obtain predictions
+  }
+
+  # finished covariates ...
+
+
+  # assimilate covariates to help model snowcrab
+  M = snowcrab_carstm( p=p, DS="carstm_inputs", redo=TRUE )  # will redo if not found
+
+
+  # run model and obtain predictions
+  res = snowcrab_carstm( p=p, DS="carstm_modelled", redo=TRUE )
+
+
+  res = snowcrab_carstm( p=p, DS="carstm_modelled" ) # to load currently saved res
+  fit =  snowcrab_carstm( p=p, DS="carstm_modelled_fit" )  # extract currently saved model fit
+  plot(fit)
+  plot(fit, plot.prior=TRUE, plot.hyperparameters=TRUE, plot.fixed.effects=FALSE )
+  s = summary(fit)
+  s$dic$dic
+  s$dic$p.eff
+
+  # maps of some of the results
+  carstm_plot( p=p, res=res, vn="snowcrab.predicted" )
+  carstm_plot( p=p, res=res, vn="snowcrab.random_strata_nonspatial" )
+  carstm_plot( p=p, res=res, vn="snowcrab.random_strata_spatial" )
+
+
+
+
+# end
+
+
+
+
+# scenarios
 
 # --------------------------------
 if (0) {
@@ -74,325 +204,9 @@ if (exists(tmpdir)) {
 }
 
 
-# --------------------------------
-# Get the data
-
-# first snow crab survey locations to determine bounds and grids
-
-set = aegis.survey::survey.db( p=p, DS="filter" ) # mature male > 95 mm
-
-    if ( p$selection$type=="number") {
-      # should be snowcrab survey data only taken care of p$selection$survey = "snowcrab"
-      # robustify input data: .. upper bound trim
-      if (exists("quantile_bounds", p)) {
-        highestpossible = quantile( set$totno_adjusted, probs=p$quantile_bounds[2], na.rm=TRUE )
-        set$totno_adjusted[ set$totno_adjusted > highestpossible ] = highestpossible
-        # keep "zero's" to inform spatial processes but only as "lowestpossible" value
-        jj = which( set$totno_adjusted > 0 )
-        lowestpossible =  quantile( set$totno_adjusted[jj], probs=p$quantile_bounds[1], na.rm=TRUE )
-        lowerbound =  quantile( set$totno_adjusted[jj], probs=p$quantile_bounds[1]/10, na.rm=TRUE )
-        ii = which( set$totno_adjusted < lowestpossible )
-        set$totno_adjusted[ii] = lowerbound ## arbitrary but close to detection limit
-      }
-      set[, p$variables$Y] = set$totno_adjusted
-      set$wt = 1 / set$cf_set_no
-    }
-
-    if ( p$selection$type=="biomass") {
-      # should be snowcrab survey data only taken care of p$selection$survey = "snowcrab"
-      # robustify input data: .. upper bound trim
-      if (exists("quantile_bounds", p)) {
-        highestpossible = quantile( set$totwgt_adjusted, probs=p$quantile_bounds[2], na.rm=TRUE )
-        set$totwgt_adjusted[ set$totwgt_adjusted > highestpossible ] = highestpossible
-
-        # keep "zero's" to inform spatial processes but only as "lowestpossible" value
-        jj = which( set$totwgt_adjusted > 0 )
-        lowestpossible =  quantile( set$totwgt_adjusted[jj], probs=p$quantile_bounds[1], na.rm=TRUE )
-        lowerbound =  quantile( set$totno_adjusted[jj], probs=p$quantile_bounds[1]/10, na.rm=TRUE )
-        ii = which( set$totwgt_adjusted < lowestpossible )
-        set$totwgt_adjusted[ii] = lowerbound ## arbitrary but close to detection limit
-      }
-      set[, p$variables$Y] = set$totwgt_adjusted
-      set$wt = 1 / set$cf_set_mass
-    }
-
-    if ( p$selection$type=="presence_absence") {
-      # must run here as we need the wgt from this for both PA and abundance
-      if ( grepl( "snowcrab.large.males", p$variables$Y ) ) {
-        # add commerical fishery data --
-        # depth data is problematic ... drop for now
-        lgbk = logbook.db( DS="fisheries.complete", p=p )
-        lgbk = lgbk[ which( is.finite( lgbk$landings)), ]
-        lgbk = lgbk[ which( lgbk$year > 2005), ]  # previous to this all sorts of traps were used
-        lgbk = lgbk[ which( as.numeric(lgbk$soak.time) >= 12 & as.numeric(lgbk$soak.time) <= 48), ]   # avoid nonlinearity in catch with time
-        lgbk$cpue_time = lgbk$cpue / as.numeric(lgbk$soak.time)  # approx with realtive catch rate in time
-
-        lgbk$qm = NA   # default when no data
-        oo = which( lgbk$cpue_time == 0 )  # retain as zero values
-        if (length(oo)>0 ) lgbk$qm[oo] = 0
-        ii = which( lgbk$cpue_time != 0 )
-        lgbk$qm[ii] = quantile_estimate( lgbk$cpue_time[ii]  )  # convert to quantiles
-        lgbk$zm = quantile_to_normal( lgbk$qm )
-
-        lgbk$totmass = NA # dummy to bring in mass as well
-        lgbk$data.source = "logbooks"
-        lgbk$z = exp( lgbk$z )
-        nms = intersect( names(set) , names( lgbk) )
-        set = rbind( set[, nms], lgbk[,nms] )
-      }
-
-      pa = presence.absence( X=set$zm, px=p$habitat.threshold.quantile )  # determine presence absence and weighting
-      set[, p$variables$Y] = pa$pa
-      set[, "wt"] = pa$probs
-      pa = NULL
-      set = set[ which(is.finite(set$plon + set$plat)),]
-    }
-
-
-    set = set[ which(is.finite(set[, p$variables$Y])),]
-
-    coastline_source="eastcoast_gadm"
-    coast = coastline.db( p=p, DS=coastline_source )
-    coast = spTransform( coast, CRS("+proj=longlat +datum=WGS84") )
-    setcoord = SpatialPoints( as.matrix( set[, c("lon", "lat")]),  proj4string=CRS(projection_proj4string("lonlat_wgs84")) )
-    inside = sp::over( setcoord, coast )
-    onland = which (is.finite(inside))
-    if (length(onland)>0) set = set[-onland, ]
-
-    set$tiyr = lubridate::decimal_date( set$timestamp )
-
-
-  ## lookup data
-
-    # set = aegis_db_lookup(
-    #   X=set,
-    #   lookupvars=p$variables$COV,
-    #   xy_vars=c("lon", "lat"),
-    #   time_var="timestamp"
-    # )
-
-    # if (!alldata) {
-    #  set = set[, which(names(set) %in% c( p$variables$LOCS, p$variables$COV, p$variables$Y, p$variables$TIME, "dyear", "yr",  "wt") ) ]  # a data frame
-    #   oo = setdiff( c( p$variables$LOCS, p$variables$COV ), names(set))
-    #   if (length(oo) > 0 ) {
-    #     print(oo )
-    #     warning("Some variables are missing in the input data")
-    #   }
-    #   set = na.omit(set)
-    # }
-
-    # cap quantiles of dependent vars
-    # if (exists("quantile_bounds", p)) {
-    #   dr = list()
-    #   for (pvn in p$variables$COV) {
-    #     dr[[pvn]] = quantile( set[,pvn], probs=p$quantile_bounds, na.rm=TRUE ) # use 95%CI
-    #     il = which( set[,pvn] < dr[[pvn]][1] )
-    #     if ( length(il) > 0 ) set[il,pvn] = dr[[pvn]][1]
-    #     iu = which( set[,pvn] > dr[[pvn]][2] )
-    #     if ( length(iu) > 0 ) set[iu,pvn] = dr[[pvn]][2]
-    #   }
-    # }
-
-
-
-  set$Y = set$totno  # unadjusted value is used as we are usinmg offsets ...
-  set$data_offset  = 1 / set[, ifelse( runtype=="number", "cf_set_no", "cf_set_wgt")]  # as "sa"
-  set$data_offset[which(!is.finite(set$data_offset))] = median(set$data_offset, na.rm=TRUE )  # just in case missing data
-  set$tag = "observations"
-
-
-
-# ensure if polys exist and create if required
-# for (au in c("cfanorth", "cfasouth", "cfa4x", "cfaall" )) plot(polygons_managementarea( species="snowcrab", au))
-  sppoly = areal_units(
-    areal_units_strata_type="lattice",
-    areal_units_resolution_km=p$areal_units_resolution_km,
-    spatial_domain="SSE",
-    areal_units_proj4string_planar_km=p$areal_units_proj4string_planar_km,
-    areal_units_overlay="snowcrab",
-    areal_units_constraint=set[, c("lon", "lat")],
-    redo=FALSE
-  )
-
-  sppoly = neighbourhood_structure( sppoly=sppoly )
-
-
-# --------------------------------
-# Get/create predictions surface
-
-APS = bathymetry_carstm( p=p, sppoly=sppoly, DS="carstm_modelled", redo=FALSE )
-
-APS = temperature_carstm( p=p, sppoly=sppoly, DS="carstm_modelled", redo=FALSE )
-
-
-
-## ----------------------------------
-# covariate estimates for prediction in strata and year
-# collapse PS vars with time into APS (and regrid via raster)
-  APS = aegis_db_extract(
-    vars=p$lookupvars,
-    yrs=p$yrs,
-    spatial_domain=p$spatial_domain,
-    dyear=p$prediction_dyear,
-    areal_units_resolution_km=p$areal_units_resolution_km,
-    aegis_proj4string_planar_km=sp::CRS(p$aegis_proj4string_planar_km),
-    returntype="data.frame",
-    redo = FALSE
-  )
-
-  APS$yr = as.numeric( APS$year)
-  APS$Y = NA
-  APS$data_offset = 1  # force to be density n/km^2
-  APS$tag = "predictions"
-
-
-  # StrataID reset to be consistent in both data and prediction areal units
-  o = over( SpatialPoints( set[,c("lon", "lat")], sp::CRS(projection_proj4string("lonlat_wgs84")) ), spTransform(sppoly, sp::CRS(projection_proj4string("lonlat_wgs84")) ) ) # match each datum to an area
-  set$StrataID = o$StrataID
-
-
-  o = over( SpatialPoints( APS[,c("lon", "lat")], sp::CRS(projection_proj4string("lonlat_wgs84")) ), spTransform(sppoly, sp::CRS(projection_proj4string("lonlat_wgs84")) ) ) # match each datum to an area
-  APS$StrataID = o$StrataID
-
-  o = NULL
-
-  #  good data
-  ok = which(
-    is.finite(set[,p$variables$Y]) &   # INLA can impute Y-data
-    is.finite(set$data_offset) &
-    is.finite(set$StrataID)
-  )
-
-
-# construct meanweights matrix
-weight_year = meanweights_by_strata( set=set, StrataID=as.character( sppoly$StrataID ), yrs=p$yrs, fillall=TRUE, annual_breakdown=TRUE )
-# weight_year = weight_year[, match(as.character(p$yrs), colnames(weight_year) )]
-# weight_year = weight_year[ match(as.character(sppoly$StrataID), rownames(weight_year) )]
-
-
-varstokeep = unique( c( "Y", "StrataID", "yr", "data_offset", "tag", p$lookupvars) )
-
-M = rbind( set[ok, varstokeep], APS[,varstokeep] )
-
-M = M[ which(
-      is.finite(M$data_offset) &
-      is.finite(M$StrataID)
-    ) , ]
-
-M$yr_factor = factor( as.character(M$yr) )
-M$StrataID  = factor( as.character(M$StrataID), levels=levels( sppoly$StrataID ) )
-M$strata  = as.numeric( M$StrataID)
-M$year  = as.numeric( M$yr_factor)
-M$iid_error = 1:nrow(M) # for inla indexing for set level variation
-
-
-M$t[!is.finite(M$t)] = median(M$t, na.rm=TRUE )  # missing data .. quick fix .. do something better
-M$tsd[!is.finite(M$tsd)] = median(M$tsd, na.rm=TRUE )  # missing data .. quick fix .. do something better
-M$tmin[!is.finite(M$tmin)] = median(M$tmin, na.rm=TRUE )  # missing data .. quick fix .. do something better
-M$tmax[!is.finite(M$tmax)] = median(M$tmax, na.rm=TRUE )  # missing data .. quick fix .. do something better
-M$degreedays[!is.finite(M$degreedays)] = median(M$degreedays, na.rm=TRUE )  # missing data .. quick fix .. do something better
-M$z[!is.finite(M$z)] = median(M$z, na.rm=TRUE )  # missing data .. quick fix .. do something better
-M$dZ[!is.finite(M$dZ)] = median(M$dZ, na.rm=TRUE )  # missing data .. quick fix .. do something better
-M$ddZ[!is.finite(M$ddZ)] = median(M$ddZ, na.rm=TRUE )  # missing data .. quick fix .. do something better
-M$substrate.grainsize[!is.finite(M$substrate.grainsize)] = median(M$substrate.grainsize, na.rm=TRUE )  # missing data .. quick fix .. do something better
-
-
-M$ti = discretize_data( M$t, p$discretization$t )
-M$tisd = discretize_data( M$tsd, p$discretization$tsd )
-M$timin = discretize_data( M$tmin, p$discretization$tmin )
-M$timax = discretize_data( M$tmax, p$discretization$tmax )
-M$di = discretize_data( M$t, p$discretization$degreedays )
-M$zi = discretize_data( M$t, p$discretization$z )
-M$zid = discretize_data( M$t, p$discretization$dZ )
-M$zidd = discretize_data( M$t, p$discretization$ddZ )
-M$si = discretize_data( M$t, p$discretization$substrate.grainsize )
-
-
-totest = setdiff(1:ncol(M), which(names(M) %in% c("Y", "StrataID", "tag", "yr_factor") ))
-ii = which(is.finite(rowSums(M[,totest])))
-
-M = M[ii,]
-
-# ---------------------
-# generic PC priors
-m = log( {set$Y / set$data_offset}[ok] )
-m[!is.finite(m)] = min(m[is.finite(m)])
-
-
-
-
-carstm_hyperparameters = function( reference_sd, alpha=0.5, reference_mean=0 ) {
-  # some generic PC priors, scaled by sd of data
-  # pc.prior to median .. minimally info. scale
-
-  hyper = list(
-
-    iid = list(
-      prec = list(
-        prior = "pc.prec",  # exponential decay
-        param = c(reference_sd, alpha)
-      )
-    ),
-
-    # means informative, sd marginally diffuse
-    # see: inla.set.control.fixed.default() for defaults
-    fixed = list(
-        mean.intercept = reference_mean,
-        prec.intercept = 1e-3,
-        mean=0,
-        prec=1e-2
-    ),
-
-
-    # param=c(u, alpha); u=sigma; alpha=prob;
-    # see inla.doc("pc.rw2") inla.doc("pc.prec")  ..prior sd attributable to rw2
-    rw2 = list(
-      prec = list(
-        prior = "pc.prec",  # exponential decay
-        param = c(reference_sd, alpha)
-      )
-    ),
-
-    # see inla.doc("ar1") ; theta0, theta1 are expected
-    # param=c(u, alpha); u=sigma; alpha=prob;
-    # see inla.doc("pc.prec")  ..prior sd attributable to autocor rho
-    # param=c(u, alpha); rho = 0.5; u=sqrt(1-rho); alpha=prob; see inla.doc("pc.cor1")
-    ar1 = list(
-      prec = list(
-        prior = "pc.prec",  # exponential decay
-        param = c(reference_sd, alpha)
-      ),
-      rho = list(
-        prior = "pc.cor0", # inla.doc("pc.cor0") ..base model: rho = 0  --- expoential; will tend to 0 unless there is info
-        param = c(sqrt(1-0.5), 0.1)  # rho=0.5; u=sqrt(1-rho)  ... 100-10% of probablity weight to rho 0.5 or less .. forces smooth and only goes high if really high
-      )
-    ),
-
-    # param=c(u, alpha); u=phi (proportion spatial); alpha=prob
-    bym2 = list(
-      prec = list(
-        prior = "pc.prec",
-        param = c(reference_sd, alpha)
-      ),
-      phi = list(
-        prior="pc",  # see bottom of inla.doc("bym2")
-        param=c(0.5, 0.5) # c(phi=0.5, alpha=0.5)
-      )
-    )
-  )
-
-  return(hyper)
-}
-
-
-H = carstm_hyperparameters( sd(m), alpha=0.5, median(m) )
-# H$prec$prec.intercept = 1e-9
-
-
-
 
 # -------------------------------------
-# simple glm
+# model 1 - simple glm
 fit = glm(
   formula = Y ~ 1 + offset( log( data_offset) ) + StrataID + yr_factor,
   family = "poisson", # "zeroinflatedpoisson0",
@@ -434,6 +248,8 @@ yr = "2018"
 sppoly@data[,vn] = out[,yr] * weight_year[,yr]  # biomass density
 brks = interval_break(X= sppoly[[vn]], n=length(p$mypalette), style="quantile")
 spplot( sppoly, vn, col.regions=p$mypalette, main=vn, at=brks, sp.layout=p$coastLayout, col="transparent" )
+
+
 
 
 
@@ -481,6 +297,7 @@ yr = "2018"
 sppoly@data[,vn] = out[,yr] * weight_year[,yr]  # biomass density
 brks = interval_break(X= sppoly[[vn]], n=length(p$mypalette), style="quantile")
 spplot( sppoly, vn, col.regions=p$mypalette, main=vn, at=brks, sp.layout=p$coastLayout, col="transparent" )
+
 
 
 
