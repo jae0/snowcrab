@@ -89,6 +89,116 @@ snowcrab_carstm = function( p=NULL, DS=NULL, sppoly=NULL, redo=FALSE, ... ) {
     M$StrataID  = factor( as.character(M$StrataID), levels=levels( sppoly$StrataID ) ) # revert to factors
     sppoly = NULL
 
+
+# Get/create predictions surface
+
+  APS = bathymetry_carstm( p=p, sppoly=sppoly, DS="carstm_modelled", redo=FALSE )
+
+  APS = snowcrab_carstm( p=p, sppoly=sppoly, DS="carstm_modelled", redo=FALSE )
+
+
+
+## ----------------------------------
+# covariate estimates for prediction in strata and year
+# collapse PS vars with time into APS (and regrid via raster)
+  APS = aegis_db_extract(
+    vars=p$lookupvars,
+    yrs=p$yrs,
+    spatial_domain=p$spatial_domain,
+    dyear=p$prediction_dyear,
+    areal_units_resolution_km=p$areal_units_resolution_km,
+    aegis_proj4string_planar_km=sp::CRS(p$aegis_proj4string_planar_km),
+    returntype="data.frame",
+    redo = FALSE
+  )
+
+  APS$yr = as.numeric( APS$year)
+  APS$Y = NA
+  APS$data_offset = 1  # force to be density n/km^2
+  APS$tag = "predictions"
+
+
+  # StrataID reset to be consistent in both data and prediction areal units
+  o = over( SpatialPoints( set[,c("lon", "lat")], sp::CRS(projection_proj4string("lonlat_wgs84")) ), spTransform(sppoly, sp::CRS(projection_proj4string("lonlat_wgs84")) ) ) # match each datum to an area
+  set$StrataID = o$StrataID
+
+
+  o = over( SpatialPoints( APS[,c("lon", "lat")], sp::CRS(projection_proj4string("lonlat_wgs84")) ), spTransform(sppoly, sp::CRS(projection_proj4string("lonlat_wgs84")) ) ) # match each datum to an area
+  APS$StrataID = o$StrataID
+
+  o = NULL
+
+  #  good data
+  ok = which(
+    is.finite(set[,p$variables$Y]) &   # INLA can impute Y-data
+    is.finite(set$data_offset) &
+    is.finite(set$StrataID)
+  )
+
+
+# construct meanweights matrix
+weight_year = meanweights_by_strata( set=set, StrataID=as.character( sppoly$StrataID ), yrs=p$yrs, fillall=TRUE, annual_breakdown=TRUE )
+# weight_year = weight_year[, match(as.character(p$yrs), colnames(weight_year) )]
+# weight_year = weight_year[ match(as.character(sppoly$StrataID), rownames(weight_year) )]
+
+
+varstokeep = unique( c( "Y", "StrataID", "yr", "data_offset", "tag", p$lookupvars) )
+
+M = rbind( set[ok, varstokeep], APS[,varstokeep] )
+
+M = M[ which(
+      is.finite(M$data_offset) &
+      is.finite(M$StrataID)
+    ) , ]
+
+M$yr_factor = factor( as.character(M$yr) )
+M$StrataID  = factor( as.character(M$StrataID), levels=levels( sppoly$StrataID ) )
+M$strata  = as.numeric( M$StrataID)
+M$year  = as.numeric( M$yr_factor)
+M$iid_error = 1:nrow(M) # for inla indexing for set level variation
+
+
+M$t[!is.finite(M$t)] = median(M$t, na.rm=TRUE )  # missing data .. quick fix .. do something better
+M$tsd[!is.finite(M$tsd)] = median(M$tsd, na.rm=TRUE )  # missing data .. quick fix .. do something better
+M$tmin[!is.finite(M$tmin)] = median(M$tmin, na.rm=TRUE )  # missing data .. quick fix .. do something better
+M$tmax[!is.finite(M$tmax)] = median(M$tmax, na.rm=TRUE )  # missing data .. quick fix .. do something better
+M$degreedays[!is.finite(M$degreedays)] = median(M$degreedays, na.rm=TRUE )  # missing data .. quick fix .. do something better
+M$z[!is.finite(M$z)] = median(M$z, na.rm=TRUE )  # missing data .. quick fix .. do something better
+M$dZ[!is.finite(M$dZ)] = median(M$dZ, na.rm=TRUE )  # missing data .. quick fix .. do something better
+M$ddZ[!is.finite(M$ddZ)] = median(M$ddZ, na.rm=TRUE )  # missing data .. quick fix .. do something better
+M$substrate.grainsize[!is.finite(M$substrate.grainsize)] = median(M$substrate.grainsize, na.rm=TRUE )  # missing data .. quick fix .. do something better
+
+
+M$ti = discretize_data( M$t, p$discretization$t )
+M$tisd = discretize_data( M$tsd, p$discretization$tsd )
+M$timin = discretize_data( M$tmin, p$discretization$tmin )
+M$timax = discretize_data( M$tmax, p$discretization$tmax )
+M$di = discretize_data( M$t, p$discretization$degreedays )
+M$zi = discretize_data( M$t, p$discretization$z )
+M$zid = discretize_data( M$t, p$discretization$dZ )
+M$zidd = discretize_data( M$t, p$discretization$ddZ )
+M$si = discretize_data( M$t, p$discretization$substrate.grainsize )
+
+
+totest = setdiff(1:ncol(M), which(names(M) %in% c("Y", "StrataID", "tag", "yr_factor") ))
+ii = which(is.finite(rowSums(M[,totest])))
+
+M = M[ii,]
+
+# ---------------------
+# generic PC priors
+m = log( {set$Y / set$data_offset}[ok] )
+m[!is.finite(m)] = min(m[is.finite(m)])
+
+
+
+H = carstm_hyperparameters( sd(m), alpha=0.5, median(m) )
+# H$prec$prec.intercept = 1e-9
+
+
+
+
+
     save( M, file=fn, compress=TRUE )
     return( M )
   }
