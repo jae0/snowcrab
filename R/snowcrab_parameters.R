@@ -249,8 +249,7 @@ snowcrab_parameters = function( p=NULL, year.assessment=NULL, project_class="def
 
     p$libs = unique( c( p$libs, project.library ( "spatialreg", "INLA", "raster", "mgcv",  "carstm" ) ) )
 
-    if ( !exists("project_name", p)) p$project_name = "speciescomposition"
-
+    if ( !exists("project_name", p)) p$project_name = "snowcrab"
 
     if ( !exists("areal_units_strata_type", p)) p$areal_units_strata_type = "lattice" # "stmv_lattice" to use ageis fields instead of carstm fields ... note variables are not the same
 
@@ -315,6 +314,8 @@ snowcrab_parameters = function( p=NULL, year.assessment=NULL, project_class="def
     }
 
     p = aegis_parameters( p=p, DS="carstm" )  #generics
+
+  #  boundingbox = list( xlim = c(-70.5, -56.5), ylim=c(39.5, 47.5)), # bounding box for plots using spplot
 
     return(p)
   }

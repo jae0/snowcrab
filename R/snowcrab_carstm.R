@@ -234,8 +234,8 @@ H = carstm_hyperparameters( sd(m), alpha=0.5, median(m) )
 
     if ( grepl("glm", p$carstm_modelengine) ) {
       assign("fit", eval(parse(text=paste( "try(", p$carstm_modelcall, ")" ) ) ))
-      if (is.null(fit)) error("model fit error")
-      if ("try-error" %in% class(fit) ) error("model fit error")
+      if (is.null(fit)) warning("model fit error")
+      if ("try-error" %in% class(fit) ) warning("model fit error")
       save( fit, file=fn_fit, compress=TRUE )
       ii = which( M$tag=="predictions" & M$StrataID %in% M[ which(M$tag=="observations"), "StrataID"] )
       jj = match( M$StrataID[ii], res$StrataID )
@@ -249,8 +249,8 @@ H = carstm_hyperparameters( sd(m), alpha=0.5, median(m) )
 
     if ( grepl("gam", p$carstm_modelengine) ) {
       assign("fit", eval(parse(text=paste( "try(", p$carstm_modelcall, ")" ) ) ))
-      if (is.null(fit)) error("model fit error")
-      if ("try-error" %in% class(fit) ) error("model fit error")
+      if (is.null(fit)) warning("model fit error")
+      if ("try-error" %in% class(fit) ) warning("model fit error")
       save( fit, file=fn_fit, compress=TRUE )
       ii = which( M$tag=="predictions" & M$StrataID %in% M[ which(M$tag=="observations"), "StrataID"] )
       jj = match( M$StrataID[ii], res$StrataID )
@@ -272,8 +272,8 @@ H = carstm_hyperparameters( sd(m), alpha=0.5, median(m) )
       M$strata  = as.numeric( M$StrataID)
       M$iid_error = 1:nrow(M) # for inla indexing for set level variation
       assign("fit", eval(parse(text=paste( "try(", p$carstm_modelcall, ")" ) ) ))
-      if (is.null(fit)) error("model fit error")
-      if ("try-error" %in% class(fit) ) error("model fit error")
+      if (is.null(fit)) warning("model fit error")
+      if ("try-error" %in% class(fit) ) warning("model fit error")
       save( fit, file=fn_fit, compress=TRUE )
       # reformat predictions into matrix form
       ii = which(M$tag=="predictions")
