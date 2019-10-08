@@ -24,31 +24,29 @@
     areal_units_proj4string_planar_km = projection_proj4string("utm20"),  # coord system to use for areal estimation and gridding for carstm
     trawlable_units = "towdistance",  # <<<<<<<<<<<<<<<<<< also:  "standardtow", "sweptarea" (for groundfish surveys)
     quantile_bounds =c(0, 0.99), # trim upper bounds
+    selection=list(
+      type = p$runtype,
+      biologicals=list(
+        spec_bio=bio.taxonomy::taxonomy.recode( from="spec", to="parsimonious", tolookup=p$groundfish_species_code ),
+        sex=0, # male
+        mat=1, # do not use maturity status in groundfish data as it is suspect ..
+        len= c( 95, 200 )/10, #  mm -> cm ; aegis_db in cm
+        ranged_data="len"
+      ),
+      survey=list(
+        data.source = ifelse (p$runtype=="number", c("snowcrab"), c("snowcrab", "groundfish")),
+        yr = p$yrs,      # time frame for comparison specified above
+        settype = 1, # same as geartype in groundfish db
+        polygon_enforce=TRUE,  # make sure mis-classified stations or incorrectly entered positions get filtered out
+        strata_toremove = NULL,  # emphasize that all data enters analysis initially ..
+        ranged_data = c("dyear")  # not used .. just to show how to use range_data
+      )
+    ),
+    variables = list(Y="Y"),
     libs = RLibrary ( "sp", "spdep", "rgeos", "INLA", "raster", "aegis", "aegis.polygons", "aegis.coastline", "aegis.survey", "bio.taxonomy", "carstm" )
   )
 
-  # biologicals selection
-  p$selection=list(
-    type = p$runtype,
-    biologicals=list(
-      spec_bio=bio.taxonomy::taxonomy.recode( from="spec", to="parsimonious", tolookup=p$groundfish_species_code ),
-      sex=0, # male
-      mat=1, # do not use maturity status in groundfish data as it is suspect ..
-      len= c( 95, 200 )/10, #  mm -> cm ; aegis_db in cm
-      ranged_data="len"
-    ),
-    survey=list(
-      data.source = ifelse (p$runtype=="number", c("snowcrab"), c("snowcrab", "groundfish")),
-      yr = p$yrs,      # time frame for comparison specified above
-      settype = 1, # same as geartype in groundfish db
-      polygon_enforce=TRUE,  # make sure mis-classified stations or incorrectly entered positions get filtered out
-      strata_toremove = NULL,  # emphasize that all data enters analysis initially ..
-      ranged_data = c("dyear")  # not used .. just to show how to use range_data
-    )
-  )
-
-  p$variables$Y = "Y"  # name to give variable in extraction and model
-  p$lookupvars = c("t", "tsd", "tmax", "tmin",  "z",  "zsd"  )
+  p = bio.snowcrab::snowcrab_parameters( p=p, project_class = "carstm" ) # defines which parameter set to load .. needs to repeated # carstm parameters
 
 
 
@@ -56,8 +54,6 @@
   M = snowcrab.db( p=p, DS="biological_data"  )
 
 
-# carstm parameters
-  p = bio.snowcrab::snowcrab_parameters( p=p, project_class = "carstm" ) # defines which parameter set to load .. needs to repeated
 
 # ensure if polys exist and create if required
   sppoly = areal_units( p=p )
@@ -89,6 +85,7 @@
 
 
 # substrate -- ensure the data assimilation in substrate is first completed :: 01.substrate_data.R
+# about 6 hrs
   p$p_substrate = aegis.substrate::substrate_parameters(
     project_class = "carstm", # defines which parameter class / set to load
     project_name = "substrate",
@@ -116,9 +113,9 @@
     auid = p$auid
   )
   if (REDO) {
-    M = temperature.db( p=p$p_substrate, DS="aggregated_data" )  # will redo if not found .. not used here but used for data matching/lookup in other aegis projects that use temperature
-    M = temperature_carstm( p=p$p_substrate, DS="carstm_inputs" )  # will redo if not found
-    res = temperature_carstm( p=p$p_substrate, DS="carstm_modelled"  ) # run model and obtain predictions
+    M = temperature.db( p=p$p_temperature, DS="aggregated_data" )  # will redo if not found .. not used here but used for data matching/lookup in other aegis projects that use temperature
+    M = temperature_carstm( p=p$p_temperature, DS="carstm_inputs" )  # will redo if not found
+    res = temperature_carstm( p=p$p_temperature, DS="carstm_modelled"  ) # run model and obtain predictions
   }
 
 
@@ -144,7 +141,7 @@
     project_name = "speciescomposition",
     variabletomodel = "pca2",
     spatial_domain = p$spatial_domain,  # defines spatial area, currenty: "snowcrab" or "SSE"
-    inputdata_spatial_discretization_planar_km = 1,  # 1 km .. some thinning .. requires 32 GB RAM and limit of speed -- controls resolution of data prior to modelling to reduce data set and speed up modelling
+    inputdata_spatial_discretization_planar_km = 1,  #  1 km .. some thinning .. requires 32 GB RAM and limit of speed -- controls resolution of data prior to modelling to reduce data set and speed up modelling
     areal_units_resolution_km = p$areal_units_resolution_km, # km dim of lattice ~ 1 hr
     areal_units_proj4string_planar_km = p$areal_units_proj4string_planar_km,  # coord system to use for areal estimation and gridding for carstm
     auid = p$auid
