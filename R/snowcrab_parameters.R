@@ -266,6 +266,7 @@ snowcrab_parameters = function( p=NULL, year.assessment=NULL, project_class="def
 
     if ( !exists("carstm_modelcall", p)) {
       if ( grepl("inla", p$carstm_modelengine) ) {
+        # use strata which is a numeric representation of the StrataID factor
         p$carstm_modelcall = paste(
           'inla( formula = Y ',
           ' ~ 1
@@ -295,7 +296,7 @@ snowcrab_parameters = function( p=NULL, year.assessment=NULL, project_class="def
       if ( grepl("glm", p$carstm_modelengine) ) {
         p$carstm_modelcall = paste(
           'glm( formula =',  p$variabletomodel,
-          ' ~ 1 + StrataID + t + z + substrate.grainsize +tiyr,
+          ' ~ 1 + StrataID + t + z + substrate.grainsize +tiyr,  # StrataID is a factor
             data= M[ which(M$tag=="observations"), ],
             family=gaussian(link="identity")
           )'
