@@ -107,7 +107,7 @@ snowcrab_carstm = function( p=NULL, DS=NULL, sppoly=NULL, redo=FALSE, ... ) {
     )
 
     APS$yr = as.numeric( APS$year)
-    APS$Y = NA
+    APS[,p$variabletomodel] = NA
     APS$data_offset = 1  # force to be density n/km^2
     APS$tag = "predictions"
 
@@ -124,7 +124,7 @@ snowcrab_carstm = function( p=NULL, DS=NULL, sppoly=NULL, redo=FALSE, ... ) {
 
     #  good data
     ok = which(
-      is.finite(set[,p$variables$Y]) &   # INLA can impute Y-data
+      is.finite(set[,p$variabletomodel]) &   # INLA can impute Y-data
       is.finite(set$data_offset) &
       is.finite(set$StrataID)
     )
@@ -136,7 +136,7 @@ snowcrab_carstm = function( p=NULL, DS=NULL, sppoly=NULL, redo=FALSE, ... ) {
   # weight_year = weight_year[ match(as.character(sppoly$StrataID), rownames(weight_year) )]
 
 
-  varstokeep = unique( c( "Y", "StrataID", "yr", "data_offset", "tag", p$lookupvars) )
+  varstokeep = unique( c( p$variabletomodel, "StrataID", "yr", "data_offset", "tag", p$lookupvars) )
 
   M = rbind( set[ok, varstokeep], APS[,varstokeep] )
 
@@ -174,14 +174,14 @@ snowcrab_carstm = function( p=NULL, DS=NULL, sppoly=NULL, redo=FALSE, ... ) {
   M$si = discretize_data( M$t, p$discretization$substrate.grainsize )
 
 
-  totest = setdiff(1:ncol(M), which(names(M) %in% c("Y", "StrataID", "tag", "yr_factor") ))
+  totest = setdiff(1:ncol(M), which(names(M) %in% c( p$variabletomodel , "StrataID", "tag", "yr_factor") ))
   ii = which(is.finite(rowSums(M[,totest])))
 
   M = M[ii,]
 
   # ---------------------
   # generic PC priors
-  m = log( {set$Y / set$data_offset}[ok] )
+  m = log( {set[,p$variabletomodel] / set$data_offset}[ok] )
   m[!is.finite(m)] = min(m[is.finite(m)])
 
 

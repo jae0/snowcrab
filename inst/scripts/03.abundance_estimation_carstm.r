@@ -47,7 +47,8 @@
         ranged_data = c("dyear")  # not used .. just to show how to use range_data
       )
     ),
-    variables = list(Y="Y"),
+    # variables = list(Y="Y"),
+    variabletomodel = "totno",
     libs = RLibrary ( "sp", "spdep", "rgeos", "INLA", "raster", "aegis", "aegis.polygons", "aegis.coastline", "aegis.survey", "bio.taxonomy", "carstm" )
   )
 
@@ -121,7 +122,7 @@
     # basic model, single CAR effect across time
     p$carstm_modelcall = paste('
       inla(
-        formula = snowcrab ~ 1
+        formula =', p$variabletomodel, ' ~ 1
           + f(tiyr, model="ar1", hyper=H$ar1 )
           + f(year, model="ar1", hyper=H$ar1 )
           + f(zi, model="rw2", scale.model=TRUE, diagonal=1e-6, hyper=H$rw2)
@@ -145,7 +146,7 @@
     # CAR effect for each year
     p$carstm_modelcall = paste('
       inla(
-        formula = snowcrab ~ 1
+        formula =', p$variabletomodel, ' ~ 1
           + f(tiyr, model="ar1", hyper=H$ar1 )
           + f(year, model="ar1", hyper=H$ar1 )
           + f(zi, model="rw2", scale.model=TRUE, diagonal=1e-6, hyper=H$rw2)
@@ -168,7 +169,7 @@
     # CAR effect for each year, no year AC
     p$carstm_modelcall = paste('
       inla(
-        formula = snowcrab ~ 1
+        formula =', p$variabletomodel, ' ~ 1
           + f(tiyr, model="ar1", hyper=H$ar1 )
           + f(zi, model="rw2", scale.model=TRUE, diagonal=1e-6, hyper=H$rw2)
           + f(strata, model="bym2", graph=sppoly@nb ,group= year,  scale.model=TRUE, constr=TRUE, hyper=H$bym2)
@@ -203,12 +204,13 @@
   s$dic$p.eff
 
   # maps of some of the results
-  carstm_plot( p=p, res=res, vn="snowcrab.predicted" )
+  vn = paste(p$variabletomodel, "predicted", sep=".")
+  carstm_plot( p=p, res=res, vn=vn )
 
-  vn = "snowcrab.random_sample_iid"
+  vn = paste(p$variabletomodel, "random_sample_iid", sep=".")
   if (exists(vn, res)) carstm_plot( p=p, res=res, vn=vn, time_match=list(year="1950", dyear="0") )
 
-  vn = "snowcrab.random_strata_nonspatial"
+  vn = paste(p$variabletomodel, "random_strata_nonspatial", sep=".")
   if (exists(vn, res)) {
     res_dim = dim( res[[vn]] )
     if (res_dim == 1 ) time_match = NULL
@@ -217,7 +219,7 @@
     carstm_plot( p=p, res=res, vn=vn, time_match=time_match )
   }
 
-  vn="snowcrab.random_strata_spatial"
+  vn = paste(p$variabletomodel, "random_strata_spatial", sep=".")
   if (exists(vn, res)) {
     res_dim = dim( res[[vn]] )
     if (res_dim == 1 ) time_match = NULL

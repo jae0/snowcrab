@@ -247,7 +247,7 @@ snowcrab_parameters = function( p=NULL, year.assessment=NULL, project_class="def
 
   if (project_class=="carstm") {
 
-    p$libs = unique( c( p$libs, project.library ( "spatialreg", "INLA", "raster", "mgcv",  "carstm" ) ) )
+    p$libs = unique( c( p$libs, project.library ( "carstm" ) ) )
 
     if ( !exists("project_name", p)) p$project_name = "snowcrab"
 
@@ -266,9 +266,11 @@ snowcrab_parameters = function( p=NULL, year.assessment=NULL, project_class="def
 
     if ( !exists("carstm_modelcall", p)) {
       if ( grepl("inla", p$carstm_modelengine) ) {
+        p$libs = unique( c( p$libs, project.library ( "INLA" ) ) )
+
         # use strata which is a numeric representation of the StrataID factor
         p$carstm_modelcall = paste(
-          'inla( formula = Y ',
+          'inla( formula =', p$variabletomodel,
           ' ~ 1
             + f(tiyr2, model="seasonal", season.length=10 )
             + f(ti, model="rw2", scale.model=TRUE, diagonal=1e-6, hyper=H$rw2)
@@ -304,6 +306,8 @@ snowcrab_parameters = function( p=NULL, year.assessment=NULL, project_class="def
       }
 
       if ( grepl("gam", p$carstm_modelengine) ) {
+        p$libs = unique( c( p$libs, project.library ( "mgcv"  ) ) )
+
         p$carstm_modelcall = paste(
           'gam( formula =',  p$variabletomodel,
           ' ~ 1 + StrataID + s(t) + s(z) + s(substrate.grainsize) + s(yr) + s(dyear),
