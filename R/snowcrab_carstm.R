@@ -364,8 +364,9 @@ snowcrab_carstm = function( p=NULL, DS=NULL, sppoly=NULL, redo=FALSE, ... ) {
 
           }
         }
-      save( res, file=fn, compress=TRUE )
+      }
     }
+    save( res, file=fn, compress=TRUE )
     return( res )
   }
 }
