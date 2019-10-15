@@ -285,20 +285,14 @@ snowcrab_carstm = function( p=NULL, DS=NULL, sppoly=NULL, redo=FALSE, ... ) {
       matchfrom = list( strata=M$strata[ii], year=as.character(M$year[ii]), dyear=M$dyear[ii] )
       matchto   = list( strata=res$strata, year=as.character(p$yrs), dyear=factor(p$dyears) )
 
-      res$snowcrab.predicted = reformat_to_array(
-        input = fit$summary.fitted.values[ ii, "mean" ],
-        matchfrom=matchfrom, matchto=matchto
-      )
+      vn = paste( p$variabletomodel, "predicted", sep=".")
+      res[vn] = reformat_to_array( input = fit$summary.fitted.values[ ii, "mean" ], matchfrom=matchfrom, matchto=matchto )
 
-      res$snowcrab.predicted_lb = reformat_to_array(
-        input = fit$summary.fitted.values[ ii, "0.025quant" ],
-        matchfrom=matchfrom, matchto=matchto
-      )
+      vn = paste( p$variabletomodel, "predicted_lb", sep=".")
+      res[vn]  = reformat_to_array( input = fit$summary.fitted.values[ ii, "0.025quant" ], matchfrom=matchfrom, matchto=matchto )
 
-      res$snowcrab.predicted_ub = reformat_to_array(
-        input =  fit$summary.fitted.values[ ii, "0.975quant" ],
-        matchfrom=matchfrom, matchto=matchto
-      )
+      vn = paste( p$variabletomodel, "predicted_ub", sep=".")
+      res[vn] = reformat_to_array( input =  fit$summary.fitted.values[ ii, "0.975quant" ], matchfrom=matchfrom, matchto=matchto )
 
       # random effects results ..
       if (exists("summary.random", fit)) {
@@ -317,10 +311,9 @@ snowcrab_carstm = function( p=NULL, DS=NULL, sppoly=NULL, redo=FALSE, ... ) {
           # IID random effects
           matchfrom = list( strata=M$strata[ii], year=M$year[ii], dyear=M$dyear[ii] )
           matchto   = list( strata=res$strata, year=p$yrs, dyear=factor(p$dyears) )
-          res$snowcrab.random_sample_iid = reformat_to_array(
-            input =  fit$summary.random$iid_error[ ii, "mean" ],
-            matchfrom=matchfrom, matchto=matchto
-          )
+
+          vn = paste( p$variabletomodel, "random_sample_iid", sep=".")
+          res[vn] = reformat_to_array( input=fit$summary.random$iid_error[ ii, "mean" ], matchfrom=matchfrom, matchto=matchto )
           # carstm_plot( p=p, res=res, vn="snowcrab.random_sample_iid", time_match=list(year="1950", dyear="0") )
         }
 
@@ -333,58 +326,46 @@ snowcrab_carstm = function( p=NULL, DS=NULL, sppoly=NULL, redo=FALSE, ... ) {
             jj = 1:nstrata
             matchfrom = list( strata=fit$summary.random$strata$ID[jj]  )
             matchto   = list( strata=res$strata  )
-            res$snowcrab.random_strata_nonspatial = reformat_to_array(
-              fit$summary.random$strata[ jj, "mean" ],
-              matchfrom=matchfrom, matchto=matchto
-            )
-            res$snowcrab.random_strata_spatial =reformat_to_array(
-              fit$summary.random$strata[ jj+nstrata, "mean" ],
-              matchfrom=matchfrom, matchto=matchto
-            )
-            # carstm_plot( p=p, res=res, vn="snowcrab.random_strata_nonspatial"  )
-            # carstm_plot( p=p, res=res, vn="snowcrab.random_strata_spatial" )
+
+            vn = paste( p$variabletomodel, "random_strata_nonspatial", sep=".")
+            res[vn] = reformat_to_array( input=fit$summary.random$strata[ jj, "mean" ], matchfrom=matchfrom, matchto=matchto )
+
+            vn = paste( p$variabletomodel, "random_strata_spatial", sep=".")
+            res[vn] = reformat_to_array( input=fit$summary.random$strata[ jj+max(jj), "mean" ], matchfrom=matchfrom, matchto=matchto )
+
+            # carstm_plot( p=p, res=res, vn=vn )
 
           } else if (nrow(fit$summary.random$strata) == nstrata*2 * p$ny ) {
             # spatial and nonspatial effects grouped by year
             matchfrom = list( strata=M$strata[ii], year=M$year[ii] )
             matchto   = list( strata=res$strata, year=p$yrs )
 
-            res$snowcrab.random_strata_nonspatial = reformat_to_array(
-              input =  fit$summary.random$strata[ ii, "mean" ],
-              matchfrom = matchfrom, matchto = matchto
-            )
-            res$snowcrab.random_strata_spatial = reformat_to_array(
-              input = fit$summary.random$strata[ ii+max(ii), "mean" ],
-              matchfrom = matchfrom, matchto = matchto
-            )
-            # carstm_plot( p=p, res=res, vn="snowcrab.random_strata_nonspatial", time_match=list(year="2000" ) )
-            # carstm_plot( p=p, res=res, vn="snowcrab.random_strata_spatial", time_match=list(year="2000" ) )
+            vn = paste( p$variabletomodel, "random_strata_nonspatial", sep=".")
+            res[vn] = reformat_to_array( input=fit$summary.random$strata[ ii, "mean" ], matchfrom=matchfrom, matchto=matchto )
+
+            vn = paste( p$variabletomodel, "random_strata_spatial", sep=".")
+            res[vn] = reformat_to_array( input=fit$summary.random$strata[ ii+max(ii), "mean" ], matchfrom=matchfrom, matchto=matchto )
+
+            # carstm_plot( p=p, res=res, vn=vn, time_match=list(year="2000" ) )
 
           } else if (nrow(fit$summary.random$strata) == nstrata*2 * p$nt ) {
 
             # need to test/fix ...
-            matchfrom = list( StrataID=M$StrataID[ii], year=M$year[ii], dyear=M$dyear[ii] ),
+            matchfrom = list( StrataID=M$StrataID[ii], year=M$year[ii], dyear=M$dyear[ii] )
             matchto   = list( StrataID=res$StrataID, year=p$yrs, dyear=factor(p$dyears) )
 
-            res$snowcrab.random_strata_nonspatial = reformat_to_array(
-              input = fit$summary.random$strata[ jj, "mean" ],
-              matchfrom = matchfrom,  matchto   = matchto
-            )
-            res$snowcrab.random_strata_spatial = reformat_to_array(
-              input = fit$summary.random$strata[ ii+max(ii), "mean" ],
-              matchfrom = matchfrom, matchto   = matchto
-            )
+            vn = paste( p$variabletomodel, "random_strata_nonspatial", sep=".")
+            res[vn] = reformat_to_array( input=fit$summary.random$strata[ ii, "mean" ], matchfrom=matchfrom, matchto=matchto )
 
-            # carstm_plot( p=p, res=res, vn="snowcrab.random_strata_nonspatial", time_match=list(year="2000", dyear="0.8" ) )
-            # carstm_plot( p=p, res=res, vn="snowcrab.random_strata_spatial", time_match=list(year="2000", dyear="0.8" ) )
+            vn = paste( p$variabletomodel, "random_strata_spatial", sep=".")
+            res[vn] = reformat_to_array( input=fit$summary.random$strata[ ii+max(ii), "mean" ], matchfrom=matchfrom, matchto=matchto )
+
+            # carstm_plot( p=p, res=res, vn=vn, time_match=list(year="2000", dyear="0.8" ) )
 
           }
         }
       save( res, file=fn, compress=TRUE )
     }
-
-
     return( res )
   }
-
 }
