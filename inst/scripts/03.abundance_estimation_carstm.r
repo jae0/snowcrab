@@ -75,46 +75,49 @@
   # about 8 hrs to redo
     p$p_bathymetry = aegis.bathymetry::bathymetry_parameters( p=p, project_class="carstm_auid" ) # transcribes relevant parts of p to load bathymetry
     M = bathymetry.db( p=p$p_bathymetry, DS="aggregated_data" )  # will redo if not found .. not used here but used for data matching/lookup in other aegis projects that use bathymetry
-    M = bathymetry_carstm( p=p$p_bathymetry, DS="carstm_inputs" )  # will redo if not found
-    res = bathymetry_carstm( p=p$p_bathymetry, DS="carstm_modelled"  ) # run model and obtain predictions
-    fit = bathymetry_carstm( p=p$p_bathymetry, DS="carstm_modelled_fit" )  # extract currently saved model fit
+    M = bathymetry.db( p=p$p_bathymetry, DS="carstm_inputs" )  # will redo if not found
+    # res = carstm_model( p=p$p_bathymetry, M=M  ) # run model and obtain predictions
+    res = carstm_model( p=p$p_bathymetry, DS="carstm_modelled"  ) # run model and obtain predictions
+    fit = carstm_model( p=p$p_bathymetry, DS="carstm_modelled_fit" )  # extract currently saved model fit
 
 # substrate -- ensure the data assimilation in substrate is first completed :: 01.substrate_data.R
 # about 8 hrs
     p$p_substrate = aegis.substrate::substrate_parameters(p=p, project_class="carstm_auid" )
     M = substrate.db( p=p$p_substrate, DS="aggregated_data" )  # will redo if not found .. not used here but used for data matching/lookup in other aegis projects that use substrate
-    M = substrate_carstm( p=p$p_substrate, DS="carstm_inputs" )  # will redo if not found
-    res = substrate_carstm( p=p$p_substrate, DS="carstm_modelled"  ) # run model and obtain predictions
-    fit = substrate_carstm( p=p$p_substrate, DS="carstm_modelled_fit" )  # extract currently saved model fit
+    M = substrate.db( p=p$p_substrate, DS="carstm_inputs" )  # will redo if not found
+    # res = carstm_model( p=p$p_substrate, M=M  ) # run model and obtain predictions
+    res = carstm_model( p=p$p_substrate, DS="carstm_modelled"  ) # run model and obtain predictions
+    fit = carstm_model( p=p$p_substrate, DS="carstm_modelled_fit" )  # extract currently saved model fit
 
 # temperature -- ensure the data assimilation in temperature is first completed :: 01.temperature_data.R
 # long optimization step: 2500 + at 5 hrs .. think of using eb or gaussian to bootstrap? 150 configs at 5 sec
     p$p_temperature = aegis.temperature::temperature_parameters(p=p, project_class="carstm_auid" )
     M = temperature.db( p=p$p_temperature, DS="aggregated_data" )  # will redo if not found .. not used here but used for data matching/lookup in other aegis projects that use temperature
-    M = temperature_carstm( p=p$p_temperature, DS="carstm_inputs" )  # will redo if not found
-    res = temperature_carstm( p=p$p_temperature, DS="carstm_modelled"  ) # run model and obtain predictions
-    fit = temperature_carstm( p=p$p_temperature, DS="carstm_modelled_fit" )  # extract currently saved model fit
+    M = temperature.db( p=p$p_temperature, DS="carstm_inputs" )  # will redo if not found
+    # res = carstm_model( p=p$p_temperature, M=M  ) # run model and obtain predictions
+    res = carstm_model( p=p$p_temperature, DS="carstm_modelled"  ) # run model and obtain predictions
+    fit = carstm_model(  p=p$p_temperature, DS="carstm_modelled_fit" )  # extract currently saved model fit
 
 # species composition 1 -- ensure that survey data is assimilated : bio.snowcrab::01snowcb_data.R, aegis.survey::01.surveys.data.R , etc.
     p$p_pca1 = aegis.speciescomposition::speciescomposition_parameters(p=p, project_class="carstm_auid" )
     M = speciescomposition.db( p=p$p_pca1, DS="aggregated_data" )  # will redo if not found .. not used here but used for data matching/lookup in other aegis projects that use speciescomposition
-    M = speciescomposition_carstm( p=p$p_pca1, DS="carstm_inputs" )  # will redo if not found
-    res = speciescomposition_carstm( p=p$p_pca1, DS="carstm_modelled"  ) # run model and obtain predictions
-    fit = speciescomposition_carstm( p=p$p_pca1, DS="carstm_modelled_fit" )  # extract currently saved model fit
+    M = speciescomposition.db( p=p$p_pca1, DS="carstm_inputs" )  # will redo if not found
+#    res = carstm_model( p=p$p_pca1, M=M  ) # run model and obtain predictions
+    res = carstm_model( p=p$p_pca1, DS="carstm_modelled"  ) # run model and obtain predictions
+    fit = carstm_model( p=p$p_pca1, DS="carstm_modelled_fit" )  # extract currently saved model fit
 
 # species composition 2 -- ensure that survey data is assimilated : bio.snowcrab::01snowcb_data.R, aegis.survey::01.surveys.data.R , etc.
     p$p_pca2 = speciescomposition::speciescomposition_parameters(p=p, project_class="carstm_auid" )
     M = speciescomposition.db( p=p$p_pca2, DS="aggregated_data" )  # will redo if not found .. not used here but used for data matching/lookup in other aegis projects that use speciescomposition
-    M = speciescomposition_carstm( p=p$p_pca2, DS="carstm_inputs" )  # will redo if not found
-    res = speciescomposition_carstm( p=p$p_pca2, DS="carstm_modelled"  ) # run model and obtain predictions
-    fit = speciescomposition_carstm( p=p$p_pca2, DS="carstm_modelled_fit" )  # extract currently saved model fit
+    M = speciescomposition.db( p=p$p_pca2, DS="carstm_inputs" )  # will redo if not found
+#    res = carstm_model( p=p$p_pca2, M=M  ) # run model and obtain predictions
+    res = carstm_model( p=p$p_pca2, DS="carstm_modelled"  ) # run model and obtain predictions
+    fit = carstm_model( p=p$p_pca2, DS="carstm_modelled_fit" )  # extract currently saved model fit
 
     # finished covariates ...
   }
 
 
-  # assimilate covariates to help model snowcrab
-  M = snowcrab_carstm( p=p, DS="carstm_inputs", redo=TRUE )  # will redo if not found
 
   if (0) {
     # choose model:
@@ -192,11 +195,13 @@
 
 
   # run model and obtain predictions
-  res = snowcrab_carstm( p=p, DS="carstm_modelled", redo=TRUE )
+  # assimilate covariates to help model snowcrab
+  M = snowcrab.db( p=p, DS="carstm_inputs", redo=TRUE )  # will redo if not found
+  res = carstm_model( p=p, M=M )
 
   # extract results
-  res = snowcrab_carstm( p=p, DS="carstm_modelled" ) # to load currently saved res
-  fit = snowcrab_carstm( p=p, DS="carstm_modelled_fit" )  # extract currently saved model fit
+  res = carstm_model( p=p, DS="carstm_modelled" ) # to load currently saved res
+  fit = carstm_model( p=p, DS="carstm_modelled_fit" )  # extract currently saved model fit
   plot(fit)
   plot(fit, plot.prior=TRUE, plot.hyperparameters=TRUE, plot.fixed.effects=FALSE )
   s = summary(fit)
