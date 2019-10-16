@@ -58,7 +58,7 @@
 
 
   # the underlying observations/data
-  M = snowcrab.db( p=p, DS="biological_data"  )
+  MS = snowcrab.db( p=p, DS="biological_data"  )
 
 
 
@@ -66,8 +66,9 @@
   sppoly = areal_units( p=p )
   if (REDO) {
     for (au in c("cfanorth", "cfasouth", "cfa4x", "cfaall" )) plot(polygons_managementarea( species="snowcrab", au))
-    sppoly = areal_units( p=p, areal_units_constraint=M[, c("lon", "lat")], redo=TRUE )
+    sppoly = areal_units( p=p, areal_units_constraint=MS[, c("lon", "lat")], redo=TRUE )
     #  sppoly = neighbourhood_structure( sppoly=sppoly )
+    MS = NULL
 
   # now do all covariate fields on the above polygons
 
