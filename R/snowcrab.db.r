@@ -1358,14 +1358,7 @@ snowcrab.db = function( DS, p=NULL, yrs=NULL) {
 
     M$strata  = as.numeric( M$StrataID)
 
-    if ( grepl("inla", p$carstm_modelengine) ) {
-      M$zi = discretize_data( M$z, p$discretization$z )
-      M$tiyr2 = M$tiyr  # use a copy for "seasonal" models
-      M$year = floor(M$tiyr)
-      M$dyear  =  M$tiyr - M$year
-      M$iid_error = 1:nrow(M) # for inla indexing for set level variation
-    }
-
+    M$zi = discretize_data( M$z, p$discretization$z )
 
     save( M, file=fn, compress=TRUE )
     return( M )
