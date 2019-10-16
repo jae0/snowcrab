@@ -1356,8 +1356,6 @@ snowcrab.db = function( DS, p=NULL, yrs=NULL) {
   m[!is.finite(m)] = min(m[is.finite(m)])
 
 
-    M$strata  = as.numeric( M$StrataID)
-
     M$zi = discretize_data( M$z, p$discretization$z )
 
     save( M, file=fn, compress=TRUE )
