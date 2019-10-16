@@ -64,6 +64,8 @@ snowcrab_parameters = function( p=NULL, year.assessment=NULL, project_class="def
   p$esonar.yToload  = intersect( p$yrs, 2014:p$year.assessment)
   p$netmensuration.problems = c()
 
+  p$aegis_dimensionality="space-year"
+
   p$ny = length(p$yrs)
   p$nt = p$ny # must specify, else assumed = 1 (1= no time)  ## nt=ny annual time steps, nt = ny*nw is seassonal
   p$nw = 10 # default value of 10 time steps for all temp and indicators
@@ -131,7 +133,6 @@ snowcrab_parameters = function( p=NULL, year.assessment=NULL, project_class="def
     # min number of data points req before attempting to model timeseries in a localized space
     if (!exists("stmv_nmax", p)) p$stmv_nmax = 6000 # actually can have a lot of data from logbooks ... this keeps things reasonable in terms of run-time
 
-    p$aegis_dimensionality="space-year"
 
     # due to formulae being potentially created on the fly, these are required params
     if (!exists("Y", p$variables)) {
