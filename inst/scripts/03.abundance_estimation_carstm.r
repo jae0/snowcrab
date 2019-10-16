@@ -47,7 +47,7 @@
         ranged_data = c("dyear")  # not used .. just to show how to use range_data
       )
     ),
-    # variables = list(Y="Y"),
+    variables = list(Y="totno"),  # name to give (using stmv access methods)
     variabletomodel = "totno",
     libs = RLibrary ( "sp", "spdep", "rgeos", "INLA", "raster", "aegis", "aegis.polygons", "aegis.coastline", "aegis.survey", "bio.taxonomy", "carstm" )
   )
