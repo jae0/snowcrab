@@ -1308,6 +1308,8 @@ snowcrab.db = function( DS, p=NULL, yrs=NULL) {
 
 
   varstokeep = unique( c( p$variabletomodel, "StrataID", "yr", "data_offset", "tag", p$lookupvars) )
+   vn = c( p$variabletomodel, pb$variabletomodel,  ps$variabletomodel,  pt$variabletomodel, "tag", "StrataID" )
+
 
   M = rbind( set[ok, varstokeep], APS[,varstokeep] )
 
@@ -1356,7 +1358,15 @@ snowcrab.db = function( DS, p=NULL, yrs=NULL) {
   m[!is.finite(m)] = min(m[is.finite(m)])
 
 
-    M$zi = discretize_data( M$z, p$discretization$z )
+      M$strata  = as.numeric( M$StrataID)
+      M$iid_error = 1:nrow(M) # for inla indexing for set level variation
+
+      M$zi = discretize_data( M[, pb$variabletomodel], p$discretization$z )
+
+      M$tiyr  = trunc( M$tiyr / p$tres )*p$tres    # discretize for inla .. midpoints
+      M$year = floor(M$tiyr)
+      M$dyear  =  factor( as.character( trunc(  (M$tiyr - M$year )/ p$tres )*p$tres), levels=p$dyears)
+
 
     save( M, file=fn, compress=TRUE )
     return( M )

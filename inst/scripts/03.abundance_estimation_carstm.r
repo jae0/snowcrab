@@ -59,12 +59,11 @@
 
   # the underlying observations/data
   MS = snowcrab.db( p=p, DS="biological_data"  )
-
-
-
-  # ensure if polys exist and create if required
   sppoly = areal_units( p=p )
+  plot(sppoly)
+
   if (REDO) {
+    # ensure if polys exist and create if required
     for (au in c("cfanorth", "cfasouth", "cfa4x", "cfaall" )) plot(polygons_managementarea( species="snowcrab", au))
     sppoly = areal_units( p=p, areal_units_constraint=MS[, c("lon", "lat")], redo=TRUE )
     #  sppoly = neighbourhood_structure( sppoly=sppoly )
