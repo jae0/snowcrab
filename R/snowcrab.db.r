@@ -1232,7 +1232,7 @@ snowcrab.db = function( DS, p=NULL, yrs=NULL) {
     APS$z = NA
 
     pb = aegis.bathymetry::bathymetry_parameters( p=p, project_class =="carstm_auid" ) # transcribes relevant parts of p to load bathymetry
-    BI = bathymetry.db ( p=pb, DS="carstm_modelled" )  # unmodeled!
+    BI = carstm_model ( p=pb, DS="carstm_modelled" )  # unmodeled!
 
     jj = match( as.character( APS$StrataID), as.character( BI$StrataID) )
     APS$z = BI$z.predicted[jj]
