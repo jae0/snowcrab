@@ -72,7 +72,7 @@
   # now do all covariate fields on the above polygons
 
   # bathymetry -- ensure the data assimilation in bathymetry is first completed :: 01.bathymetry_data.R
-  # about 8 hrs to redo
+  # about 15 hrs to redo
     p$p_bathymetry = aegis.bathymetry::bathymetry_parameters( p=p, project_class="carstm_auid" ) # transcribes relevant parts of p to load bathymetry
     M = bathymetry.db( p=p$p_bathymetry, DS="aggregated_data" )  # will redo if not found .. not used here but used for data matching/lookup in other aegis projects that use bathymetry
     M = bathymetry.db( p=p$p_bathymetry, DS="carstm_inputs" )  # will redo if not found
@@ -81,7 +81,7 @@
     fit = carstm_model( p=p$p_bathymetry, DS="carstm_modelled_fit" )  # extract currently saved model fit
 
 # substrate -- ensure the data assimilation in substrate is first completed :: 01.substrate_data.R
-# about 8 hrs
+# about 8 hrs -- 27 configs @ 40 min each, total time 12 hrs
     p$p_substrate = aegis.substrate::substrate_parameters(p=p, project_class="carstm_auid" )
     M = substrate.db( p=p$p_substrate, DS="aggregated_data" )  # will redo if not found .. not used here but used for data matching/lookup in other aegis projects that use substrate
     M = substrate.db( p=p$p_substrate, DS="carstm_inputs" )  # will redo if not found
