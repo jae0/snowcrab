@@ -1189,6 +1189,7 @@ snowcrab.db = function( DS, p=NULL, yrs=NULL) {
 
   if ( DS=="carstm_inputs") {
 
+
     fn = file.path( p$modeldir, paste( "snowcrab", "carstm_inputs", p$auid,
       p$inputdata_spatial_discretization_planar_km,
       round(p$inputdata_temporal_discretization_yr, 6),
