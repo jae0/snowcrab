@@ -124,7 +124,6 @@
 
 # species composition 1 -- ensure that survey data is assimilated : bio.snowcrab::01snowcb_data.R, aegis.survey::01.surveys.data.R , etc.
     pPC1 = aegis.speciescomposition::speciescomposition_parameters(p=p, project_class="carstm_auid" )
-    M = speciescomposition.db( p=pPC1, DS="aggregated_data", redo=TRUE )  # will redo if not found .. not used here but used for data matching/lookup in other aegis projects that use speciescomposition
     M = speciescomposition.db( p=pPC1, DS="carstm_inputs", redo=TRUE )  # will redo if not found
     res = carstm_model( p=pPC1, M=M, DS="redo"  ) # run model and obtain predictions
     # res = carstm_model( p=pPC1, DS="carstm_modelled"  ) # run model and obtain predictions
@@ -132,7 +131,6 @@
 
 # species composition 2 -- ensure that survey data is assimilated : bio.snowcrab::01snowcb_data.R, aegis.survey::01.surveys.data.R , etc.
     pPC2 = speciescomposition::speciescomposition_parameters(p=p, project_class="carstm_auid" )
-    M = speciescomposition.db( p=pPC2, DS="aggregated_data", redo=TRUE )  # will redo if not found .. not used here but used for data matching/lookup in other aegis projects that use speciescomposition
     M = speciescomposition.db( p=pPC2, DS="carstm_inputs", redo=TRUE )  # will redo if not found
     res = carstm_model( p=pPC2, M=M, DS="redo"  ) # run model and obtain predictions
     # res = carstm_model( p=pPC2, DS="carstm_modelled"  ) # run model and obtain predictions
@@ -221,7 +219,7 @@
   # run model and obtain predictions
   # assimilate covariates to help model snowcrab
   M = snowcrab.db( p=p, DS="carstm_inputs", redo=TRUE )  # will redo if not found
-  res = carstm_model( p=p, M=M )
+  res = carstm_model( p=p, M=snowcrab.db( p=p, DS="carstm_inputs" ) )
 
   # extract results
   res = carstm_model( p=p, DS="carstm_modelled" ) # to load currently saved res
