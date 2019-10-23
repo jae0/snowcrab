@@ -432,17 +432,18 @@
 			logbook$depth = NULL
       oo =  which( logbook$z < 10 | logbook$z > 500 ) # screen out large z's
       if (length(oo) > 0 )  logbook$z[ oo ] = NA
-      ii = which(!is.finite(logbook$z))
-      if (length(ii)>0){
-        logbook$z[ii] = bathymetry.lookup( p=p, locs=logbook[ii,c("plon", "plat")], vnames="z" )
-      }
-      logbook$z = log( logbook$z )
 
-      ii = which( ! is.finite( logbook$z) )
-      if (length(ii)>0) logbook = logbook[ -ii, ]
+      # ii = which(!is.finite(logbook$z))
+      # if (length(ii)>0){
+      #   logbook$z[ii] = bathymetry.lookup( p=p, locs=logbook[ii,c("plon", "plat")], vnames="z" )
+      # }
+      # logbook$z = log( logbook$z )
 
-      # bring in time varing features:: temperature
-      logbook$t = temperature.lookup( p=p, locs=logbook[, c("plon","plat")], timestamp=logbook$timestamp )
+      # ii = which( ! is.finite( logbook$z) )
+      # if (length(ii)>0) logbook = logbook[ -ii, ]
+
+      # # bring in time varing features:: temperature
+      # logbook$t = temperature.lookup( p=p, locs=logbook[, c("plon","plat")], timestamp=logbook$timestamp )
 
 			save( logbook, file=fn, compress=T )
 
