@@ -74,8 +74,8 @@
   # bathymetry -- ensure the data assimilation in bathymetry is first completed :: 01.bathymetry_data.R
   # about 15 hrs to redo
     pB = aegis.bathymetry::bathymetry_parameters( p=p, project_class="carstm_auid" ) # transcribes relevant parts of p to load bathymetry
-    M = bathymetry.db( p=pB, DS="aggregated_data", redo=TRUE )  # will redo if not found .. not used here but used for data matching/lookup in other aegis projects that use bathymetry
-    M = bathymetry.db( p=pB, DS="carstm_inputs", redo=TRUE )  # will redo if not found
+    M = bathymetry_carstm_db( p=pB, DS="aggregated_data", redo=TRUE )  # will redo if not found .. not used here but used for data matching/lookup in other aegis projects that use bathymetry
+    M = bathymetry_carstm_db( p=pB, DS="carstm_inputs", redo=TRUE )  # will redo if not found
     res = carstm_model( p=pB, M=M, DS="redo"  ) # run model and obtain predictions
     # res = carstm_model( p=pB, DS="carstm_modelled"  ) # run model and obtain predictions
     # fit = carstm_model( p=pB, DS="carstm_modelled_fit" )  # extract currently saved model fit
