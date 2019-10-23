@@ -323,7 +323,7 @@ snowcrab_parameters = function( p=NULL, year.assessment=NULL, project_class="def
       }
     }
 
-    p = aegis_parameters( p=p, DS="carstm" )  #generics
+    p = carstm_parameters( p=p, DS="basic" )  # fill in anything missing and some checks
 
   #  boundingbox = list( xlim = c(-70.5, -56.5), ylim=c(39.5, 47.5)), # bounding box for plots using spplot
 

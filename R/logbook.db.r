@@ -421,7 +421,7 @@
       logbook$plon = grid_internal( logbook$plon, grid$plon )
       logbook$plat = grid_internal( logbook$plat, grid$plat )
 
-			logbook$timestamp = as.POSIXct( logbook$date.landed, tz="America/Halifax", origin=lubridate::origin  )  # required for temperature lookups
+			logbook$timestamp = as.POSIXct( logbook$date.landed, tz="America/Halifax", origin=lubridate::origin  )  # required for temperature_stmv_lookups
       logbook$timestamp = with_tz( logbook$timestamp, "UTC")
 
       logbook$dyear = lubridate::decimal_date( logbook$timestamp ) - lubridate::year(logbook$timestamp )
@@ -435,7 +435,7 @@
 
       # ii = which(!is.finite(logbook$z))
       # if (length(ii)>0){
-      #   logbook$z[ii] = bathymetry.lookup( p=p, locs=logbook[ii,c("plon", "plat")], vnames="z" )
+      #   logbook$z[ii] = bathymetry_stmv_lookup( p=p, locs=logbook[ii,c("plon", "plat")], vnames="z" )
       # }
       # logbook$z = log( logbook$z )
 
@@ -443,7 +443,7 @@
       # if (length(ii)>0) logbook = logbook[ -ii, ]
 
       # # bring in time varing features:: temperature
-      # logbook$t = temperature.lookup( p=p, locs=logbook[, c("plon","plat")], timestamp=logbook$timestamp )
+      # logbook$t = temperature_stmv_lookup( p=p, locs=logbook[, c("plon","plat")], timestamp=logbook$timestamp )
 
 			save( logbook, file=fn, compress=T )
 
