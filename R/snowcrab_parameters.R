@@ -10,7 +10,6 @@ snowcrab_parameters = function( p=NULL, year.assessment=NULL, project_class="def
   if ( length(i) > 0 ) p = p[-i] # give any passed parameters a higher priority, overwriting pre-existing variable
 
 
-
   # ---------------------
   # create/update library list
   p$libs = unique( c( p$libs, RLibrary ( "colorspace",  "geosphere", "lattice",

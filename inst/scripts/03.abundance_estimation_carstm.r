@@ -14,7 +14,7 @@
   REDO = FALSE
 
   # survey (set-level) parameters
-  p = aegis.survey::survey_parameters(
+  p = bio.snowcrab::snowcrab_carstm(
     speciesname = "Snow crab",
     groundfish_species_code = groundfish_species_code,
     runtype = "number",  # "biomass", "presence_absence", "number"
@@ -25,7 +25,7 @@
     inputdata_temporal_discretization_yr = 1/12,
     auid = "snowcrab_assessment_25",  # identifyer for areal units polygon filename
     areal_units_resolution_km = 25, # km dim of lattice ~ 1 hr
-    areal_units_proj4string_planar_km = projection_proj4string("utm20"),  # coord system to use for areal estimation and gridding for carstm
+    areal_units_proj4string_planar_km = aegis::projection_proj4string("utm20"),  # coord system to use for areal estimation and gridding for carstm
     trawlable_units = "towdistance",  # <<<<<<<<<<<<<<<<<< also:  "standardtow", "sweptarea" (for groundfish surveys)
     quantile_bounds =c(0, 0.99), # trim upper bounds
     selection=list(
@@ -48,10 +48,9 @@
     ),
     variables = list(Y="totno"),  # name to give (using stmv access methods)
     variabletomodel = "totno",
-    libs = RLibrary ( "sp", "spdep", "rgeos", "INLA", "raster", "aegis", "aegis.polygons", "aegis.coastline", "aegis.survey", "bio.taxonomy", "carstm" )
+    libs = RLibrary ( "sp", "rgeos", "INLA", "raster", "aegis", "aegis.polygons", "aegis.coastline", "aegis.survey", "bio.taxonomy",  "aegis.speciescomposition", "bio.snowcrab", "carstm" )
   )
 
-  p = bio.snowcrab::snowcrab_carstm( p=p, DS="parameters" ) # defines which parameter set to load .. needs to repeated # carstm parameters
 
   #  boundingbox = list( xlim = c(-70.5, -56.5), ylim=c(39.5, 47.5)), # bounding box for plots using spplot
 
@@ -122,14 +121,14 @@
     # fit = carstm_model(  p=pT, DS="carstm_modelled_fit" )  # extract currently saved model fit
 
 # species composition 1 -- ensure that survey data is assimilated : bio.snowcrab::01snowcb_data.R, aegis.survey::01.surveys.data.R , etc.
-    pPC1 = speciescomposition_carstm(p=p, DS="carstm_auid" )
+    pPC1 = speciescomposition_carstm(p=p, DS="carstm_auid", vn="pca1" )
     M = speciescomposition_carstm( p=pPC1, DS="carstm_inputs", redo=TRUE )  # will redo if not found
     res = carstm_model( p=pPC1, M=M, DS="redo"  ) # run model and obtain predictions
     # res = carstm_model( p=pPC1, DS="carstm_modelled"  ) # run model and obtain predictions
     # fit = carstm_model( p=pPC1, DS="carstm_modelled_fit" )  # extract currently saved model fit
 
 # species composition 2 -- ensure that survey data is assimilated : bio.snowcrab::01snowcb_data.R, aegis.survey::01.surveys.data.R , etc.
-    pPC2 = speciescomposition_carstm(p=p, DS="carstm_auid" )
+    pPC2 = speciescomposition_carstm(p=p, DS="carstm_auid", vn="pca1" )
     M = speciescomposition_carstm( p=pPC2, DS="carstm_inputs", redo=TRUE )  # will redo if not found
     res = carstm_model( p=pPC2, M=M, DS="redo"  ) # run model and obtain predictions
     # res = carstm_model( p=pPC2, DS="carstm_modelled"  ) # run model and obtain predictions

@@ -1,18 +1,26 @@
 
-snowcrab_carstm = function( DS, p=NULL, yrs=NULL) {
+snowcrab_carstm = function( DS, p=NULL, yrs=NULL, ...) {
 
 	# handles all basic data tables, etc. ...
 
   # over-ride default dependent variable name if it exists
-  if (is.null(p)) p = snowcrab_parameters()
 
-  if ( !exists("project_name", p)) p$project_name = "snowcrab"
-  if ( !exists("data_root", p) ) p$data_root = project.datadirectory( "aegis", p$project_name )
-  if ( !exists("datadir", p) )   p$datadir  = file.path( p$data_root, "data" )
-  if ( !exists("modeldir", p) )  p$modeldir = file.path( p$data_root, "modelled" )
+    if ( is.null(p)) {
+      p = bio.snowcrab::snowcrab_parameters(...)
+    } else {
+      p = bio.snowcrab::snowcrab_parameters(p=p, ...)
+    }
 
 
-  p$libs = unique( c( p$libs, project.library ( "carstm" ) ) )
+  # ---------------------
+  # create/update library list
+  p$libs = c( p$libs, RLibrary ( "colorspace",  "fields", "geosphere", "lubridate",  "lattice",
+    "maps", "mapdata", "maptools", "parallel",  "rgdal", "rgeos",  "sp", "splancs", "GADMTools" ) )
+  p$libs = c( p$libs, project.library ( "aegis", "aegis.bathymetry", "aegis.survey", "netmensuration", "carstm" ) )
+
+  # p$taxa.of.interest = aegis.survey::groundfish.variablelist("catch.summary")
+  # p$season = "summer"
+  # p$taxa =  "maxresolved"
 
 
   # ---------------------
@@ -35,6 +43,7 @@ snowcrab_carstm = function( DS, p=NULL, yrs=NULL) {
     )
     return(pc)
   }
+
 
   # ---------------------
 
