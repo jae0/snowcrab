@@ -16,7 +16,7 @@ snowcrab_carstm = function( DS, p=NULL, yrs=NULL, ...) {
   # create/update library list
   p$libs = c( p$libs, RLibrary ( "colorspace",  "fields", "geosphere", "lubridate",  "lattice",
     "maps", "mapdata", "maptools", "parallel",  "rgdal", "rgeos",  "sp", "splancs", "GADMTools" ) )
-  p$libs = c( p$libs, project.library ( "aegis", "aegis.bathymetry", "aegis.survey", "netmensuration", "carstm" ) )
+  p$libs = c( p$libs, project.library ( "aegis", "aegis.bathymetry", "aegis.polygons", "aegis.coastline", "aegis.survey", "netmensuration", "bio.snowcraab", "carstm" ) )
 
   # p$taxa.of.interest = aegis.survey::groundfish.variablelist("catch.summary")
   # p$season = "summer"
