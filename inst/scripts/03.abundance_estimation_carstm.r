@@ -15,7 +15,6 @@
 
   # survey (set-level) parameters
   p = aegis.survey::survey_parameters(
-    project_class = "carstm",
     speciesname = "Snow crab",
     groundfish_species_code = groundfish_species_code,
     runtype = "number",  # "biomass", "presence_absence", "number"
