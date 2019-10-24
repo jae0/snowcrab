@@ -219,7 +219,7 @@
   # run model and obtain predictions
   # assimilate covariates to help model snowcrab
   M = snowcrab_carstm( p=p, DS="carstm_inputs", redo=TRUE )  # will redo if not found
-  res = carstm_model( p=p, M=snowcrab.db( p=p, DS="carstm_inputs" ) )
+  res = carstm_model( p=p, M=snowcrab_carstm( p=p, DS="carstm_inputs" ) )
 
   # extract results
   res = carstm_model( p=p, DS="carstm_modelled" ) # to load currently saved res
