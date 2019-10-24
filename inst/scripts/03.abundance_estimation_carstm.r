@@ -15,6 +15,7 @@
 
   # survey (set-level) parameters
   p = bio.snowcrab::snowcrab_carstm(
+    DS = "paramaters",
     speciesname = "Snow crab",
     groundfish_species_code = groundfish_species_code,
     runtype = "number",  # "biomass", "presence_absence", "number"
@@ -47,9 +48,8 @@
       )
     ),
     variables = list(Y="totno"),  # name to give (using stmv access methods)
-    variabletomodel = "totno",
-    libs = RLibrary ( "sp", "rgeos", "INLA", "raster", "aegis", "aegis.polygons", "aegis.coastline", "aegis.survey", "bio.taxonomy",  "aegis.speciescomposition", "bio.snowcrab", "carstm" )
-  )
+    variabletomodel = "totno"
+ )
 
 
   #  boundingbox = list( xlim = c(-70.5, -56.5), ylim=c(39.5, 47.5)), # bounding box for plots using spplot
