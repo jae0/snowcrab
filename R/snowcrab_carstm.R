@@ -1,5 +1,5 @@
 
-snowcrab_carstm = function( DS, p=NULL, yrs=NULL, ...) {
+snowcrab_carstm = function( p=NULL, DS="parameters", redo=FALSE, ...) {
 
 	# handles all basic data tables, etc. ...
 
@@ -25,7 +25,7 @@ snowcrab_carstm = function( DS, p=NULL, yrs=NULL, ...) {
 
   # ---------------------
 
-  if (DS =="carstm_auid") {
+  if (DS =="parameters_override") {
     # translate param values from one project to a unified representation
     # must be first to catch p
     pc = snowcrab_carstm(
@@ -174,7 +174,7 @@ snowcrab_carstm = function( DS, p=NULL, yrs=NULL, ...) {
     APS$t = NA
     APS$z = NA
 
-    pB = aegis.bathymetry::bathymetry_carstm( p=p, DS="carstm_auid" ) # transcribes relevant parts of p to load bathymetry
+    pB = bathymetry_carstm( p=p, DS="parameters_override" ) # transcribes relevant parts of p to load bathymetry
     BI = carstm_model ( p=pB, DS="carstm_modelled" )  # unmodeled!
 
     jj = match( as.character( APS$StrataID), as.character( BI$StrataID) )
