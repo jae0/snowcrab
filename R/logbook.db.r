@@ -433,17 +433,17 @@
       oo =  which( logbook$z < 10 | logbook$z > 500 ) # screen out large z's
       if (length(oo) > 0 )  logbook$z[ oo ] = NA
 
-      # ii = which(!is.finite(logbook$z))
-      # if (length(ii)>0){
-      #   logbook$z[ii] = lookup_bathymetry_from_stmv( p=p, locs=logbook[ii,c("plon", "plat")], vnames="z" )
-      # }
-      # logbook$z = log( logbook$z )
+      ii = which(!is.finite(logbook$z))
+      if (length(ii)>0){
+        logbook$z[ii] = lookup_bathymetry_from_surveys( p=p, locs=logbook[ii,c("plon", "plat")] )
+      }
+      logbook$z = log( logbook$z )
 
-      # ii = which( ! is.finite( logbook$z) )
-      # if (length(ii)>0) logbook = logbook[ -ii, ]
+      ii = which( ! is.finite( logbook$z) )
+      if (length(ii)>0) logbook = logbook[ -ii, ]
 
-      # # bring in time varing features:: temperature
-      # logbook$t = lookup_temperature_from_stmv( p=p, locs=logbook[, c("plon","plat")], timestamp=logbook$timestamp )
+      # bring in time varing features:: temperature
+      logbook$t = lookup_temperature_from_surveys( p=p, locs=logbook[, c("plon","plat")], timestamp=logbook$timestamp )
 
 			save( logbook, file=fn, compress=T )
 
