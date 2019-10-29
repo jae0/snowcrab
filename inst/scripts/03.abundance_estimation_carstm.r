@@ -83,6 +83,11 @@
     pS = substrate_carstm(p=p, DS="parameters_override" )
     M = substrate.db( p=pS, DS="aggregated_data", redo=TRUE )  # will redo if not found .. not used here but used for data matching/lookup in other aegis projects that use substrate
     M = substrate_carstm( p=pS, DS="carstm_inputs", redo=TRUE )  # will redo if not found
+    # zi too close together relative to the range ... force ignore
+    m = get("inla.models", INLA:::inla.get.inlaEnv())
+    m$latent$rw2$min.diff = NULL
+    assign("inla.models", m, INLA:::inla.get.inlaEnv())
+
     res = carstm_model( p=pS, M=M, DS="redo"  ) # run model and obtain predictions
     # res = carstm_model( p=pS, DS="carstm_modelled"  ) # run model and obtain predictions
     # fit = carstm_model( p=pS, DS="carstm_modelled_fit" )  # extract currently saved model fit
