@@ -1,5 +1,5 @@
 
-snowcrab_stmv = function( DS=NULL, p=NULL, year=NULL, ret="mean", varnames=NULL, coastline_source="eastcoast_gadm", alldata=FALSE, ... ) {
+snowcrab_stmv = function( DS=NULL, p=NULL, year=NULL, ret="mean", varnames=NULL, coastline_source="eastcoast_gadm", alldata=FALSE, redo=FALSE, ... ) {
 
   # deal with additional passed parameters
   # ---------------------
@@ -13,143 +13,6 @@ snowcrab_stmv = function( DS=NULL, p=NULL, year=NULL, ret="mean", varnames=NULL,
   if (exists( "libs", p)) RLibrary( p$libs )
   if (!("stmv" %in% p$libs)) p$libs = c( p$libs, RLibrary( "stmv" ) )  # required for parallel processing
 
-  # due to formulae being created on the fly, these are required params
-  # if (!exists("variables", p)) stop("Please define p$variables$Y")
-  # if (!exists("Y", p$variables)) stop("Please define p$variables$Y")
-
-  if (!exists("variables", p)) p$variables = list()
-
-  if (!exists("LOCS", p$variables)) p$variables$LOCS = c("plon", "plat")
-  if (!exists("TIME", p$variables)) p$variables$TIME = "tiyr"
-
-  # ---------------------
-  if (DS=="parameters") {
-
-    if (!exists("storage.backend", p)) p$storage.backend="bigmemory.ram"
-
-    if (!exists("boundary", p)) p$boundary = FALSE
-    if (!exists("depth.filter", p)) p$depth.filter = 0 # depth (m) stats locations with elevation > 0 m as being on land (and so ignore)
-    if (!exists("stmv_quantile_bounds", p)) p$stmv_quantile_bounds = c(0.015, 0.995) # remove these extremes in interpolations
-
-    if (!exists("stmv_rsquared_threshold", p)) p$stmv_rsquared_threshold = 0.25 # lower threshold
-    if (!exists("stmv_distance_statsgrid", p)) p$stmv_distance_statsgrid = 4 # resolution (km) of data aggregation (i.e. generation of the ** statistics ** )
-#    if (!exists("stmv_distance_prediction", p)) p$stmv_distance_prediction = p$stmv_distance_statsgrid*0.75  # this is a half window km
-    if (!exists("stmv_distance_scale", p)) p$stmv_distance_scale = c(25, 35, 45) # km ... approx guess of 95% AC range
-    if (!exists("stmv_distance_upsampling_fraction", p)) p$stmv_distance_upsampling_fraction = c(1, 1.1, 1.25)  # upsample to determine input data .. do not want to make it too large for snowcrab as this can bias up estimates
-
-    if (!exists("n.min", p)) p$n.min = 250 # n.min/n.max changes with resolution must be more than the number of knots/edf
-    # min number of data points req before attempting to model timeseries in a localized space
-    if (!exists("n.max", p)) p$n.max = 6000 # actually can have a lot of data from logbooks ... this keeps things reasonable in terms of run-time
-
-    p$stmv_dimensionality="space-year"
-
-    # due to formulae being potentially created on the fly, these are required params
-    if (!exists("Y", p$variables)) {
-      if (exists("stmv_local_modelformula", p))  {
-        if (!is.null(p$stmv_local_modelformula)) {
-          if (p$stmv_local_modelformula != "none") {
-            oo = all.vars( p$stmv_local_modelformula[[2]] )
-            if (length(oo) > 0) p$variables$Y = oo
-          }
-        }
-      }
-      if (exists("stmv_global_modelformula", p))  {
-        if (!is.null(p$stmv_global_modelformula)) {
-          if (p$stmv_global_modelformula != "none") {
-            oo = all.vars( p$stmv_global_modelformula[[2]] )
-            if (length(oo) > 0) p$variables$Y = oo
-          }
-        }
-      }
-    }
-    if (!exists("Y", p$variables)) p$variables$Y = "not_defined" # this can be called to get covars.. do not stop
-
-
-    # additional variable to extract from aegis_db for inputs
-    p$aegis_variables = list()
-    # p$aegis_project_datasources = c("speciescomposition", "speciesarea", "sizespectrum", "condition", "metabolism", "biochem")
-    if (!exists("aegis_project_datasources", p)) p$aegis_project_datasources = "speciescomposition"
-    for (id in p$aegis_project_datasources ) {
-      pz = aegis::aegis_parameters( p=p, DS=id )
-      pz_vars = intersect( pz$varstomodel, p$variables$COV )  # these are aegis vars to model
-      if (length(pz_vars) > 0) p$aegis_variables[[id]] = pz_vars
-    }
-
-    if (!exists("stmv_variogram_method", p)) p$stmv_variogram_method = "gstat"
-    if (!exists("stmv_local_modelengine", p)) p$stmv_local_modelengine ="gam"
-
-    if (!exists("stmv_global_modelengine", p)) p$stmv_global_modelengine ="gam"
-    if (!exists("stmv_global_family", p)) p$stmv_global_family = gaussian(link="log")
-
-    # using covariates as a first pass essentially makes it ~ kriging with external drift .. no time or space here
-    if (!exists("stmv_global_modelformula", p)) {
-      p$stmv_global_modelformula = formula( paste(
-        p$variables$Y,
-        ' ~ s( t, k=3, bs="ts") + s( tsd, k=3, bs="ts") + s( tmax, k=3, bs="ts") + s( degreedays, k=3, bs="ts") ',
-        ' + s( log(z), k=3, bs="ts") + s( log(dZ), k=3, bs="ts") + s( log(ddZ), k=3, bs="ts") ',
-        ' + s( log(substrate.grainsize), k=3, bs="ts") + s(pca1, k=3, bs="ts") + s(pca2, k=3, bs="ts")  '
-      ))  # no space
-    }
-
-    if (p$stmv_local_modelengine =="twostep") {
-      # this is the time component (mostly) .. space enters as a rough constraint
-      # if (!exists("stmv_local_modelformula", p))  p$stmv_local_modelformula = formula( paste(
-      #   p$variables$Y, '~ s(yr, k=10, bs="ts") + s(cos.w, k=3, bs="ts") + s(sin.w, k=3, bs="ts") ',
-      #     ' + s(cos.w, sin.w, yr, bs="ts", k=20) ',
-      #     ' + s(plon, k=3, bs="ts") + s(plat, k=3, bs="ts") + s(plon, plat, k=20, bs="ts") ' ) )
-      if (!exists("stmv_local_model_distanceweighted", p)) p$stmv_local_model_distanceweighted = TRUE
-      if (!exists("stmv_gam_optimizer", p)) p$stmv_gam_optimizer=c("outer", "bfgs")
-
-      if (!exists("stmv_twostep_time", p))  p$stmv_twostep_time = "gam"
-
-      if (p$stmv_twostep_time == "gam") {
-        if (!exists("stmv_local_modelformula_time", p)) {
-          p$stmv_local_modelformula_time = formula( paste(
-            p$variables$Y,
-            ' ~ s(yr, k=12, bs="ts") + s(cos.w, k=3, bs="ts") + s(sin.w, k=3, bs="ts") ',
-            ' + s(cos.w, sin.w, yr, bs="ts", k=30) ',
-            ' + s( log(z), k=3, bs="ts" ) + s(plon, k=3, bs="ts") + s(plat, k=3, bs="ts") + s(log(z), plon, plat, k=30, bs="ts") '
-          ) )
-        }
-      }
-
-      # this is the spatial component
-      if (!exists("stmv_twostep_space", p))  p$stmv_twostep_space = "fft"
-      if (p$stmv_twostep_space == "gam") {
-        if (!exists("stmv_local_modelformula_space", p))  p$stmv_local_modelformula_space = formula( paste(
-        p$variables$Y, '~ s(log(z), k=3, bs="ts") + s(plon, k=3, bs="ts") + s(plat, k=3, bs="ts") + s( log(z), plon, plat, k=27, bs="ts")  ') )
-      }
-      if (!exists("stmv_fft_filter", p)) p$stmv_fft_filter="matern" #  matern, krige (very slow), lowpass, lowpass_matern
-
-    }  else if (p$stmv_local_modelengine == "gam") {
-
-      if (!exists("stmv_local_modelformula", p))  p$stmv_local_modelformula = formula( paste(
-        p$variables$Y, '~ s(yr, bs="ts") + s(cos.w, k=3, bs="ts") + s(sin.w, k=3, bs="ts") ',
-          ' + s(cos.w, sin.w, yr, bs="ts", k=25)  ',
-          ' + s(plon, k=3, bs="ts") + s(plat, k=3, bs="ts") + s(plon, plat, k=25, bs="ts") ' ) )
-      if (!exists("stmv_local_model_distanceweighted", p)) p$stmv_local_model_distanceweighted = TRUE
-      # if (!exists("stmv_gam_optimizer", p)) p$stmv_gam_optimizer="perf"
-      if (!exists("stmv_gam_optimizer", p)) p$stmv_gam_optimizer=c("outer", "bfgs")
-
-    }  else if (p$stmv_local_modelengine == "bayesx") {
-      # bayesx families are specified as characters, this forces it to pass as is and
-      # then the next does the transformation internal to the "stmv__bayesx"
-      # alternative models .. testing .. problem is that SE of fit is not accessible?
-      p$stmv_local_modelformula = formula( paste(
-        p$variables$Y, ' ~ sx(yr, bs="ps") + sx(cos.w, bs="ps") + s(sin.w, bs="ps") +s(z, bs="ps") + sx(plon, bs="ps") + sx(plat,  bs="ps")',
-          ' + sx(plon, plat, cos.w, sin.w, yr, bs="te") ' )
-          # te is tensor spline
-      )
-      p$stmv_local_model_bayesxmethod="MCMC"
-      p$stmv_local_model_distanceweighted = FALSE
-    } else {
-      message( "The specified stmv_local_modelengine is not tested/supported ... you are on your own ;) ..." )
-    }
-
-    p = stmv_variablelist(p=p)  # decompose into covariates, etc
-
-    return(p)
-  }
 
 
   # --------------------------
@@ -166,40 +29,49 @@ snowcrab_stmv = function( DS=NULL, p=NULL, year=NULL, ret="mean", varnames=NULL,
   # --------------------------
 
   if (DS %in% c("input_data") ) {
-    set = aegis::survey.db( p=p, DS="filter" ) # mature male > 95 mm
+
+    fn = file.path( project.datadirectory("bio.snowcrab", "snowcrab_stmv" ), paste( "input_data", p$selection$type, "rdata", sep="." ) )
+    set = NULL
+
+    if (!redo) {
+      if (file.exists(fn)) load(fn)
+      if( !is.null(set) ) return(set)
+    }
+
+    set = aegis.survey::survey.db( p=p, DS="filter" ) # mature male > 95 mm
 
     if ( p$selection$type=="number") {
       # should be snowcrab survey data only taken care of p$selection$survey = "snowcrab"
       # robustify input data: .. upper bound trim
-      if (exists("stmv_quantile_bounds", p)) {
-        highestpossible = quantile( set$totno_adjusted, probs=p$stmv_quantile_bounds[2], na.rm=TRUE )
+      if (exists("quantile_bounds", p)) {
+        highestpossible = quantile( set$totno_adjusted, probs=p$quantile_bounds[2], na.rm=TRUE )
         set$totno_adjusted[ set$totno_adjusted > highestpossible ] = highestpossible
         # keep "zero's" to inform spatial processes but only as "lowestpossible" value
         jj = which( set$totno_adjusted > 0 )
-        lowestpossible =  quantile( set$totno_adjusted[jj], probs=p$stmv_quantile_bounds[1], na.rm=TRUE )
-        lowerbound =  quantile( set$totno_adjusted[jj], probs=p$stmv_quantile_bounds[1]/10, na.rm=TRUE )
+        lowestpossible =  quantile( set$totno_adjusted[jj], probs=p$quantile_bounds[1], na.rm=TRUE )
+        lowerbound =  quantile( set$totno_adjusted[jj], probs=p$quantile_bounds[1]/10, na.rm=TRUE )
         ii = which( set$totno_adjusted < lowestpossible )
         set$totno_adjusted[ii] = lowerbound ## arbitrary but close to detection limit
       }
-      set[, p$variables$Y] = set$totno_adjusted 
+      set[, p$variables$Y] = set$totno_adjusted
       set$wt = 1 / set$cf_set_no
     }
 
     if ( p$selection$type=="biomass") {
       # should be snowcrab survey data only taken care of p$selection$survey = "snowcrab"
       # robustify input data: .. upper bound trim
-      if (exists("stmv_quantile_bounds", p)) {
-        highestpossible = quantile( set$totwgt_adjusted, probs=p$stmv_quantile_bounds[2], na.rm=TRUE )
+      if (exists("quantile_bounds", p)) {
+        highestpossible = quantile( set$totwgt_adjusted, probs=p$quantile_bounds[2], na.rm=TRUE )
         set$totwgt_adjusted[ set$totwgt_adjusted > highestpossible ] = highestpossible
 
         # keep "zero's" to inform spatial processes but only as "lowestpossible" value
         jj = which( set$totwgt_adjusted > 0 )
-        lowestpossible =  quantile( set$totwgt_adjusted[jj], probs=p$stmv_quantile_bounds[1], na.rm=TRUE )
-        lowerbound =  quantile( set$totno_adjusted[jj], probs=p$stmv_quantile_bounds[1]/10, na.rm=TRUE )
+        lowestpossible =  quantile( set$totwgt_adjusted[jj], probs=p$quantile_bounds[1], na.rm=TRUE )
+        lowerbound =  quantile( set$totno_adjusted[jj], probs=p$quantile_bounds[1]/10, na.rm=TRUE )
         ii = which( set$totwgt_adjusted < lowestpossible )
         set$totwgt_adjusted[ii] = lowerbound ## arbitrary but close to detection limit
       }
-      set[, p$variables$Y] = set$totwgt_adjusted 
+      set[, p$variables$Y] = set$totwgt_adjusted
       set$wt = 1 / set$cf_set_mass
     }
 
@@ -255,7 +127,6 @@ snowcrab_stmv = function( DS=NULL, p=NULL, year=NULL, ret="mean", varnames=NULL,
       time_var="timestamp"
     )
 
-
     if (!alldata) {
      set = set[, which(names(set) %in% c( p$variables$LOCS, p$variables$COV, p$variables$Y, p$variables$TIME, "dyear", "yr",  "wt") ) ]  # a data frame
       oo = setdiff( c( p$variables$LOCS, p$variables$COV ), names(set))
@@ -267,18 +138,19 @@ snowcrab_stmv = function( DS=NULL, p=NULL, year=NULL, ret="mean", varnames=NULL,
     }
 
     # cap quantiles of dependent vars
-    if (exists("stmv_quantile_bounds", p)) {
+    if (exists("quantile_bounds", p)) {
       dr = list()
       for (pvn in p$variables$COV) {
-        dr[[pvn]] = quantile( set[,pvn], probs=p$stmv_quantile_bounds, na.rm=TRUE ) # use 95%CI
+        dr[[pvn]] = quantile( set[,pvn], probs=p$quantile_bounds, na.rm=TRUE ) # use 95%CI
         il = which( set[,pvn] < dr[[pvn]][1] )
         if ( length(il) > 0 ) set[il,pvn] = dr[[pvn]][1]
         iu = which( set[,pvn] > dr[[pvn]][2] )
         if ( length(iu) > 0 ) set[iu,pvn] = dr[[pvn]][2]
       }
     }
-    return (set)
 
+    save(set, file=fn, compress=TRUE)
+    return (set)
   }
 
 
@@ -287,7 +159,7 @@ snowcrab_stmv = function( DS=NULL, p=NULL, year=NULL, ret="mean", varnames=NULL,
 
   if (DS %in% c("output_data") ) {
 
-    PS = aegis_db_extract( vars=p$variables$COV, yrs=p$yrs, spatial.domain=p$spatial.domain, dyear=p$prediction.dyear )
+    PS = aegis_db_extract( vars=p$variables$COV, yrs=p$yrs, spatial_domain=p$spatial_domain, dyear=p$prediction_dyear )
 
     return (PS)
   }
@@ -298,11 +170,11 @@ snowcrab_stmv = function( DS=NULL, p=NULL, year=NULL, ret="mean", varnames=NULL,
   if ( DS %in% c("predictions", "predictions.redo" ) ) {
     # NOTE: the primary interpolated data were already created by stmv.
     # This routine points to this data and also creates
-    # subsets of the data where required, determined by "spatial.domain.subareas"
+    # subsets of the data where required, determined by "spatial_domain_subareas"
     # not strictly required for snow crab data analysis as there are no sub-areas that are analysed
     # at present, but in case there are small-area analysis in future, this is a mechnanism
 
-    projectdir = file.path(p$data_root, "modelled", p$variables$Y, p$spatial.domain )
+    projectdir = file.path(p$data_root, "modelled", p$variables$Y, p$spatial_domain )
 
     if (DS %in% c("predictions")) {
       P = Pl = Pu = NULL
@@ -313,7 +185,7 @@ snowcrab_stmv = function( DS=NULL, p=NULL, year=NULL, ret="mean", varnames=NULL,
       if (ret=="ub") return( Pu)
     }
 
-    sreg = setdiff( p$spatial.domain.subareas, p$spatial.domain ) # see  note above
+    sreg = setdiff( p$spatial_domain_subareas, p$spatial_domain ) # see  note above
     if (is.null(sreg)) return
     if (length(sreg) < 1 ) return
 
@@ -329,18 +201,21 @@ snowcrab_stmv = function( DS=NULL, p=NULL, year=NULL, ret="mean", varnames=NULL,
       WW0 = stmv_db( p=p, DS="stmv.prediction", yr=year, ret="ub")
 
       for ( gr in sreg ) {
-        p1 = spatial_parameters( p=p, spatial.domain=gr ) # 'warping' from p -> p1
+        p1 = spatial_parameters( p=p, spatial_domain=gr ) # 'warping' from p -> p1
         L1 = bathymetry.db( p=p1, DS="baseline" )
         L1i = stmv::array_map( "xy->2", L1[, c("plon", "plat")], gridparams=p1$gridparams )
-        L1 = planar2lonlat( L1, proj.type=p1$internal.crs )
+        L1 = planar2lonlat( L1, proj.type=p1$aegis_proj4string_planar_km )
         L1$plon_1 = L1$plon # store original coords
         L1$plat_1 = L1$plat
-        L1 = lonlat2planar( L1, proj.type=p0$internal.crs )
-        p1$wght = fields::setup.image.smooth( nrow=p1$nplons, ncol=p1$nplats, dx=p1$pres, dy=p1$pres, theta=p1$pres, xwidth=4*p1$pres, ywidth=4*p1$pres )
+        L1 = lonlat2planar( L1, proj.type=p0$aegis_proj4string_planar_km )
+        p1$wght = fields::setup.image.smooth( nrow=p1$nplons, ncol=p1$nplats, dx=p1$pres, dy=p1$pres,
+          theta=p1$pres/3, xwidth=4*p1$pres, ywidth=4*p1$pres )
+        # theta=p1$pres/3 assume at pres most of variance is accounted ... correct if dense pre-intepolated matrices .. if not can be noisy
+
         P = spatial_warp( PP0[], L0, L1, p0, p1, "fast", L0i, L1i )
         Pl = spatial_warp( VV0[], L0, L1, p0, p1, "fast", L0i, L1i )
         Pu = spatial_warp( WW0[], L0, L1, p0, p1, "fast", L0i, L1i )
-        projectdir_p1 = file.path(p$data_root, "modelled", p1$variables$Y, p1$spatial.domain )
+        projectdir_p1 = file.path(p$data_root, "modelled", p1$variables$Y, p1$spatial_domain )
         dir.create( projectdir_p1, recursive=T, showWarnings=F )
         fn1_sg = file.path( projectdir_p1, paste("stmv.prediction.mean",  year, "rdata", sep=".") )
         fn2_sg = file.path( projectdir_p1, paste("stmv.prediction.lb",  year, "rdata", sep=".") )
@@ -367,13 +242,13 @@ snowcrab_stmv = function( DS=NULL, p=NULL, year=NULL, ret="mean", varnames=NULL,
 
     if (DS %in% c("stmv.stats")) {
       stats = NULL
-      projectdir = file.path(p$data_root, "modelled", p$variables$Y, p$spatial.domain )
+      projectdir = file.path(p$data_root, "modelled", p$variables$Y, p$spatial_domain )
       fn = file.path( projectdir, paste( "stmv.statistics", "rdata", sep=".") )
       if (file.exists(fn) ) load(fn)
       return( stats )
     }
 
-    sreg = setdiff( p$spatial.domain.subareas, p$spatial.domain )
+    sreg = setdiff( p$spatial_domain_subareas, p$spatial_domain )
     if (is.null(sreg)) return
     if (length(sreg) < 1 ) return
 
@@ -384,20 +259,23 @@ snowcrab_stmv = function( DS=NULL, p=NULL, year=NULL, ret="mean", varnames=NULL,
     L0i = stmv::array_map( "xy->2", L0[, c("plon", "plat")], gridparams=p0$gridparams )
 
     for ( gr in sreg ) {
-      p1 = spatial_parameters( p=p, spatial.domain=gr ) # 'warping' from p -> p1
+      p1 = spatial_parameters( p=p, spatial_domain=gr ) # 'warping' from p -> p1
       L1 = bathymetry.db( p=p1, DS="baseline" )
       L1i = stmv::array_map( "xy->2", L1[, c("plon", "plat")], gridparams=p1$gridparams )
-      L1 = planar2lonlat( L1, proj.type=p1$internal.crs )
+      L1 = planar2lonlat( L1, proj.type=p1$aegis_proj4string_planar_km )
       L1$plon_1 = L1$plon # store original coords
       L1$plat_1 = L1$plat
-      L1 = lonlat2planar( L1, proj.type=p0$internal.crs )
-      p1$wght = fields::setup.image.smooth( nrow=p1$nplons, ncol=p1$nplats, dx=p1$pres, dy=p1$pres, theta=p1$pres, xwidth=4*p1$pres, ywidth=4*p1$pres )
+      L1 = lonlat2planar( L1, proj.type=p0$aegis_proj4string_planar_km )
+      p1$wght = fields::setup.image.smooth( nrow=p1$nplons, ncol=p1$nplats, dx=p1$pres, dy=p1$pres,
+        theta=p1$pres/3, xwidth=4*p1$pres, ywidth=4*p1$pres )
+      # theta=p1$pres/3 assume at pres most of variance is accounted ... correct if dense pre-intepolated matrices .. if not can be noisy
+
       stats = matrix( NA, ncol=ncol(S0), nrow=nrow(L1) )
       for ( i in 1:ncol(S0) ) {
         stats[,i] = spatial_warp( S0[,i], L0, L1, p0, p1, "fast", L0i, L1i )
       }
       colnames(stats) = Snames
-      projectdir_p1 = file.path(p$data_root, "modelled", p$variables$Y, p1$spatial.domain )
+      projectdir_p1 = file.path(p$data_root, "modelled", p$variables$Y, p1$spatial_domain )
       dir.create( projectdir_p1, recursive=T, showWarnings=F )
       fn1_sg = file.path( projectdir_p1, paste("stmv.statistics", "rdata", sep=".") )
       save( stats, file=fn1_sg, compress=T )
@@ -416,9 +294,9 @@ snowcrab_stmv = function( DS=NULL, p=NULL, year=NULL, ret="mean", varnames=NULL,
     # assemble data for use by other projects
     if (DS=="complete") {
       IC = NULL
-      projectdir = file.path(p$data_root, "modelled", p$variables$Y, p$spatial.domain )
+      projectdir = file.path(p$data_root, "modelled", p$variables$Y, p$spatial_domain )
       dir.create(projectdir, recursive=T, showWarnings=F)
-      outfile =  file.path( projectdir, paste( "snowcrab", "complete", p$spatial.domain, "rdata", sep= ".") )
+      outfile =  file.path( projectdir, paste( "snowcrab", "complete", p$spatial_domain, "rdata", sep= ".") )
       if ( file.exists( outfile ) ) load( outfile )
       Inames = names(IC)
       if (is.null(varnames)) varnames=Inames
@@ -428,7 +306,7 @@ snowcrab_stmv = function( DS=NULL, p=NULL, year=NULL, ret="mean", varnames=NULL,
       return(IC)
     }
 
-    grids = unique( c(p$spatial.domain.subareas , p$spatial.domain ) ) # operate upon every domain
+    grids = unique( c(p$spatial_domain_subareas , p$spatial_domain ) ) # operate upon every domain
 
     # if ( p$variables$Y=="snowcrab.large.males_abundance" ) {
     #   # copied from  snowcrab_stmv(p=p, DS="input_data" )
@@ -438,7 +316,7 @@ snowcrab_stmv = function( DS=NULL, p=NULL, year=NULL, ret="mean", varnames=NULL,
     # }
 
     for (gr in grids ) {
-      p1 = spatial_parameters( p=p, spatial.domain=gr ) #target projection
+      p1 = spatial_parameters( p=p, spatial_domain=gr ) #target projection
       # p1$variables$Y = p$variables$Y # need to send this to get the correct results
       L1 = bathymetry.db(p=p1, DS="baseline")
       BS = snowcrab_stmv( p=p1, DS="stmv.stats" )
@@ -459,9 +337,9 @@ snowcrab_stmv = function( DS=NULL, p=NULL, year=NULL, ret="mean", varnames=NULL,
       colnames(CL) = paste( p1$variables$Y, c("mean", "lb", "ub"), "climatology", sep=".")
       IC = cbind( IC, CL )
       PS = PSlb = PSub = NULL
-      projectdir = file.path(p$data_root, "modelled", p1$variables$Y, p1$spatial.domain )
+      projectdir = file.path(p$data_root, "modelled", p1$variables$Y, p1$spatial_domain )
       dir.create( projectdir, recursive=T, showWarnings=F )
-      outfile =  file.path( projectdir, paste( "snowcrab", "complete", p1$spatial.domain, "rdata", sep= ".") )
+      outfile =  file.path( projectdir, paste( "snowcrab", "complete", p1$spatial_domain, "rdata", sep= ".") )
       save( IC, file=outfile, compress=T )
       print( outfile )
     }
@@ -475,8 +353,8 @@ snowcrab_stmv = function( DS=NULL, p=NULL, year=NULL, ret="mean", varnames=NULL,
     if ( DS=="baseline" ) {
       BL = list()
       for (bvn in varnames ) {
-        projectdir = file.path(p$data_root, "modelled", bvn, p$spatial.domain )
-        outfile =  file.path( projectdir, paste( "snowcrab", "baseline", ret, p$spatial.domain, "rdata", sep= ".") )
+        projectdir = file.path(p$data_root, "modelled", bvn, p$spatial_domain )
+        outfile =  file.path( projectdir, paste( "snowcrab", "baseline", ret, p$spatial_domain, "rdata", sep= ".") )
         TS = NULL
         load( outfile)
         BL[[bvn]] = TS
@@ -484,12 +362,12 @@ snowcrab_stmv = function( DS=NULL, p=NULL, year=NULL, ret="mean", varnames=NULL,
       return (BL)
     }
 
-    grids = unique( c(p$spatial.domain.subareas , p$spatial.domain ) ) # operate upon every domain
+    grids = unique( c(p$spatial_domain_subareas , p$spatial_domain ) ) # operate upon every domain
 
     for (gr in grids) {
         print(gr)
-        p1 = spatial_parameters( p=p, spatial.domain=gr ) #target projection
-        projectdir = file.path(p$data_root, "modelled", p$variables$Y, p1$spatial.domain )
+        p1 = spatial_parameters( p=p, spatial_domain=gr ) #target projection
+        projectdir = file.path(p$data_root, "modelled", p$variables$Y, p1$spatial_domain )
         dir.create( projectdir, recursive=T, showWarnings=F )
         L1 = bathymetry.db(p=p1, DS="baseline")
         nL1 = nrow(L1)
@@ -497,19 +375,19 @@ snowcrab_stmv = function( DS=NULL, p=NULL, year=NULL, ret="mean", varnames=NULL,
         for (i in 1:p$ny ) {
           TS[,i] = stmv_db( p=p1, DS="stmv.prediction", yr=p$yrs[i], ret="mean")
         }
-        outfile =  file.path( projectdir, paste( "snowcrab", "baseline", "mean", p1$spatial.domain, "rdata", sep= ".") )
+        outfile =  file.path( projectdir, paste( "snowcrab", "baseline", "mean", p1$spatial_domain, "rdata", sep= ".") )
         save( TS, file=outfile, compress=T )
         TS = TS[] * NA
         for (i in 1:p$ny ) {
           TS[,i] = stmv_db( p=p1, DS="stmv.prediction", yr=p$yrs[i], ret="lb")
         }
-        outfile =  file.path( projectdir, paste( "snowcrab", "baseline", "lb", p1$spatial.domain, "rdata", sep= ".") )
+        outfile =  file.path( projectdir, paste( "snowcrab", "baseline", "lb", p1$spatial_domain, "rdata", sep= ".") )
         save( TS, file=outfile, compress=T )
         TS = TS[] * NA
         for (i in 1:p$ny ) {
           TS[,i] = stmv_db( p=p1, DS="stmv.prediction", yr=p$yrs[i], ret="ub")
         }
-        outfile =  file.path( projectdir, paste( "snowcrab", "baseline", "ub", p1$spatial.domain, "rdata", sep= ".") )
+        outfile =  file.path( projectdir, paste( "snowcrab", "baseline", "ub", p1$spatial_domain, "rdata", sep= ".") )
         save( TS, file=outfile, compress=T )
       }
     return( "Complete" )
@@ -520,10 +398,10 @@ snowcrab_stmv = function( DS=NULL, p=NULL, year=NULL, ret="mean", varnames=NULL,
 
   if ( DS=="map.all" ) {
 
-    allgrids = unique(c( p$spatial.domain.subareas, p$spatial.domain) )
+    allgrids = unique(c( p$spatial_domain_subareas, p$spatial_domain) )
     for ( gr in allgrids ) {
       print (gr)
-      p1 = spatial_parameters(  p=p, spatial.domain= gr )
+      p1 = spatial_parameters(  p=p, spatial_domain= gr )
       snowcrab_stmv( p=p1, DS="map.climatology" ) # no parallel option .. just a few
       snowcrab_stmv( p=p1, DS="map.annual" )
     }
@@ -539,7 +417,7 @@ snowcrab_stmv = function( DS=NULL, p=NULL, year=NULL, ret="mean", varnames=NULL,
     eps = 0.001
 
     for ( year in p$yrs ) {
-        projectdir = file.path(p$data_root, "maps", p$variables$Y, p$spatial.domain, "annual" )
+        projectdir = file.path(p$data_root, "maps", p$variables$Y, p$spatial_domain, "annual" )
         dir.create( projectdir, recursive=T, showWarnings=F )
         loc = bathymetry.db(p=p, DS="baseline" )
 
@@ -565,9 +443,9 @@ snowcrab_stmv = function( DS=NULL, p=NULL, year=NULL, ret="mean", varnames=NULL,
         dir.create (projectdir, showWarnings=FALSE, recursive =TRUE)
         fn = file.path( projectdir, paste(outfn, "png", sep="." ) )
         png( filename=fn, width=3072, height=2304, pointsize=40, res=300 )
-        lp = aegis::aegis_map( xyz=xyz, depthcontours=TRUE, pts=NULL,
+        lp = aegis_map( xyz=xyz, depthcontours=TRUE, pts=NULL,
           annot=annot, annot.cex=annot.cex, at=datarange, col.regions=cols,
-          corners=p$corners, spatial.domain=p$spatial.domain , plotlines="cfa.regions"  )
+          corners=p$corners, spatial_domain=p$spatial_domain , plotlines="cfa.regions"  )
         print(lp)
         dev.off()
 
@@ -592,9 +470,9 @@ snowcrab_stmv = function( DS=NULL, p=NULL, year=NULL, ret="mean", varnames=NULL,
         dir.create (projectdir, showWarnings=FALSE, recursive =TRUE)
         fn = file.path( projectdir, paste(outfn, "png", sep="." ) )
         png( filename=fn, width=3072, height=2304, pointsize=40, res=300 )
-        lp = aegis::aegis_map( xyz=xyz, depthcontours=TRUE, pts=NULL,
+        lp = aegis_map( xyz=xyz, depthcontours=TRUE, pts=NULL,
           annot=annot, annot.cex=annot.cex, at=datarange, col.regions=cols,
-          corners=p$corners, spatial.domain=p$spatial.domain , plotlines="cfa.regions" )
+          corners=p$corners, spatial_domain=p$spatial_domain , plotlines="cfa.regions" )
         print(lp)
         dev.off()
 
@@ -618,9 +496,9 @@ snowcrab_stmv = function( DS=NULL, p=NULL, year=NULL, ret="mean", varnames=NULL,
         dir.create (projectdir, showWarnings=FALSE, recursive =TRUE)
         fn = file.path( projectdir, paste(outfn, "png", sep="." ) )
         png( filename=fn, width=3072, height=2304, pointsize=40, res=300 )
-        lp = aegis::aegis_map( xyz=xyz, depthcontours=TRUE, pts=NULL,
+        lp = aegis_map( xyz=xyz, depthcontours=TRUE, pts=NULL,
               annot=annot, annot.cex=annot.cex, at=datarange , col.regions=cols,
-              corners=p$corners, spatial.domain=p$spatial.domain , plotlines="cfa.regions" )
+              corners=p$corners, spatial_domain=p$spatial_domain , plotlines="cfa.regions" )
         print(lp)
         dev.off()
 
@@ -643,7 +521,7 @@ snowcrab_stmv = function( DS=NULL, p=NULL, year=NULL, ret="mean", varnames=NULL,
     H = NULL
 
     for (vn in vnames) {
-        projectdir = file.path(p$data_root, "maps", p$variables$Y, p$spatial.domain, "climatology" )
+        projectdir = file.path(p$data_root, "maps", p$variables$Y, p$spatial_domain, "climatology" )
         dir.create( projectdir, recursive=T, showWarnings=F )
         loc = bathymetry.db(p=p, DS="baseline" )
         H = snowcrab_stmv( p=p, DS="complete" )
@@ -667,9 +545,9 @@ snowcrab_stmv = function( DS=NULL, p=NULL, year=NULL, ret="mean", varnames=NULL,
         dir.create (projectdir, showWarnings=FALSE, recursive =TRUE)
         fn = file.path( projectdir, paste(vn, "png", sep="." ) )
         png( filename=fn, width=3072, height=2304, pointsize=40, res=300 )
-        lp = aegis::aegis_map( xyz=xyz, depthcontours=TRUE, pts=NULL,
+        lp = aegis_map( xyz=xyz, depthcontours=TRUE, pts=NULL,
           annot=annot, annot.cex=annot.cex, at=datarange, col.regions=cols,
-          corners=p$corners, spatial.domain=p$spatial.domain, plotlines="cfa.regions"  )
+          corners=p$corners, spatial_domain=p$spatial_domain, plotlines="cfa.regions"  )
         print(lp)
         dev.off()
 

@@ -16,13 +16,13 @@ wd = project.datadirectory('aegis','data')
 
 # read in shapefiles
 #--------------------------------------
-  basemap= importShapefile(aegis::polygon_file("map_base_region"))
-  dm200= importShapefile(aegis::polygon_file("dm200_region"))
-  dm100= importShapefile(aegis::polygon_file("dm100_region"))
-  zones= importShapefile(aegis::polygon_file("sczones2010_polyline"))
-  land= importShapefile(aegis::polygon_file("landmass_region"))
-  coast=importShapefile(aegis::polygon_file("coastline_polyline"))
-  axis=importShapefile(aegis::polygon_file("axis_polyline"))
+  basemap= importShapefile(aegis.polygons::polygon_file("map_base_region"))
+  dm200= importShapefile(aegis.polygons::polygon_file("dm200_region"))
+  dm100= importShapefile(aegis.polygons::polygon_file("dm100_region"))
+  zones= importShapefile(aegis.polygons::polygon_file("sczones2010_polyline"))
+  land= importShapefile(aegis.polygons::polygon_file("landmass_region"))
+  coast=importShapefile(aegis.polygons::polygon_file("coastline_polyline"))
+  axis=importShapefile(aegis.polygons::polygon_file("axis_polyline"))
 
 # Provide projection information
 #---------------------------------
@@ -67,10 +67,10 @@ wd = project.datadirectory('aegis','data')
 
   if(addSummerStrata) {
 
-  a = aegis::polygon_file('summer_strata_labels',return.one.match=F)
+  a = aegis.polygons::polygon_file('summer_strata_labels',return.one.match=F)
   a = read.csv(a,header=T)
   names(a)[4] <- 'label'
-  b = aegis::polygon_file('strat.gf',return.one.match=F)
+  b = aegis.polygons::polygon_file('strat.gf',return.one.match=F)
   b = read.table(b)
   names(b) <- c('X','Y','PID')
   b = within(b,{POS <- ave(PID,list(PID),FUN=seq_along)})
@@ -90,17 +90,17 @@ wd = project.datadirectory('aegis','data')
   }
 
 if(addStAnns) {
-	sta <- read.csv(aegis::polygon_file('StAnnsMPA.csv'))
+	sta <- read.csv(aegis.polygons::polygon_file('StAnnsMPA.csv'))
 	 rc = col2rgb("red")
 	addPolys(sta[sta$PID==1,],col=	rgb(rc[1]/255, rc[2]/255, rc[3]/255, .3) , border = "black")
 }
    if(addEmera) {
-  emera=importShapefile(aegis::polygon_file("ENL_SubseaCable_2km_StudyArea.shp"))
+  emera=importShapefile(aegis.polygons::polygon_file("ENL_SubseaCable_2km_StudyArea.shp"))
   addPolys(emera,col='red',lwd=2)
 }
 
 if(addSurvey) {
-	surveydata <- read.csv(aegis::polygon_file('surveypoints.csv'))
+	surveydata <- read.csv(aegis.polygons::polygon_file('surveypoints.csv'))
   surveydata = surveydata[-which(is.na(surveydata$Station)),]
   names(surveydata) = c("PID", "Y", "X", "Y2", "X2", "ID", "col" )
   surveydata$col[which(surveydata$col == 1)] = "green"
@@ -144,7 +144,7 @@ if(addGully) {
 if(addFisheryFootprint){
 
 n=7
-	ff=importShapefile(aegis::polygon_file("crq0610_weight_2minGrid.shp"))
+	ff=importShapefile(aegis.polygons::polygon_file("crq0610_weight_2minGrid.shp"))
 	cols 			<- colorRampPalette(c("darkblue","cyan","green", "yellow", "orange","darkred", "black"), space = "Lab")
 	fp <- attr(ff,'PolyData')[,c('PID','ZDENSITY','CLASS','GMEAN')]
 	fp$Z <- log(fp$ZDENSITY+1)

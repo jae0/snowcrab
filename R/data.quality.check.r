@@ -5,7 +5,7 @@
     if (type=="stations") {
       set <- snowcrab.db( DS="setInitial" )
       must.be.unique = paste( set$yr, set$station, sep="~" )
-      dups = duplicates.toremove( must.be.unique )
+      dups = which(must.be.unique %in% must.be.unique[which(duplicated(must.be.unique))]) # all dups
       x = set[ dups, c( "trip", "set", "station" ) ]
       x = x[ is.finite(x$station), ]
       dup.stations = x[ order(x$station) ,]
@@ -22,7 +22,7 @@
       nregions = length(p$regions)
       res = matrix( NA, nrow=nyears, ncol=nregions)
       for (r in 1:nregions) {
-        nr = aegis::polygon_inside(x=set, region=aegis::polygon_internal_code(p$regions[r]), planar=F)
+        nr = polygon_inside(x=set, region=aegis.polygons::polygon_internal_code(p$regions[r]), planar=F)
         for (y in 1:nyears) {
           ni = which( set$yr==years[y] )
           res[y,r] = length( unique( intersect (nr, ni) ) )
@@ -40,7 +40,7 @@
     if(type=="position") {
       set <- snowcrab.db( DS="setInitial" )
       plot(set$lon, set$lat)
-      inside = aegis::polygon_inside( set[, c("lon", "lat") ], "cfaall")
+      inside = polygon_inside( set[, c("lon", "lat") ], "cfaall")
       if (length (inside) == nrow(set) ) {
         print("All data are within positional bounds")
         return (NULL)
@@ -143,7 +143,7 @@
     if(type=="minilog") {
       set <- snowcrab.db( DS="set.clean" )
       must.be.unique = set$t0
-      dups = duplicates.toremove( must.be.unique )
+      dups = which(must.be.unique %in% must.be.unique[which(duplicated(must.be.unique))]) # all dups
       x = set[ dups, c( "trip", "set", "station", "t0" ) ]
       dup.t0 = x[ is.finite(x$t0), ]
       print( "Duplicated minilog times:" )

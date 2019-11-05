@@ -9,7 +9,7 @@
     i.max = range( x$yr )[2]
 
     if (type=="annual") {} # nothing to do
-    if (type=="decadal") x$yr = floor(x$yr / 10) * 10
+    if (type=="decadal") x$yr = trunc(x$yr / 10) * 10
     if (type=="annualsmoothed" ) {
       i = which (x$yr <= (t0+delta)) & (x$yr >= (t0-delta))
       x$yr[i] = t0

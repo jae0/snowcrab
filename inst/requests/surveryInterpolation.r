@@ -43,12 +43,12 @@ if(do.interpolation) {
       dir.create (fo, showWarnings=FALSE, recursive =TRUE)
       fn = file.path( fo, paste(outfn, "png", sep="." ) )
       png( filename=fn, width=3072, height=2304, pointsize=40, res=300 )
-      lp = aegis::aegis_map( fp[,1:3], xyz.coords="planar", depthcontours=TRUE,
+      lp = aegis_map( fp[,1:3], xyz.coords="planar", depthcontours=TRUE,
         at=datarange , col.regions=cols(length(datarange)+1), colpts=T, corners=p$planar.corners, annot=gps[i], plotlines="cfa.regions"  )
       print(lp)
       dev.off()
 
-    ras 			<- rasterFromXYZ(fp[,c('plon','plat','z')],crs=p$internal.crs)
+    ras 			<- rasterFromXYZ(fp[,c('plon','plat','z')], crs=p$aegis_proj4string_planar_km)
 
     writeRaster(ras,filename=file.path(fo,paste(gps[i],".asc",sep="")), format="ascii", overwrite=TRUE)
     }

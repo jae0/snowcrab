@@ -6,7 +6,7 @@ model {
 
   # -------------------  
   # (Stochastic, exponential) Growth model
-    brodysd ~ dunif( brodysd0, sigma)  # hyperparamaters for sd of brody coefficient 
+    brodysd ~ dunif( brodysd0, sigma)  # hyperparameters for sd of brody coefficient 
     for (j in 1:R) {
       Growth[j] ~ dnorm( brodycoef, pow(brodysd,-2) )  # growth rate
     }

@@ -2,8 +2,8 @@ map.cfas = function( p, conversions=c("ps2png") ) {
   #Import coastline
   #MG: Switch this to the smaller coastline with no islands
   library('rgdal')
-  internal.crs <- "+proj=utm +zone=20 ellps=WGS84"
-  geog.proj <- CRS("+proj=longlat +ellps=WGS84")
+
+  geog.proj = CRS(   projection_proj4string("lonlat_wgs84") )
   #seis <- colorRampPalette(c("darkblue","blue3", "green", "yellow", "orange","red3", "darkred"), space = "Lab")
 
   polydir = file.path(project.datadirectory("aegis"), "data", "Basemaps", "Marine", "Coastline")

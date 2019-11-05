@@ -1,4 +1,4 @@
-  
+
 
   logbook.db = function( DS, prorate=T, p=NULL, yrs=NULL ) {
 
@@ -94,23 +94,22 @@
       h = which( !is.na( lgbk$lon + lgbk$lat ) )
       lgbk = lgbk[h,]
 
-      i = aegis::polygon_inside( lgbk[, c("lon", "lat")], region="cfaall")
+      i = polygon_inside( lgbk[, c("lon", "lat")], region="cfaall")
       lgbk = lgbk[i,]
 
-      j = aegis::polygon_inside( lgbk[, c("lon", "lat")], region="isobath1000m")
+      j = polygon_inside( lgbk[, c("lon", "lat")], region="isobath1000m")
       lgbk = lgbk[j,]
 
       # additional constraint ..
       # remove data that are strange in location .. land
 
-      proj4strvalue=CRS("+proj=longlat +datum=WGS84")
-      V = SpatialPoints( lgbk[,c("lon", "lat")], proj4strvalue )
+      V = SpatialPoints( lgbk[,c("lon", "lat")], projection_proj4string("lonlat_wgs84") )
 
-      coastlineSp =  aegis::coastline.db( p=p, DS="mapdata.coastPolygon", crs="+proj=longlat +datum=WGS84" )
+      coastlineSp =  aegis.coastline::coastline.db( p=p, DS="mapdata.coastPolygon", crs="+proj=longlat +datum=WGS84" )
 
       # coastline = maps::map( database="worldHires", regions=c("Canada", "US"), fill=TRUE, plot=FALSE )
-      # coastlineSp = maptools::map2SpatialPolygons( coastline, IDs=coastline$names, proj4string=proj4strvalue  )
-      bboxSP = aegis::boundingbox(p$corners$lon, p$corners$lat)
+      # coastlineSp = maptools::map2SpatialPolygons( coastline, IDs=coastline$names, proj4string=projection_proj4string("lonlat_wgs84")  )
+      bboxSP = boundingbox(p$corners$lon, p$corners$lat)
       keep <- rgeos::gContains( bboxSP, coastlineSp, byid=TRUE ) | rgeos::gOverlaps( bboxSP, coastlineSp, byid=TRUE )
 
       stopifnot( ncol(keep)==1 )
@@ -131,10 +130,10 @@
 
 
       # only accept "correctly" positioned data within each subarea ... in case miscoded data have a large effect
-      icfa4x = aegis::polygon_inside( lgbk[, c("lon", "lat")], "cfa4x")
-      icfanorth = aegis::polygon_inside( lgbk[, c("lon", "lat")], "cfanorth")
-      icfa23 = aegis::polygon_inside( lgbk[, c("lon", "lat")], "cfa23")
-      icfa24 = aegis::polygon_inside( lgbk[, c("lon", "lat")], "cfa24")
+      icfa4x = polygon_inside( lgbk[, c("lon", "lat")], "cfa4x")
+      icfanorth = polygon_inside( lgbk[, c("lon", "lat")], "cfanorth")
+      icfa23 = polygon_inside( lgbk[, c("lon", "lat")], "cfa23")
+      icfa24 = polygon_inside( lgbk[, c("lon", "lat")], "cfa24")
 
       gooddata = sort( unique( c(icfa4x, icfanorth, icfa23, icfa24 ) ) )
       lgbk = lgbk[gooddata, ]
@@ -171,7 +170,7 @@
 
       names( x ) = tolower( names( x ) )
       names( x ) = rename.bio.snowcrab.variables(names( x ))
-      to.char = c( "cfa", "licence_id_old", "licence", "date.fished", 
+      to.char = c( "cfa", "licence_id_old", "licence", "date.fished",
                    "captain", "vessel", "doc_id", "doc_type")
       for (i in to.char) x[,i] = as.character(x[,i])
 
@@ -246,7 +245,7 @@
       pp = which ( x$effort > 240 ) # small traps were used at times with large 240 trap compliments
       if ( length(pp) > 0 ) x$effort[pp] = NA
 
-      x = lonlat2planar( x,  proj.type=p$internal.crs )
+      x = lonlat2planar( x,  proj.type=p$aegis_proj4string_planar_km )
       logbook = x
 
       save (logbook, file=filename, compress=T )  # this is for plotting maps, etc
@@ -422,7 +421,7 @@
       logbook$plon = grid_internal( logbook$plon, grid$plon )
       logbook$plat = grid_internal( logbook$plat, grid$plat )
 
-			logbook$timestamp = as.POSIXct( logbook$date.landed, tz="America/Halifax", origin=lubridate::origin  )  # required for temperature lookups
+			logbook$timestamp = as.POSIXct( logbook$date.landed, tz="America/Halifax", origin=lubridate::origin  )  # required for lookup_temperature_from_stmvs
       logbook$timestamp = with_tz( logbook$timestamp, "UTC")
 
       logbook$dyear = lubridate::decimal_date( logbook$timestamp ) - lubridate::year(logbook$timestamp )
@@ -433,9 +432,10 @@
 			logbook$depth = NULL
       oo =  which( logbook$z < 10 | logbook$z > 500 ) # screen out large z's
       if (length(oo) > 0 )  logbook$z[ oo ] = NA
+
       ii = which(!is.finite(logbook$z))
       if (length(ii)>0){
-        logbook$z[ii] = bathymetry.lookup( p=p, locs=logbook[ii,c("plon", "plat")], vnames="z" )
+        logbook$z[ii] = lookup_bathymetry_from_surveys( p=p, locs=logbook[ii,c("lon", "lat")] )
       }
       logbook$z = log( logbook$z )
 
@@ -443,7 +443,7 @@
       if (length(ii)>0) logbook = logbook[ -ii, ]
 
       # bring in time varing features:: temperature
-      logbook$t = temperature.lookup( p=p, locs=logbook[, c("plon","plat")], timestamp=logbook$timestamp )
+      logbook$t = lookup_temperature_from_surveys( p=p, locs=logbook[, c("lon", "lat")], timestamp=logbook$timestamp )
 
 			save( logbook, file=fn, compress=T )
 

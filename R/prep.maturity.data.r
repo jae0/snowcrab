@@ -21,9 +21,9 @@
       x$yr=as.factor(x$yr)
 
       x$reg = NA # initialise the column / field
-      x$reg[ aegis::polygon_inside(x,aegis::polygon_internal_code("cfanorth")) ] = "cfanorth"
-      x$reg[ aegis::polygon_inside(x,aegis::polygon_internal_code("cfasouth")) ] = "cfasouth"
-      x$reg[ aegis::polygon_inside(x,aegis::polygon_internal_code("cfa4x")) ] = "cfa4x"
+      x$reg[ polygon_inside(x,aegis.polygons::polygon_internal_code("cfanorth")) ] = "cfanorth"
+      x$reg[ polygon_inside(x,aegis.polygons::polygon_internal_code("cfasouth")) ] = "cfasouth"
+      x$reg[ polygon_inside(x,aegis.polygons::polygon_internal_code("cfa4x")) ] = "cfa4x"
       x = x[ which( x$reg %in% c("cfanorth", "cfasouth" ) ) ,]
       x$reg=as.factor(x$reg)
 

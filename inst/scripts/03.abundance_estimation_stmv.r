@@ -1,4 +1,4 @@
-require(aegis.env)
+require(aegis)
 
 #Pick whichever year reference below is correct (most often year.assessment...-1)
   if (!exists("year.assessment")) {
@@ -43,7 +43,7 @@ require(aegis.env)
 #stmv_rsquared_threshold = 0.2, # lower threshold
 #stmv_distance_statsgrid = 4, # resolution (km) of data aggregation (i.e. generation of the ** statistics ** )
 #stmv_distance_scale = c(50, 60, 80), # km ... approx guess of 95% AC range .. data tends to be sprse realtive to pure space models
-#stmv_distance_prediction_fraction = 1, # stmv_distance_prediction = stmv_distance_statsgrid * XX ..this is a half window km (default is 0.75)
+
 
 
 # 1. Define some additional starting parameters for debugging
@@ -75,8 +75,16 @@ p = bio.snowcrab::load.environment( year.assessment=year.assessment )
 
 # 11 hrs with these settings
 ncpus = parallel::detectCores()
+if (0) {
+  ram_required_main_process = ? # GB
+  ram_required_per_process  = ?  # about 1.2GB on average ..in 2018, for twostep / fft
+  ncpu = min( parallel::detectCores(), trunc( (ram_local()-ram_required_main_process) / ram_required_per_process ) )
+}
 
-p = snowcrab_stmv( p=p, DS="parameters",
+
+p = snowcrab_stmv(
+  p=p,
+  project_class="stmv",
   variables=list(Y="snowcrab.large.males_abundance"),
   selection=list(
     type = "biomass",
@@ -100,21 +108,43 @@ p = snowcrab_stmv( p=p, DS="parameters",
   stmv_twostep_space = "fft",
   stmv_fft_filter="matern",  #  matern, krige (very slow), lowpass, lowpass_matern
   stmv_gam_optimizer=c("outer", "bfgs") ,
-  stmv_variogram_method = "gstat",
   stmv_distance_statsgrid = 3, # resolution (km) of data aggregation (i.e. generation of the ** statistics ** ),
-  stmv_distance_prediction_fraction = 1, # stmv_distance_prediction = stmv_distance_statsgrid * XX ..this is a half window km
   stmv_distance_scale = c( 25, 35, 45 ), #likely must be over 30km, so 50 +/- 20km, should likely match the setting in ~ line 256
-  stmv_clusters = list( rep("localhost", ncpus), rep("localhost", ncpus), rep("localhost", ncpus) )  # no of cores used made explicit.. must be same length as "stmv_distance_scale"
+  stmv_clusters = list( scale=rep("localhost", ncpus), interpolate=rep("localhost", ncpus) )
 ) #End passing of parameters
 
 
 if (0) {
+
   p$stmv_global_modelformula = formula( paste(
     ' snowcrab.large.males_abundance',
-    ' ~ s( t, k = 3, bs = "ts") + s( tsd, k = 3, bs = "ts") + s( tmax, k = 3, bs = "ts") + s( degreedays, k = 3, bs = "ts") ',
+    ' ~ s( t, k=3, bs="ts") + s( tsd, k=3, bs="ts") + s( degreedays, k=3, bs="ts") ',
     ' + s( log(z), k=3, bs="ts") + s( log(dZ), k=3, bs="ts") + s( log(ddZ), k=3, bs="ts") ',
-    ' + s( log(substrate.grainsize), k=3, bs="ts") + s(pca1, k=3, bs="ts") + s(pca2, k=3, bs="ts")   '
+    ' + s( substrate.grainsize, k=3, bs="ts")  ',
+    ' + s(pca1, bs="ts") + s(pca2, bs="ts")  '
   ))
+
+  p$stmv_global_modelformula = formula( paste(
+    ' snowcrab.large.males_abundance',
+    ' ~ s( t, k = 4, bs="ts") + s( tmax, k = 4, bs="ts") + s( degreedays, k = 4, bs="ts") ',
+    ' + s( log(z), k=4, bs="ts") + s( log(dZ), k=4, bs="ts") + s( log(ddZ), k=4, bs="ts") ',
+    ' + s( substrate.grainsize, k=4, bs="ts") + s(pca1, k=4, bs="ts") + s(pca2, k=4, bs="ts")   '
+  ))
+
+  p = stmv_variablelist(p=p)  # decompose into covariates, etc
+
+  o = snowcrab_stmv(p=p, DS="input_data" )  # create fields for
+
+  global_model = gam(
+    formula=p$stmv_global_modelformula,
+    family=p$stmv_global_family,
+    data = o,
+    weights=o$wt,
+    optimizer= p$stmv_gam_optimizer,
+    na.action="na.omit"
+  )
+
+
 }
 
 #Run the following line if you want to use maptools rather than GADMTools for mapping coastline
@@ -149,12 +179,12 @@ plot(global_model)
 # Link function: log
 #
 # Formula:
-# snowcrab.large.males_abundance ~ s(t, k = 3, bs = "ts") + s(tsd,
-#     k = 3, bs = "ts") + s(tmax, k = 3, bs = "ts") + s(degreedays,
-#     k = 3, bs = "ts") + s(log(z), k = 3, bs = "ts") + s(log(dZ),
-#     k = 3, bs = "ts") + s(log(ddZ), k = 3, bs = "ts") + s(log(substrate.grainsize),
-#     k = 3, bs = "ts") + s(pca1, k = 3, bs = "ts") + s(pca2, k = 3,
-#     bs = "ts")
+# snowcrab.large.males_abundance ~ s(t, k=3, bs="ts") + s(tsd,
+#     k=3, bs="ts") + s(tmax, k=3, bs="ts") + s(degreedays,
+#     k=3, bs="ts") + s(log(z), k=3, bs="ts") + s(log(dZ),
+#     k=3, bs="ts") + s(log(ddZ), k=3, bs="ts") + s(substrate.grainsize,
+#     k=3, bs="ts") + s(pca1, k=3, bs="ts") + s(pca2, k=3,
+#     bs="ts")
 #
 # Parametric coefficients:
 #             Estimate Std. Error t value Pr(>|t|)
@@ -169,7 +199,7 @@ plot(global_model)
 # s(log(z))                   1.91      2 174.7 < 2e-16
 # s(log(dZ))                  1.93      2  20.9 3.8e-10
 # s(log(ddZ))                 1.95      2  61.5 < 2e-16
-# s(log(substrate.grainsize)) 1.99      2  51.0 < 2e-16
+# s(substrate.grainsize) 1.99      2  51.0 < 2e-16
 # s(pca1)                     2.00      2 100.4 < 2e-16
 # s(pca2)                     1.94      2  95.3 < 2e-16
 #
@@ -189,7 +219,9 @@ plot(global_model)
 p = bio.snowcrab::load.environment( year.assessment=year.assessment )
 ncpus = parallel::detectCores()
 
-p = snowcrab_stmv( p=p, DS="parameters",
+p = bio.snowcrab::snowcrab_parameters(
+  p=p,
+  project_class="stmv",
   variables=list(Y="snowcrab.large.males_presence_absence"),
   selection=list(
     type = "presence_absence",
@@ -215,20 +247,42 @@ p = snowcrab_stmv( p=p, DS="parameters",
   stmv_twostep_space = "fft",
   stmv_fft_filter="matern",  #  matern, krige (very slow), lowpass, lowpass_matern
   stmv_gam_optimizer=c("outer", "bfgs") ,
-  stmv_variogram_method = "gstat",
   stmv_distance_statsgrid = 3, # resolution (km) of data aggregation (i.e. generation of the ** statistics ** ),
-  stmv_distance_prediction_fraction = 1, # stmv_distance_prediction = stmv_distance_statsgrid * XX ..this is a half window km
   stmv_distance_scale = c( 25, 35, 45 ), #likely must be over 30km, so 50 +/- 20km, should likely match the setting in ~ line 256
-  stmv_clusters = list( rep("localhost", ncpus), rep("localhost", ncpus), rep("localhost", ncpus) )  # no of cores used made explicit.. must be same length as )
+  stmv_clusters = list( scale=rep("localhost", ncpus), interpolate=rep("localhost", ncpus) )
 )
 
+
 if (0) {
+
   p$stmv_global_modelformula = formula( paste(
-    ' snowcrab.large.males_presence_absence',
-    ' ~ s( t, k = 3, bs = "ts") + s( tsd, k = 3, bs = "ts") + s( tmax, k = 3, bs = "ts") + s( degreedays, k = 3, bs = "ts") ',
+    ' snowcrab.large.males_abundance',
+    ' ~ s( t, k=3, bs="ts") + s( tsd, k=3, bs="ts") + s( degreedays, k=3, bs="ts") ',
+    ' + s( t, tsd, degreedays, bs="ts")  ',
     ' + s( log(z), k=3, bs="ts") + s( log(dZ), k=3, bs="ts") + s( log(ddZ), k=3, bs="ts") ',
-    ' + s( log(substrate.grainsize), k=3, bs="ts") + s(pca1, k=3, bs="ts") + s(pca2, k=3, bs="ts")   '
+    ' + s( log(z), log(dZ), log(ddZ),  bs="ts") ',
+    ' + s( substrate.grainsize, k=3, bs="ts")  ',
+    ' + s(pca1, k=3, bs="ts") + s(pca2, k=3, bs="ts") + s(pca1, pca2, k=8, bs="ts")     '
   ))
+
+  p$stmv_global_modelformula = formula( paste(
+    ' snowcrab.large.males_abundance',
+    ' ~ s( t, k = 4, bs="ts") + s( tmax, k = 4, bs="ts") + s( degreedays, k = 4, bs="ts") ',
+    ' + s( log(z), k=4, bs="ts") + s( log(dZ), k=4, bs="ts") + s( log(ddZ), k=4, bs="ts") ',
+    ' + s( substrate.grainsize, k=4, bs="ts") + s(pca1, k=4, bs="ts") + s(pca2, k=4, bs="ts")   '
+  ))
+
+  o = snowcrab_stmv(p=p, DS="input_data" )  # create fields for
+
+  global_model = gam(
+    formula=p$stmv_global_modelformula,
+    family=p$stmv_global_family,
+    data = o,
+    weights=o$wt,
+    optimizer= p$stmv_gam_optimizer,
+    na.action="na.omit"
+  )
+
 }
 
 # p$DATA = 'snowcrab_stmv( p=p, DS="stmv_inputs", coastline_source="mapdata.coastPolygon" )'
@@ -254,12 +308,12 @@ plot(global_model, all.terms=TRUE, trans=bio.snowcrab::inverse.logit, seWithMean
 # Link function: logit
 #
 # Formula:
-# snowcrab.large.males_presence_absence ~ s(t, k = 3, bs = "ts") +
-#     s(tsd, k = 3, bs = "ts") + s(tmax, k = 3, bs = "ts") + s(degreedays,
-#     k = 3, bs = "ts") + s(log(z), k = 3, bs = "ts") + s(log(dZ),
-#     k = 3, bs = "ts") + s(log(ddZ), k = 3, bs = "ts") + s(log(substrate.grainsize),
-#     k = 3, bs = "ts") + s(pca1, k = 3, bs = "ts") + s(pca2, k = 3,
-#     bs = "ts")
+# snowcrab.large.males_presence_absence ~ s(t, k=3, bs="ts") +
+#     s(tsd, k=3, bs="ts") + s(tmax, k=3, bs="ts") + s(degreedays,
+#     k=3, bs="ts") + s(log(z), k=3, bs="ts") + s(log(dZ),
+#     k=3, bs="ts") + s(log(ddZ), k=3, bs="ts") + s(substrate.grainsize,
+#     k=3, bs="ts") + s(pca1, k=3, bs="ts") + s(pca2, k=3,
+#     bs="ts")
 #
 # Parametric coefficients:
 #             Estimate Std. Error z value Pr(>|z|)
@@ -274,7 +328,7 @@ plot(global_model, all.terms=TRUE, trans=bio.snowcrab::inverse.logit, seWithMean
 # s(log(z))                   2.00      2 1282.7 < 2e-16
 # s(log(dZ))                  1.99      2   68.7 9.1e-16
 # s(log(ddZ))                 1.98      2  224.4 < 2e-16
-# s(log(substrate.grainsize)) 1.98      2  394.4 < 2e-16
+# s(substrate.grainsize) 1.98      2  394.4 < 2e-16
 # s(pca1)                     2.00      2  932.6 < 2e-16
 # s(pca2)                     2.00      2 1291.8 < 2e-16
 #
@@ -290,7 +344,9 @@ plot(global_model, all.terms=TRUE, trans=bio.snowcrab::inverse.logit, seWithMean
 #------------------------------------------------------------------------------
 
 p = bio.snowcrab::load.environment( year.assessment=year.assessment )
-p = snowcrab_stmv( p=p, DS="parameters",
+p = snowcrab_stmv(
+  p=p,
+  project_class="stmv",
   variables = list(Y="snowcrab.large.males_abundance"),
   selection=list(
     type = "biomass",
@@ -367,66 +423,13 @@ cor(log(spred),log(set$snowcrab.large.males_abundance), use="complete.obs")
 #
 # R> plot(log(spred)~log(snowcrab.large.males_abundance), data=set )
 # R> cor(log(spred),log(set$snowcrab.large.males_abundance), use="complete.obs")
-# [1] 0.409
+# [1]  0.4269
 
 # determine presence absence(Y) and weighting(wt)
-#      set$weekno = floor(set$julian / 365 * 52) + 1
-#      set$dyear = floor(set$julian / 365 ) + 1
+#      set$weekno = trunc(set$julian / 365 * 52) + 1
+#      set$dyear = trunc(set$julian / 365 ) + 1
 
 
-### ______________ TESTING __________________
-
-  # currently supported:
-  # z = depth (m)
-  # dZ = bottom slope (m/km)
-  # ddZ = bottom curvature (m/km^2)
-  # substrate.grainsize = mean grain size of bottom substrate (mm)
-  # t = temperature (C) – subannual
-  # tlb = temperature lower 95% bound (C) –subannual
-  # tub = temperature upper 95% bound (C) –subannual
-  # tmean = mean annual temperature
-  # tsd = standard deviation of the mean annual temperature
-  # tmin = minimum value of temperature in a given year – annual
-  # tmax = maximum value of temperature in a given year – annual
-  # tamplitude = amplitude of temperature swings in a year (tmax-tmin) – annual
-  # degreedays = number of degree days in a given year – annual
-
-p$variables$COV = c(
-  "t", "tub", "tsd", "tmin", "tmax", "tamplitude", "degreedays",
-  "tmean.climatology", "tsd.climatology",
-  "z", "dZ", "ddZ",
-  "substrate.grainsize", "pca1", "pca2"    )
-
-u = snowcrab_stmv(p=p, DS="input_data", alldata=TRUE )
-u$Y = u$snowcrab.large.males_abundance
-
-
-qn = quantile( u$Y[u$Y > 0], probs=p$habitat.threshold.quantile, na.rm=TRUE )
-u$Y[ u$Y < qn ] = qn/10
-
-v = gam( Y ~ s( t, k = 3, bs = "ts") + s( tsd, k = 3, bs = "ts") + s( tmax, k = 3, bs = "ts") + s( degreedays, k = 3, bs = "ts")
-    + s(log(z), k = 3, bs = "ts") + s(log(dZ), k = 3, bs = "ts") + s(log(ddZ), k = 3, bs = "ts")
-    + s(log(substrate.grainsize), k = 3, bs = "ts")
-    + s(pca1, k = 3, bs = "ts") + s(pca2, k = 3, bs = "ts"),
-      data = u,
-      family=gaussian(link="log")
-    )
-
-summary(v)
-
-
-
-u$Y = u$snowcrab.large.males_presence_absence
-
-v = gam( Y ~ s( t, k = 3, bs = "ts") + s( tsd, k = 3, bs = "ts") + s( tmax, k = 3, bs = "ts") + s( degreedays, k = 3, bs = "ts")
-    + s(log(z), k = 3, bs = "ts") + s(log(dZ), k = 3, bs = "ts") + s(log(ddZ), k = 3, bs = "ts")
-    + s(log(substrate.grainsize), k = 3, bs = "ts")
-    + s(pca1, k = 3, bs = "ts") + s(pca2, k = 3, bs = "ts"),
-      data = u,
-      family=binomial(link="logit")
-    )
-
-summary(v)
 
 
 ## END

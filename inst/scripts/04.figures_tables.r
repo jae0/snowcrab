@@ -55,7 +55,7 @@ if (!exists("year.assessment")) {
 # p$model.type = "gam.simple" # choose method for habitat model :  no longer used
 
 p$habitat.threshold.quantile = 0.05 # quantile at which to consider zero-valued abundance
-p$prediction.dyear = 9/12 # predict for ~ Sept 1
+p$prediction_dyear = 9/12 # predict for ~ Sept 1
 figure.timeseries.snowcrab.habitat( p=p)
 
 # ------------------------------------------

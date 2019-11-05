@@ -997,7 +997,7 @@ model {
       }
 
       if (is.null( Data$idx )) {
-        # index position of paramaters
+        # index position of parameters
         Data$idx = list(
           r=grep("\\<r\\>", Data$parm.names),
           K=grep("\\<K\\>", Data$parm.names),
@@ -1275,7 +1275,7 @@ model {
 
     warning( "TMB method is not yet complete")
 
-    require(aegis.env)
+    require(aegis)
 
 
     sb = biomass.summary.db(p=p, DS="surplusproduction" )

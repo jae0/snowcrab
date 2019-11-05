@@ -1,5 +1,5 @@
 Package: bio.snowcrab
-Title: Snow crab assessment suite for em* and associated projects. 
+Title: Snow crab assessment suite for em* and associated projects.
 Version: 0.1
 Authors@R: c(
   person("Jae", "Choi", email = "choijaeseok@gmail.com", role = c("aut", "cre")),
@@ -8,35 +8,12 @@ Authors@R: c(
   person("Michelle", "Greenlaw", email = "Michelle.Greenlaw@dfo-mpo.gc.ca", role = c("aut")),
   person("Adam", "Cook", email = "Adam.Cook@dfo-mpo.gc.ca", role = c("aut")) ,
   person("Ben", "Zisserson", email = "Ben.Zisserson@dfo-mpo.g.ca", role = c("aut")))
-Description: The snow crab assessment suite used by Maritimes Region in Canada. It is  
-  designed to be used as part of the em* project. 
+Description: The snow crab assessment suite used by Maritimes Region in Canada. It is
+  designed to be used as part of the bio.* and aegis.* projects.
 Depends: R (>= 3.0.0)
-Imports:
-  akima, 
-  bigmemory,
-  boot, 
-  Cairo, 
-  DBI, 
-  devtools,
-  fields, 
-  grid,
-  lubridate,
-  lattice, 
-  mgcv, 
-  parallel, 
-  rgdal, 
-  rgeos, 
-  ROracle,
-  sp, 
-  vegan, 
-  aegis.env,
-  aegis, 
-  netmensuration,
-  stmv
-Suggests:  gstat, geosphere, maptools, maps, mapdata, Hmisc, RColorBrewer 
+Imports: akima, bigmemory, boot, Cairo, DBI, devtools, fields, grid,
+  lubridate, lattice, mgcv, parallel, rgdal, rgeos, ROracle, sp, vegan, maptools, maps, mapdata, Hmisc, RColorBrewer
+Suggests: aegis, netmensuration, stmv,
 License: MIT
 LazyData: true
-URL: https://github.com/jae0/bio.snowcrab/
-
-
-
+URL: https://github.com/jae0/bio.snowcrab

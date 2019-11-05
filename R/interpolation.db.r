@@ -29,8 +29,8 @@ interpolation.db = function( ip=NULL, DS=NULL, p=NULL,
     bm=bu=bl = NULL
 
     # respect the bounds of input data (no extrapolation)
-    # set = aegis::survey.db( p=p, DS="filter" ) # mature male > 95 mm
-    # qn = quantile( set$totwgt_adjusted, probs=p$stmv_quantile_bounds, na.rm=TRUE )
+    # set = aegis.survey::survey.db( p=p, DS="filter" ) # mature male > 95 mm
+    # qn = quantile( set$totwgt_adjusted, probs=c(0.025, 0.975), na.rm=TRUE )
     # bm[ bm > qn[2] ] = qn[2]  # truncate .. do not extrapolate
     # bm[ bm < qn[1] ] = 0  # these are assumed to be below detection limit
     # bm[ bl < qn[1] ] = 0  # these are assumed to be below detection limit
@@ -114,7 +114,7 @@ interpolation.db = function( ip=NULL, DS=NULL, p=NULL,
 
   if (DS %in% c( "fishable.biomass.map" )) {
 
-    projectdir = file.path(p$data_root, "maps", "fishable.biomass", p$spatial.domain )
+    projectdir = file.path(p$data_root, "maps", "fishable.biomass", p$spatial_domain )
     dir.create (projectdir, showWarnings=FALSE, recursive =TRUE)
 
     bs = bathymetry.db(p=p, DS="baseline")
@@ -125,7 +125,7 @@ interpolation.db = function( ip=NULL, DS=NULL, p=NULL,
     fu = bm$ub  / 10^3  # kg/km^2 to t/km^2  .. required for biomass.summary.db
     h  = bm$h
 
-    qs = quantile(fb[fb>0], probs=p$stmv_quantile_bounds, na.rm=TRUE)
+    qs = quantile(fb[fb>0], probs=c(0.025, 0.975), na.rm=TRUE)
     datarange = seq( (qs[1]), (qs[2]), length.out=150)
     cols = color.code( "seis", datarange )
     fb[which(!is.finite(fb))] = qs[1]*0.99
@@ -136,7 +136,7 @@ interpolation.db = function( ip=NULL, DS=NULL, p=NULL,
       outfn = paste( "prediction.abundance.mean", y, sep=".")
       fn = file.path( projectdir, paste(outfn, "png", sep="." ) )
       png( filename=fn, width=3072, height=2304, pointsize=40, res=300 )
-      lp = aegis::aegis_map( xyz=xyz, depthcontours=TRUE, pts=NULL, annot=y,
+      lp = aegis_map( xyz=xyz, depthcontours=TRUE, pts=NULL, annot=y,
         annot.cex=annot.cex, corners=p$planar.corners, at=datarange,
         col.regions=cols, rez=c(p$pres,p$pres), plotlines="cfa.regions"  )
       print(lp)
@@ -145,7 +145,7 @@ interpolation.db = function( ip=NULL, DS=NULL, p=NULL,
     }
 
 
-    qs = quantile(fl[fl>0], probs=p$stmv_quantile_bounds, na.rm=TRUE)
+    qs = quantile(fl[fl>0], probs=c(0.025, 0.975), na.rm=TRUE)
     qs = range(fl[fl>0], na.rm=TRUE)
     datarange = seq( (qs[1]), (qs[2]), length.out=150)
     cols = color.code( "seis", datarange )
@@ -157,7 +157,7 @@ interpolation.db = function( ip=NULL, DS=NULL, p=NULL,
       outfn = paste( "prediction.abundance.lb", y, sep=".")
       fn = file.path( projectdir, paste(outfn, "png", sep="." ) )
       png( filename=fn, width=3072, height=2304, pointsize=40, res=300 )
-      lp = aegis::aegis_map( xyz=xyz, depthcontours=TRUE, pts=NULL, annot=y,
+      lp = aegis_map( xyz=xyz, depthcontours=TRUE, pts=NULL, annot=y,
         annot.cex=annot.cex, corners=p$planar.corners, at=datarange,
         col.regions=cols, rez=c(p$pres,p$pres), plotlines="cfa.regions"  )
       print(lp)
@@ -166,7 +166,7 @@ interpolation.db = function( ip=NULL, DS=NULL, p=NULL,
     }
 
 
-    qs = quantile(fu[fu>0], probs=p$stmv_quantile_bounds, na.rm=TRUE)
+    qs = quantile(fu[fu>0], probs=c(0.025, 0.975), na.rm=TRUE)
     datarange = seq( (qs[1]), (qs[2]), length.out=150)
     cols = color.code( "seis", datarange )
     fu[which(!is.finite(fu))] = qs[1]*0.99
@@ -177,7 +177,7 @@ interpolation.db = function( ip=NULL, DS=NULL, p=NULL,
       outfn = paste( "prediction.abundance.ub", y, sep=".")
       fn = file.path( projectdir, paste(outfn, "png", sep="." ) )
       png( filename=fn, width=3072, height=2304, pointsize=40, res=300 )
-      lp = aegis::aegis_map( xyz=xyz, depthcontours=TRUE, pts=NULL, annot=y,
+      lp = aegis_map( xyz=xyz, depthcontours=TRUE, pts=NULL, annot=y,
         annot.cex=annot.cex, corners=p$planar.corners, at=datarange,
         col.regions=cols, rez=c(p$pres,p$pres), plotlines="cfa.regions"  )
       print(lp)
@@ -206,7 +206,7 @@ interpolation.db = function( ip=NULL, DS=NULL, p=NULL,
     K = NULL
     nreg = length(p$regions.to.model)
     for (r in 1:nreg ){
-      aoi = aegis::polygon_inside(x=bs[ , c("plon", "plat")], region=p$regions.to.model[r], planar=TRUE, proj.type=p$internal.crs )
+      aoi = polygon_inside(x=bs[ , c("plon", "plat")], region=p$regions.to.model[r], planar=TRUE, proj.type=p$aegis_proj4string_planar_km )
       aoi = intersect( aoi, which( bs$plon > 250 ) )
       out = matrix( NA, nrow=p$ny, ncol=5)
 
@@ -283,7 +283,7 @@ interpolation.db = function( ip=NULL, DS=NULL, p=NULL,
     K = NULL
     nreg = length(p$regions.to.model)
     for (r in 1:nreg ){
-      aoi = aegis::polygon_inside(x=bs[ , c("plon", "plat")], region=p$regions.to.model[r], planar=TRUE, proj.type=p$internal.crs )
+      aoi = polygon_inside(x=bs[ , c("plon", "plat")], region=p$regions.to.model[r], planar=TRUE, proj.type=p$aegis_proj4string_planar_km )
       aoi = intersect( aoi, which( bs$plon > 250 ) )
       out = matrix( NA, nrow=p$ny, ncol=2)
 

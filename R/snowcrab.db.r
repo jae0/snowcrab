@@ -37,7 +37,7 @@ snowcrab.db = function( DS, p=NULL, yrs=NULL) {
 			SNCRABSETS = NULL
 			SNCRABSETS = ROracle::dbGetQuery(con,
 								paste("select * from SNCRABSETS where EXTRACT(YEAR from BOARD_DATE) = ", YR) )
-			save( SNCRABSETS, file=fny, compress=T)
+			save( SNCRABSETS, file=fny, compress=TRUE)
 			gc()  # garbage collection
 			print(YR)
 		}
@@ -56,7 +56,7 @@ snowcrab.db = function( DS, p=NULL, yrs=NULL) {
 
     if (DS=="det.rawdata") {
 			out = NULL
-      fl = list.files( path=fn.root, pattern="*.rdata", full.names=T )
+      fl = list.files( path=fn.root, pattern="*.rdata", full.names=TRUE )
 			for ( fny in fl ) {
 				load (fny)
 				out = rbind( out, SNCRABDETAILS )
@@ -72,7 +72,7 @@ snowcrab.db = function( DS, p=NULL, yrs=NULL) {
 			#in following line replaced sqlQuery (Rrawdata) with  ROracle::dbGetQuery (ROracle)
 			SNCRABDETAILS = ROracle::dbGetQuery(con,
                 paste("select * from SNCRABDETAILS where EXTRACT(YEAR from BOARD_DATE) = ", YR) )
-			save( SNCRABDETAILS, file=fny, compress=T)
+			save( SNCRABDETAILS, file=fny, compress=TRUE)
 			gc()  # garbage collection
 			print(YR)
 		}
@@ -91,7 +91,7 @@ snowcrab.db = function( DS, p=NULL, yrs=NULL) {
 
     if (DS=="cat.rawdata") {
 			out = NULL
-      fl = list.files( path=fn.root, pattern="*.rdata", full.names=T )
+      fl = list.files( path=fn.root, pattern="*.rdata", full.names=TRUE )
 			for ( fny in fl ) {
 				load (fny)
 				out = rbind( out, SNTRAWLBYCATCH )
@@ -107,7 +107,7 @@ snowcrab.db = function( DS, p=NULL, yrs=NULL) {
 			#in following line replaced sqlQuery (Rrawdata) with  ROracle::dbGetQuery (ROracle)
 			SNTRAWLBYCATCH = ROracle::dbGetQuery(con,
                 paste("select * from SNTRAWLBYCATCH where EXTRACT(YEAR from BOARD_DATE) = ", YR) )
-			save( SNTRAWLBYCATCH, file=fny, compress=T)
+			save( SNTRAWLBYCATCH, file=fny, compress=TRUE)
 			gc()  # garbage collection
 			print(YR)
 		}
@@ -169,8 +169,8 @@ snowcrab.db = function( DS, p=NULL, yrs=NULL) {
 
   # The following section were "on the fly" fixes to minor problems before data base corrections can be made
   # 2018- BZ. These have all been corrected in the database. One "debug" is left as an example in case needed in the future
-    
-    #dbug.2011 = T
+
+    #dbug.2011 = TRUE
     #if ( dbug.2011 ) {
       # one-off error corrections until database gets refreshed
      # i = which(set$trip=="S15092006" & set$set==3)
@@ -179,7 +179,7 @@ snowcrab.db = function( DS, p=NULL, yrs=NULL) {
       #i = which(set$trip=="S21092007" & set$set==12)
       #if (length(i)==1) set$towquality[i] = 1
     #}
-    
+
     set = set[,setvars]
     set$sa[ which(set$sa==0) ] = NA
     set$sa = set$sa / 10^6    # convert to km2 ... sa was stored as m2
@@ -198,10 +198,10 @@ snowcrab.db = function( DS, p=NULL, yrs=NULL) {
 
     # ---------------------
     # local lookuptable for netmind/minilog data (historical data only)
-    sntows = read.table(file.path( project.datadirectory("bio.snowcrab"), "data", "lookuptables", "sntow.csv"),  sep=";", as.is=T, colClasses="character", header=T)
+    sntows = read.table(file.path( project.datadirectory("bio.snowcrab"), "data", "lookuptables", "sntow.csv"),  sep=";", as.is=TRUE, colClasses="character", header=TRUE)
     sntow.vars = c("trip",  "set", "patchtime", "netmind", "minilog")
 
-    set = merge(set, sntows[,sntow.vars], by=c("trip", "set"), all.x=T, all.y=F, sort=F)
+    set = merge(set, sntows[,sntow.vars], by=c("trip", "set"), all.x=TRUE, all.y=FALSE, sort=FALSE)
     if ( nrow( set) != nset0 ) { print("Merge error"); stop() }
 
     set$lon = -set$lon # the data are stored as degress West convert to standard degrees E notation
@@ -257,14 +257,14 @@ snowcrab.db = function( DS, p=NULL, yrs=NULL) {
                  "shell", "gonad", "eggcol", "eggPr", "durometer", "legs")
     det=det[is.finite(det$crabno),]
     # merge in the sa which is used as a weighting factor of most analyses
-    det = merge(x=det[,detvars], y=X[,c("trip","set","sa")], by=c("trip", "set"), all.x=T, all.y=F)
+    det = merge(x=det[,detvars], y=X[,c("trip","set","sa")], by=c("trip", "set"), all.x=TRUE, all.y=FALSE)
 
     # Trips and sets with no matching SA ...
     ii = which( !is.finite(det$sa) )
     #print ("DET without matching SA ... due to bad tows? ... check these ")
     #print (det[ii, c("trip","set")])
     #print (det[ii,])
-    det$sa[ii] = median(det$sa, na.rm=T )
+    det$sa[ii] = median(det$sa, na.rm=TRUE )
 
     i.mat = which(det$mat==1)
     i.imm = which(det$mat==2)
@@ -286,7 +286,7 @@ snowcrab.db = function( DS, p=NULL, yrs=NULL) {
     #Identify morphology errors and print, save to CSV
     yr.e <- p$year.assessment
     fn.e = file.path(project.datadirectory("bio.snowcrab"), "output", "morphology.errors")
-    dir.create(fn.e, recursive=T, showWarnings=F)
+    dir.create(fn.e, recursive=TRUE, showWarnings=F)
     outfile.e =  file.path( fn.e, paste("morphologyerrors", yr.e, ".csv", sep=""))
     outfile.e2 =  file.path( fn.e, paste("morphologyerrors.allyears", yr.e, ".csv", sep=""))
 
@@ -303,11 +303,11 @@ snowcrab.db = function( DS, p=NULL, yrs=NULL) {
     abdomen.e <- det[which(det$abdomen < 1 | det$abdomen > 66 ),]
     #abdomen.e$error <- 'abdomen.e' #BZ 2018 no abdomen lengths met "error" condition, broke script #
     if ( !is.na(abdomen.e$trip[1]))  abdomen.e$test='abdomen.e' #replaced above statement
-    
+
     #Mass.e: Mass less than 1 or greater than 1500
     mass.e <- det[which( det$mass < 1 | det$mass > 1500  ),]
     if ( !is.na(mass.e$trip[1]))  mass.e$error <- 'mass.e'
-    
+
     #Sex.a: Indeterminate sex based on measurements taken (abdomen values where sex=male)
     sex.a <- det[which(is.finite( det$abdomen ) & det$sex==male),]
     sex.a$error <- 'sex.a'
@@ -359,8 +359,8 @@ snowcrab.db = function( DS, p=NULL, yrs=NULL) {
     det$fecundity[multiparous] = fecundity.allometric( cw=det$cw[multiparous], method="moncton.multiparous" )
     det$fecundity[ which(det$fecundity> 250000) ] = NA
 
-    save(det, file=fn, compress=T)
-    
+    save(det, file=fn, compress=TRUE)
+
     # do only after the above save
 
     allometry.snowcrab( "cw.mass", "male", redo=T )
@@ -386,7 +386,7 @@ snowcrab.db = function( DS, p=NULL, yrs=NULL) {
     print("Current Year Morphology Errors saved to file")
     print(outfile.e)
 }
-    
+
     write.csv(errors, file=outfile.e2)
     print("All Years Morphology Errors saved to file")
     print(outfile.e2)
@@ -522,8 +522,8 @@ snowcrab.db = function( DS, p=NULL, yrs=NULL) {
 		mw = mw[which(is.finite(mw$meanweight)) ,]
 
 		# add groundfish data if it does not exist already
-    gp = aegis_parameters( DS="groundfish", year.assessment=p$year.assessment )
-    gs = aegis::groundfish.db( p=gp, DS="gscat" )  # raw data .. does not need vessel corrections
+    gp = aegis.survey::groundfish_parameters( year.assessment=p$year.assessment )
+    gs = aegis.survey::groundfish.db( p=gp, DS="gscat" )  # raw data .. does not need vessel corrections
 		meanwgt = gs$totwgt / gs$totno
 		good = which( is.finite( meanwgt) & is.finite( 1/meanwgt ) )
 		mw2 = as.data.frame( unlist( (tapply( log( meanwgt[good]), gs$spec[good], mean )) ))
@@ -690,7 +690,7 @@ snowcrab.db = function( DS, p=NULL, yrs=NULL) {
     ilat = which( is.finite( set$slat) )
     set$lat[ilat] = set$slat[ilat]
 
-    set = lonlat2planar(set, proj.type=p$internal.crs) # get planar projections of lon/lat in km
+    set = lonlat2planar(set, proj.type=p$aegis_proj4string_planar_km) # get planar projections of lon/lat in km
 
     grid = spatial_grid(p=p, DS="planar.coords")
 
@@ -981,7 +981,7 @@ snowcrab.db = function( DS, p=NULL, yrs=NULL) {
     # bring in time invariant features:: depth
     ii = which(!is.finite(set$z))
     if (length(ii)>0){
-      set$z[ii] = bathymetry.lookup( p=p, locs=set[ii,c("plon", "plat")], vnames="z" )
+      set$z[ii] = lookup_bathymetry_from_surveys( p=p, locs=set[ii,c("lon", "lat")] )
     }
     set$z = log( set$z )
     # as of 2016, there are 11 locations where there are missing depths, because they are outside the area defined for snow crab ... they are all bad sets too (set_type=4) in NENS ... ignoring for now
@@ -989,11 +989,11 @@ snowcrab.db = function( DS, p=NULL, yrs=NULL) {
     # bring in time varing features:: temperature
     ii = which(!is.finite(set$t))
     if (length(ii)>0){
-      set$t[ii] = temperature.lookup( p=p, locs=set[ii, c("plon","plat")], timestamp=set$timestamp[ii] )
+      set$t[ii] = lookup_temperature_from_surveys( p=p, locs=set[ii, c("lon", "lat")], timestamp=set$timestamp[ii] )
     }
 
     # return planar coords to correct resolution
-    set = lonlat2planar( set, proj.type=p$internal.crs )
+    set = lonlat2planar( set, proj.type=p$aegis_proj4string_planar_km )
 
     # set2015 = set[which(set$yr ==2015), ]
     # print(head(set2015))
@@ -1011,7 +1011,7 @@ snowcrab.db = function( DS, p=NULL, yrs=NULL) {
 
   if (DS %in% c("data.transforms", "data.transforms.redo") ) {
     REPOS = NULL
-    if (is.null(p)) p = bio.snowcrab::snowcrab.parameters()
+    if (is.null(p)) p = bio.snowcrab::snowcrab_parameters()
 
     if (DS=="data.transforms") {
       if (file.exists( p$transform_lookup ) ) load (p$transform_lookup)
@@ -1059,6 +1059,131 @@ snowcrab.db = function( DS, p=NULL, yrs=NULL) {
     save( REPOS, file=p$transform_lookup, compress=TRUE )
     return( REPOS )
   }
+
+
+  # ----------------------
+
+
+  if ( DS=="biological_data") {
+
+    set = aegis.survey::survey.db( p=p, DS="filter" ) # mature male > 95 mm
+
+    if ( p$selection$type=="number") {
+      # should be snowcrab survey data only taken care of p$selection$survey = "snowcrab"
+      # robustify input data: .. upper bound trim
+      if (exists("quantile_bounds", p)) {
+        highestpossible = quantile( set$totno_adjusted, probs=p$quantile_bounds[2], na.rm=TRUE )
+        set$totno_adjusted[ set$totno_adjusted > highestpossible ] = highestpossible
+        # keep "zero's" to inform spatial processes but only as "lowestpossible" value
+        jj = which( set$totno_adjusted > 0 )
+        lowestpossible =  quantile( set$totno_adjusted[jj], probs=p$quantile_bounds[1], na.rm=TRUE )
+        lowerbound =  quantile( set$totno_adjusted[jj], probs=p$quantile_bounds[1]/10, na.rm=TRUE )
+        ii = which( set$totno_adjusted < lowestpossible )
+        set$totno_adjusted[ii] = lowerbound ## arbitrary but close to detection limit
+      }
+      set[, p$variables$Y] = set$totno_adjusted
+      set$wt = 1 / set$cf_set_no
+    }
+
+    if ( p$selection$type=="biomass") {
+      # should be snowcrab survey data only taken care of p$selection$survey = "snowcrab"
+      # robustify input data: .. upper bound trim
+      if (exists("quantile_bounds", p)) {
+        highestpossible = quantile( set$totwgt_adjusted, probs=p$quantile_bounds[2], na.rm=TRUE )
+        set$totwgt_adjusted[ set$totwgt_adjusted > highestpossible ] = highestpossible
+
+        # keep "zero's" to inform spatial processes but only as "lowestpossible" value
+        jj = which( set$totwgt_adjusted > 0 )
+        lowestpossible =  quantile( set$totwgt_adjusted[jj], probs=p$quantile_bounds[1], na.rm=TRUE )
+        lowerbound =  quantile( set$totno_adjusted[jj], probs=p$quantile_bounds[1]/10, na.rm=TRUE )
+        ii = which( set$totwgt_adjusted < lowestpossible )
+        set$totwgt_adjusted[ii] = lowerbound ## arbitrary but close to detection limit
+      }
+      set[, p$variables$Y] = set$totwgt_adjusted
+      set$wt = 1 / set$cf_set_mass
+    }
+
+    if ( p$selection$type=="presence_absence") {
+      # must run here as we need the wgt from this for both PA and abundance
+      if ( grepl( "snowcrab.large.males", p$variables$Y ) ) {
+        # add commerical fishery data --
+        # depth data is problematic ... drop for now
+        lgbk = logbook.db( DS="fisheries.complete", p=p )
+        lgbk = lgbk[ which( is.finite( lgbk$landings)), ]
+        lgbk = lgbk[ which( lgbk$year > 2005), ]  # previous to this all sorts of traps were used
+        lgbk = lgbk[ which( as.numeric(lgbk$soak.time) >= 12 & as.numeric(lgbk$soak.time) <= 48), ]   # avoid nonlinearity in catch with time
+        lgbk$cpue_time = lgbk$cpue / as.numeric(lgbk$soak.time)  # approx with realtive catch rate in time
+
+        lgbk$qm = NA   # default when no data
+        oo = which( lgbk$cpue_time == 0 )  # retain as zero values
+        if (length(oo)>0 ) lgbk$qm[oo] = 0
+        ii = which( lgbk$cpue_time != 0 )
+        lgbk$qm[ii] = quantile_estimate( lgbk$cpue_time[ii]  )  # convert to quantiles
+        lgbk$zm = quantile_to_normal( lgbk$qm )
+
+        lgbk$totmass = NA # dummy to bring in mass as well
+        lgbk$data.source = "logbooks"
+        lgbk$z = exp( lgbk$z )
+        nms = intersect( names(set) , names( lgbk) )
+        set = rbind( set[, nms], lgbk[,nms] )
+      }
+
+      pa = presence.absence( X=set$zm, px=p$habitat.threshold.quantile )  # determine presence absence and weighting
+      set[, p$variables$Y] = pa$pa
+      set[, "wt"] = pa$probs
+      pa = NULL
+      set = set[ which(is.finite(set$plon + set$plat)),]
+    }
+
+    set = set[ which(is.finite(set[, p$variables$Y])),]
+    crs = projection_proj4string("lonlat_wgs84")
+    coastline_source="eastcoast_gadm"
+    coast = coastline.db( p=p, DS=coastline_source, crs=crs )
+    setcoord = SpatialPoints( as.matrix( set[, c("lon", "lat")]), proj4string=CRS(crs) )
+    inside = sp::over( setcoord, coast )
+    onland = which (is.finite(inside))
+    if (length(onland)>0) set = set[-onland, ]
+
+    set$tiyr = lubridate::decimal_date( set$timestamp )
+
+    ## lookup data
+
+    # set = aegis_db_lookup(
+    #   X=set,
+    #   lookupvars=p$variables$COV,
+    #   xy_vars=c("lon", "lat"),
+    #   time_var="timestamp"
+    # )
+
+    # if (!alldata) {
+    #  set = set[, which(names(set) %in% c( p$variables$LOCS, p$variables$COV, p$variables$Y, p$variables$TIME, "dyear", "yr",  "wt") ) ]  # a data frame
+    #   oo = setdiff( c( p$variables$LOCS, p$variables$COV ), names(set))
+    #   if (length(oo) > 0 ) {
+    #     print(oo )
+    #     warning("Some variables are missing in the input data")
+    #   }
+    #   set = na.omit(set)
+    # }
+
+    # cap quantiles of dependent vars
+    # if (exists("quantile_bounds", p)) {
+    #   dr = list()
+    #   for (pvn in p$variables$COV) {
+    #     dr[[pvn]] = quantile( set[,pvn], probs=p$quantile_bounds, na.rm=TRUE ) # use 95%CI
+    #     il = which( set[,pvn] < dr[[pvn]][1] )
+    #     if ( length(il) > 0 ) set[il,pvn] = dr[[pvn]][1]
+    #     iu = which( set[,pvn] > dr[[pvn]][2] )
+    #     if ( length(iu) > 0 ) set[iu,pvn] = dr[[pvn]][2]
+    #   }
+    # }
+
+    set$Y = set$totno  # unadjusted value is used as we are usinmg offsets ...
+    set$data_offset  = 1 / set[, ifelse( p$runtype=="number", "cf_set_no", "cf_set_wgt")]  # as "sa"
+    set$data_offset[which(!is.finite(set$data_offset))] = median(set$data_offset, na.rm=TRUE )  # just in case missing data
+
+    return( set )
+  }
+
 
 
 }  ## end snowcrab.db
