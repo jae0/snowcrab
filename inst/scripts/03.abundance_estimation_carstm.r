@@ -122,31 +122,17 @@
 # long optimization step: 2500 + at 5 hrs .. think of using eb or gaussian to bootstrap? 150 configs at 5 sec
     pT = temperature_carstm(p=p, DS="parameters_override" )
     M = temperature.db( p=pT, DS="aggregated_data", redo=TRUE )  # will redo if not found .. not used here but used for data matching/lookup in other aegis projects that use temperature
+
     M = temperature_carstm( p=pT, DS="carstm_inputs", redo=TRUE )  # will redo if not found
 
-  m = get("inla.models", INLA:::inla.get.inlaEnv())
+    require(INLA)
+    m = get("inla.models", INLA:::inla.get.inlaEnv())
     m$latent$rw2$min.diff = NULL
     assign("inla.models", m, INLA:::inla.get.inlaEnv())
 
-    + f(seasonal, model="seasonal", season.length=', pT$n.season, ', scale.model=TRUE )  # using seasonal effect is not recommended as it is not smoothed well .. rw2 is better
-
-#     Expected effective number of parameters: 2184.218(29.952),  eqv.#replicates: 14.467
-# DIC:
-# 	Mean of Deviance ................. 116299
-# 	Deviance at Mean ................. 114115
-# 	Effective number of parameters ... 2184.27
-# 	DIC .............................. 118484
-# DIC (Saturated):
-# 	Mean of Deviance ................. 31564.1
-# 	Deviance at Mean ................. 29379.8
-# 	Effective number of parameters ... 2184.27
-# 	DIC .............................. 33748.4
-# Marginal likelihood: Integration -61918.088603 Gaussian-approx -61918.840195
-# Compute the marginal for each of the 8 hyperparameters
-
-
 
     # CAR effect for each year
+    pT$carstm_model_label = "CAR_depth_dyr_yr"
     pT$carstm_modelcall = paste('
       inla(
         formula = ', pT$variabletomodel, ' ~ 1
@@ -168,9 +154,29 @@
         verbose=TRUE
     ) ' )
 
+    #     Expected effective number of parameters: 2184.218(29.952),  eqv.#replicates: 14.467
+    # DIC:
+    # 	Mean of Deviance ................. 116299
+    # 	Deviance at Mean ................. 114115
+    # 	Effective number of parameters ... 2184.27
+    # 	DIC .............................. 118484
+    # DIC (Saturated):
+    # 	Mean of Deviance ................. 31564.1
+    # 	Deviance at Mean ................. 29379.8
+    # 	Effective number of parameters ... 2184.27
+    # 	DIC .............................. 33748.4
+    # Marginal likelihood: Integration -61918.088603 Gaussian-approx -61918.840195
+    # Compute the marginal for each of the 8 hyperparameters
+
+
     res = carstm_model( p=pT, M='temperature_carstm( p=pT, DS="carstm_inputs")', DS="redo"  ) # run model and obtain predictions
     # res = carstm_model( p=pT, DS="carstm_modelled"  ) # run model and obtain predictions
     # fit = carstm_model(  p=pT, DS="carstm_modelled_fit" )  # extract currently saved model fit
+
+
+
+#    + f(seasonal, model="seasonal", season.length=', pT$n.season, ', scale.model=TRUE )  # using seasonal effect is not recommended as it is not smoothed well .. rw2 is better
+
 
     # maps of some of the results
     vn = paste(pT$variabletomodel, "predicted", sep=".")
@@ -178,13 +184,19 @@
 
 
 # species composition 1 -- ensure that survey data is assimilated : bio.snowcrab::01snowcb_data.R, aegis.survey::01.surveys.data.R , etc.
-    M = speciescomposition_carstm( p=p, DS="carstm_inputs", varnametomodel="pca1", redo=TRUE )  # will redo if not found
+    pPC1 = speciescomposition_carstm(p=p, DS="parameters_override", varnametomodel="pca1" )
+    M = speciescomposition_carstm( p=pPC1, DS="carstm_inputs", varnametomodel="pca1", redo=TRUE )  # will redo if not found
+
+    pPC1$carstm_model_label = "CAR_depth_dyr_yr_t"
     res = carstm_model( p=pPC1, M='speciescomposition_carstm( p=p, DS="carstm_inputs", varnametomodel="pca1" )', DS="redo"  ) # run model and obtain predictions
     # res = carstm_model( p=pPC1, DS="carstm_modelled"  ) # run model and obtain predictions
     # fit = carstm_model( p=pPC1, DS="carstm_modelled_fit" )  # extract currently saved model fit
 
 # species composition 2 -- ensure that survey data is assimilated : bio.snowcrab::01snowcb_data.R, aegis.survey::01.surveys.data.R , etc.
-    M = speciescomposition_carstm( p=p, DS="carstm_inputs", varnametomodel="pca2", redo=TRUE )  # will redo if not found
+    pPC2 = speciescomposition_carstm(p=p, DS="parameters_override", varnametomodel="pca2" )
+    M = speciescomposition_carstm( p=pPC2, DS="carstm_inputs", redo=TRUE )  # will redo if not found
+
+    pPC2$carstm_model_label = "CAR_depth_dyr_yr_t"
     res = carstm_model( p=pPC2, M='speciescomposition_carstm( p=p, DS="carstm_inputs", varnametomodel="pca2" )', DS="redo"  ) # run model and obtain predictions
     # res = carstm_model( p=pPC2, DS="carstm_modelled"  ) # run model and obtain predictions
     # fit = carstm_model( p=pPC2, DS="carstm_modelled_fit" )  # extract currently saved model fit
@@ -194,10 +206,14 @@
 
 
 
+  M = snowcrab_carstm( p=p, DS="carstm_inputs", redo=TRUE )  # will redo if not found
+
+
   if (0) {
     # choose model:
 
     # basic model, single CAR effect across time
+    p$carstm_model_label = "CAR_static"
     p$carstm_modelcall = paste('
       inla(
         formula =', p$variabletomodel, ' ~ 1
@@ -219,9 +235,11 @@
         blas.num.threads=4,
         verbose=TRUE
     ) ' )
+    res = carstm_model( p=p, M='snowcrab_carstm( p=p, DS="carstm_inputs" )' )
 
 
     # CAR effect for each year
+    p$carstm_model_label = "CARxYear"
     p$carstm_modelcall = paste('
       inla(
         formula =', p$variabletomodel, ' ~ 1
@@ -243,8 +261,12 @@
         blas.num.threads=4,
         verbose=TRUE
     ) ' )
+    res = carstm_model( p=p, M='snowcrab_carstm( p=p, DS="carstm_inputs" )' )
+
+
 
     # CAR effect for each year, no year AC
+    p$carstm_model_label = "CAR_Yearasfactor"
     p$carstm_modelcall = paste('
       inla(
         formula =', p$variabletomodel, ' ~ 1
@@ -267,12 +289,9 @@
     ) ' )
 
   }
-
-
-  # run model and obtain predictions
-  # assimilate covariates to help model snowcrab
-  M = snowcrab_carstm( p=p, DS="carstm_inputs", redo=TRUE )  # will redo if not found
   res = carstm_model( p=p, M='snowcrab_carstm( p=p, DS="carstm_inputs" )' )
+
+
 
   # extract results
   res = carstm_model( p=p, DS="carstm_modelled" ) # to load currently saved res
