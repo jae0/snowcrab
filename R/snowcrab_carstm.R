@@ -73,6 +73,7 @@ snowcrab_carstm = function( p=NULL, DS="parameters", redo=FALSE, ...) {
         p$libs = unique( c( p$libs, project.library ( "INLA" ) ) )
 
         # use strata which is a numeric representation of the StrataID factor
+        p$carstm_model_label = "default_inla"
         p$carstm_modelcall = paste(
           'inla( formula =', p$variabletomodel,
           ' ~ 1
@@ -100,6 +101,7 @@ snowcrab_carstm = function( p=NULL, DS="parameters", redo=FALSE, ...) {
         # + f(year,  model="ar1", hyper=H$ar1 )
 
       if ( grepl("glm", p$carstm_modelengine) ) {
+        p$carstm_model_label = "default_glm"
         p$carstm_modelcall = paste(
           'glm( formula =',  p$variabletomodel,
           ' ~ 1 + StrataID + t + z + substrate.grainsize +tiyr,  # StrataID is a factor
@@ -112,6 +114,7 @@ snowcrab_carstm = function( p=NULL, DS="parameters", redo=FALSE, ...) {
       if ( grepl("gam", p$carstm_modelengine) ) {
         p$libs = unique( c( p$libs, project.library ( "mgcv"  ) ) )
 
+        p$carstm_model_label = "default_gam"
         p$carstm_modelcall = paste(
           'gam( formula =',  p$variabletomodel,
           ' ~ 1 + StrataID + s(t) + s(z) + s(substrate.grainsize) + s(yr) + s(dyear),
