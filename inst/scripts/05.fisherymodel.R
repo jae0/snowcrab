@@ -34,13 +34,13 @@ p$fishery_model$stancode = fishery_model( p=p, DS="stan_surplus_production" )
 p$fishery_model$stancode_compiled = rstan::stan_model( model_code=p$fishery_model$stancode )
 
 ##stmv biomass estimates with cpue
-p$fishery_model = list()
-p$fishery_model$method = "stan"  # "jags", etc.
-p$fishery_model$outdir = file.path(project.datadirectory('bio.snowcrab'), "assessments", p$year.assessment )
-p$fishery_model$fnres  = file.path(p$fishery_model$outdir, paste( "surplus.prod.mcmc", p$year.assessment, p$fishery_model$method, "rdata", sep=".") )
-p$fishery_model$standata = fishery_model( p=p, DS="stan_data" )
-p$fishery_model$stancode = fishery_model( p=p, DS="stan_surplus_production_stmv_CPUE" )
-p$fishery_model$stancode_compiled = rstan::stan_model( model_code=p$fishery_model$stancode )
+#p$fishery_model = list()
+#p$fishery_model$method = "stan"  # "jags", etc.
+#p$fishery_model$outdir = file.path(project.datadirectory('bio.snowcrab'), "assessments", p$year.assessment )
+#p$fishery_model$fnres  = file.path(p$fishery_model$outdir, paste( "surplus.prod.mcmc", p$year.assessment, p$fishery_model$method, "rdata", sep=".") )
+#p$fishery_model$standata = fishery_model( p=p, DS="stan_data" )
+#p$fishery_model$stancode = fishery_model( p=p, DS="stan_surplus_production_stmv_CPUE" )
+#p$fishery_model$stancode_compiled = rstan::stan_model( model_code=p$fishery_model$stancode )
 
 # later:::ensureInitialized()  # solve mode error
 
@@ -74,6 +74,9 @@ figure.mcmc( "bpsd", res=res, fn=file.path(p$fishery_model$outdir, "bpsd.density
 # timeseries
 figure.mcmc( type="timeseries", vname="biomass", res=res, fn=file.path(p$fishery_model$outdir, "biomass.timeseries.png" ), save.plot=T )
 figure.mcmc( type="timeseries", vname="fishingmortality", res=res, fn=file.path(p$fishery_model$outdir, "fishingmortality.timeseries.png" ) )
+
+#Summary table of mean values for inclusion in document
+biomass.summary.table(x)
 
 # Harvest control rules
 figure.mcmc( type="hcr", vname="default", res=res, fn=file.path(p$fishery_model$outdir, "hcr.default.png" ), save.plot=T  )
