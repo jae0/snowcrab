@@ -192,9 +192,46 @@ Compute the marginal for each of the 3 hyperparameters
     pT$carstm_modelcall = paste('
       inla(
         formula = ', pT$variabletomodel, ' ~ 1
-          + f(tiyr, model="ar1", hyper=H$ar1 )
-          + f(year, model="ar1", hyper=H$ar1 )
-          + f(dyear, model="rw2", hyper=H$rw2 )
+          + f(year_factor, model="ar1", hyper=H$ar1 )
+          + f(seasonal, model="seasonal", season.length=', pT$n.season, ', scale.model=TRUE )
+          + f(zi, model="rw2", scale.model=TRUE, diagonal=1e-6, hyper=H$rw2)
+          + f(strata, model="bym2", graph=sppoly@nb ,group= year_factor,  scale.model=TRUE, constr=TRUE, hyper=H$bym2),
+        family = "normal",
+        data= M,
+        control.compute=list(dic=TRUE, config=TRUE),
+        control.results=list(return.marginals.random=TRUE, return.marginals.predictor=TRUE ),
+        control.predictor=list(compute=FALSE, link=1 ),
+        control.fixed=H$fixed,  # priors for fixed effects, generic is ok
+        # control.inla=list(strategy="gaussian", int.strategy="eb") ,# to get empirical Bayes results much faster.
+        # control.inla=list(int.strategy="eb") ,# to get empirical Bayes results much faster.
+        # control.inla=list( strategy="laplace", cutoff=1e-6, correct=TRUE, correct.verbose=FALSE ),
+        # num.threads=4,
+        # blas.num.threads=4,
+        verbose=TRUE
+    ) ' )
+
+    Expected effective number of parameters: 2184.218(29.952),  eqv.#replicates: 14.467
+DIC:
+	Mean of Deviance ................. 116299
+	Deviance at Mean ................. 114115
+	Effective number of parameters ... 2184.27
+	DIC .............................. 118484
+DIC (Saturated):
+	Mean of Deviance ................. 31564.1
+	Deviance at Mean ................. 29379.8
+	Effective number of parameters ... 2184.27
+	DIC .............................. 33748.4
+Marginal likelihood: Integration -61918.088603 Gaussian-approx -61918.840195
+Compute the marginal for each of the 8 hyperparameters
+
+
+
+    # CAR effect for each year
+    pT$carstm_modelcall = paste('
+      inla(
+        formula = ', pT$variabletomodel, ' ~ 1
+          + f(year_factor, model="ar1", hyper=H$ar1 )
+          + f(dyri, model="rw2", scale.model=TRUE, diagonal=1e-6, hyper=H$rw2 )
           + f(zi, model="rw2", scale.model=TRUE, diagonal=1e-6, hyper=H$rw2)
           + f(strata, model="bym2", graph=sppoly@nb ,group= year_factor,  scale.model=TRUE, constr=TRUE, hyper=H$bym2)
           + f(iid_error, model="iid", hyper=H$iid),
