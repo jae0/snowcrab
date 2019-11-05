@@ -75,93 +75,28 @@
     M = bathymetry.db( p=pB, DS="aggregated_data", redo=TRUE )  # will redo if not found .. not used here but used for data matching/lookup
     M = bathymetry_carstm( p=pB, DS="carstm_inputs", redo=TRUE ) # will redo if not found
 
-default model:
-
-           mean    sd 0.025quant 0.5quant 0.975quant  mode kld
-(Intercept) 7.883 0.006      7.871    7.883      7.896 7.883   0
-
-Random effects:
-  Name	  Model
-    strata BYM2 model
-   iid_error IID model
-
-Model hyperparameters:
-                                             mean    sd 0.025quant 0.5quant 0.975quant     mode
-Precision for the lognormal observations 1.03e+04 7.996   1.03e+04 1.03e+04   1.03e+04 1.03e+04
-Precision for strata                     1.26e+02 0.090   1.26e+02 1.26e+02   1.26e+02 1.26e+02
-Phi for strata                           3.20e-02 0.000   3.20e-02 3.20e-02   3.20e-02 3.20e-02
-Precision for iid_error                  8.00e+02 0.287   8.00e+02 8.00e+02   8.01e+02 8.00e+02
-
-Expected number of effective parameters(stdev): 104448.46(0.001)
-Number of equivalent replicates : 1.08
-
-Deviance Information Criterion (DIC) ...............: 1157922.13
-Deviance Information Criterion (DIC, saturated) ....: 216852.39
-Effective number of parameters .....................: 104448.45
-
-Marginal log-Likelihood:  -678184.42
-Posterior marginals for the linear predictor and
- the fitted values are computed
-
- p$carstm_modelcall = paste(
-          'inla(
-            formula = ', p$variabletomodel, ' ~ 1
-              + f(strata, model="bym2", graph=sppoly@nb, scale.model=TRUE, constr=TRUE, hyper=H$bym2)
-              + f(iid_error, model="iid", hyper=H$iid),
-            family = "lognormal",
-            data= M,
-            control.compute=list(dic=TRUE, config=TRUE),  # config=TRUE if doing posterior simulations
-            control.results=list(return.marginals.random=TRUE, return.marginals.predictor=TRUE ),
-            control.predictor=list(compute=FALSE, link=1 ),
-            control.fixed=H$fixed,  # priors for fixed effects, generic is ok
-            # control.inla=list(int.strategy="eb") ,# to get empirical Bayes results much faster.
-            # control.inla=list( strategy="laplace", cutoff=1e-6, correct=TRUE, correct.verbose=FALSE ),
-            # num.threads=4,
-            blas.num.threads=8,
-            verbose=TRUE
-          ) ' )
-
-
     #1.4 hrs
 
-DIC:
-	Mean of Deviance ................. 1.34805e+06
-	Deviance at Mean ................. 1.34735e+06
-	Effective number of parameters ... 699.161
-	DIC .............................. 1.34875e+06
-DIC (Saturated):
-	Mean of Deviance ................. 112533
-	Deviance at Mean ................. 111833
-	Effective number of parameters ... 699.161
-	DIC .............................. 113232
-Marginal likelihood: Integration -674832.219605 Gaussian-approx -674832.751075
-Compute the marginal for each of the 3 hyperparameters
+# DIC:
+# 	Mean of Deviance ................. 1.34805e+06
+# 	Deviance at Mean ................. 1.34735e+06
+# 	Effective number of parameters ... 699.161
+# 	DIC .............................. 1.34875e+06
+# DIC (Saturated):
+# 	Mean of Deviance ................. 112533
+# 	Deviance at Mean ................. 111833
+# 	Effective number of parameters ... 699.161
+# 	DIC .............................. 113232
+# Marginal likelihood: Integration -674832.219605 Gaussian-approx -674832.751075
+# Compute the marginal for each of the 3 hyperparameters
 
- pB$carstm_modelcall = paste(
-          'inla(
-            formula = ', pB$variabletomodel, ' ~ 1
-              + f(strata, model="bym2", graph=sppoly@nb, scale.model=TRUE, constr=TRUE, hyper=H$bym2),
-
-            family = "lognormal",
-            data= M,
-            control.compute=list(dic=TRUE, config=TRUE),  # config=TRUE if doing posterior simulations
-            control.results=list(return.marginals.random=TRUE, return.marginals.predictor=TRUE ),
-            control.predictor=list(compute=FALSE, link=1 ),
-            control.fixed=H$fixed,  # priors for fixed effects, generic is ok
-            # control.inla=list(int.strategy="eb") ,# to get empirical Bayes results much faster.
-            # control.inla=list( strategy="laplace", cutoff=1e-6, correct=TRUE, correct.verbose=FALSE ),
-            # num.threads=4,
-            blas.num.threads=8,
-            verbose=TRUE
-          ) ' )
-
-    res = carstm_model( p=pB, M=M, DS="redo"  ) # run model and obtain predictions
+    res = carstm_model( p=pB, M='bathymetry_carstm( p=pB, DS="carstm_inputs" )', DS="redo"  ) # run model and obtain predictions
     # res = carstm_model( p=pB, DS="carstm_modelled"  ) # run model and obtain predictions
     # fit = carstm_model( p=pB, DS="carstm_modelled_fit" )  # extract currently saved model fit
 
-  # maps of some of the results
-  vn = paste(pB$variabletomodel, "predicted", sep=".")
-  carstm_plot( p=pB, res=res, vn=vn )
+    # maps of some of the results
+    vn = paste(pB$variabletomodel, "predicted", sep=".")
+    carstm_plot( p=pB, res=res, vn=vn )
 
 
 # substrate -- ensure the data assimilation in substrate is first completed :: 01.substrate_data.R
@@ -174,9 +109,14 @@ Compute the marginal for each of the 3 hyperparameters
     m$latent$rw2$min.diff = NULL
     assign("inla.models", m, INLA:::inla.get.inlaEnv())
 
-    res = carstm_model( p=pS, M=M, DS="redo"  ) # run model and obtain predictions
+    res = carstm_model( p=pS, M='substrate_carstm( p=pS, DS="carstm_inputs")', DS="redo"  ) # run model and obtain predictions
     # res = carstm_model( p=pS, DS="carstm_modelled"  ) # run model and obtain predictions
     # fit = carstm_model( p=pS, DS="carstm_modelled_fit" )  # extract currently saved model fit
+
+    # maps of some of the results
+    vn = paste(pS$variabletomodel, "predicted", sep=".")
+    carstm_plot( p=pS, res=res, vn=vn )
+
 
 # temperature -- ensure the data assimilation in temperature is first completed :: 01.temperature_data.R
 # long optimization step: 2500 + at 5 hrs .. think of using eb or gaussian to bootstrap? 150 configs at 5 sec
@@ -188,41 +128,21 @@ Compute the marginal for each of the 3 hyperparameters
     m$latent$rw2$min.diff = NULL
     assign("inla.models", m, INLA:::inla.get.inlaEnv())
 
-        # CAR effect for each year
-    pT$carstm_modelcall = paste('
-      inla(
-        formula = ', pT$variabletomodel, ' ~ 1
-          + f(year_factor, model="ar1", hyper=H$ar1 )
-          + f(seasonal, model="seasonal", season.length=', pT$n.season, ', scale.model=TRUE )
-          + f(zi, model="rw2", scale.model=TRUE, diagonal=1e-6, hyper=H$rw2)
-          + f(strata, model="bym2", graph=sppoly@nb ,group= year_factor,  scale.model=TRUE, constr=TRUE, hyper=H$bym2),
-        family = "normal",
-        data= M,
-        control.compute=list(dic=TRUE, config=TRUE),
-        control.results=list(return.marginals.random=TRUE, return.marginals.predictor=TRUE ),
-        control.predictor=list(compute=FALSE, link=1 ),
-        control.fixed=H$fixed,  # priors for fixed effects, generic is ok
-        # control.inla=list(strategy="gaussian", int.strategy="eb") ,# to get empirical Bayes results much faster.
-        # control.inla=list(int.strategy="eb") ,# to get empirical Bayes results much faster.
-        # control.inla=list( strategy="laplace", cutoff=1e-6, correct=TRUE, correct.verbose=FALSE ),
-        # num.threads=4,
-        # blas.num.threads=4,
-        verbose=TRUE
-    ) ' )
+    + f(seasonal, model="seasonal", season.length=', pT$n.season, ', scale.model=TRUE )  # using seasonal effect is not recommended as it is not smoothed well .. rw2 is better
 
-    Expected effective number of parameters: 2184.218(29.952),  eqv.#replicates: 14.467
-DIC:
-	Mean of Deviance ................. 116299
-	Deviance at Mean ................. 114115
-	Effective number of parameters ... 2184.27
-	DIC .............................. 118484
-DIC (Saturated):
-	Mean of Deviance ................. 31564.1
-	Deviance at Mean ................. 29379.8
-	Effective number of parameters ... 2184.27
-	DIC .............................. 33748.4
-Marginal likelihood: Integration -61918.088603 Gaussian-approx -61918.840195
-Compute the marginal for each of the 8 hyperparameters
+#     Expected effective number of parameters: 2184.218(29.952),  eqv.#replicates: 14.467
+# DIC:
+# 	Mean of Deviance ................. 116299
+# 	Deviance at Mean ................. 114115
+# 	Effective number of parameters ... 2184.27
+# 	DIC .............................. 118484
+# DIC (Saturated):
+# 	Mean of Deviance ................. 31564.1
+# 	Deviance at Mean ................. 29379.8
+# 	Effective number of parameters ... 2184.27
+# 	DIC .............................. 33748.4
+# Marginal likelihood: Integration -61918.088603 Gaussian-approx -61918.840195
+# Compute the marginal for each of the 8 hyperparameters
 
 
 
@@ -233,8 +153,7 @@ Compute the marginal for each of the 8 hyperparameters
           + f(year_factor, model="ar1", hyper=H$ar1 )
           + f(dyri, model="rw2", scale.model=TRUE, diagonal=1e-6, hyper=H$rw2 )
           + f(zi, model="rw2", scale.model=TRUE, diagonal=1e-6, hyper=H$rw2)
-          + f(strata, model="bym2", graph=sppoly@nb ,group= year_factor,  scale.model=TRUE, constr=TRUE, hyper=H$bym2)
-          + f(iid_error, model="iid", hyper=H$iid),
+          + f(strata, model="bym2", graph=sppoly@nb ,group= year_factor,  scale.model=TRUE, constr=TRUE, hyper=H$bym2),
         family = "normal",
         data= M,
         control.compute=list(dic=TRUE, config=TRUE),
@@ -249,19 +168,24 @@ Compute the marginal for each of the 8 hyperparameters
         verbose=TRUE
     ) ' )
 
-    res = carstm_model( p=pT, M=M, DS="redo"  ) # run model and obtain predictions
+    res = carstm_model( p=pT, M='temperature_carstm( p=pT, DS="carstm_inputs")', DS="redo"  ) # run model and obtain predictions
     # res = carstm_model( p=pT, DS="carstm_modelled"  ) # run model and obtain predictions
     # fit = carstm_model(  p=pT, DS="carstm_modelled_fit" )  # extract currently saved model fit
 
+    # maps of some of the results
+    vn = paste(pT$variabletomodel, "predicted", sep=".")
+    carstm_plot( p=pT, res=res, vn=vn )
+
+
 # species composition 1 -- ensure that survey data is assimilated : bio.snowcrab::01snowcb_data.R, aegis.survey::01.surveys.data.R , etc.
     M = speciescomposition_carstm( p=p, DS="carstm_inputs", varnametomodel="pca1", redo=TRUE )  # will redo if not found
-    res = carstm_model( p=pPC1, M=M, DS="redo"  ) # run model and obtain predictions
+    res = carstm_model( p=pPC1, M='speciescomposition_carstm( p=p, DS="carstm_inputs", varnametomodel="pca1" )', DS="redo"  ) # run model and obtain predictions
     # res = carstm_model( p=pPC1, DS="carstm_modelled"  ) # run model and obtain predictions
     # fit = carstm_model( p=pPC1, DS="carstm_modelled_fit" )  # extract currently saved model fit
 
 # species composition 2 -- ensure that survey data is assimilated : bio.snowcrab::01snowcb_data.R, aegis.survey::01.surveys.data.R , etc.
     M = speciescomposition_carstm( p=p, DS="carstm_inputs", varnametomodel="pca2", redo=TRUE )  # will redo if not found
-    res = carstm_model( p=pPC2, M=M, DS="redo"  ) # run model and obtain predictions
+    res = carstm_model( p=pPC2, M='speciescomposition_carstm( p=p, DS="carstm_inputs", varnametomodel="pca2" )', DS="redo"  ) # run model and obtain predictions
     # res = carstm_model( p=pPC2, DS="carstm_modelled"  ) # run model and obtain predictions
     # fit = carstm_model( p=pPC2, DS="carstm_modelled_fit" )  # extract currently saved model fit
 
@@ -348,7 +272,7 @@ Compute the marginal for each of the 8 hyperparameters
   # run model and obtain predictions
   # assimilate covariates to help model snowcrab
   M = snowcrab_carstm( p=p, DS="carstm_inputs", redo=TRUE )  # will redo if not found
-  res = carstm_model( p=p, M=snowcrab_carstm( p=p, DS="carstm_inputs" ) )
+  res = carstm_model( p=p, M='snowcrab_carstm( p=p, DS="carstm_inputs" )' )
 
   # extract results
   res = carstm_model( p=p, DS="carstm_modelled" ) # to load currently saved res
