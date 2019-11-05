@@ -94,32 +94,40 @@
 
 # temperature -- ensure the data assimilation in temperature is first completed :: 01.temperature_data.R
 # long optimization step: 2500 + at 5 hrs .. think of using eb or gaussian to bootstrap? 150 configs at 5 sec
+# 6.5 days ! for the simpler model (ar1)
+
     pT = temperature_carstm(p=p, DS="parameters_override" )
     M = temperature.db( p=pT, DS="aggregated_data", redo=TRUE )  # will redo if not found .. not used here but used for data matching/lookup in other aegis projects that use temperature
     M = temperature_carstm( p=pT, DS="carstm_inputs", redo=TRUE )  # will redo if not found
 
-        # CAR effect for each year
+    m = get("inla.models", INLA:::inla.get.inlaEnv())
+    m$latent$rw2$min.diff = NULL
+    assign("inla.models", m, INLA:::inla.get.inlaEnv())
+
+
+    # CAR effect for each year
     pT$carstm_modelcall = paste('
       inla(
         formula = ', pT$variabletomodel, ' ~ 1
           + f(tiyr, model="ar1", hyper=H$ar1 )
-          + f(year, model="ar1", hyper=H$ar1 )
+          + f(seasonal, model="seasonal", season.length=', pT$n.season, ', scale.model=TRUE )
+          + f(year_factor, model="ar1", hyper=H$ar1 )
           + f(zi, model="rw2", scale.model=TRUE, diagonal=1e-6, hyper=H$rw2)
-          + f(strata, model="bym2", graph=sppoly@nb ,group= year_factor,  scale.model=TRUE, constr=TRUE, hyper=H$bym2)
-          + f(iid_error, model="iid", hyper=H$iid),
+          + f(strata, model="bym2", graph=sppoly@nb ,group= year_factor,  scale.model=TRUE, constr=TRUE, hyper=H$bym2),
         family = "normal",
         data= M,
         control.compute=list(dic=TRUE, config=TRUE),
         control.results=list(return.marginals.random=TRUE, return.marginals.predictor=TRUE ),
         control.predictor=list(compute=FALSE, link=1 ),
         control.fixed=H$fixed,  # priors for fixed effects, generic is ok
-        control.inla=list(strategy="gaussian", int.strategy="eb") ,# to get empirical Bayes results much faster.
+        # control.inla=list(strategy="gaussian", int.strategy="eb") ,# to get empirical Bayes results much faster.
         # control.inla=list(int.strategy="eb") ,# to get empirical Bayes results much faster.
         # control.inla=list( strategy="laplace", cutoff=1e-6, correct=TRUE, correct.verbose=FALSE ),
-        num.threads=4,
-        blas.num.threads=4,
+        # num.threads=4,
+        # blas.num.threads=4,
         verbose=TRUE
     ) ' )
+#          + f(iid_error, model="iid", hyper=H$iid),
 
     res = carstm_model( p=pT, M=M, DS="redo"  ) # run model and obtain predictions
     # res = carstm_model( p=pT, DS="carstm_modelled"  ) # run model and obtain predictions
