@@ -90,10 +90,9 @@
 # Marginal likelihood: Integration -674832.219605 Gaussian-approx -674832.751075
 # Compute the marginal for each of the 3 hyperparameters
 
-    pB$carstm_model_label = "production"
-    res = carstm_model( p=pB, M='bathymetry_carstm( p=pB, DS="carstm_inputs" )', DS="redo"  ) # run model and obtain predictions
-    # res = carstm_model( p=pB, DS="carstm_modelled"  ) # run model and obtain predictions
-    # fit = carstm_model( p=pB, DS="carstm_modelled_fit" )  # extract currently saved model fit
+    res = carstm_model( p=pB, M='bathymetry_carstm( p=pB, DS="carstm_inputs" )', DS="redo", carstm_model_label="production"  ) # run model and obtain predictions
+    # res = carstm_model( p=pB, DS="carstm_modelled", carstm_model_label="production" ) # run model and obtain predictions
+    # fit = carstm_model( p=pB, DS="carstm_modelled_fit", carstm_model_label="production" )  # extract currently saved model fit
 
     # maps of some of the results
     vn = paste(pB$variabletomodel, "predicted", sep=".")
@@ -107,10 +106,9 @@
     M = substrate_carstm( p=pS, DS="carstm_inputs", redo=TRUE )  # will redo if not found
     # zi too close together relative to the range ... force ignore
 
-    pS$carstm_model_label = "production"
-    res = carstm_model( p=pS, M='substrate_carstm( p=pS, DS="carstm_inputs")', DS="redo"  ) # run model and obtain predictions
-    # res = carstm_model( p=pS, DS="carstm_modelled"  ) # run model and obtain predictions
-    # fit = carstm_model( p=pS, DS="carstm_modelled_fit" )  # extract currently saved model fit
+    res = carstm_model( p=pS, M='substrate_carstm( p=pS, DS="carstm_inputs")', DS="redo", carstm_model_label="production"  ) # run model and obtain predictions
+    # res = carstm_model( p=pS, DS="carstm_modelled", carstm_model_label="production"   ) # run model and obtain predictions
+    # fit = carstm_model( p=pS, DS="carstm_modelled_fit", carstm_model_label="production" )  # extract currently saved model fit
     if(0) {
       # if there is an error, run again..
       m = get("inla.models", INLA:::inla.get.inlaEnv())
@@ -131,10 +129,89 @@
 
     M = temperature_carstm( p=pT, DS="carstm_inputs", redo=TRUE )  # will redo if not found
 
-    require(INLA)
     m = get("inla.models", INLA:::inla.get.inlaEnv())
     m$latent$rw2$min.diff = NULL
     assign("inla.models", m, INLA:::inla.get.inlaEnv())
+
+
+    # CAR effect for each year
+    pT$carstm_model_label = "testing"
+    pT$carstm_modelcall = paste('
+      inla(
+        formula = ', pT$variabletomodel, ' ~ 1
+          + f(year_factor, model="ar1", hyper=H$ar1 )
+          + f(dyri, model="rw2", group= year_factor, scale.model=TRUE, diagonal=1e-6, hyper=H$rw2 )
+          + f(zi, model="rw2", scale.model=TRUE, diagonal=1e-6, hyper=H$rw2)
+          + f(strata, model="bym2", graph=sppoly@nb, group= year_factor,  scale.model=TRUE, constr=TRUE, hyper=H$bym2),
+        family = "normal",
+        data= M,
+        control.compute=list(dic=TRUE, config=TRUE),
+        control.results=list(return.marginals.random=TRUE, return.marginals.predictor=TRUE ),
+        control.predictor=list(compute=FALSE, link=1 ),
+        control.fixed=H$fixed,  # priors for fixed effects, generic is ok
+        control.inla=list(strategy="gaussian", int.strategy="eb") ,# to get empirical Bayes results much faster.
+        # control.inla=list(int.strategy="eb") ,# to get empirical Bayes results much faster.
+        # control.inla=list( strategy="laplace", cutoff=1e-6, correct=TRUE, correct.verbose=FALSE ),
+        # num.threads=4,
+        # blas.num.threads=4,
+        verbose=TRUE
+    ) ' )
+
+    # CAR effect for each year
+    pT$carstm_model_label = "testing"
+    pT$carstm_modelcall = paste('
+      inla(
+        formula = ', pT$variabletomodel, ' ~ 1
+          + f(year_factor, model="ar1", hyper=H$ar1 )
+          + f(dyri, model="rw2", scale.model=TRUE, diagonal=1e-6, hyper=H$rw2 )
+          + f(zi, model="rw2", scale.model=TRUE, diagonal=1e-6, hyper=H$rw2)
+          + f(strata, model="bym2", graph=sppoly@nb,  scale.model=TRUE, constr=TRUE, hyper=H$bym2),
+        family = "normal",
+        data= M,
+        control.compute=list(dic=TRUE, config=TRUE),
+        control.results=list(return.marginals.random=TRUE, return.marginals.predictor=TRUE ),
+        control.predictor=list(compute=FALSE, link=1 ),
+        control.fixed=H$fixed,  # priors for fixed effects, generic is ok
+        control.inla=list(strategy="gaussian", int.strategy="eb") ,# to get empirical Bayes results much faster.
+        # control.inla=list(int.strategy="eb") ,# to get empirical Bayes results much faster.
+        # control.inla=list( strategy="laplace", cutoff=1e-6, correct=TRUE, correct.verbose=FALSE ),
+        # num.threads=4,
+        # blas.num.threads=4,
+        verbose=TRUE
+    ) ' )
+    # Time used:
+    #     Pre = 2.67, Running = 559, Post = 2.69, Total = 564
+    # Fixed effects:
+    #             mean    sd 0.025quant 0.5quant 0.975quant  mode kld
+    # (Intercept) 5.127 0.309       4.52    5.127      5.734 5.127   0
+
+    # Random effects:
+    #   Name	  Model
+    #     year_factor AR1 model
+    #   dyri RW2 model
+    #   zi RW2 model
+    #   strata BYM2 model
+
+    # Model hyperparameters:
+    #                                         mean    sd 0.025quant 0.5quant 0.975quant  mode
+    # Precision for the Gaussian observations 0.421 0.000      0.421    0.421   4.52e-01 0.421
+    # Precision for year_factor               1.325 0.057      1.181    1.308   2.29e+05 1.344
+    # Rho for year_factor                     0.458 0.022      0.398    0.452   1.00e+00 0.466
+    # Precision for dyri                      1.131 0.061      1.005    1.121   1.30e+00 1.085
+    # Precision for zi                        0.001 0.000      0.001    0.001   1.06e-01 0.001
+    # Precision for strata                    0.220 0.001      0.214    0.220   2.23e-01 0.220
+    # Phi for strata                          0.993 0.000      0.992    0.993   1.00e+00 0.994
+
+    # Expected number of effective parameters(stdev): 215.49(0.00)
+    # Number of equivalent replicates : 146.64
+
+    # Deviance Information Criterion (DIC) ...............: 128672.37
+    # Deviance Information Criterion (DIC, saturated) ....: 43266.47
+    # Effective number of parameters .....................: 215.48
+
+    # Marginal log-Likelihood:  -64703.07
+    # Posterior marginals for the linear predictor and
+    # the fitted values are computed
 
 
     # CAR effect for each year
@@ -160,24 +237,46 @@
         verbose=TRUE
     ) ' )
 
-    #     Expected effective number of parameters: 2184.218(29.952),  eqv.#replicates: 14.467
-    # DIC:
-    # 	Mean of Deviance ................. 116299
-    # 	Deviance at Mean ................. 114115
-    # 	Effective number of parameters ... 2184.27
-    # 	DIC .............................. 118484
-    # DIC (Saturated):
-    # 	Mean of Deviance ................. 31564.1
-    # 	Deviance at Mean ................. 29379.8
-    # 	Effective number of parameters ... 2184.27
-    # 	DIC .............................. 33748.4
-    # Marginal likelihood: Integration -61918.088603 Gaussian-approx -61918.840195
-    # Compute the marginal for each of the 8 hyperparameters
+    # Time used:
+    #     Pre = 1.5, Running = 848, Post = 2.71, Total = 852
+    # Fixed effects:
+    #             mean    sd 0.025quant 0.5quant 0.975quant  mode kld
+    # (Intercept) 5.101 0.206      4.698    5.101      5.504 5.101   0
+
+    # Random effects:
+    #   Name	  Model
+    #     year_factor AR1 model
+    #   dyri RW2 model
+    #   zi RW2 model
+    #   strata BYM2 model
+
+    # Model hyperparameters:
+    #                                         mean    sd 0.025quant 0.5quant 0.975quant  mode
+    # Precision for the Gaussian observations 0.355 0.003      0.349    0.355      0.361 0.355
+    # Precision for year_factor               2.417 0.850      1.036    2.335      4.306 2.137
+    # Rho for year_factor                     0.440 0.176      0.090    0.444      0.761 0.442
+    # Precision for dyri                      0.556 0.305      0.167    0.492      1.331 0.375
+    # Precision for zi                        0.001 0.000      0.000    0.001      0.001 0.001
+    # Precision for strata                    0.328 0.027      0.280    0.325      0.387 0.319
+    # Phi for strata                          0.992 0.010      0.966    0.995      1.000 1.000
+    # GroupRho for strata                     0.843 0.015      0.810    0.844      0.868 0.848
+
+    # Expected number of effective parameters(stdev): 1216.66(0.00)
+    # Number of equivalent replicates : 25.97
+
+    # Deviance Information Criterion (DIC) ...............: 123610.43
+    # Deviance Information Criterion (DIC, saturated) ....: 32822.21
+    # Effective number of parameters .....................: 1216.63
+
+    # Marginal log-Likelihood:  -60756.52
 
 
     res = carstm_model( p=pT, M='temperature_carstm( p=pT, DS="carstm_inputs")', DS="redo"  ) # run model and obtain predictions
-    # res = carstm_model( p=pT, DS="carstm_modelled"  ) # run model and obtain predictions
-    # fit = carstm_model(  p=pT, DS="carstm_modelled_fit" )  # extract currently saved model fit
+    fit = carstm_model(  p=pT, DS="carstm_modelled_fit")
+    summary(fit)
+
+    # res = carstm_model( p=pT, DS="carstm_modelled", carstm_model_label="production" ) # run model and obtain predictions
+    # fit = carstm_model(  p=pT, DS="carstm_modelled_fit", carstm_model_label="production" )  # extract currently saved model fit
 
 
 
