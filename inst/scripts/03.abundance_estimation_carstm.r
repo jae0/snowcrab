@@ -90,6 +90,7 @@
 # Marginal likelihood: Integration -674832.219605 Gaussian-approx -674832.751075
 # Compute the marginal for each of the 3 hyperparameters
 
+    pB$carstm_model_label = "production"
     res = carstm_model( p=pB, M='bathymetry_carstm( p=pB, DS="carstm_inputs" )', DS="redo"  ) # run model and obtain predictions
     # res = carstm_model( p=pB, DS="carstm_modelled"  ) # run model and obtain predictions
     # fit = carstm_model( p=pB, DS="carstm_modelled_fit" )  # extract currently saved model fit
@@ -105,10 +106,8 @@
     M = substrate.db( p=pS, DS="aggregated_data", redo=TRUE )  # will redo if not found .. not used here but used for data matching/lookup in other aegis projects that use substrate
     M = substrate_carstm( p=pS, DS="carstm_inputs", redo=TRUE )  # will redo if not found
     # zi too close together relative to the range ... force ignore
-    m = get("inla.models", INLA:::inla.get.inlaEnv())
-    m$latent$rw2$min.diff = NULL
-    assign("inla.models", m, INLA:::inla.get.inlaEnv())
 
+    pS$carstm_model_label = "production"
     res = carstm_model( p=pS, M='substrate_carstm( p=pS, DS="carstm_inputs")', DS="redo"  ) # run model and obtain predictions
     # res = carstm_model( p=pS, DS="carstm_modelled"  ) # run model and obtain predictions
     # fit = carstm_model( p=pS, DS="carstm_modelled_fit" )  # extract currently saved model fit
