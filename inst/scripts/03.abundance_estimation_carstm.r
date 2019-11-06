@@ -101,7 +101,7 @@
 
 
 # substrate -- ensure the data assimilation in substrate is first completed :: 01.substrate_data.R
-# about 8 hrs -- 27 configs @ 40 min each, total time 12 hrs
+# about 4 hrs -- 27 configs @ 7 min each, total time 3.5 hrs
     pS = substrate_carstm(p=p, DS="parameters_override" )
     M = substrate.db( p=pS, DS="aggregated_data", redo=TRUE )  # will redo if not found .. not used here but used for data matching/lookup in other aegis projects that use substrate
     M = substrate_carstm( p=pS, DS="carstm_inputs", redo=TRUE )  # will redo if not found
@@ -111,6 +111,13 @@
     res = carstm_model( p=pS, M='substrate_carstm( p=pS, DS="carstm_inputs")', DS="redo"  ) # run model and obtain predictions
     # res = carstm_model( p=pS, DS="carstm_modelled"  ) # run model and obtain predictions
     # fit = carstm_model( p=pS, DS="carstm_modelled_fit" )  # extract currently saved model fit
+    if(0) {
+      # if there is an error, run again..
+      m = get("inla.models", INLA:::inla.get.inlaEnv())
+      m$latent$rw2$min.diff = NULL
+      assign("inla.models", m, INLA:::inla.get.inlaEnv())
+      res = carstm_model( p=pS, M='substrate_carstm( p=pS, DS="carstm_inputs")', DS="redo"  ) # run model and obtain predictions
+    }
 
     # maps of some of the results
     vn = paste(pS$variabletomodel, "predicted", sep=".")
