@@ -74,34 +74,7 @@
     pB = bathymetry_carstm( p=p, DS="parameters_override" )
     M = bathymetry.db( p=pB, DS="aggregated_data", redo=TRUE )
       # will redo if not found .. not used here but used for data matching/lookup
-    M = bathymetry_carstm( p=pB, DS="carstm_inputs", redo=TRUE, carstm_inputs_aggregated=TRUE ) # will redo if not found
-
-    #1.4 hrs
-
-# Time used:
-#     Pre = 1.61, Running = 4862, Post = 4.58, Total = 4868
-# Fixed effects:
-#              mean    sd 0.025quant 0.5quant 0.975quant  mode kld
-# (Intercept) 7.883 0.001      7.882    7.883      7.885 7.883   0
-
-# Random effects:
-#   Name	  Model
-#     strata BYM2 model
-
-# Model hyperparameters:
-#                                             mean     sd 0.025quant 0.5quant 0.975quant    mode
-# Precision for the lognormal observations 752.113  3.193    745.773  752.138    758.345 752.240
-# Precision for strata                     288.053 22.983    241.196  289.024    331.026 293.702
-# Phi for strata                             0.979  0.021      0.922    0.985      0.999   0.996
-
-# Expected number of effective parameters(stdev): 698.43(1.76)
-# Number of equivalent replicates : 161.08
-
-# Deviance Information Criterion (DIC) ...............: 1348750.89
-# Deviance Information Criterion (DIC, saturated) ....: 113231.66
-# Effective number of parameters .....................: 699.16
-
-# Marginal log-Likelihood:  -674832.75
+    M = bathymetry_carstm( p=pB, DS="carstm_inputs", redo=TRUE  ) # will redo if not found
 
 
 # Using all data ... not aggregated .. 3hrs
@@ -151,7 +124,7 @@
 
 
 # substrate -- ensure the data assimilation in substrate is first completed :: 01.substrate_data.R
-# about 4 hrs -- 27 configs @ 7 min each, total time 3.5 hrs
+# 27 configs @ 2 hrs each, total time 50 hrs
     pS = substrate_carstm(p=p, DS="parameters_override" )
     M = substrate.db( p=pS, DS="aggregated_data", redo=TRUE )  # will redo if not found .. not used here but used for data matching/lookup in other aegis projects that use substrate
     M = substrate_carstm( p=pS, DS="carstm_inputs", redo=TRUE )  # will redo if not found
@@ -163,7 +136,7 @@
       m = get("inla.models", INLA:::inla.get.inlaEnv())
       m$latent$rw2$min.diff = NULL
       assign("inla.models", m, INLA:::inla.get.inlaEnv())
-    res = carstm_model( p=pS, M='substrate_carstm( p=pS, DS="carstm_inputs")', DS="redo"  ) # run model and obtain predictions
+    res = carstm_model( p=pS, M='substrate_carstm( p=pS, DS="carstm_inputs")', DS="redo", carstm_model_label="production"  ) # run model and obtain predictions
 
     if(0) {
       # to use a saved instance
@@ -211,7 +184,7 @@
     ) ' )
 
     # CAR effect for each year
-    pT$carstm_model_label = "testing"
+    pT$carstm_model_label = "testing_no_year_grouping"
     pT$carstm_modelcall = paste('
       inla(
         formula = ', pT$variabletomodel, ' ~ 1
@@ -275,7 +248,7 @@
           + f(year_factor, model="ar1", hyper=H$ar1 )
           + f(dyri, model="rw2", scale.model=TRUE, diagonal=1e-6, hyper=H$rw2 )
           + f(zi, model="rw2", scale.model=TRUE, diagonal=1e-6, hyper=H$rw2)
-          + f(strata, model="bym2", graph=sppoly@nb ,group= year_factor,  scale.model=TRUE, constr=TRUE, hyper=H$bym2),
+          + f(strata, model="bym2", graph=sppoly@nb, group= year_factor,  scale.model=TRUE, constr=TRUE, hyper=H$bym2),
         family = "normal",
         data= M,
         control.compute=list(dic=TRUE, config=TRUE),
@@ -324,11 +297,11 @@
     # Marginal log-Likelihood:  -60756.52
 
     # covar breaks too close for INLA defaults... overide:
-    res = carstm_model( p=pT, M='temperature_carstm( p=pT, DS="carstm_inputs")', DS="redo"  ) # run model and obtain predictions
+    res = carstm_model( p=pT, M='temperature_carstm( p=pT, DS="carstm_inputs")', DS="redo", carstm_model_label="production"  ) # run model and obtain predictions
       m = get("inla.models", INLA:::inla.get.inlaEnv())
       m$latent$rw2$min.diff = NULL
       assign("inla.models", m, INLA:::inla.get.inlaEnv())
-    res = carstm_model( p=pT, M='temperature_carstm( p=pT, DS="carstm_inputs")', DS="redo"  ) # run model and obtain predictions
+    res = carstm_model( p=pT, M='temperature_carstm( p=pT, DS="carstm_inputs")', DS="redo", carstm_model_label="production"  ) # run model and obtain predictions
 
     if (0) {
       # look inside ..

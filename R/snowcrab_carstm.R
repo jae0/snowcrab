@@ -73,7 +73,7 @@ snowcrab_carstm = function( p=NULL, DS="parameters", redo=FALSE, ...) {
         p$libs = unique( c( p$libs, project.library ( "INLA" ) ) )
 
         # use strata which is a numeric representation of the StrataID factor
-        p$carstm_model_label = "default_inla"
+        p$carstm_model_label = "production"
         p$carstm_modelcall = paste(
           'inla( formula =', p$variabletomodel,
           ' ~ 1
@@ -91,8 +91,8 @@ snowcrab_carstm = function( p=NULL, DS="parameters", redo=FALSE, ...) {
             control.fixed=H$fixed,  # priors for fixed effects, generic is ok
             # control.inla=list(int.strategy="eb") ,# to get empirical Bayes results much faster.
             # control.inla=list( strategy="laplace", cutoff=1e-6, correct=TRUE, correct.verbose=FALSE ),
-            num.threads=4,
-            #blas.num.threads=4,
+            # num.threads=4,
+            # blas.num.threads=4,
             verbose=TRUE
           )'
         )
