@@ -126,7 +126,7 @@
 # substrate -- ensure the data assimilation in substrate is first completed :: 01.substrate_data.R
 # 27 configs @ 2 hrs each, total time 50 hrs
     pS = substrate_carstm(p=p, DS="parameters_override" )
-    M = substrate.db( p=pS, DS="aggregated_data", redo=TRUE )  # will redo if not found .. not used here but used for data matching/lookup in other aegis projects that use substrate
+    M = substrate.db( p=pS, DS="aggregated_data", redo=TRUE )  # used for data matching/lookup in other aegis projects that use substrate
     M = substrate_carstm( p=pS, DS="carstm_inputs", redo=TRUE )  # will redo if not found
     # zi too close together relative to the range ... force ignore
 
@@ -325,19 +325,32 @@
     pPC1 = speciescomposition_carstm(p=p, DS="parameters_override", varnametomodel="pca1" )
     M = speciescomposition_carstm( p=pPC1, DS="carstm_inputs", varnametomodel="pca1", redo=TRUE )  # will redo if not found
 
-    pPC1$carstm_model_label = "CAR_depth_dyr_yr_t"
-    res = carstm_model( p=pPC1, M='speciescomposition_carstm( p=p, DS="carstm_inputs", varnametomodel="pca1" )', DS="redo"  ) # run model and obtain predictions
-    # res = carstm_model( p=pPC1, DS="carstm_modelled"  ) # run model and obtain predictions
-    # fit = carstm_model( p=pPC1, DS="carstm_modelled_fit" )  # extract currently saved model fit
+    res = carstm_model( p=pPC1, M='speciescomposition_carstm( p=p, DS="carstm_inputs", varnametomodel="pca1" )', DS="redo", carstm_model_label="production"   ) # run model and obtain predictions
+    if (0) {
+      res = carstm_model( p=pPC1, DS="carstm_modelled", carstm_model_label="production"  ) # run model and obtain predictions
+      fit = carstm_model( p=pPC1, DS="carstm_modelled_fit", carstm_model_label="production" )  # extract currently saved model fit
+      summary(fit)
+      # maps of some of the results
+      vn = paste(pPC1$variabletomodel, "predicted", sep=".")
+      carstm_plot( p=pPC1, res=res, vn=vn, time_match=list(year="2000", dyear="0.8" ) )
+    }
+
 
 # species composition 2 -- ensure that survey data is assimilated : bio.snowcrab::01snowcb_data.R, aegis.survey::01.surveys.data.R , etc.
     pPC2 = speciescomposition_carstm(p=p, DS="parameters_override", varnametomodel="pca2" )
     M = speciescomposition_carstm( p=pPC2, DS="carstm_inputs", redo=TRUE )  # will redo if not found
 
-    pPC2$carstm_model_label = "CAR_depth_dyr_yr_t"
-    res = carstm_model( p=pPC2, M='speciescomposition_carstm( p=p, DS="carstm_inputs", varnametomodel="pca2" )', DS="redo"  ) # run model and obtain predictions
-    # res = carstm_model( p=pPC2, DS="carstm_modelled"  ) # run model and obtain predictions
-    # fit = carstm_model( p=pPC2, DS="carstm_modelled_fit" )  # extract currently saved model fit
+    res = carstm_model( p=pPC2, M='speciescomposition_carstm( p=p, DS="carstm_inputs", varnametomodel="pca2" )', DS="redo" , carstm_model_label="production"  ) # run model and obtain predictions
+
+    if (0) {
+      res = carstm_model( p=pPC2, DS="carstm_modelled", carstm_model_label="production"   ) # run model and obtain predictions
+      fit = carstm_model( p=pPC2, DS="carstm_modelled_fit", carstm_model_label="production"  )  # extract currently saved model fit
+      summary(fit)
+      # maps of some of the results
+      vn = paste(pPC2$variabletomodel, "predicted", sep=".")
+      carstm_plot( p=pPC2, res=res, vn=vn, time_match=list(year="2000", dyear="0.8" ) )
+    }
+
 
     # finished covariates ...
   }
@@ -358,8 +371,7 @@
           + f(tiyr, model="ar1", hyper=H$ar1 )
           + f(year, model="ar1", hyper=H$ar1 )
           + f(zi, model="rw2", scale.model=TRUE, diagonal=1e-6, hyper=H$rw2)
-          + f(strata, model="bym2", graph=sppoly@nb, scale.model=TRUE, constr=TRUE, hyper=H$bym2)
-          + f(iid_error, model="iid", hyper=H$iid),
+          + f(strata, model="bym2", graph=sppoly@nb, scale.model=TRUE, constr=TRUE, hyper=H$bym2),
         family = "normal",
         data= M,
         control.compute=list(dic=TRUE, config=TRUE),
@@ -384,8 +396,7 @@
           + f(tiyr, model="ar1", hyper=H$ar1 )
           + f(year, model="ar1", hyper=H$ar1 )
           + f(zi, model="rw2", scale.model=TRUE, diagonal=1e-6, hyper=H$rw2)
-          + f(strata, model="bym2", graph=sppoly@nb ,group= year,  scale.model=TRUE, constr=TRUE, hyper=H$bym2)
-          + f(iid_error, model="iid", hyper=H$iid),
+          + f(strata, model="bym2", graph=sppoly@nb ,group= year,  scale.model=TRUE, constr=TRUE, hyper=H$bym2),
         family = "normal",
         data= M,
         control.compute=list(dic=TRUE, config=TRUE),
@@ -410,8 +421,7 @@
         formula =', p$variabletomodel, ' ~ 1
           + f(tiyr, model="ar1", hyper=H$ar1 )
           + f(zi, model="rw2", scale.model=TRUE, diagonal=1e-6, hyper=H$rw2)
-          + f(strata, model="bym2", graph=sppoly@nb ,group= year,  scale.model=TRUE, constr=TRUE, hyper=H$bym2)
-          + f(iid_error, model="iid", hyper=H$iid),
+          + f(strata, model="bym2", graph=sppoly@nb ,group= year,  scale.model=TRUE, constr=TRUE, hyper=H$bym2),
         family = "normal",
         data= M,
         control.compute=list(dic=TRUE, config=TRUE),
@@ -591,7 +601,7 @@ spplot( sppoly, vn, col.regions=p$mypalette, main=vn, at=brks, sp.layout=p$coast
 # - -----------------------------
 # simple with default priors
 fit = inla(
-  formula = Y ~ 1 + offset( log( data_offset) ) + StrataID + yr_factor + f(iid_error, model="iid", hyper=H$iid) ,
+  formula = Y ~ 1 + offset( log( data_offset) ) + StrataID + yr_factor ,
   family = "poisson", # "zeroinflatedpoisson0",
   data= M,
   control.compute=list(dic=TRUE, config=TRUE),
@@ -642,7 +652,6 @@ fit = inla(
     Y ~ 1 + offset( log( data_offset) )
       + f(strata, model="iid", hyper=H$iid)
       + f(year, model="iid", hyper=H$iid )
-      + f(iid_error, model="iid", hyper=H$iid)
    ,
   family = "poisson", # "zeroinflatedpoisson0",
   data= M,
@@ -734,7 +743,6 @@ fit = inla(
     Y ~ 1 + offset( log( data_offset) )
       + f(strata, model="bym2", graph=sppoly@nb, scale.model=TRUE, constr=TRUE, hyper=H$bym2)
       + f(year, model="iid", hyper=H$iid )
-      + f(iid_error, model="iid", hyper=H$iid)
     ,
   family = "poisson", # "zeroinflatedpoisson0",
   data= M,
@@ -788,7 +796,6 @@ fit = inla(
     Y ~ 1 + offset( log( data_offset) )
       + f(strata, model="bym2", graph=sppoly@nb, group=year, scale.model=TRUE, constr=TRUE, hyper=H$bym2)
       + f(year, model="iid", hyper=H$iid )
-      + f(iid_error, model="iid", hyper=H$iid)
       # + f(ti, model="rw2", scale.model=TRUE, diagonal=1e-6, hyper=H$rw2)
       # + f(tisd, model="rw2", scale.model=TRUE, diagonal=1e-6, hyper=H$rw2)
       # + f(timin, model="rw2", scale.model=TRUE, diagonal=1e-6, hyper=H$rw2)
@@ -877,7 +884,6 @@ fit = inla(
     Y ~ 1 + offset( log( data_offset) )
       + f(strata, model="bym2", graph=sppoly@nb, scale.model=TRUE, constr=TRUE, hyper=H$bym2)
       + f(year, model="iid", hyper=H$iid )
-      + f(iid_error, model="iid", hyper=H$iid)
       + f(ti, model="rw2", scale.model=TRUE, diagonal=1e-6, hyper=H$rw2)
       # + f(tisd, model="rw2", scale.model=TRUE, diagonal=1e-6, hyper=H$rw2)
       # + f(timin, model="rw2", scale.model=TRUE, diagonal=1e-6, hyper=H$rw2)
@@ -969,7 +975,6 @@ fit = inla(
     Y ~ 1 + offset( log( data_offset) )
       + f(strata, model="bym2", graph=sppoly@nb, scale.model=TRUE, constr=TRUE, hyper=H$bym2)
       + f(year, model="iid", hyper=H$iid )
-      + f(iid_error, model="iid", hyper=H$iid)
       + f(ti, model="rw2", scale.model=TRUE, diagonal=1e-6, hyper=H$rw2)
       + f(tisd, model="rw2", scale.model=TRUE, diagonal=1e-6, hyper=H$rw2)
       + f(timin, model="rw2", scale.model=TRUE, diagonal=1e-6, hyper=H$rw2)
@@ -1268,7 +1273,6 @@ M = rbind( set[, basic_vars], APS[,basic_vars] )
 M$t[!is.finite(M$t)] = median(M$t, na.rm=TRUE )  # missing data .. quick fix .. do something better for
 M$z[!is.finite(M$z)] = median(M$z, na.rm=TRUE )  # missing data .. quick fix .. do something better for
 
-M$iid_error = 1:nrow(M)
 M$yr_factor = factor( as.character(M$yr) )
 M$StrataID  = factor( M$StrataID, levels=levels(sppoly$StrataID ))
 M$strata  = as.numeric( M$StrataID)
@@ -1282,7 +1286,6 @@ M$zi = discretize_data( M$t, p$discretization$z )
 
 fit = inla(
   formula = pa ~ 1
-  + f(iid_error, model="iid", hyper=H$iid)
   + f(ti, model="rw2", scale.model=TRUE, hyper=H$rw2)
   + f(zi, model="rw2", scale.model=TRUE, hyper=H$rw2)
   + f(di, model="rw2", scale.model=TRUE, hyper=H$rw2)
