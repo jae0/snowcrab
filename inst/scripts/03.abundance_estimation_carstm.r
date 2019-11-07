@@ -139,12 +139,15 @@
 #  the fitted values are computed
 
     res = carstm_model( p=pB, M='bathymetry_carstm( p=pB, DS="carstm_inputs" )', DS="redo", carstm_model_label="production"  ) # run model and obtain predictions
-    # res = carstm_model( p=pB, DS="carstm_modelled", carstm_model_label="production" ) # run model and obtain predictions
-    # fit = carstm_model( p=pB, DS="carstm_modelled_fit", carstm_model_label="production" )  # extract currently saved model fit
+    if (0) {
+      # to use a saved instance
+      res = carstm_model( p=pB, DS="carstm_modelled", carstm_model_label="production" ) # run model and obtain predictions
+      fit = carstm_model( p=pB, DS="carstm_modelled_fit", carstm_model_label="production" )  # extract currently saved model fit
+      # maps of some of the results
+      vn = paste(pB$variabletomodel, "predicted", sep=".")
+      carstm_plot( p=pB, res=res, vn=vn )
+    }
 
-    # maps of some of the results
-    vn = paste(pB$variabletomodel, "predicted", sep=".")
-    carstm_plot( p=pB, res=res, vn=vn )
 
 
 # substrate -- ensure the data assimilation in substrate is first completed :: 01.substrate_data.R
@@ -154,20 +157,24 @@
     M = substrate_carstm( p=pS, DS="carstm_inputs", redo=TRUE )  # will redo if not found
     # zi too close together relative to the range ... force ignore
 
-    res = carstm_model( p=pS, M='substrate_carstm( p=pS, DS="carstm_inputs")', DS="redo", carstm_model_label="production"  ) # run model and obtain predictions
-    # res = carstm_model( p=pS, DS="carstm_modelled", carstm_model_label="production"   ) # run model and obtain predictions
-    # fit = carstm_model( p=pS, DS="carstm_modelled_fit", carstm_model_label="production" )  # extract currently saved model fit
-    if(0) {
-      # if there is an error, run again..
+
+    # run model and obtain predictions
+    res = carstm_model( p=pS, M='substrate_carstm( p=pS, DS="carstm_inputs")', DS="redo", carstm_model_label="production"  )  #this will complan about values too close together and fail .. now re-run with following:
       m = get("inla.models", INLA:::inla.get.inlaEnv())
       m$latent$rw2$min.diff = NULL
       assign("inla.models", m, INLA:::inla.get.inlaEnv())
-      res = carstm_model( p=pS, M='substrate_carstm( p=pS, DS="carstm_inputs")', DS="redo"  ) # run model and obtain predictions
+    res = carstm_model( p=pS, M='substrate_carstm( p=pS, DS="carstm_inputs")', DS="redo"  ) # run model and obtain predictions
+
+    if(0) {
+      # to use a saved instance
+      res = carstm_model( p=pS, DS="carstm_modelled", carstm_model_label="production"   ) # run model and obtain predictions
+      fit = carstm_model( p=pS, DS="carstm_modelled_fit", carstm_model_label="production" )  # extract currently saved model fit
+
+      # maps of some of the results
+      vn = paste(pS$variabletomodel, "predicted", sep=".")
+      carstm_plot( p=pS, res=res, vn=vn )
     }
 
-    # maps of some of the results
-    vn = paste(pS$variabletomodel, "predicted", sep=".")
-    carstm_plot( p=pS, res=res, vn=vn )
 
 
 # temperature -- ensure the data assimilation in temperature is first completed :: 01.temperature_data.R
@@ -177,9 +184,7 @@
 
     M = temperature_carstm( p=pT, DS="carstm_inputs", redo=TRUE )  # will redo if not found
 
-    m = get("inla.models", INLA:::inla.get.inlaEnv())
-    m$latent$rw2$min.diff = NULL
-    assign("inla.models", m, INLA:::inla.get.inlaEnv())
+
 
 
     # CAR effect for each year
@@ -318,22 +323,29 @@
 
     # Marginal log-Likelihood:  -60756.52
 
-
+    # covar breaks too close for INLA defaults... overide:
     res = carstm_model( p=pT, M='temperature_carstm( p=pT, DS="carstm_inputs")', DS="redo"  ) # run model and obtain predictions
-    fit = carstm_model(  p=pT, DS="carstm_modelled_fit")
-    summary(fit)
+      m = get("inla.models", INLA:::inla.get.inlaEnv())
+      m$latent$rw2$min.diff = NULL
+      assign("inla.models", m, INLA:::inla.get.inlaEnv())
+    res = carstm_model( p=pT, M='temperature_carstm( p=pT, DS="carstm_inputs")', DS="redo"  ) # run model and obtain predictions
 
-    # res = carstm_model( p=pT, DS="carstm_modelled", carstm_model_label="production" ) # run model and obtain predictions
-    # fit = carstm_model(  p=pT, DS="carstm_modelled_fit", carstm_model_label="production" )  # extract currently saved model fit
+    if (0) {
+      # look inside ..
+      res = carstm_model( p=pT, DS="carstm_modelled", carstm_model_label="production" ) # run model and obtain predictions
+      fit = carstm_model(  p=pT, DS="carstm_modelled_fit", carstm_model_label="production" )  # extract currently saved model fit
+      summary(fit)
+      # maps of some of the results
+      vn = paste(pT$variabletomodel, "predicted", sep=".")
+      carstm_plot( p=pT, res=res, vn=vn, time_match=list(year="2000", dyear="0.8" ) )
+
+    }
 
 
 
 #    + f(seasonal, model="seasonal", season.length=', pT$n.season, ', scale.model=TRUE )  # using seasonal effect is not recommended as it is not smoothed well .. rw2 is better
 
 
-    # maps of some of the results
-    vn = paste(pT$variabletomodel, "predicted", sep=".")
-    carstm_plot( p=pT, res=res, vn=vn )
 
 
 # species composition 1 -- ensure that survey data is assimilated : bio.snowcrab::01snowcb_data.R, aegis.survey::01.surveys.data.R , etc.
