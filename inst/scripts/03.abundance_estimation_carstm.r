@@ -72,23 +72,71 @@
   # bathymetry -- ensure the data assimilation in bathymetry is first completed :: 01.bathymetry_data.R
   # about 50 hrs to redo; 25 configs @ 2 hrs each
     pB = bathymetry_carstm( p=p, DS="parameters_override" )
-    M = bathymetry.db( p=pB, DS="aggregated_data", redo=TRUE )  # will redo if not found .. not used here but used for data matching/lookup
-    M = bathymetry_carstm( p=pB, DS="carstm_inputs", redo=TRUE ) # will redo if not found
+    M = bathymetry.db( p=pB, DS="aggregated_data", redo=TRUE )
+      # will redo if not found .. not used here but used for data matching/lookup
+    M = bathymetry_carstm( p=pB, DS="carstm_inputs", redo=TRUE, carstm_inputs_aggregated=TRUE ) # will redo if not found
 
     #1.4 hrs
 
-# DIC:
-# 	Mean of Deviance ................. 1.34805e+06
-# 	Deviance at Mean ................. 1.34735e+06
-# 	Effective number of parameters ... 699.161
-# 	DIC .............................. 1.34875e+06
-# DIC (Saturated):
-# 	Mean of Deviance ................. 112533
-# 	Deviance at Mean ................. 111833
-# 	Effective number of parameters ... 699.161
-# 	DIC .............................. 113232
-# Marginal likelihood: Integration -674832.219605 Gaussian-approx -674832.751075
-# Compute the marginal for each of the 3 hyperparameters
+# Time used:
+#     Pre = 1.61, Running = 4862, Post = 4.58, Total = 4868
+# Fixed effects:
+#              mean    sd 0.025quant 0.5quant 0.975quant  mode kld
+# (Intercept) 7.883 0.001      7.882    7.883      7.885 7.883   0
+
+# Random effects:
+#   Name	  Model
+#     strata BYM2 model
+
+# Model hyperparameters:
+#                                             mean     sd 0.025quant 0.5quant 0.975quant    mode
+# Precision for the lognormal observations 752.113  3.193    745.773  752.138    758.345 752.240
+# Precision for strata                     288.053 22.983    241.196  289.024    331.026 293.702
+# Phi for strata                             0.979  0.021      0.922    0.985      0.999   0.996
+
+# Expected number of effective parameters(stdev): 698.43(1.76)
+# Number of equivalent replicates : 161.08
+
+# Deviance Information Criterion (DIC) ...............: 1348750.89
+# Deviance Information Criterion (DIC, saturated) ....: 113231.66
+# Effective number of parameters .....................: 699.16
+
+# Marginal log-Likelihood:  -674832.75
+
+
+# Using all data ... not aggregated .. 3hrs
+# Call:
+#    c("inla(formula = z ~ 1 + f(strata, model = \"bym2\", graph = sppoly@nb, ", " scale.model = TRUE, constr =
+#    TRUE, hyper = H$bym2), family = \"lognormal\", ", " data = M, verbose = TRUE, control.compute = list(dic =
+#    TRUE, ", " config = TRUE), control.predictor = list(compute = FALSE, ", " link = 1), control.results =
+#    list(return.marginals.random = TRUE, ", " return.marginals.predictor = TRUE), control.fixed = H$fixed, ", "
+#    blas.num.threads = 8)")
+# Time used:
+#     Pre = 4.71, Running = 10928, Post = 4.51, Total = 10938
+# Fixed effects:
+#              mean    sd 0.025quant 0.5quant 0.975quant  mode kld
+# (Intercept) 7.883 0.001      7.882    7.883      7.885 7.883   0
+
+# Random effects:
+#   Name	  Model
+#     strata BYM2 model
+
+# Model hyperparameters:
+#                                             mean     sd 0.025quant 0.5quant 0.975quant    mode
+# Precision for the lognormal observations 752.050  3.198    745.879  752.003    758.450 751.849
+# Precision for strata                     286.200 23.004    239.367  287.143    329.336 291.721
+# Phi for strata                             0.979  0.021      0.922    0.985      0.999   0.996
+
+# Expected number of effective parameters(stdev): 698.31(1.78)
+# Number of equivalent replicates : 161.11
+
+# Deviance Information Criterion (DIC) ...............: 1348750.89
+# Deviance Information Criterion (DIC, saturated) ....: 113171.52
+# Effective number of parameters .....................: 698.85
+
+# Marginal log-Likelihood:  -674832.61
+# Posterior marginals for the linear predictor and
+#  the fitted values are computed
 
     res = carstm_model( p=pB, M='bathymetry_carstm( p=pB, DS="carstm_inputs" )', DS="redo", carstm_model_label="production"  ) # run model and obtain predictions
     # res = carstm_model( p=pB, DS="carstm_modelled", carstm_model_label="production" ) # run model and obtain predictions
