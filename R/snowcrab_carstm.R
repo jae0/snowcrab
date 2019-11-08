@@ -77,6 +77,7 @@ snowcrab_carstm = function( p=NULL, DS="parameters", redo=FALSE, ...) {
         p$carstm_modelcall = paste(
           'inla( formula =', p$variabletomodel,
           ' ~ 1
+            + offset( log(data_offset))
             + f(year_factor, model="ar1", hyper=H$ar1 )
             + f(dyri, model="rw2", scale.model=TRUE, diagonal=1e-6, hyper=H$rw2 )
             + f(ti, model="rw2", scale.model=TRUE, diagonal=1e-6, hyper=H$rw2)
@@ -85,7 +86,7 @@ snowcrab_carstm = function( p=NULL, DS="parameters", redo=FALSE, ...) {
             + f(pca1i, model="rw2", scale.model=TRUE, diagonal=1e-6, hyper=H$rw2)
             + f(pca2i, model="rw2", scale.model=TRUE, diagonal=1e-6, hyper=H$rw2)
             + f(strata, model="bym2", graph=sppoly@nb, group=year_factor, scale.model=TRUE, constr=TRUE, hyper=H$bym2),
-            family = "normal",
+            family = "poisson",
             data= M,
             control.compute=list(dic=TRUE, config=TRUE),
             control.results=list(return.marginals.random=TRUE, return.marginals.predictor=TRUE ),
@@ -388,6 +389,9 @@ snowcrab_carstm = function( p=NULL, DS="parameters", redo=FALSE, ...) {
     APS[, pPC2$variabletomodel] = PI [dindex]
     PI = NULL
 
+    # useful vars to have for analyses outside of carstm_model
+    varstoadd = c( "totwgt", "totno", "sa", "data_offset",  "zn", "qn" )
+    for (vn in varstoadd) if (!exists( vn, APS)) APS[,vn] = NA
 
     M = rbind( M[, names(APS)], APS )
     APS = NULL
@@ -409,6 +413,7 @@ snowcrab_carstm = function( p=NULL, DS="parameters", redo=FALSE, ...) {
     M$dyri = discretize_data( M[, "dyear"], p$discretization[["dyear"]] )
 
     # M$seasonal = (as.numeric(M$year_factor) - 1) * length(p$dyears)  + as.numeric(M$dyear)
+
 
     save( M, file=fn, compress=TRUE )
     return( M )
