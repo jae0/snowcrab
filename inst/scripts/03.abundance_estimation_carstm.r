@@ -11,7 +11,6 @@
   groundfish_species_code = 2526
   runtype="number"
 
-  REDO = FALSE
 
   # survey (set-level) parameters
   p = bio.snowcrab::snowcrab_carstm(
@@ -59,6 +58,9 @@
   MS = snowcrab.db( p=p, DS="biological_data"  )  # domain is  sse
   sppoly = areal_units( p=p )
   plot(sppoly)
+
+
+  REDO = FALSE
 
   if (REDO) {
     # ensure if polys exist and create if required
@@ -132,11 +134,14 @@
 
 
     # run model and obtain predictions
-    res = carstm_model( p=pS, M='substrate_carstm( p=pS, DS="carstm_inputs")', DS="redo", carstm_model_label="production"  )  #this will complan about values too close together and fail .. now re-run with following:
-      m = get("inla.models", INLA:::inla.get.inlaEnv())
-      m$latent$rw2$min.diff = NULL
-      assign("inla.models", m, INLA:::inla.get.inlaEnv())
-    res = carstm_model( p=pS, M='substrate_carstm( p=pS, DS="carstm_inputs")', DS="redo", carstm_model_label="production"  ) # run model and obtain predictions
+    res = carstm_model( p=pS, M='substrate_carstm( p=pS, DS="carstm_inputs")', DS="redo", carstm_model_label="production"  )
+    if (0) {
+      # if this  complans about values too close together and fail .. re-run with following:
+        m = get("inla.models", INLA:::inla.get.inlaEnv())
+        m$latent$rw2$min.diff = NULL
+        assign("inla.models", m, INLA:::inla.get.inlaEnv())
+      res = carstm_model( p=pS, M='substrate_carstm( p=pS, DS="carstm_inputs")', DS="redo", carstm_model_label="production"  ) # run model and obtain predictions
+    }
 
     if(0) {
       # to use a saved instance
@@ -153,8 +158,7 @@
 # temperature -- ensure the data assimilation in temperature is first completed :: 01.temperature_data.R
 # long optimization step: 2500 + at 5 hrs .. think of using eb or gaussian to bootstrap? 150 configs at 5 sec
     pT = temperature_carstm(p=p, DS="parameters_override" )
-    M = temperature.db( p=pT, DS="aggregated_data", redo=TRUE )  # will redo if not found .. not used here but used for data matching/lookup in other aegis projects that use temperature
-
+    M = temperature.db( p=pT, DS="aggregated_data", redo=TRUE )  #  used for data matching/lookup in other aegis projects that use temperature
     M = temperature_carstm( p=pT, DS="carstm_inputs", redo=TRUE )  # will redo if not found
 
 
@@ -322,6 +326,7 @@
 
 
 # species composition 1 -- ensure that survey data is assimilated : bio.snowcrab::01snowcb_data.R, aegis.survey::01.surveys.data.R , etc.
+# 30 min, 150 configs
     pPC1 = speciescomposition_carstm(p=p, DS="parameters_override", varnametomodel="pca1" )
     M = speciescomposition_carstm( p=pPC1, DS="carstm_inputs", varnametomodel="pca1", redo=TRUE )  # will redo if not found
 
@@ -332,11 +337,12 @@
       summary(fit)
       # maps of some of the results
       vn = paste(pPC1$variabletomodel, "predicted", sep=".")
-      carstm_plot( p=pPC1, res=res, vn=vn, time_match=list(year="2000", dyear="0.8" ) )
+      carstm_plot( p=pPC1, res=res, vn=vn, time_match=list(year="2000" ) )
     }
 
 
-# species composition 2 -- ensure that survey data is assimilated : bio.snowcrab::01snowcb_data.R, aegis.survey::01.surveys.data.R , etc.
+# species composition 2 -- ensure that survey data is assimilated : bio.snowcrab::01snowcb_data.R, aegis.survey::01.surveys.data.R ,
+# etc.30 min, 30 min
     pPC2 = speciescomposition_carstm(p=p, DS="parameters_override", varnametomodel="pca2" )
     M = speciescomposition_carstm( p=pPC2, DS="carstm_inputs", redo=TRUE )  # will redo if not found
 
@@ -348,7 +354,7 @@
       summary(fit)
       # maps of some of the results
       vn = paste(pPC2$variabletomodel, "predicted", sep=".")
-      carstm_plot( p=pPC2, res=res, vn=vn, time_match=list(year="2000", dyear="0.8" ) )
+      carstm_plot( p=pPC2, res=res, vn=vn, time_match=list(year="2000" ) )
     }
 
 
@@ -670,7 +676,7 @@ fn3 ="~/tmp/snowcrab_30km_iid_space_time.Rdata"
 # save( fit, file=fn3)
 # load(fn3)
 
-# Fixed effects:
+# Fixed effects:/
 #               mean   sd 0.025quant 0.5quant 0.975quant   mode kld
 # (Intercept) -6.269 1.12     -8.468   -6.269     -4.071 -6.269   0
 

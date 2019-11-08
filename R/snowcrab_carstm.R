@@ -155,7 +155,7 @@ snowcrab_carstm = function( p=NULL, DS="parameters", redo=FALSE, ...) {
 
 
     # do this immediately to reduce storage for sppoly (before adding other variables)
-    M = snowcrab.db( p=p, DS="biological_data", redo=TRUE )  # will redo if not found .. not used here but used for data matching/lookup in other aegis projects that use bathymetry
+    M = snowcrab.db( p=p, DS="biological_data" )  # will redo if not found .. not used here but used for data matching/lookup in other aegis projects that use bathymetry
 
     # reduce size
     M = M[ which( M$lon > p$corners$lon[1] & M$lon < p$corners$lon[2]  & M$lat > p$corners$lat[1] & M$lat < p$corners$lat[2] ), ]
