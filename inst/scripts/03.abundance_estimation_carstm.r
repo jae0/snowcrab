@@ -365,6 +365,12 @@
 
   M = snowcrab_carstm( p=p, DS="carstm_inputs", redo=TRUE )  # will redo if not found
 
+  # construct meanweights matrix
+  weight_year = meanweights_by_strata( set=set, StrataID=as.character( sppoly$StrataID ), yrs=p$yrs, fillall=TRUE, annual_breakdown=TRUE )
+  # weight_year = weight_year[, match(as.character(p$yrs), colnames(weight_year) )]
+  # weight_year = weight_year[ match(as.character(sppoly$StrataID), rownames(weight_year) )]
+
+
 
   if (0) {
     # choose model:
