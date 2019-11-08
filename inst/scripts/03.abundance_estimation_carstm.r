@@ -57,7 +57,25 @@
   # the underlying observations/data
   MS = snowcrab.db( p=p, DS="biological_data"  )  # domain is  sse
   sppoly = areal_units( p=p )
+
+
   plot(sppoly)
+
+
+  # construct meanweights matrix
+ crs_lonlat = sp::CRS(projection_proj4string("lonlat_wgs84"))
+  MS$StrataID = over( SpatialPoints( MS[, c("lon", "lat")], crs_lonlat ), spTransform(sppoly, crs_lonlat ) )$StrataID # match each datum to an area
+
+  weight_year = meanweights_by_strata(
+    set=MS,
+    StrataID=as.character( sppoly$StrataID ),
+    yrs=p$yrs,
+    fillall=TRUE,
+    annual_breakdown=TRUE
+  )
+  # weight_year = weight_year[, match(as.character(p$yrs), colnames(weight_year) )]
+  # weight_year = weight_year[ match(as.character(sppoly$StrataID), rownames(weight_year) )]
+
 
 
   REDO = FALSE
@@ -365,11 +383,6 @@
 
   M = snowcrab_carstm( p=p, DS="carstm_inputs", redo=TRUE )  # will redo if not found
 
-  # construct meanweights matrix
-  weight_year = meanweights_by_strata( set=set, StrataID=as.character( sppoly$StrataID ), yrs=p$yrs, fillall=TRUE, annual_breakdown=TRUE )
-  # weight_year = weight_year[, match(as.character(p$yrs), colnames(weight_year) )]
-  # weight_year = weight_year[ match(as.character(sppoly$StrataID), rownames(weight_year) )]
-
 
 
   if (0) {
@@ -449,6 +462,7 @@
     ) ' )
 
   }
+
   res = carstm_model( p=p, M='snowcrab_carstm( p=p, DS="carstm_inputs" )' )
 
 

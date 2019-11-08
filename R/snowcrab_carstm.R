@@ -77,11 +77,14 @@ snowcrab_carstm = function( p=NULL, DS="parameters", redo=FALSE, ...) {
         p$carstm_modelcall = paste(
           'inla( formula =', p$variabletomodel,
           ' ~ 1
-            + f(tiyr2, model="seasonal", season.length=10 )
+            + f(year_factor, model="ar1", hyper=H$ar1 )
+            + f(dyri, model="rw2", scale.model=TRUE, diagonal=1e-6, hyper=H$rw2 )
             + f(ti, model="rw2", scale.model=TRUE, diagonal=1e-6, hyper=H$rw2)
             + f(zi, model="rw2", scale.model=TRUE, diagonal=1e-6, hyper=H$rw2)
             + f(gsi, model="rw2", scale.model=TRUE, diagonal=1e-6, hyper=H$rw2)
-            + f(strata, model="bym2", graph=sppoly@nb, scale.model=TRUE, constr=TRUE, hyper=H$bym2),
+            + f(pca1i, model="rw2", scale.model=TRUE, diagonal=1e-6, hyper=H$rw2)
+            + f(pca2i, model="rw2", scale.model=TRUE, diagonal=1e-6, hyper=H$rw2)
+            + f(strata, model="bym2", graph=sppoly@nb, group=year_factor, scale.model=TRUE, constr=TRUE, hyper=H$bym2),
             family = "normal",
             data= M,
             control.compute=list(dic=TRUE, config=TRUE),
@@ -182,10 +185,16 @@ snowcrab_carstm = function( p=NULL, DS="parameters", redo=FALSE, ...) {
     pB = bathymetry_carstm( p=p, DS="parameters_override" ) # transcribes relevant parts of p to load bathymetry
     pS = substrate_carstm( p=p, DS="parameters_override" ) # transcribes relevant parts of p to load bathymetry
     pT = temperature_carstm( p=p, DS="parameters_override" ) # transcribes relevant parts of p to load
+    pPC1 = speciescomposition_carstm( p=p, DS="parameters_override", varnametomodel="pca1" ) # transcribes relevant parts of p to load
+
+    pPC2 = speciescomposition_carstm( p=p, DS="parameters_override", varnametomodel="pca2" ) # transcribes relevant parts of p to load
 
     if (!(exists(pB$variabletomodel, M ))) M[,pB$variabletomodel] = NA
     if (!(exists(pS$variabletomodel, M ))) M[,pS$variabletomodel] = NA
     if (!(exists(pT$variabletomodel, M ))) M[,pT$variabletomodel] = NA
+    if (!(exists(pPC1$variabletomodel, M ))) M[,pPC1$variabletomodel] = NA
+    if (!(exists(pPC2$variabletomodel, M ))) M[,pPC2$variabletomodel] = NA
+
 
     kk = which(!is.finite(M[, pB$variabletomodel]))
     if (length(kk) > 0 ) M[kk, pB$variabletomodel] = lookup_bathymetry_from_surveys( p=pB, locs=M[kk, c("lon", "lat")] )
@@ -195,6 +204,20 @@ snowcrab_carstm = function( p=NULL, DS="parameters", redo=FALSE, ...) {
 
     kk = which(!is.finite(M[, pT$variabletomodel]))
     if (length(kk) > 0 ) M[kk, pT$variabletomodel] = lookup_temperature_from_surveys(  p=pT, locs=M[kk, c("lon", "lat")], timestamp=M$timestamp )
+
+    kk = which(!is.finite(M[, pPC1$variabletomodel]))
+    if (length(kk) > 0 ) {
+      pc1 = speciescomposition.db( p=pPC1, DS="speciescomposition"  )
+      ii = match( M$id, pc1$id)
+      M[kk, pPC1$variabletomodel] = pc1[ii, pPC1$variabletomodel]
+    }
+
+    kk = which(!is.finite(M[, pPC2$variabletomodel]))
+    if (length(kk) > 0 ) {
+      pc2 = speciescomposition.db( p=pPC2, DS="speciescomposition"  )
+      ii = match( M$id, pc2$id)
+      M[kk, pPC2$variabletomodel] = pc2[ii, pPC2$variabletomodel]
+    }
 
 
     # if any still missing then use a mean depth by StrataID
@@ -250,6 +273,48 @@ snowcrab_carstm = function( p=NULL, DS="parameters", redo=FALSE, ...) {
     }
 
 
+
+
+    kk =  which( !is.finite(M[, pPC1$variabletomodel]))
+    if (length(kk) > 0) {
+      pc1 = speciescomposition.db( p=pPC1, DS="speciescomposition"  )
+      pc1 = planar2lonlat( pc1, proj.type=p$aegis_proj4string_planar_km )
+      pc1$StrataID = over( SpatialPoints( pc1[, c("lon", "lat")], crs_lonlat ), spTransform(sppoly, crs_lonlat ) )$StrataID # match each datum to an area
+      oo = tapply( pc1[, pPC1$variabletomodel ], pc1$StrataID, FUN=median, na.rm=TRUE )
+      jj = match( as.character( M$StrataID[kk]), as.character( names(oo )) )
+      if (length(jj) > 0) M[kk, pPC1$variabletomodel] = oo[jj ]
+    }
+    kk =  which( !is.finite(M[, pPC1$variabletomodel]))
+    if (length(kk) > 0) {
+      PI = carstm_model ( p=pPC1, DS="carstm_modelled" )
+      strata_map = match( as.numeric(M$StrataID[kk]), levels(sppoly$StrataID[as.numeric(dimnames(PI)$strata)]  ) )
+      year_map = match( as.character(M$year[kk]), dimnames(PI)$year )
+      dindex = cbind(strata_map, year_map )
+      M[kk, pPC1$variabletomodel] = PI [dindex]
+    }
+
+
+
+    kk =  which( !is.finite(M[, pPC2$variabletomodel]))
+    if (length(kk) > 0) {
+      pc2 = speciescomposition.db( p=pPC2, DS="speciescomposition"  )
+      pc2 = planar2lonlat( pc2, proj.type=p$aegis_proj4string_planar_km )
+      pc2$StrataID = over( SpatialPoints( pc2[, c("lon", "lat")], crs_lonlat ), spTransform(sppoly, crs_lonlat ) )$StrataID # match each datum to an area
+      oo = tapply( pc2[, pPC2$variabletomodel ], pc2$StrataID, FUN=median, na.rm=TRUE )
+      jj = match( as.character( M$StrataID[kk]), as.character( names(oo )) )
+      if (length(jj) > 0) M[kk, pPC2$variabletomodel] = oo[jj ]
+    }
+    kk =  which( !is.finite(M[, pPC2$variabletomodel]))
+    if (length(kk) > 0) {
+      PI = carstm_model ( p=pPC2, DS="carstm_modelled" )
+      strata_map = match( as.numeric(M$StrataID[kk]), levels(sppoly$StrataID[as.numeric(dimnames(PI)$strata)]  ) )
+      year_map = match( as.character(M$year[kk]), dimnames(PI)$year )
+      dindex = cbind(strata_map, year_map )
+      M[kk, pPC2$variabletomodel] = PI [dindex]
+    }
+
+
+    PI = NULL
     M$plon = NULL
     M$plat = NULL
     M$lon = NULL
@@ -298,18 +363,30 @@ snowcrab_carstm = function( p=NULL, DS="parameters", redo=FALSE, ...) {
 
     TI = carstm_model ( p=pT, DS="carstm_modelled" )
     TI = TI[[ paste(pT$variabletomodel,"predicted",sep="." )]]
-
     strata_map = match( as.numeric(APS$StrataID),levels(sppoly$StrataID[as.numeric(dimnames(TI)$strata)]  ) )
     year_map = match( as.character(APS$year), dimnames(TI)$year )
-
     dyear_breaks = c(p$dyears, p$dyears[length(p$dyears)]+ diff(p$dyears)[1] )
     dyear_map = as.numeric( cut( APS$dyear, breaks=dyear_breaks, include.lowest=TRUE, ordered_result=TRUE, right=FALSE ) )
-
     dindex = cbind(strata_map, year_map, dyear_map )
-
     APS[, pT$variabletomodel] = TI[ dindex]
-    jj =NULL
     TI = NULL
+
+
+    PI = carstm_model ( p=pPC1, DS="carstm_modelled" )
+    PI = PI[[ paste(pPC1$variabletomodel,"predicted",sep="." )]]
+    strata_map = match( as.numeric(APS$StrataID), levels(sppoly$StrataID[as.numeric(dimnames(PI)$strata)]  ) )
+    year_map = match( as.character(APS$year), dimnames(PI)$year )
+    dindex = cbind(strata_map, year_map )
+    APS[, pPC1$variabletomodel] = PI [dindex]
+    PI = NULL
+
+    PI = carstm_model ( p=pPC2, DS="carstm_modelled" )
+    PI = PI[[ paste(pPC2$variabletomodel,"predicted",sep="." )]]
+    strata_map = match( as.numeric(APS$StrataID), levels(sppoly$StrataID[as.numeric(dimnames(PI)$strata)]  ) )
+    year_map = match( as.character(APS$year), dimnames(PI)$year )
+    dindex = cbind(strata_map, year_map  )
+    APS[, pPC2$variabletomodel] = PI [dindex]
+    PI = NULL
 
 
     M = rbind( M[, names(APS)], APS )
