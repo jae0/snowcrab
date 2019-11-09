@@ -402,7 +402,9 @@ snowcrab_carstm = function( p=NULL, DS="parameters", redo=FALSE, ...) {
 
     # useful vars to have for analyses outside of carstm_model
     varstoadd = c( "totwgt", "totno", "sa", "data_offset",  "zn", "qn" )
+
     for (vn in varstoadd) if (!exists( vn, APS)) APS[,vn] = NA
+    APS$data_offset = 1  # force to solve for unit area
 
     M = rbind( M[, names(APS)], APS )
     APS = NULL

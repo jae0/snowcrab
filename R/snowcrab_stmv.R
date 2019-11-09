@@ -48,6 +48,7 @@ snowcrab_stmv = function( DS=NULL, p=NULL, year=NULL, ret="mean", varnames=NULL,
         set$totno_adjusted[ set$totno_adjusted > highestpossible ] = highestpossible
         # keep "zero's" to inform spatial processes but only as "lowestpossible" value
         jj = which( set$totno_adjusted > 0 )
+# NOTE :: rejecting zeros and replacing with small values .. technically this is dangerous
         lowestpossible =  quantile( set$totno_adjusted[jj], probs=p$quantile_bounds[1], na.rm=TRUE )
         lowerbound =  quantile( set$totno_adjusted[jj], probs=p$quantile_bounds[1]/10, na.rm=TRUE )
         ii = which( set$totno_adjusted < lowestpossible )
@@ -66,6 +67,9 @@ snowcrab_stmv = function( DS=NULL, p=NULL, year=NULL, ret="mean", varnames=NULL,
 
         # keep "zero's" to inform spatial processes but only as "lowestpossible" value
         jj = which( set$totwgt_adjusted > 0 )
+
+# NOTE :: rejecting zeros and replacing with small values .. technically this is dangerous
+
         lowestpossible =  quantile( set$totwgt_adjusted[jj], probs=p$quantile_bounds[1], na.rm=TRUE )
         lowerbound =  quantile( set$totno_adjusted[jj], probs=p$quantile_bounds[1]/10, na.rm=TRUE )
         ii = which( set$totwgt_adjusted < lowestpossible )

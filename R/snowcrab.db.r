@@ -1077,9 +1077,8 @@ snowcrab.db = function( DS, p=NULL, yrs=NULL) {
         # keep "zero's" to inform spatial processes but only as "lowestpossible" value
         jj = which( set$totno_adjusted > 0 )
         lowestpossible =  quantile( set$totno_adjusted[jj], probs=p$quantile_bounds[1], na.rm=TRUE )
-        lowerbound =  quantile( set$totno_adjusted[jj], probs=p$quantile_bounds[1]/10, na.rm=TRUE )
         ii = which( set$totno_adjusted < lowestpossible )
-        set$totno_adjusted[ii] = lowerbound ## arbitrary but close to detection limit
+        set$totno_adjusted[ii] = 0
       }
       set[, p$variables$Y] = set$totno_adjusted
       set$wt = 1 / set$cf_set_no
@@ -1095,9 +1094,8 @@ snowcrab.db = function( DS, p=NULL, yrs=NULL) {
         # keep "zero's" to inform spatial processes but only as "lowestpossible" value
         jj = which( set$totwgt_adjusted > 0 )
         lowestpossible =  quantile( set$totwgt_adjusted[jj], probs=p$quantile_bounds[1], na.rm=TRUE )
-        lowerbound =  quantile( set$totno_adjusted[jj], probs=p$quantile_bounds[1]/10, na.rm=TRUE )
         ii = which( set$totwgt_adjusted < lowestpossible )
-        set$totwgt_adjusted[ii] = lowerbound ## arbitrary but close to detection limit
+        set$totwgt_adjusted[ii] = 0 ## arbitrary but close to detection limit
       }
       set[, p$variables$Y] = set$totwgt_adjusted
       set$wt = 1 / set$cf_set_mass
