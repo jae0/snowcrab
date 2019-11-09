@@ -419,6 +419,7 @@
   # construct meanweights matrix
   M = snowcrab_carstm( p=p, DS="carstm_inputs" )
   M$yr = M$year  # req for meanweights
+  sppoly = areal_units( p=p )
 
   weight_year = meanweights_by_strata(
     set=M[M$tag=="observations",],
@@ -475,6 +476,26 @@
   }
 
 }
+
+RES = data.frame(yr = p$yrs )
+RES$INLA.Envir.AR1.CAR = colSums( {out * weight_year * sppoly$sa_strata_km2}[sppoly$strata_to_keep, ], na.rm=TRUE )
+
+plot( INLA.Envir.AR1.CAR ~ yr, data=RES, lty=1, lwd=2.5, col="red", type="b")
+
+
+# map it ..mean density
+vn = "pred"
+sppoly@data[,vn] = out[,"2017"]
+brks = interval_break(X= sppoly[[vn]], n=length(p$mypalette), style="quantile")
+spplot( sppoly, vn, col.regions=p$mypalette, main=vn, at=brks, sp.layout=p$coastLayout, col="transparent" )
+
+
+plot(fit, plot.prior=TRUE, plot.hyperparameters=TRUE, plot.fixed.effects=FALSE )
+
+
+plot( fit$marginals.hyperpar$"Phi for strata", type="l")  # posterior distribution of phi nonspatial dominates
+plot( fit$marginals.hyperpar$"Precision for strata", type="l")
+plot( fit$marginals.hyperpar$"Precision for setno", type="l")
 
 
 # end
