@@ -26,7 +26,9 @@
     auid = "snowcrab_assessment_25",  # identifyer for areal units polygon filename
     areal_units_resolution_km = 25, # km dim of lattice ~ 1 hr
     areal_units_proj4string_planar_km = aegis::projection_proj4string("utm20"),  # coord system to use for areal estimation and gridding for carstm
-    trawlable_units = "towdistance",  # <<<<<<<<<<<<<<<<<< also:  "standardtow", "sweptarea" (for groundfish surveys)
+    areal_units_strata_type = "lattice", # "stmv_fields" to use ageis fields instead of carstm fields ... note variables are not the same
+    areal_units_overlay = "snowcrab_managementareas",
+    trawlable_units = "sweptarea",  # <<<<<<<<<<<<<<<<<< also:  "standardtow", "sweptarea" (for groundfish surveys)
     quantile_bounds =c(0, 0.99), # trim upper bounds
     selection=list(
       type = runtype,
@@ -51,15 +53,15 @@
  )
 
 
-  #  boundingbox = list( xlim = c(-70.5, -56.5), ylim=c(39.5, 47.5)), # bounding box for plots using spplot
-
-
   # the underlying observations/data
   MS = snowcrab.db( p=p, DS="biological_data"  )  # domain is  sse
-  sppoly = areal_units( p=p )
 
+  sppoly = areal_units( p=p, areal_units_constraint=MS[, c("lon", "lat")], redo=TRUE )
 
-  plot(sppoly)
+  if (0) {
+    sppoly = areal_units( p=p )
+    plot(sppoly)
+  }
 
 
 
@@ -69,7 +71,6 @@
   if (REDO) {
     # ensure if polys exist and create if required
     for (au in c("cfanorth", "cfasouth", "cfa4x", "cfaall" )) plot(polygons_managementarea( species="snowcrab", au))
-    sppoly = areal_units( p=p, areal_units_constraint=MS[, c("lon", "lat")], redo=TRUE )
     #  sppoly = neighbourhood_structure( sppoly=sppoly )
     MS = NULL
 
@@ -79,7 +80,6 @@
   # about 50 hrs to redo; 25 configs @ 2 hrs each
     pB = bathymetry_carstm( p=p, DS="parameters_override" )
     M = bathymetry.db( p=pB, DS="aggregated_data", redo=TRUE )
-      # will redo if not found .. not used here but used for data matching/lookup
     M = bathymetry_carstm( p=pB, DS="carstm_inputs", redo=TRUE  ) # will redo if not found
 
 
@@ -117,7 +117,33 @@
 # Posterior marginals for the linear predictor and
 #  the fitted values are computed
 
+        inla_nthreads = ifelse( exists("inla_nthreads", pB ), pB$inla_nthreads, 1 )
+        inla_nthreads_blas = ifelse ( exists("inla_nthreads_blas", pB ), pB$inla_nthreads_blas, 1 )
+
+        pB$carstm_model_label = "production"
+
+        pB$carstm_modelcall = paste(
+          'inla(
+            formula = ', pB$variabletomodel, ' ~ 1
+              + f(strata, model="bym2", graph=sppoly@nb, scale.model=TRUE, constr=TRUE, hyper=H$bym2),
+            family = "lognormal",
+            data= M,
+            control.compute=list(dic=TRUE, config=TRUE),  # config=TRUE if doing posterior simulations
+            control.results=list(return.marginals.random=TRUE, return.marginals.predictor=TRUE ),
+            control.predictor=list(compute=FALSE, link=1 ),
+            control.fixed=H$fixed,  # priors for fixed effects, generic is ok
+            # control.inla=list(int.strategy="eb", reordering="metis") ,# to get empirical Bayes results much faster.
+            # control.inla=list( strategy="gaussian", diagonal=100, int.strategy="eb", cutoff=1e-6, correct=TRUE, correct.verbose=FALSE ), # quick estim
+            control.inla=list( strategy="laplace", cutoff=1e-6, correct=TRUE, correct.verbose=FALSE ),
+            num.threads=', inla_nthreads, ' ,
+            blas.num.threads=', inla_nthreads_blas, ' ,
+            verbose=TRUE
+          ) ' )
+
+    pB$carstm_inputs_aggregated = TRUE
+
     res = carstm_model( p=pB, M='bathymetry_carstm( p=pB, DS="carstm_inputs" )', DS="redo", carstm_model_label="production"  ) # run model and obtain predictions
+
     if (0) {
       # to use a saved instance
       res = carstm_model( p=pB, DS="carstm_modelled", carstm_model_label="production" ) # run model and obtain predictions
@@ -138,6 +164,30 @@
 
 
     # run model and obtain predictions
+
+        inla_nthreads = ifelse( exists("inla_nthreads", pS ), pS$inla_nthreads, 1 )
+        inla_nthreads_blas = ifelse ( exists("inla_nthreads_blas", pS ), pS$inla_nthreads_blas, 1 )
+
+        pS$carstm_modelcall = paste('
+          inla(
+            formula =', pS$variabletomodel, ' ~ 1
+              + f(zi, model="rw2", scale.model=TRUE, diagonal=1e-6, hyper=H$rw2)
+              + f(strata, model="bym2", graph=sppoly@nb, scale.model=TRUE, constr=TRUE, hyper=H$bym2),
+            family = "lognormal",
+            data= M,
+            control.compute=list(dic=TRUE, config=TRUE),
+            control.results=list(return.marginals.random=TRUE, return.marginals.predictor=TRUE ),
+            control.predictor=list(compute=FALSE, link=1 ),
+            control.fixed=H$fixed,  # priors for fixed effects, generic is ok
+            # control.inla=list(int.strategy="eb") ,# to get empirical Bayes results much faster.
+            control.inla=list( strategy="laplace", cutoff=1e-6, correct=TRUE, correct.verbose=FALSE ),  # extra work to get tails
+            num.threads=', inla_nthreads, ' ,
+            blas.num.threads=', inla_nthreads_blas, ' ,
+            verbose=TRUE
+          ) ' )
+      }
+
+    pS$carstm_inputs_aggregated = TRUE
     res = carstm_model( p=pS, M='substrate_carstm( p=pS, DS="carstm_inputs")', DS="redo", carstm_model_label="production"  )
 
     if(0) {
@@ -158,6 +208,32 @@
     M = temperature.db( p=pT, DS="aggregated_data", redo=TRUE )  #  used for data matching/lookup in other aegis projects that use temperature
     M = temperature_carstm( p=pT, DS="carstm_inputs", redo=TRUE )  # will redo if not found
 
+
+  inla_nthreads = ifelse( exists("inla_nthreads", pT ), pT$inla_nthreads, 1 )
+        inla_nthreads_blas = ifelse ( exists("inla_nthreads_blas", pT ), pT$inla_nthreads_blas, 1 )
+
+        pT$carstm_model_label = "production"
+        pT$carstm_modelcall = paste('
+          inla(
+            formula = ', pT$variabletomodel, ' ~ 1
+              + f(year_factor, model="ar1", hyper=H$ar1 )
+              + f(dyri, model="rw2", scale.model=TRUE, diagonal=1e-6, hyper=H$rw2 )
+              + f(zi, model="rw2", scale.model=TRUE, diagonal=1e-6, hyper=H$rw2)
+              + f(strata, model="bym2", graph=sppoly@nb, group= year_factor,  scale.model=TRUE, constr=TRUE, hyper=H$bym2),
+            family = "normal",
+            data= M,
+            control.compute=list(dic=TRUE, config=TRUE),
+            control.results=list(return.marginals.random=TRUE, return.marginals.predictor=TRUE ),
+            control.predictor=list(compute=FALSE, link=1 ),
+            control.fixed=H$fixed,  # priors for fixed effects, generic is ok
+            # control.inla=list(strategy="gaussian", int.strategy="eb") ,# to get empirical Bayes results much faster.
+            # control.inla=list(int.strategy="eb") ,# to get empirical Bayes results much faster.
+            control.inla=list( strategy="laplace", cutoff=1e-6, correct=TRUE, correct.verbose=FALSE ),
+            num.threads=', inla_nthreads, ' ,
+            blas.num.threads=', inla_nthreads_blas, ' ,
+            verbose=TRUE
+          ) ' )
+      }
 
 
     # CAR effect for each year
@@ -414,88 +490,107 @@
 
 
   M = snowcrab_carstm( p=p, DS="carstm_inputs", redo=TRUE )  # will redo if not found
-
-
-  # construct meanweights matrix
-  M = snowcrab_carstm( p=p, DS="carstm_inputs" )
-  M$yr = M$year  # req for meanweights
-  sppoly = areal_units( p=p )
-
-  weight_year = meanweights_by_strata(
-    set=M[M$tag=="observations",],
-    StrataID=as.character( sppoly$StrataID ),
-    yrs=p$yrs,
-    fillall=TRUE,
-    annual_breakdown=TRUE
-  )
-  # weight_year = weight_year[, match(as.character(p$yrs), colnames(weight_year) )]
-  # weight_year = weight_year[ match(as.character(sppoly$StrataID), rownames(weight_year) )]
-
   # 151 configs and long optim .. 19 hrs
   res = carstm_model( p=p, M='snowcrab_carstm( p=p, DS="carstm_inputs" )' )
 
-  # extract results
-  res = carstm_model( p=p, DS="carstm_modelled" ) # to load currently saved res
-  fit = carstm_model( p=p, DS="carstm_modelled_fit" )  # extract currently saved model fit
+  if (0) {
 
-     summary(fit)
-      # maps of some of the results
-      vn = paste(p$variabletomodel, "predicted", sep=".")
-      carstm_plot( p=p, res=res, vn=vn, time_match=list(year="2000" ) )
+    # extract results
+    res = carstm_model( p=p, DS="carstm_modelled" ) # to load currently saved res
+    fit = carstm_model( p=p, DS="carstm_modelled_fit" )  # extract currently saved model fit
+
+      summary(fit)
+        # maps of some of the results
+        vn = paste(p$variabletomodel, "predicted", sep=".")
+        carstm_plot( p=p, res=res, vn=vn, time_match=list(year="2000" ) )
 
 
-  plot(fit)
-  plot(fit, plot.prior=TRUE, plot.hyperparameters=TRUE, plot.fixed.effects=FALSE )
-  s = summary(fit)
-  s$dic$dic
-  s$dic$p.eff
+    plot(fit)
+    plot(fit, plot.prior=TRUE, plot.hyperparameters=TRUE, plot.fixed.effects=FALSE )
+    s = summary(fit)
+    s$dic$dic
+    s$dic$p.eff
 
-  # maps of some of the results
-  vn = paste(p$variabletomodel, "predicted", sep=".")
-  carstm_plot( p=p, res=res, vn=vn )
+    # maps of some of the results
+    vn = paste(p$variabletomodel, "predicted", sep=".")
+    carstm_plot( p=p, res=res, vn=vn )
 
-  vn = paste(p$variabletomodel, "random_sample_iid", sep=".")
-  if (exists(vn, res)) carstm_plot( p=p, res=res, vn=vn, time_match=list(year="1950", dyear="0") )
+    vn = paste(p$variabletomodel, "random_sample_iid", sep=".")
+    if (exists(vn, res)) carstm_plot( p=p, res=res, vn=vn, time_match=list(year="1950", dyear="0") )
 
-  vn = paste(p$variabletomodel, "random_strata_nonspatial", sep=".")
-  if (exists(vn, res)) {
-    res_dim = dim( res[[vn]] )
-    if (res_dim == 1 ) time_match = NULL
-    if (res_dim == 2 ) time_match = list(year="2000")
-    if (res_dim == 3 ) time_match = list(year="2000", dyear="0.8" )
-    carstm_plot( p=p, res=res, vn=vn, time_match=time_match )
+    vn = paste(p$variabletomodel, "random_strata_nonspatial", sep=".")
+    if (exists(vn, res)) {
+      res_dim = dim( res[[vn]] )
+      if (res_dim == 1 ) time_match = NULL
+      if (res_dim == 2 ) time_match = list(year="2000")
+      if (res_dim == 3 ) time_match = list(year="2000", dyear="0.8" )
+      carstm_plot( p=p, res=res, vn=vn, time_match=time_match )
+    }
+
+    vn = paste(p$variabletomodel, "random_strata_spatial", sep=".")
+    if (exists(vn, res)) {
+      res_dim = dim( res[[vn]] )
+      if (res_dim == 1 ) time_match = NULL
+      if (res_dim == 2 ) time_match = list(year="2000")
+      if (res_dim == 3 ) time_match = list(year="2000", dyear="0.8" )
+      carstm_plot( p=p, res=res, vn=vn, time_match=time_match )
+    }
+
+
+    # construct meanweights matrix
+    M = snowcrab_carstm( p=p, DS="carstm_inputs" )
+    M$yr = M$year  # req for meanweights
+    sppoly = areal_units( p=p )
+
+    weight_year = meanweights_by_strata(
+      set=M[M$tag=="observations",],
+      StrataID=as.character( sppoly$StrataID ),
+      yrs=p$yrs,
+      fillall=TRUE,
+      annual_breakdown=TRUE
+    )
+    # weight_year = weight_year[, match(as.character(p$yrs), colnames(weight_year) )]
+    # weight_year = weight_year[ match(as.character(sppoly$StrataID), rownames(weight_year) )]
+
+    # / 10^6  # 10^6 kg -> kt .. kg/km * km
+    out = res[[ paste( p$variabletomodel, "predicted", sep=".")]]
+    out[!is.finite(out)] = NA
+    out[out > 1e10] = NA
+    RES$model1 = list(
+      yrs = p$yrs,
+      cfaall    = colSums( out * weight_year * sppoly$sa_strata_km2/ 10^6, na.rm=TRUE )  ,
+      cfanorth  = colSums( out * weight_year * sppoly$cfanorth_surfacearea/ 10^6, na.rm=TRUE ) ,
+      cfasouth  = colSums( out * weight_year * sppoly$cfasouth_surfacearea/ 10^6, na.rm=TRUE ) ,
+      cfa23     = colSums( out * weight_year * sppoly$cfa23_surfacearea/ 10^6, na.rm=TRUE ) ,
+      cfa24     = colSums( out * weight_year * sppoly$cfa24_surfacearea/ 10^6, na.rm=TRUE ) ,
+      cfa4x     = colSums( out * weight_year * sppoly$cfa4x_surfacearea/ 10^6, na.rm=TRUE )
+    )
+
+
+    fn_RES = file.path(p$modeldir, p$carstm_model_label, "RES_ts.rdata")
+    save( RES, fn_RES )
+    load( fn_RES )
+
+    plot( model1 ~ yr, data=RES$model1, lty=1, lwd=2.5, col="red", type="b")
+
+
+    # map it ..mean density
+    vn = "pred"
+    sppoly@data[,vn] = out[,"2017"]
+    brks = interval_break(X= sppoly[[vn]], n=length(p$mypalette), style="quantile")
+    spplot( sppoly, vn, col.regions=p$mypalette, main=vn, at=brks, sp.layout=p$coastLayout, col="transparent" )
+
+
+    plot(fit, plot.prior=TRUE, plot.hyperparameters=TRUE, plot.fixed.effects=FALSE )
+
+
+    plot( fit$marginals.hyperpar$"Phi for strata", type="l")  # posterior distribution of phi nonspatial dominates
+    plot( fit$marginals.hyperpar$"Precision for strata", type="l")
+    plot( fit$marginals.hyperpar$"Precision for setno", type="l")
+
+
   }
 
-  vn = paste(p$variabletomodel, "random_strata_spatial", sep=".")
-  if (exists(vn, res)) {
-    res_dim = dim( res[[vn]] )
-    if (res_dim == 1 ) time_match = NULL
-    if (res_dim == 2 ) time_match = list(year="2000")
-    if (res_dim == 3 ) time_match = list(year="2000", dyear="0.8" )
-    carstm_plot( p=p, res=res, vn=vn, time_match=time_match )
-  }
-
-}
-
-RES = data.frame(yr = p$yrs )
-RES$INLA.Envir.AR1.CAR = colSums( {out * weight_year * sppoly$sa_strata_km2}[sppoly$strata_to_keep, ], na.rm=TRUE )
-
-plot( INLA.Envir.AR1.CAR ~ yr, data=RES, lty=1, lwd=2.5, col="red", type="b")
-
-
-# map it ..mean density
-vn = "pred"
-sppoly@data[,vn] = out[,"2017"]
-brks = interval_break(X= sppoly[[vn]], n=length(p$mypalette), style="quantile")
-spplot( sppoly, vn, col.regions=p$mypalette, main=vn, at=brks, sp.layout=p$coastLayout, col="transparent" )
-
-
-plot(fit, plot.prior=TRUE, plot.hyperparameters=TRUE, plot.fixed.effects=FALSE )
-
-
-plot( fit$marginals.hyperpar$"Phi for strata", type="l")  # posterior distribution of phi nonspatial dominates
-plot( fit$marginals.hyperpar$"Precision for strata", type="l")
-plot( fit$marginals.hyperpar$"Precision for setno", type="l")
 
 
 # end
@@ -503,28 +598,15 @@ plot( fit$marginals.hyperpar$"Precision for setno", type="l")
 
 
 
-# scenarios
-
-# --------------------------------
-if (0) {
-  fn = file.path( getwd(), "RES.rdata" )
-  # save(RES, file=fn)
-  # load(fn)
-}
-if (!exists("RES")) RES = data.frame(yr=p$selection$survey[["yr"]]) # collect model comparisons
-
-if (exists(tmpdir)) {
-  setwd( tmpdir )  # temp files saved here
-} else {
-  tmpdir = getwd()
-}
 
 
 
 # -------------------------------------
 # model 1 - simple glm
+M = snowcrab_carstm( p=p, DS="carstm_inputs"  )  # will redo if not found
+
 fit = glm(
-  formula = Y ~ 1 + offset( log( data_offset) ) + StrataID + yr_factor,
+  formula = totno ~ 1 + offset( log( data_offset) ) + StrataID + yr_factor,
   family = "poisson", # "zeroinflatedpoisson0",
   data= M[ which(M$tag=="observations"), ]
 )
@@ -548,15 +630,26 @@ out = reformat_to_array(
 )
 # out[ out>1e10] = NA
 # convert numbers/km to biomass/strata (kg)..
-RES$poisson_glm = colSums( {out * weight_year * sppoly$sa_strata_km2}, na.rm=TRUE ) / 10^6  # 10^6 kg -> kt # kg/km * km
-RES$poisson_glm_cfanorth = colSums( {out * weight_year * sppoly$cfanorth_surfacearea}, na.rm=TRUE ) / 10^6  # 10^6 kg -> kt # kg/km * km
-RES$poisson_glm_cfasouth = colSums( {out * weight_year * sppoly$cfasouth_surfacearea}, na.rm=TRUE ) / 10^6  # 10^6 kg -> kt # kg/km * km
-RES$poisson_glm_cfa4x = colSums( {out * weight_year * sppoly$cfa4x_surfacearea}, na.rm=TRUE ) / 10^6  # 10^6 kg -> kt # kg/km * km
 
-plot( poisson_glm ~ yr, data=RES, lty=1, lwd=2.5, col="blue", type="b")
-plot( poisson_glm_cfanorth ~ yr, data=RES, lty=1, lwd=2.5, col="green", type="b")
-plot( poisson_glm_cfasouth ~ yr, data=RES, lty=1, lwd=2.5, col="green", type="b")
-plot( poisson_glm_cfa4x ~ yr, data=RES, lty=1, lwd=2.5, col="green", type="b")
+# / 10^6  # 10^6 kg -> kt .. kg/km * km
+RES$poisson_glm = list(
+  yrs = p$yrs,
+  cfaall    = colSums( out * weight_year * sppoly$sa_strata_km2, na.rm=TRUE ) / 10^6 ,
+  cfanorth  = colSums( out * weight_year * sppoly$ccfanorth_surfacearea, na.rm=TRUE )/ 10^6 ,
+  cfasouth  = colSums( out * weight_year * sppoly$cfasouth_surfacearea, na.rm=TRUE )/ 10^6 ,
+  cfa23     = colSums( out * weight_year * sppoly$cfa23_surfacearea, na.rm=TRUE )/ 10^6 ,
+  cfa24     = colSums( out * weight_year * sppoly$cfa24_surfacearea, na.rm=TRUE )/ 10^6 ,
+  cfa4x     = colSums( out * weight_year * sppoly$cfa4x_surfacearea, na.rm=TRUE )/ 10^6
+)
+
+
+
+plot( poisson_glm ~ yr, data=RES$poisson_glm, lty=1, lwd=2.5, col="blue", type="b")
+plot( poisson_glm_cfanorth ~ yr, data=RES$poisson_glm, lty=1, lwd=2.5, col="green", type="b")
+plot( poisson_glm_cfasouth ~ yr, data=RES$poisson_glm, lty=1, lwd=2.5, col="green", type="b")
+plot( poisson_glm_cfa4x ~ yr, data=RES$poisson_glm, lty=1, lwd=2.5, col="green", type="b")
+
+
 
 # map it
 vn = "pred"
@@ -595,17 +688,22 @@ out = reformat_to_array(
   matchfrom = list( StrataID=M$StrataID[ii], yr_factor=M$yr_factor[ii]),
   matchto   = list( StrataID=sppoly$StrataID, yr_factor=factor(p$yrs) )
 )
-# out[ out>1e10] = NA
-# convert numbers/km to biomass/strata (kg)..
-RES$poisson_gam = colSums( {out * weight_year * sppoly$sa_strata_km2}, na.rm=TRUE ) / 10^6  # 10^6 kg -> kt # kg/km * km
-RES$poisson_gam_cfanorth = colSums( {out * weight_year * sppoly$cfanorth_surfacearea}, na.rm=TRUE ) / 10^6  # 10^6 kg -> kt # kg/km * km
-RES$poisson_gam_cfasouth = colSums( {out * weight_year * sppoly$cfasouth_surfacearea}, na.rm=TRUE ) / 10^6  # 10^6 kg -> kt # kg/km * km
-RES$poisson_gam_cfa4x = colSums( {out * weight_year * sppoly$cfa4x_surfacearea}, na.rm=TRUE ) / 10^6  # 10^6 kg -> kt # kg/km * km
 
-plot( poisson_gam ~ yr, data=RES, lty=1, lwd=2.5, col="blue", type="b")
-plot( poisson_gam_cfanorth ~ yr, data=RES, lty=1, lwd=2.5, col="green", type="b")
-plot( poisson_gam_cfasouth ~ yr, data=RES, lty=1, lwd=2.5, col="green", type="b")
-plot( poisson_gam_cfa4x ~ yr, data=RES, lty=1, lwd=2.5, col="green", type="b")
+RES$poisson_gam = list(
+  yrs = p$yrs,
+  cfaall    = colSums( out * weight_year * sppoly$sa_strata_km2, na.rm=TRUE ) / 10^6 ,
+  cfanorth  = colSums( out * weight_year * sppoly$ccfanorth_surfacearea, na.rm=TRUE )/ 10^6 ,
+  cfasouth  = colSums( out * weight_year * sppoly$cfasouth_surfacearea, na.rm=TRUE )/ 10^6 ,
+  cfa23     = colSums( out * weight_year * sppoly$cfa23_surfacearea, na.rm=TRUE )/ 10^6 ,
+  cfa24     = colSums( out * weight_year * sppoly$cfa24_surfacearea, na.rm=TRUE )/ 10^6 ,
+  cfa4x     = colSums( out * weight_year * sppoly$cfa4x_surfacearea, na.rm=TRUE )/ 10^6
+)
+
+
+plot( poisson_gam ~ yr, data=RES$poisson_gam, lty=1, lwd=2.5, col="blue", type="b")
+plot( poisson_gam_cfanorth ~ yr, data=RES$poisson_gam, lty=1, lwd=2.5, col="green", type="b")
+plot( poisson_gam_cfasouth ~ yr, data=RES$poisson_gam, lty=1, lwd=2.5, col="green", type="b")
+plot( poisson_gam_cfa4x ~ yr, data=RES$poisson_gam, lty=1, lwd=2.5, col="green", type="b")
 
 # map it
 vn = "pred"
@@ -1365,7 +1463,7 @@ plot( habitat_glm  ~ yr, data=RES, lty=lty[1], lwd=lwd[1], col=col[1], pch=pch[1
 lines( habitat_gam ~ yr, data=RES, lty=lty[2], lwd=lwd[2], col=col[2], pch=pch[2], type=type[2])
 lines( habitat_inla ~ yr, data=RES, lty=lty[3], lwd=lwd[3], col=col[3], pch=pch[3], type=type[3])
 lines( habitat_bym_yriid ~ yr, data=RES, lty=lty[4], lwd=lwd[4], col=col[4], pch=pch[4], type=type[4])  # yr_iid
-# lines( INLA.Envir.AR1.CAR ~ yr, data=RES, lty=lty[5], lwd=lwd[5], col=col[5], pch=pch[5], type=type[5])
+# lines( model1 ~ yr, data=RES, lty=lty[5], lwd=lwd[5], col=col[5], pch=pch[5], type=type[5])
 # lines( INLA.Envir.AR1.CAR_year ~ yr, data=RES, lty=lty[6], lwd=lwd[6], col=col[6], pch=pch[6], type=type[6])
 # lines( INLA.Envir.AR1_strata.CAR ~ yr, data=RES, lty=lty[7], lwd=lwd[7], col=col[7], pch=pch[7], type=type[7])
 # lines( INLA.Envir.AR1_strata.CAR_year ~ yr, data=RES, lty=lty[8], lwd=lwd[8], col=col[8], pch=pch[8], type=type[8])

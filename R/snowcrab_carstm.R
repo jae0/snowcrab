@@ -72,6 +72,9 @@ snowcrab_carstm = function( p=NULL, DS="parameters", redo=FALSE, ...) {
       if ( grepl("inla", p$carstm_modelengine) ) {
         p$libs = unique( c( p$libs, project.library ( "INLA" ) ) )
 
+        inla_nthreads = ifelse( exists("inla_nthreads", p ), p$inla_nthreads, 1 )
+        inla_nthreads_blas = ifelse ( exists("inla_nthreads_blas", p ), p$inla_nthreads_blas, 1 )
+
         # use strata which is a numeric representation of the StrataID factor
         p$carstm_model_label = "production"
         p$carstm_modelcall = paste(
@@ -93,9 +96,9 @@ snowcrab_carstm = function( p=NULL, DS="parameters", redo=FALSE, ...) {
             control.predictor=list(compute=FALSE, link=1 ),
             control.fixed=H$fixed,  # priors for fixed effects, generic is ok
             # control.inla=list(int.strategy="eb") ,# to get empirical Bayes results much faster.
-            # control.inla=list( strategy="laplace", cutoff=1e-6, correct=TRUE, correct.verbose=FALSE ),
-            # num.threads=4,
-            # blas.num.threads=4,
+            control.inla=list( strategy="laplace", cutoff=1e-6, correct=TRUE, correct.verbose=FALSE ),
+            num.threads=', inla_nthreads, ' ,
+            blas.num.threads=', inla_nthreads_blas, ' ,
             verbose=TRUE
           )'
         )
