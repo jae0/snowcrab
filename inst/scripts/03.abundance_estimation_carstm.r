@@ -14,8 +14,6 @@
   inla.setOption(blas.num.threads=2)
 
 
-
-
   assessment.years = 1999:2018
   groundfish_species_code = 2526
   runtype="number"
@@ -84,68 +82,13 @@
     MS = NULL
 
   # now do all covariate fields on the above polygons
-
-  # bathymetry -- ensure the data assimilation in bathymetry is first completed :: 01.bathymetry_data.R
-  # about 50 hrs to redo; 25 configs @ 2 hrs each
+# -----------------
+# bathymetry -- ensure the data assimilation in bathymetry is first completed :: 01.bathymetry_data.R
+# about 50 hrs to redo; 25 configs @ 2 hrs each
     pB = bathymetry_carstm( p=p, DS="parameters_override" )
-    pB$carstm_inputs_aggregated = TRUE
 
     M = bathymetry.db( p=pB, DS="aggregated_data", redo=TRUE )
     M = bathymetry_carstm( p=pB, DS="carstm_inputs", redo=TRUE  ) # will redo if not found
-
-
-# Using all data ... not aggregated .. 3hrs
-# Call:
-#    c("inla(formula = z ~ 1 + f(strata, model = \"bym2\", graph = sppoly@nb, ", " scale.model = TRUE, constr =
-#    TRUE, hyper = H$bym2), family = \"lognormal\", ", " data = M, verbose = TRUE, control.compute = list(dic =
-#    TRUE, ", " config = TRUE), control.predictor = list(compute = FALSE, ", " link = 1), control.results =
-#    list(return.marginals.random = TRUE, ", " return.marginals.predictor = TRUE), control.fixed = H$fixed, ", "
-#    blas.num.threads = 8)")
-# Time used:
-#     Pre = 4.71, Running = 10928, Post = 4.51, Total = 10938
-# Fixed effects:
-#              mean    sd 0.025quant 0.5quant 0.975quant  mode kld
-# (Intercept) 7.883 0.001      7.882    7.883      7.885 7.883   0
-
-# Random effects:
-#   Name	  Model
-#     strata BYM2 model
-
-# Model hyperparameters:
-#                                             mean     sd 0.025quant 0.5quant 0.975quant    mode
-# Precision for the lognormal observations 752.050  3.198    745.879  752.003    758.450 751.849
-# Precision for strata                     286.200 23.004    239.367  287.143    329.336 291.721
-# Phi for strata                             0.979  0.021      0.922    0.985      0.999   0.996
-
-# Expected number of effective parameters(stdev): 698.31(1.78)
-# Number of equivalent replicates : 161.11
-
-# Deviance Information Criterion (DIC) ...............: 1348750.89
-# Deviance Information Criterion (DIC, saturated) ....: 113171.52
-# Effective number of parameters .....................: 698.85
-
-# Marginal log-Likelihood:  -674832.61
-# Posterior marginals for the linear predictor and
-#  the fitted values are computed
-
-        pB$carstm_model_label = "production"
-
-        pB$carstm_modelcall = paste(
-          'inla(
-            formula = ', pB$variabletomodel, ' ~ 1
-              + f(strata, model="bym2", graph=sppoly@nb, scale.model=TRUE, constr=TRUE, hyper=H$bym2),
-            family = "lognormal",
-            data= M,
-            control.compute=list(dic=TRUE, config=TRUE),  # config=TRUE if doing posterior simulations
-            control.results=list(return.marginals.random=TRUE, return.marginals.predictor=TRUE ),
-            control.predictor=list(compute=FALSE, link=1 ),
-            control.fixed=H$fixed,  # priors for fixed effects, generic is ok
-            # control.inla=list(int.strategy="eb", reordering="metis") ,# to get empirical Bayes results much faster.
-            # control.inla=list( strategy="gaussian", diagonal=100, int.strategy="eb", cutoff=1e-6, correct=TRUE, correct.verbose=FALSE ), # quick estim
-            control.inla=list( strategy="laplace", cutoff=1e-6, correct=TRUE, correct.verbose=FALSE ),
-            verbose=TRUE
-          ) ' )
-
 
     res = carstm_model( p=pB, M='bathymetry_carstm( p=pB, DS="carstm_inputs" )', DS="redo", carstm_model_label="production"  ) # run model and obtain predictions
 
@@ -158,43 +101,47 @@
       carstm_plot( p=pB, res=res, vn=vn )
     }
 
+    # Time used:
+    #     Pre = 4.71, Running = 10928, Post = 4.51, Total = 10938
+    # Fixed effects:
+    #              mean    sd 0.025quant 0.5quant 0.975quant  mode kld
+    # (Intercept) 7.883 0.001      7.882    7.883      7.885 7.883   0
+
+    # Random effects:
+    #   Name	  Model
+    #     strata BYM2 model
+
+    # Model hyperparameters:
+    #                                             mean     sd 0.025quant 0.5quant 0.975quant    mode
+    # Precision for the lognormal observations 752.050  3.198    745.879  752.003    758.450 751.849
+    # Precision for strata                     286.200 23.004    239.367  287.143    329.336 291.721
+    # Phi for strata                             0.979  0.021      0.922    0.985      0.999   0.996
+
+    # Expected number of effective parameters(stdev): 698.31(1.78)
+    # Number of equivalent replicates : 161.11
+
+    # Deviance Information Criterion (DIC) ...............: 1348750.89
+    # Deviance Information Criterion (DIC, saturated) ....: 113171.52
+    # Effective number of parameters .....................: 698.85
+
+    # Marginal log-Likelihood:  -674832.61
+    # Posterior marginals for the linear predictor and
+    #  the fitted values are computed
 
 
+# -----------------
 # substrate -- ensure the data assimilation in substrate is first completed :: 01.substrate_data.R
 # 25 configs @ 2 hrs each, total time 32 hrs
     pS = substrate_carstm(p=p, DS="parameters_override" )
-    pS$carstm_inputs_aggregated = TRUE
+
     M = substrate.db( p=pS, DS="aggregated_data", redo=TRUE )  # used for data matching/lookup in other aegis projects that use substrate
     M = substrate_carstm( p=pS, DS="carstm_inputs", redo=TRUE )  # will redo if not found
-    # zi too close together relative to the range ... force ignore
 
-
-    # run model and obtain predictions
-
-        pS$carstm_modelcall = paste('
-          inla(
-            formula =', pS$variabletomodel, ' ~ 1
-              + f(zi, model="rw2", scale.model=TRUE, diagonal=1e-6, hyper=H$rw2)
-              + f(strata, model="bym2", graph=sppoly@nb, scale.model=TRUE, constr=TRUE, hyper=H$bym2),
-            family = "lognormal",
-            data= M,
-            control.compute=list(dic=TRUE, config=TRUE),
-            control.results=list(return.marginals.random=TRUE, return.marginals.predictor=TRUE ),
-            control.predictor=list(compute=FALSE, link=1 ),
-            control.fixed=H$fixed,  # priors for fixed effects, generic is ok
-            # control.inla=list(int.strategy="eb") ,# to get empirical Bayes results much faster.
-            control.inla=list( strategy="laplace", cutoff=1e-6, correct=TRUE, correct.verbose=FALSE ),  # extra work to get tails
-            verbose=TRUE
-          ) ' )
-      }
-
-    res = carstm_model( p=pS, M='substrate_carstm( p=pS, DS="carstm_inputs")', DS="redo", carstm_model_label="production"  )
-
+    res = carstm_model( p=pS, M='substrate_carstm( p=pS, DS="carstm_inputs")', DS="redo", carstm_model_label="production"  )  # run model and obtain predictions
     if(0) {
       # to use a saved instance
       res = carstm_model( p=pS, DS="carstm_modelled", carstm_model_label="production"   ) # run model and obtain predictions
       fit = carstm_model( p=pS, DS="carstm_modelled_fit", carstm_model_label="production" )  # extract currently saved model fit
-
       # maps of some of the results
       vn = paste(pS$variabletomodel, "predicted", sep=".")
       carstm_plot( p=pS, res=res, vn=vn )
@@ -202,60 +149,32 @@
 
 
 
+
+# -----------------
 # temperature -- ensure the data assimilation in temperature is first completed :: 01.temperature_data.R
 # total: 30 min, 80 configs .. fast
     pT = temperature_carstm(p=p, DS="parameters_override" )
-    pT$carstm_inputs_aggregated = FALSE
 
     M = temperature.db( p=pT, DS="aggregated_data", redo=TRUE )  #  used for data matching/lookup in other aegis projects that use temperature
     M = temperature_carstm( p=pT, DS="carstm_inputs", redo=TRUE )  # will redo if not found
 
 
 
-        pT$carstm_model_label = "production"
-        pT$carstm_modelcall = paste('
-          inla(
-            formula = ', pT$variabletomodel, ' ~ 1
-              + f(year_factor, model="ar1", hyper=H$ar1 )
-              + f(dyri, model="rw2", scale.model=TRUE, diagonal=1e-6, hyper=H$rw2 )
-              + f(zi, model="rw2", scale.model=TRUE, diagonal=1e-6, hyper=H$rw2)
-              + f(strata, model="bym2", graph=sppoly@nb, group= year_factor,  scale.model=TRUE, constr=TRUE, hyper=H$bym2),
-            family = "normal",
-            data= M,
-            control.compute=list(dic=TRUE, config=TRUE),
-            control.results=list(return.marginals.random=TRUE, return.marginals.predictor=TRUE ),
-            control.predictor=list(compute=FALSE, link=1 ),
-            control.fixed=H$fixed,  # priors for fixed effects, generic is ok
-            # control.inla=list(strategy="gaussian", int.strategy="eb") ,# to get empirical Bayes results much faster.
-            # control.inla=list(int.strategy="eb") ,# to get empirical Bayes results much faster.
-            control.inla=list( strategy="laplace", cutoff=1e-6, correct=TRUE, correct.verbose=FALSE ),
-            verbose=TRUE
-          ) ' )
-      }
+    # covar breaks too close for INLA defaults... overide:
+    res = carstm_model( p=pT, M='temperature_carstm( p=pT, DS="carstm_inputs")', DS="redo", carstm_model_label="production"  ) # run model and obtain predictions
 
 
-    # CAR effect for each year
-    pT$carstm_model_label = "testing_no_year_grouping"
-    pT$carstm_modelcall = paste('
-      inla(
-        formula = ', pT$variabletomodel, ' ~ 1
-          + f(year_factor, model="ar1", hyper=H$ar1 )
-          + f(dyri, model="rw2", scale.model=TRUE, diagonal=1e-6, hyper=H$rw2 )
-          + f(zi, model="rw2", scale.model=TRUE, diagonal=1e-6, hyper=H$rw2)
-          + f(strata, model="bym2", graph=sppoly@nb,  scale.model=TRUE, constr=TRUE, hyper=H$bym2),
-        family = "normal",
-        data= M,
-        control.compute=list(dic=TRUE, config=TRUE),
-        control.results=list(return.marginals.random=TRUE, return.marginals.predictor=TRUE ),
-        control.predictor=list(compute=FALSE, link=1 ),
-        control.fixed=H$fixed,  # priors for fixed effects, generic is ok
-        control.inla=list(strategy="gaussian", int.strategy="eb") ,# to get empirical Bayes results much faster.
-        # control.inla=list(int.strategy="eb") ,# to get empirical Bayes results much faster.
-        # control.inla=list( strategy="laplace", cutoff=1e-6, correct=TRUE, correct.verbose=FALSE ),
-        # num.threads=4,
-        # blas.num.threads=4,
-        verbose=TRUE
-    ) ' )
+    if (0) {
+      # look inside ..
+      res = carstm_model( p=pT, DS="carstm_modelled", carstm_model_label="production" ) # run model and obtain predictions
+      fit = carstm_model(  p=pT, DS="carstm_modelled_fit", carstm_model_label="production" )  # extract currently saved model fit
+      summary(fit)
+      # maps of some of the results
+      vn = paste(pT$variabletomodel, "predicted", sep=".")
+      carstm_plot( p=pT, res=res, vn=vn, time_match=list(year="2000", dyear="0.8" ) )
+
+    }
+
     # Time used:
     #     Pre = 2.67, Running = 559, Post = 2.69, Total = 564
     # Fixed effects:
@@ -291,28 +210,6 @@
     # the fitted values are computed
 
 
-    # CAR effect for each year
-    pT$carstm_model_label = "CAR_depth_dyr_yr"
-    pT$carstm_modelcall = paste('
-      inla(
-        formula = ', pT$variabletomodel, ' ~ 1
-          + f(year_factor, model="ar1", hyper=H$ar1 )
-          + f(dyri, model="rw2", scale.model=TRUE, diagonal=1e-6, hyper=H$rw2 )
-          + f(zi, model="rw2", scale.model=TRUE, diagonal=1e-6, hyper=H$rw2)
-          + f(strata, model="bym2", graph=sppoly@nb, group= year_factor,  scale.model=TRUE, constr=TRUE, hyper=H$bym2),
-        family = "normal",
-        data= M,
-        control.compute=list(dic=TRUE, config=TRUE),
-        control.results=list(return.marginals.random=TRUE, return.marginals.predictor=TRUE ),
-        control.predictor=list(compute=FALSE, link=1 ),
-        control.fixed=H$fixed,  # priors for fixed effects, generic is ok
-        control.inla=list(strategy="gaussian", int.strategy="eb") ,# to get empirical Bayes results much faster.
-        # control.inla=list(int.strategy="eb") ,# to get empirical Bayes results much faster.
-        # control.inla=list( strategy="laplace", cutoff=1e-6, correct=TRUE, correct.verbose=FALSE ),
-        # num.threads=4,
-        # blas.num.threads=4,
-        verbose=TRUE
-    ) ' )
 
     # Time used:
     #     Pre = 1.5, Running = 848, Post = 2.71, Total = 852
@@ -347,28 +244,11 @@
 
     # Marginal log-Likelihood:  -60756.52
 
-    # covar breaks too close for INLA defaults... overide:
-    res = carstm_model( p=pT, M='temperature_carstm( p=pT, DS="carstm_inputs")', DS="redo", carstm_model_label="production"  ) # run model and obtain predictions
-
-
-    if (0) {
-      # look inside ..
-      res = carstm_model( p=pT, DS="carstm_modelled", carstm_model_label="production" ) # run model and obtain predictions
-      fit = carstm_model(  p=pT, DS="carstm_modelled_fit", carstm_model_label="production" )  # extract currently saved model fit
-      summary(fit)
-      # maps of some of the results
-      vn = paste(pT$variabletomodel, "predicted", sep=".")
-      carstm_plot( p=pT, res=res, vn=vn, time_match=list(year="2000", dyear="0.8" ) )
-
-    }
-
-
-
-#    + f(seasonal, model="seasonal", season.length=', pT$n.season, ', scale.model=TRUE )  # using seasonal effect is not recommended as it is not smoothed well .. rw2 is better
 
 
 
 
+# ------------------------------
 # species composition 1 -- ensure that survey data is assimilated : bio.snowcrab::01snowcb_data.R, aegis.survey::01.surveys.data.R , etc.
 # 30 min, 150 configs
     pPC1 = speciescomposition_carstm(p=p, DS="parameters_override", varnametomodel="pca1" )
@@ -385,6 +265,10 @@
     }
 
 
+
+
+
+# ------------------------------
 # species composition 2 -- ensure that survey data is assimilated : bio.snowcrab::01snowcb_data.R, aegis.survey::01.surveys.data.R ,
 # etc.30 min, 30 min
     pPC2 = speciescomposition_carstm(p=p, DS="parameters_override", varnametomodel="pca2" )
@@ -408,10 +292,10 @@
 
 
 
-  if (0) {
-    # choose model:
 
-    # basic model, single CAR effect across time
+
+
+  if (0) {
     p$carstm_model_label = "CAR_static"
     p$carstm_modelcall = paste('
       inla(
@@ -433,63 +317,11 @@
         blas.num.threads=4,
         verbose=TRUE
     ) ' )
-    res = carstm_model( p=p, M='snowcrab_carstm( p=p, DS="carstm_inputs" )' )
-
-
-    # CAR effect for each year
-    p$carstm_model_label = "CARxYear"
-    p$carstm_modelcall = paste('
-      inla(
-        formula =', p$variabletomodel, ' ~ 1
-          + f(tiyr, model="ar1", hyper=H$ar1 )
-          + f(year, model="ar1", hyper=H$ar1 )
-          + f(zi, model="rw2", scale.model=TRUE, diagonal=1e-6, hyper=H$rw2)
-          + f(strata, model="bym2", graph=sppoly@nb ,group= year,  scale.model=TRUE, constr=TRUE, hyper=H$bym2),
-        family = "normal",
-        data= M,
-        control.compute=list(dic=TRUE, config=TRUE),
-        control.results=list(return.marginals.random=TRUE, return.marginals.predictor=TRUE ),
-        control.predictor=list(compute=FALSE, link=1 ),
-        control.fixed=H$fixed,  # priors for fixed effects, generic is ok
-        control.inla=list(strategy="gaussian", int.strategy="eb") ,# to get empirical Bayes results much faster.
-        # control.inla=list(int.strategy="eb") ,# to get empirical Bayes results much faster.
-        # control.inla=list( strategy="laplace", cutoff=1e-6, correct=TRUE, correct.verbose=FALSE ),
-        num.threads=4,
-        blas.num.threads=4,
-        verbose=TRUE
-    ) ' )
-    res = carstm_model( p=p, M='snowcrab_carstm( p=p, DS="carstm_inputs" )' )
-
-
-
-    # CAR effect for each year, no year AC
-    p$carstm_model_label = "CAR_Yearasfactor"
-    p$carstm_modelcall = paste('
-      inla(
-        formula =', p$variabletomodel, ' ~ 1
-          + f(tiyr, model="ar1", hyper=H$ar1 )
-          + f(zi, model="rw2", scale.model=TRUE, diagonal=1e-6, hyper=H$rw2)
-          + f(strata, model="bym2", graph=sppoly@nb ,group= year,  scale.model=TRUE, constr=TRUE, hyper=H$bym2),
-        family = "normal",
-        data= M,
-        control.compute=list(dic=TRUE, config=TRUE),
-        control.results=list(return.marginals.random=TRUE, return.marginals.predictor=TRUE ),
-        control.predictor=list(compute=FALSE, link=1 ),
-        control.fixed=H$fixed,  # priors for fixed effects, generic is ok
-        control.inla=list(strategy="gaussian", int.strategy="eb") ,# to get empirical Bayes results much faster.
-        # control.inla=list(int.strategy="eb") ,# to get empirical Bayes results much faster.
-        # control.inla=list( strategy="laplace", cutoff=1e-6, correct=TRUE, correct.verbose=FALSE ),
-        num.threads=4,
-        blas.num.threads=4,
-        verbose=TRUE
-    ) ' )
-
   }
 
-
   M = snowcrab_carstm( p=p, DS="carstm_inputs", redo=TRUE )  # will redo if not found
-  # 151 configs and long optim .. 19 hrs
-  res = carstm_model( p=p, M='snowcrab_carstm( p=p, DS="carstm_inputs" )' )
+  res = carstm_model( p=p, M='snowcrab_carstm( p=p, DS="carstm_inputs" )' ) # 151 configs and long optim .. 19 hrs
+
 
   if (0) {
 
