@@ -132,6 +132,52 @@ snowcrab_carstm = function( p=NULL, DS="parameters", redo=FALSE, ...) {
     }
 
 
+
+if (0) {
+  # formulafor binomials
+
+  pa = presence.absence( X={set$totno / set$data_offset}, px=0.05 )  # determine presence absence and weighting
+  set[, "pa"] = pa$pa
+  set[, "wt"] = pa$probs
+  pa = NULL
+
+  # generic PC priors
+  H = carstm_hyperparameters( sd(set$pa) )
+
+
+  fit = inla(
+    formula = pa ~ 1
+    + f(ti, model="rw2", scale.model=TRUE, hyper=H$rw2)
+    + f(zi, model="rw2", scale.model=TRUE, hyper=H$rw2)
+    + f(di, model="rw2", scale.model=TRUE, hyper=H$rw2)
+    + f(year, model="iid", hyper=H$iid)
+    + f(strata, model="bym2", graph=sppoly@nb, scale.model=TRUE, constr=TRUE, hyper=H$bym2),
+    family="binomial",  # alternates family="zeroinflatedbinomial0", family="zeroinflatedbinomial1",
+    data=M,
+    control.family=list(control.link=list(model="logit")),
+    control.compute=list(dic=TRUE, config=TRUE),
+    control.results=list(return.marginals.random=TRUE, return.marginals.predictor=TRUE ),
+    control.predictor=list(compute=TRUE, link=1 ), # compute=TRUE on each data location
+    control.fixed=H$fixed,  # priors for fixed effects
+    control.inla=list(  correct=TRUE, correct.verbose=FALSE ), # strategy="laplace", cutoff=1e-6,
+    verbose=TRUE
+  )
+
+
+  APS = cbind( APS, fit$summary.fitted.values[ which(M$tag=="predictions"), ] )
+
+  APS$iyr = match(APS$yr_factor, p$yrs)
+  APS$istrata = match( APS$StrataID, sppoly$StrataID )
+
+  # reformat predictions into matrix form
+  out = matrix(NA, nrow=length(sppoly$StrataID), ncol=length(p$yrs), dimnames=list( sppoly$StrataID, p$yrs) )
+  out[ cbind(APS$istrata, APS$iyr) ] = APS$mean
+  RES$habitat_strata_CAR.yr_iid = colSums( {out * sppoly$sa_strata_km2 }[sppoly$strata_to_keep,], na.rm=TRUE ) /sum(sppoly$sa_strata_km2[sppoly$strata_to_keep]) # sa weighted average prob habitat
+
+
+}
+
+
     p = carstm_parameters( p=p, DS="basic" )  # fill in anything missing and some checks
 
   #  boundingbox = list( xlim = c(-70.5, -56.5), ylim=c(39.5, 47.5)), # bounding box for plots using spplot
