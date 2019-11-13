@@ -3,23 +3,16 @@
 # Snow crab --- Areal unit modelling of habitat  -- no reliance upon stmv fields
 
 
-# construct basic parameter list defining the main characteristics of the study
-
-# areal units definitions
-
-
-  # adjust based upon RAM requirements and ncores
-
+# adjust based upon RAM requirements and ncores
   inla.setOption(num.threads=2)
   inla.setOption(blas.num.threads=2)
 
 
+# construct basic parameter list defining the main characteristics of the study
   assessment.years = 1999:2018
   groundfish_species_code = 2526
-  runtype="number"
+  runtype="number"  # operate upon numerical abundance (vs biomass)
 
-
-  # survey (set-level) parameters
   p = bio.snowcrab::snowcrab_carstm(
     DS = "parameters",
     speciesname = "Snow crab",
@@ -27,13 +20,12 @@
     runtype = "number",  # "biomass", "presence_absence", "number"
     spatial_domain = "snowcrab",  # defines spatial area, currenty: "snowcrab" or "SSE"
     yrs = assessment.years,
-    # polygon_source = "pre2014",   # "pre2014" for older  ... groundfish related
     inputdata_spatial_discretization_planar_km = 1,  # 1 km .. some thinning .. requires 32 GB RAM and limit of speed -- controls resolution of data prior to modelling to reduce data set and speed up modelling
     inputdata_temporal_discretization_yr = 1/12,
-    auid = "snowcrab_assessment_25",  # identifyer for areal units polygon filename
+    areal_unit_type = "snowcrab_assessment_25",  # identifyer for areal units polygon filename
     areal_units_resolution_km = 25, # km dim of lattice ~ 1 hr
     areal_units_proj4string_planar_km = aegis::projection_proj4string("utm20"),  # coord system to use for areal estimation and gridding for carstm
-    areal_units_strata_type = "lattice", # "stmv_fields" to use ageis fields instead of carstm fields ... note variables are not the same
+    areal_units_source = "lattice", # "stmv_fields" to use ageis fields instead of carstm fields ... note variables are not the same
     areal_units_overlay = "snowcrab_managementareas",
     trawlable_units = "sweptarea",  # <<<<<<<<<<<<<<<<<< also:  "standardtow", "sweptarea" (for groundfish surveys)
     quantile_bounds =c(0, 0.99), # trim upper bounds
@@ -55,7 +47,7 @@
         ranged_data = c("dyear")  # not used .. just to show how to use range_data
       )
     ),
-    variables = list(Y="totno"),  # name to give (using stmv access methods)
+    variables = list(Y="totno"),  # name to give (using stmv access methods)  .. redundant .. to remove (needed for now)
     variabletomodel = "totno"
  )
 
@@ -72,7 +64,6 @@
 
 
 
-
   REDO = FALSE
 
   if (REDO) {
@@ -81,15 +72,13 @@
     #  sppoly = neighbourhood_structure( sppoly=sppoly )
     MS = NULL
 
-  # now do all covariate fields on the above polygons
-# -----------------
-# bathymetry -- ensure the data assimilation in bathymetry is first completed :: 01.bathymetry_data.R
-# about 50 hrs to redo; 25 configs @ 2 hrs each
-    pB = bathymetry_carstm( p=p, DS="parameters_override" )
 
+    # -----------------
+    # bathymetry -- ensure the data assimilation in bathymetry is first completed :: 01.bathymetry_data.R
+    # about 50 hrs to redo; 25 configs @ 2 hrs each
+    pB = bathymetry_carstm( p=p, DS="parameters_override" )
     M = bathymetry.db( p=pB, DS="aggregated_data", redo=TRUE )
     M = bathymetry_carstm( p=pB, DS="carstm_inputs", redo=TRUE  ) # will redo if not found
-
     res = carstm_model( p=pB, M='bathymetry_carstm( p=pB, DS="carstm_inputs" )', DS="redo", carstm_model_label="production"  ) # run model and obtain predictions
 
     if (0) {
@@ -129,50 +118,36 @@
     #  the fitted values are computed
 
 
-# -----------------
-# substrate -- ensure the data assimilation in substrate is first completed :: 01.substrate_data.R
-# 25 configs @ 2 hrs each, total time 32 hrs
+    # -----------------
+    # substrate -- ensure the data assimilation in substrate is first completed :: 01.substrate_data.R
+    # 25 configs @ 2 hrs each, total time 32 hrs
     pS = substrate_carstm(p=p, DS="parameters_override" )
-
     M = substrate.db( p=pS, DS="aggregated_data", redo=TRUE )  # used for data matching/lookup in other aegis projects that use substrate
     M = substrate_carstm( p=pS, DS="carstm_inputs", redo=TRUE )  # will redo if not found
-
     res = carstm_model( p=pS, M='substrate_carstm( p=pS, DS="carstm_inputs")', DS="redo", carstm_model_label="production"  )  # run model and obtain predictions
     if(0) {
-      # to use a saved instance
       res = carstm_model( p=pS, DS="carstm_modelled", carstm_model_label="production"   ) # run model and obtain predictions
       fit = carstm_model( p=pS, DS="carstm_modelled_fit", carstm_model_label="production" )  # extract currently saved model fit
-      # maps of some of the results
+      summary(fit)
       vn = paste(pS$variabletomodel, "predicted", sep=".")
-      carstm_plot( p=pS, res=res, vn=vn )
+      carstm_plot( p=pS, res=res, vn=vn ) # maps of some of the results
     }
 
 
 
-
-# -----------------
-# temperature -- ensure the data assimilation in temperature is first completed :: 01.temperature_data.R
-# total: 30 min, 80 configs .. fast
+    # -----------------
+    # temperature -- ensure the data assimilation in temperature is first completed :: 01.temperature_data.R
+    # total: 30 min, 80 configs .. fast
     pT = temperature_carstm(p=p, DS="parameters_override" )
-
     M = temperature.db( p=pT, DS="aggregated_data", redo=TRUE )  #  used for data matching/lookup in other aegis projects that use temperature
     M = temperature_carstm( p=pT, DS="carstm_inputs", redo=TRUE )  # will redo if not found
-
-
-
-    # covar breaks too close for INLA defaults... overide:
     res = carstm_model( p=pT, M='temperature_carstm( p=pT, DS="carstm_inputs")', DS="redo", carstm_model_label="production"  ) # run model and obtain predictions
-
-
     if (0) {
-      # look inside ..
       res = carstm_model( p=pT, DS="carstm_modelled", carstm_model_label="production" ) # run model and obtain predictions
       fit = carstm_model(  p=pT, DS="carstm_modelled_fit", carstm_model_label="production" )  # extract currently saved model fit
       summary(fit)
-      # maps of some of the results
       vn = paste(pT$variabletomodel, "predicted", sep=".")
-      carstm_plot( p=pT, res=res, vn=vn, time_match=list(year="2000", dyear="0.8" ) )
-
+      carstm_plot( p=pT, res=res, vn=vn, time_match=list(year="2000", dyear="0.8" ) )       # maps of some of the results
     }
 
     # Time used:
@@ -248,50 +223,40 @@
 
 
 
-# ------------------------------
-# species composition 1 -- ensure that survey data is assimilated : bio.snowcrab::01snowcb_data.R, aegis.survey::01.surveys.data.R , etc.
-# 30 min, 150 configs
+    # ------------------------------
+    # species composition 1 -- ensure that survey data is assimilated : bio.snowcrab::01snowcb_data.R, aegis.survey::01.surveys.data.R , etc.
+    # 30 min, 150 configs
     pPC1 = speciescomposition_carstm(p=p, DS="parameters_override", varnametomodel="pca1" )
     M = speciescomposition_carstm( p=pPC1, DS="carstm_inputs", varnametomodel="pca1", redo=TRUE )  # will redo if not found
-
     res = carstm_model( p=pPC1, M='speciescomposition_carstm( p=p, DS="carstm_inputs", varnametomodel="pca1" )', DS="redo", carstm_model_label="production"   ) # run model and obtain predictions
     if (0) {
       res = carstm_model( p=pPC1, DS="carstm_modelled", carstm_model_label="production"  ) # run model and obtain predictions
       fit = carstm_model( p=pPC1, DS="carstm_modelled_fit", carstm_model_label="production" )  # extract currently saved model fit
       summary(fit)
-      # maps of some of the results
       vn = paste(pPC1$variabletomodel, "predicted", sep=".")
-      carstm_plot( p=pPC1, res=res, vn=vn, time_match=list(year="2000" ) )
+      carstm_plot( p=pPC1, res=res, vn=vn, time_match=list(year="2000" ) ) # maps of some of the results
     }
 
 
 
 
 
-# ------------------------------
-# species composition 2 -- ensure that survey data is assimilated : bio.snowcrab::01snowcb_data.R, aegis.survey::01.surveys.data.R ,
-# etc.30 min, 30 min
+    # ------------------------------
+    # species composition 2 -- ensure that survey data is assimilated : bio.snowcrab::01snowcb_data.R, aegis.survey::01.surveys.data.R ,
+    # etc.30 min, 30 min
     pPC2 = speciescomposition_carstm(p=p, DS="parameters_override", varnametomodel="pca2" )
     M = speciescomposition_carstm( p=pPC2, DS="carstm_inputs", redo=TRUE )  # will redo if not found
-
     res = carstm_model( p=pPC2, M='speciescomposition_carstm( p=p, DS="carstm_inputs", varnametomodel="pca2" )', DS="redo" , carstm_model_label="production"  ) # run model and obtain predictions
-
     if (0) {
       res = carstm_model( p=pPC2, DS="carstm_modelled", carstm_model_label="production"   ) # run model and obtain predictions
       fit = carstm_model( p=pPC2, DS="carstm_modelled_fit", carstm_model_label="production"  )  # extract currently saved model fit
       summary(fit)
-      # maps of some of the results
       vn = paste(pPC2$variabletomodel, "predicted", sep=".")
-      carstm_plot( p=pPC2, res=res, vn=vn, time_match=list(year="2000" ) )
+      carstm_plot( p=pPC2, res=res, vn=vn, time_match=list(year="2000" ) )       # maps of some of the results
     }
-
 
     # finished covariates ...
   }
-
-
-
-
 
 
 
@@ -313,8 +278,6 @@
         control.inla=list(strategy="gaussian", int.strategy="eb") ,# to get empirical Bayes results much faster.
         # control.inla=list(int.strategy="eb") ,# to get empirical Bayes results much faster.
         # control.inla=list( strategy="laplace", cutoff=1e-6, correct=TRUE, correct.verbose=FALSE ),
-        num.threads=4,
-        blas.num.threads=4,
         verbose=TRUE
     ) ' )
   }
@@ -328,12 +291,9 @@
     # extract results
     res = carstm_model( p=p, DS="carstm_modelled" ) # to load currently saved res
     fit = carstm_model( p=p, DS="carstm_modelled_fit" )  # extract currently saved model fit
-
-      summary(fit)
-        # maps of some of the results
-        vn = paste(p$variabletomodel, "predicted", sep=".")
-        carstm_plot( p=p, res=res, vn=vn, time_match=list(year="2000" ) )
-
+    summary(fit)
+    vn = paste(p$variabletomodel, "predicted", sep=".")
+    carstm_plot( p=p, res=res, vn=vn, time_match=list(year="2000" ) )     # maps of some of the results
 
     plot(fit)
     plot(fit, plot.prior=TRUE, plot.hyperparameters=TRUE, plot.fixed.effects=FALSE )
@@ -366,21 +326,20 @@
       carstm_plot( p=p, res=res, vn=vn, time_match=time_match )
     }
 
-
     # construct meanweights matrix
     M = snowcrab_carstm( p=p, DS="carstm_inputs" )
     M$yr = M$year  # req for meanweights
     sppoly = areal_units( p=p )
 
-    weight_year = meanweights_by_strata(
+    weight_year = meanweights_by_arealunit(
       set=M[M$tag=="observations",],
-      StrataID=as.character( sppoly$StrataID ),
+      AUID=as.character( sppoly$AUID ),
       yrs=p$yrs,
       fillall=TRUE,
       annual_breakdown=TRUE
     )
     # weight_year = weight_year[, match(as.character(p$yrs), colnames(weight_year) )]
-    # weight_year = weight_year[ match(as.character(sppoly$StrataID), rownames(weight_year) )]
+    # weight_year = weight_year[ match(as.character(sppoly$AUID), rownames(weight_year) )]
 
     # / 10^6  # 10^6 kg -> kt .. kg/km * km
     out = res[[ paste( p$variabletomodel, "predicted", sep=".")]]
@@ -388,14 +347,13 @@
     out[out > 1e10] = NA
     RES$model1 = list(
       yrs = p$yrs,
-      cfaall    = colSums( out * weight_year * sppoly$sa_strata_km2/ 10^6, na.rm=TRUE )  ,
+      cfaall    = colSums( out * weight_year * sppoly$au_sa_km2/ 10^6, na.rm=TRUE )  ,
       cfanorth  = colSums( out * weight_year * sppoly$cfanorth_surfacearea/ 10^6, na.rm=TRUE ) ,
       cfasouth  = colSums( out * weight_year * sppoly$cfasouth_surfacearea/ 10^6, na.rm=TRUE ) ,
       cfa23     = colSums( out * weight_year * sppoly$cfa23_surfacearea/ 10^6, na.rm=TRUE ) ,
       cfa24     = colSums( out * weight_year * sppoly$cfa24_surfacearea/ 10^6, na.rm=TRUE ) ,
       cfa4x     = colSums( out * weight_year * sppoly$cfa4x_surfacearea/ 10^6, na.rm=TRUE )
     )
-
 
     fn_RES = file.path(p$modeldir, p$carstm_model_label, "RES_ts.rdata")
     save( RES, fn_RES )
@@ -429,14 +387,17 @@
 
 
 
+# -------------------------------------
+# simpler models:
 
 
 # -------------------------------------
 # model 1 - simple glm
 M = snowcrab_carstm( p=p, DS="carstm_inputs"  )  # will redo if not found
+sppoly = areal_units( p=p )
 
 fit = glm(
-  formula = totno ~ 1 + offset( log( data_offset) ) + StrataID + yr_factor,
+  formula = totno ~ 1 + offset( log( data_offset) ) + AUID + year_factor,
   family = "poisson", # "zeroinflatedpoisson0",
   data= M[ which(M$tag=="observations"), ]
 )
@@ -447,25 +408,26 @@ AIC(fit)  # 77326
 # reformat predictions into matrix form
 ii = which(
   M$tag=="predictions" &
-  M$StrataID %in% M[ which(M$tag=="observations"), "StrataID"] &
-  M$yr_factor %in% M[ which(M$tag=="observations"), "yr_factor"]
+  M$AUID %in% M[ which(M$tag=="observations"), "AUID"] &
+  M$year_factor %in% M[ which(M$tag=="observations"), "year_factor"]
 )
 
 preds = predict( fit, newdata=M[ii,], type="response", na.action=na.omit, se.fit=TRUE )  # no/km2
 
 out = reformat_to_array(
   input = preds$fit,
-  matchfrom = list( StrataID=M$StrataID[ii], yr_factor=M$yr_factor[ii]),
-  matchto   = list( StrataID=sppoly$StrataID, yr_factor=factor(p$yrs) )
+  matchfrom = list( AUID=as.character(M$AUID[ii]),  year_factor=as.character(M$year[ii]) ),
+  matchto   = list( AUID=as.character(sppoly$AUID), year_factor=as.character(factor(p$yrs)) )
 )
 # out[ out>1e10] = NA
 # convert numbers/km to biomass/strata (kg)..
 
+
 # / 10^6  # 10^6 kg -> kt .. kg/km * km
 RES$poisson_glm = list(
   yrs = p$yrs,
-  cfaall    = colSums( out * weight_year * sppoly$sa_strata_km2, na.rm=TRUE ) / 10^6 ,
-  cfanorth  = colSums( out * weight_year * sppoly$ccfanorth_surfacearea, na.rm=TRUE )/ 10^6 ,
+  cfaall    = colSums( out * weight_year * sppoly$au_sa_km2, na.rm=TRUE ) / 10^6 ,
+  cfanorth  = colSums( out * weight_year * sppoly$cfanorth_surfacearea, na.rm=TRUE )/ 10^6 ,
   cfasouth  = colSums( out * weight_year * sppoly$cfasouth_surfacearea, na.rm=TRUE )/ 10^6 ,
   cfa23     = colSums( out * weight_year * sppoly$cfa23_surfacearea, na.rm=TRUE )/ 10^6 ,
   cfa24     = colSums( out * weight_year * sppoly$cfa24_surfacearea, na.rm=TRUE )/ 10^6 ,
@@ -473,11 +435,10 @@ RES$poisson_glm = list(
 )
 
 
-
-plot( poisson_glm ~ yr, data=RES$poisson_glm, lty=1, lwd=2.5, col="blue", type="b")
-plot( poisson_glm_cfanorth ~ yr, data=RES$poisson_glm, lty=1, lwd=2.5, col="green", type="b")
-plot( poisson_glm_cfasouth ~ yr, data=RES$poisson_glm, lty=1, lwd=2.5, col="green", type="b")
-plot( poisson_glm_cfa4x ~ yr, data=RES$poisson_glm, lty=1, lwd=2.5, col="green", type="b")
+plot( cfaall ~ yrs, data=RES$poisson_glm, lty=1, lwd=2.5, col="blue", type="b")
+plot( cfanorth ~ yrs, data=RES$poisson_glm, lty=1, lwd=2.5, col="green", type="b")
+plot( cfasouth ~ yrs, data=RES$poisson_glm, lty=1, lwd=2.5, col="green", type="b")
+plot( cfa4x ~ yrs, data=RES$poisson_glm, lty=1, lwd=2.5, col="green", type="b")
 
 
 
@@ -496,7 +457,7 @@ spplot( sppoly, vn, col.regions=p$mypalette, main=vn, at=brks, sp.layout=p$coast
 # simple gam
 require(mgcv)
 fit = gam(
-  formula = Y ~ 1 + offset( log( data_offset) ) + StrataID + yr_factor + s(strata, year, bs="ts"),
+  formula = Y ~ 1 + offset( log( data_offset) ) + AUID + yr_factor + s(strata, year, bs="ts"),
   family = "poisson", # "zeroinflatedpoisson0",
   data= M[ which(M$tag=="observations"), ]
 )
@@ -507,7 +468,7 @@ AIC(fit)  # 76752
 # reformat predictions into matrix form
 ii = which(
   M$tag=="predictions" &
-  M$StrataID %in% M[ which(M$tag=="observations"), "StrataID"] &
+  M$AUID %in% M[ which(M$tag=="observations"), "AUID"] &
   M$yr_factor %in% M[ which(M$tag=="observations"), "yr_factor"]
 )
 
@@ -515,14 +476,14 @@ preds = predict( fit, newdata=M[ii,], type="response", na.action=na.omit, se.fit
 
 out = reformat_to_array(
   input = preds$fit,
-  matchfrom = list( StrataID=M$StrataID[ii], yr_factor=M$yr_factor[ii]),
-  matchto   = list( StrataID=sppoly$StrataID, yr_factor=factor(p$yrs) )
+  matchfrom = list( AUID=M$AUID[ii], yr_factor=M$yr_factor[ii]),
+  matchto   = list( AUID=sppoly$AUID, yr_factor=factor(p$yrs) )
 )
 
 RES$poisson_gam = list(
   yrs = p$yrs,
-  cfaall    = colSums( out * weight_year * sppoly$sa_strata_km2, na.rm=TRUE ) / 10^6 ,
-  cfanorth  = colSums( out * weight_year * sppoly$ccfanorth_surfacearea, na.rm=TRUE )/ 10^6 ,
+  cfaall    = colSums( out * weight_year * sppoly$au_sa_km2, na.rm=TRUE ) / 10^6 ,
+  cfanorth  = colSums( out * weight_year * sppoly$cfanorth_surfacearea, na.rm=TRUE )/ 10^6 ,
   cfasouth  = colSums( out * weight_year * sppoly$cfasouth_surfacearea, na.rm=TRUE )/ 10^6 ,
   cfa23     = colSums( out * weight_year * sppoly$cfa23_surfacearea, na.rm=TRUE )/ 10^6 ,
   cfa24     = colSums( out * weight_year * sppoly$cfa24_surfacearea, na.rm=TRUE )/ 10^6 ,
@@ -549,7 +510,7 @@ spplot( sppoly, vn, col.regions=p$mypalette, main=vn, at=brks, sp.layout=p$coast
 # - -----------------------------
 # simple with default priors
 fit = inla(
-  formula = Y ~ 1 + offset( log( data_offset) ) + StrataID + yr_factor ,
+  formula = Y ~ 1 + offset( log( data_offset) ) + AUID + yr_factor ,
   family = "poisson", # "zeroinflatedpoisson0",
   data= M,
   control.compute=list(dic=TRUE, config=TRUE),
@@ -578,11 +539,11 @@ s$dic$p.eff # 4865
 ii = which(M$tag=="predictions")
 out = reformat_to_array(
   input = fit$summary.fitted.values[ ii, "mean" ],
-  matchfrom = list( StrataID=M$StrataID[ii], yr_factor=M$yr_factor[ii]),
-  matchto   = list( StrataID=sppoly$StrataID, yr_factor=factor(p$yrs) )
+  matchfrom = list( AUID=M$AUID[ii], yr_factor=M$yr_factor[ii]),
+  matchto   = list( AUID=sppoly$AUID, yr_factor=factor(p$yrs) )
 )
 # out[ out>1e10] = NA
-RES$poisson_basic = colSums( {out * weight_year * sppoly$sa_strata_km2}, na.rm=TRUE )  / 10^6 # kt
+RES$poisson_basic = colSums( {out * weight_year * sppoly$au_sa_km2}, na.rm=TRUE )  / 10^6 # kt
 RES$poisson_basic_cfanorth = colSums( {out * weight_year * sppoly$cfanorth_surfacearea}, na.rm=TRUE ) / 10^6  # 10^6 kg -> kt # kg/km * km
 RES$poisson_basic_cfasouth = colSums( {out * weight_year * sppoly$cfasouth_surfacearea}, na.rm=TRUE ) / 10^6  # 10^6 kg -> kt # kg/km * km
 RES$poisson_basic_cfa4x = colSums( {out * weight_year * sppoly$cfa4x_surfacearea}, na.rm=TRUE ) / 10^6  # 10^6 kg -> kt # kg/km * km
@@ -666,11 +627,11 @@ s$dic$p.eff # 4865
 ii = which(M$tag=="predictions")
 out = reformat_to_array(
   input = fit$summary.fitted.values[ ii, "mean" ],
-  matchfrom = list( StrataID=M$StrataID[ii], yr_factor=M$yr_factor[ii]),
-  matchto   = list( StrataID=sppoly$StrataID, yr_factor=factor(p$yrs) )
+  matchfrom = list( AUID=M$AUID[ii], yr_factor=M$yr_factor[ii]),
+  matchto   = list( AUID=sppoly$AUID, yr_factor=factor(p$yrs) )
 )
 # out[ out>1e10] = NA
-RES$poisson_basic2 = colSums( {out * weight_year * sppoly$sa_strata_km2}, na.rm=TRUE ) /10^6  # km
+RES$poisson_basic2 = colSums( {out * weight_year * sppoly$au_sa_km2}, na.rm=TRUE ) /10^6  # km
 lines( poisson_basic2 ~ yr, data=RES, lty=1, lwd=2.5, col="blue", type="b")
 
 
@@ -720,11 +681,11 @@ plot(fit, plot.prior=TRUE, plot.hyperparameters=TRUE, plot.fixed.effects=FALSE )
 ii = which(M$tag=="predictions")
 out = reformat_to_array(
   input = fit$summary.fitted.values[ ii, "mean" ],
-  matchfrom = list( StrataID=M$StrataID[ii], yr_factor=M$yr_factor[ii]),
-  matchto   = list( StrataID=sppoly$StrataID, yr_factor=factor(p$yrs) )
+  matchfrom = list( AUID=M$AUID[ii], yr_factor=M$yr_factor[ii]),
+  matchto   = list( AUID=sppoly$AUID, yr_factor=factor(p$yrs) )
 )
 # out[ out>1e10] = NA
-RES$poisson_car_simple = colSums( {out * weight_year * sppoly$sa_strata_km2}, na.rm=TRUE ) / 1e6
+RES$poisson_car_simple = colSums( {out * weight_year * sppoly$au_sa_km2}, na.rm=TRUE ) / 1e6
 
 lines( poisson_car_simple ~ yr, data=RES, lty=1, lwd=2.5, col="blue", type="b")
 
@@ -804,11 +765,11 @@ s$dic$p.eff # 5124
 ii = which(M$tag=="predictions")
 out = reformat_to_array(
   input = fit$summary.fitted.values[ ii, "mean" ],
-  matchfrom = list( StrataID=M$StrataID[ii], yr_factor=M$yr_factor[ii]),
-  matchto   = list( StrataID=sppoly$StrataID, yr_factor=factor(p$yrs) )
+  matchfrom = list( AUID=M$AUID[ii], yr_factor=M$yr_factor[ii]),
+  matchto   = list( AUID=sppoly$AUID, yr_factor=factor(p$yrs) )
 )
 # out[ out>1e10] = NA
-RES$poisson_car.year_iid_yr = colSums( {out * weight_year * sppoly$sa_strata_km2}, na.rm=TRUE ) / 10^6
+RES$poisson_car.year_iid_yr = colSums( {out * weight_year * sppoly$au_sa_km2}, na.rm=TRUE ) / 10^6
 plot( poisson_car.year_iid_yr ~ yr, data=RES, lty=1, lwd=2.5, col="blue", type="b")
 
 # map it
@@ -897,11 +858,11 @@ s$dic$p.eff # 4942
 ii = which(M$tag=="predictions")
 out = reformat_to_array(
   input = fit$summary.fitted.values[ ii, "mean" ],
-  matchfrom = list( StrataID=M$StrataID[ii], yr_factor=M$yr_factor[ii]),
-  matchto   = list( StrataID=sppoly$StrataID, yr_factor=factor(p$yrs) )
+  matchfrom = list( AUID=M$AUID[ii], yr_factor=M$yr_factor[ii]),
+  matchto   = list( AUID=sppoly$AUID, yr_factor=factor(p$yrs) )
 )
 # out[ out>1e10] = NA
-RES$poisson_car.year_iid_yr = colSums( {out * weight_year * sppoly$sa_strata_km2}, na.rm=TRUE ) / 10^6
+RES$poisson_car.year_iid_yr = colSums( {out * weight_year * sppoly$au_sa_km2}, na.rm=TRUE ) / 10^6
 plot( poisson_car.year_iid_yr ~ yr, data=RES, lty=1, lwd=2.5, col="blue", type="b")
 
 # map it
@@ -988,11 +949,11 @@ s$dic$p.eff # 4942
 ii = which(M$tag=="predictions")
 out = reformat_to_array(
   input = fit$summary.fitted.values[ ii, "mean" ],
-  matchfrom = list( StrataID=M$StrataID[ii], yr_factor=M$yr_factor[ii]),
-  matchto   = list( StrataID=sppoly$StrataID, yr_factor=factor(p$yrs) )
+  matchfrom = list( AUID=M$AUID[ii], yr_factor=M$yr_factor[ii]),
+  matchto   = list( AUID=sppoly$AUID, yr_factor=factor(p$yrs) )
 )
 # out[ out>1e10] = NA
-RES$poisson_car.year_iid_yr = colSums( {out * weight_year * sppoly$sa_strata_km2}, na.rm=TRUE ) / 10^6
+RES$poisson_car.year_iid_yr = colSums( {out * weight_year * sppoly$au_sa_km2}, na.rm=TRUE ) / 10^6
 plot( poisson_car.year_iid_yr ~ yr, data=RES, lty=1, lwd=2.5, col="blue", type="b")
 
 # map it
@@ -1043,21 +1004,21 @@ APS$data_offset=1
 APS$yr = APS$year
 APS$yr_factor = factor( APS$year, levels=p$yrs)
 APS$iyr = match(APS$yr_factor, p$yrs)
-APS$istrata = match( APS$StrataID, sppoly$StrataID )
+APS$istrata = match( APS$AUID, sppoly$AUID )
 
 predictions = predict(fit, APS, type="response", se.fit=TRUE  )
 APS$predictions = predictions$fit
 APS$predictions.se = predictions$se.fit
 
 # reformat predictions into matrix form
-out = matrix(NA, nrow=length(sppoly$StrataID), ncol=length(p$yrs), dimnames=list( sppoly$StrataID, p$yrs) )
+out = matrix(NA, nrow=length(sppoly$AUID), ncol=length(p$yrs), dimnames=list( sppoly$AUID, p$yrs) )
 out[ cbind(APS$istrata, APS$iyr) ] = APS$predictions
-RES$habitat_glm = colSums( {out * sppoly$sa_strata_km2 }, na.rm=TRUE ) /sum(sppoly$sa_strata_km2) # sa weighted average prob habitat
+RES$habitat_glm = colSums( {out * sppoly$au_sa_km2 }, na.rm=TRUE ) /sum(sppoly$au_sa_km2) # sa weighted average prob habitat
 
 
 # map it onto strata means of temperature and depth
 aps = APS[ APS$year==2017,  ]
-iy = match( as.character(sppoly$StrataID), aps$StrataID )
+iy = match( as.character(sppoly$AUID), aps$AUID )
 vn = "pred"
 sppoly@data[,vn] = APS$predictions[iy]
 brks = interval_break(X= sppoly[[vn]], n=length(p$mypalette), style="quantile")
@@ -1075,7 +1036,7 @@ fit = mgcv::gam(
 )
 
 fit = mgcv::gam(
-  formula = Y ~ offset(log(data_offset)) + 1 + StrataID:yr_factor + StrataID + yr_factor + s(t, bs="tp", k=3)  + s(z, bs="tp", k=3),
+  formula = Y ~ offset(log(data_offset)) + 1 + AUID:yr_factor + AUID + yr_factor + s(t, bs="tp", k=3)  + s(z, bs="tp", k=3),
   family=poisson(link="log"),
   data=set[ok, ]
 )
@@ -1108,22 +1069,22 @@ APS$data_offset=1
 APS$yr = APS$year
 APS$yr_factor = factor( APS$year, levels=p$yrs)
 APS$iyr = match(APS$yr_factor, p$yrs)
-APS$istrata = match( APS$StrataID, sppoly$StrataID )
+APS$istrata = match( APS$AUID, sppoly$AUID )
 
 predictions = predict(fit, APS, type="response", se.fit=TRUE  )
 APS$predictions = predictions$fit
 APS$predictions.se = predictions$se.fit
 
 # reformat predictions into matrix form
-out = matrix(NA, nrow=length(sppoly$StrataID), ncol=length(p$yrs), dimnames=list( sppoly$StrataID, p$yrs) )
+out = matrix(NA, nrow=length(sppoly$AUID), ncol=length(p$yrs), dimnames=list( sppoly$AUID, p$yrs) )
 out[ cbind(APS$istrata, APS$iyr) ] = APS$predictions
 
-RES$habitat_gam = colSums( {out * sppoly$sa_strata_km2 }, na.rm=TRUE ) /sum(sppoly$sa_strata_km2) # sa weighted average prob habitat
+RES$habitat_gam = colSums( {out * sppoly$au_sa_km2 }, na.rm=TRUE ) /sum(sppoly$au_sa_km2) # sa weighted average prob habitat
 
 
 # map it
 iy = which( APS$year=="2017")
-it = match( as.character(sppoly$StrataID), APS$StrataID[iy] )
+it = match( as.character(sppoly$AUID), APS$AUID[iy] )
 vn = "pred"
 sppoly@data[,vn] = APS$predictions[iy][it]
 brks = interval_break(X= sppoly[[vn]], n=length(p$mypalette), style="quantile")
@@ -1141,7 +1102,7 @@ APS$tag = "predictions"
 APS$yr = APS$year
 APS$yr_factor = factor( APS$year, levels=p$yrs)
 
-basic_vars = unique(c( "pa", "t", "z", "degreedays", "data_offset", "tag", "yr", "StrataID"))
+basic_vars = unique(c( "pa", "t", "z", "degreedays", "data_offset", "tag", "yr", "AUID"))
 
 M = rbind( set[, basic_vars], APS[,basic_vars] )
 
@@ -1149,7 +1110,7 @@ M$t[!is.finite(M$t)] = median(M$t, na.rm=TRUE )  # missing data .. quick fix .. 
 M$z[!is.finite(M$z)] = median(M$z, na.rm=TRUE )  # missing data .. quick fix .. do something better for
 
 M$yr_factor = factor( M$yr, levels=p$yrs )
-M$StrataID  = factor( M$StrataID, levels=levels(sppoly$StrataID ))
+M$AUID  = factor( M$AUID, levels=levels(sppoly$AUID ))
 
 
 M$ti = discretize_data( M$t, p$discretization$t )
@@ -1180,12 +1141,12 @@ s$dic$p.eff # 17.73
 
 APS = cbind( APS, fit$summary.fitted.values[ which(M$tag=="predictions"), ] )
 APS$iyr = match(APS$yr_factor, p$yrs)
-APS$istrata = match( APS$StrataID, sppoly$StrataID )
+APS$istrata = match( APS$AUID, sppoly$AUID )
 
 # reformat predictions into matrix form
-out = matrix(NA, nrow=length(sppoly$StrataID), ncol=length(p$yrs), dimnames=list( sppoly$StrataID, p$yrs) )
+out = matrix(NA, nrow=length(sppoly$AUID), ncol=length(p$yrs), dimnames=list( sppoly$AUID, p$yrs) )
 out[ cbind(APS$istrata, APS$iyr) ] = APS$mean
-RES$habitat_inla = colSums( {out * sppoly$sa_strata_km2 }, na.rm=TRUE ) /sum(sppoly$sa_strata_km2) # sa weighted average prob habitat
+RES$habitat_inla = colSums( {out * sppoly$au_sa_km2 }, na.rm=TRUE ) /sum(sppoly$au_sa_km2) # sa weighted average prob habitat
 
 # map it
 vn = "pred"
@@ -1214,7 +1175,7 @@ APS$tag = "predictions"
 APS$yr = APS$year
 APS$yr_factor = factor( APS$year, levels=p$yrs)
 
-basic_vars = unique(c( "pa", "t", "z", "degreedays", "data_offset", "tag", "yr", "StrataID"))
+basic_vars = unique(c( "pa", "t", "z", "degreedays", "data_offset", "tag", "yr", "AUID"))
 
 M = rbind( set[, basic_vars], APS[,basic_vars] )
 
@@ -1222,8 +1183,8 @@ M$t[!is.finite(M$t)] = median(M$t, na.rm=TRUE )  # missing data .. quick fix .. 
 M$z[!is.finite(M$z)] = median(M$z, na.rm=TRUE )  # missing data .. quick fix .. do something better for
 
 M$yr_factor = factor( as.character(M$yr) )
-M$StrataID  = factor( M$StrataID, levels=levels(sppoly$StrataID ))
-M$strata  = as.numeric( M$StrataID)
+M$AUID  = factor( M$AUID, levels=levels(sppoly$AUID ))
+M$strata  = as.numeric( factor(M$AUID))
 M$year  = as.numeric( M$yr_factor)
 
 
@@ -1257,12 +1218,12 @@ s$dic$p.eff #163.8
 APS = cbind( APS, fit$summary.fitted.values[ which(M$tag=="predictions"), ] )
 
 APS$iyr = match(APS$yr_factor, p$yrs)
-APS$istrata = match( APS$StrataID, sppoly$StrataID )
+APS$istrata = match( APS$AUID, sppoly$AUID )
 
 # reformat predictions into matrix form
-out = matrix(NA, nrow=length(sppoly$StrataID), ncol=length(p$yrs), dimnames=list( sppoly$StrataID, p$yrs) )
+out = matrix(NA, nrow=length(sppoly$AUID), ncol=length(p$yrs), dimnames=list( sppoly$AUID, p$yrs) )
 out[ cbind(APS$istrata, APS$iyr) ] = APS$mean
-RES$habitat_bym_yriid = colSums( {out * sppoly$sa_strata_km2 }, na.rm=TRUE ) /sum(sppoly$sa_strata_km2) # sa weighted average prob habitat
+RES$habitat_bym_yriid = colSums( {out * sppoly$au_sa_km2 }, na.rm=TRUE ) /sum(sppoly$au_sa_km2) # sa weighted average prob habitat
 
 # map it
 vn = "pred"

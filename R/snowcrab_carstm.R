@@ -40,7 +40,7 @@ snowcrab_carstm = function( p=NULL, DS="parameters", redo=FALSE, ...) {
       inputdata_spatial_discretization_planar_km = p$inputdata_spatial_discretization_planar_km,  # 1 km .. some thinning .. requires 32 GB RAM and limit of speed -- controls resolution of data prior to modelling to reduce data set and speed up modelling
       inputdata_temporal_discretization_yr = p$inputdata_temporal_discretization_yr,  # ie., weekly .. controls resolution of data prior to modelling to reduce data set and speed up modelling
       modeldir = p$modeldir,  # outputs all go the the main project's model output directory
-      auid = p$auid
+      areal_unit_type = p$areal_unit_type
     )
     return(pc)
   }
@@ -55,7 +55,7 @@ snowcrab_carstm = function( p=NULL, DS="parameters", redo=FALSE, ...) {
 
     if ( !exists("project_name", p)) p$project_name = "snowcrab"
 
-    if ( !exists("areal_units_strata_type", p)) p$areal_units_strata_type = "lattice" # "stmv_lattice" to use ageis fields instead of carstm fields ... note variables are not the same
+    if ( !exists("areal_units_source", p)) p$areal_units_source = "lattice" # "stmv_lattice" to use ageis fields instead of carstm fields ... note variables are not the same
 
     if ( !exists("areal_units_overlay", p)) p$areal_units_overlay = "snowcrab_managementareas" # currently: "snowcrab_managementareas",  "groundfish_strata" .. additional polygon layers for subsequent analysis for now ..
     if ( !exists("areal_units_resolution_km", p)) p$areal_units_resolution_km = 25 # km dim of lattice ~ 1 hr
@@ -71,11 +71,6 @@ snowcrab_carstm = function( p=NULL, DS="parameters", redo=FALSE, ...) {
     if ( !exists("carstm_modelcall", p)) {
       if ( grepl("inla", p$carstm_modelengine) ) {
         p$libs = unique( c( p$libs, project.library ( "INLA" ) ) )
-
-        inla_nthreads = ifelse( exists("inla_nthreads", p ), p$inla_nthreads, 1 )
-        inla_nthreads_blas = ifelse ( exists("inla_nthreads_blas", p ), p$inla_nthreads_blas, 1 )
-
-        # use strata which is a numeric representation of the StrataID factor
         p$carstm_model_label = "production"
         p$carstm_modelcall = paste(
           'inla( formula =', p$variabletomodel,
@@ -95,10 +90,7 @@ snowcrab_carstm = function( p=NULL, DS="parameters", redo=FALSE, ...) {
             control.results=list(return.marginals.random=TRUE, return.marginals.predictor=TRUE ),
             control.predictor=list(compute=FALSE, link=1 ),
             control.fixed=H$fixed,  # priors for fixed effects, generic is ok
-            # control.inla=list(int.strategy="eb") ,# to get empirical Bayes results much faster.
             control.inla=list( strategy="laplace", cutoff=1e-6, correct=TRUE, correct.verbose=FALSE ),
-            num.threads=', inla_nthreads, ' ,
-            blas.num.threads=', inla_nthreads_blas, ' ,
             verbose=TRUE
           )'
         )
@@ -110,7 +102,7 @@ snowcrab_carstm = function( p=NULL, DS="parameters", redo=FALSE, ...) {
         p$carstm_model_label = "default_glm"
         p$carstm_modelcall = paste(
           'glm( formula =',  p$variabletomodel,
-          ' ~ 1 + StrataID + t + z + substrate.grainsize +tiyr,  # StrataID is a factor
+          ' ~ 1 + factor(AUID) + t + z + substrate.grainsize +tiyr,
             data= M[ which(M$tag=="observations"), ],
             family=gaussian(link="identity")
           )'
@@ -123,7 +115,7 @@ snowcrab_carstm = function( p=NULL, DS="parameters", redo=FALSE, ...) {
         p$carstm_model_label = "default_gam"
         p$carstm_modelcall = paste(
           'gam( formula =',  p$variabletomodel,
-          ' ~ 1 + StrataID + s(t) + s(z) + s(substrate.grainsize) + s(year) + s(dyear),
+          ' ~ 1 + factor(AUID) + s(t) + s(z) + s(substrate.grainsize) + s(year) + s(dyear),
             data= M[ which(M$tag=="observations"), ],
             family=gaussian(link="identity")
           )'
@@ -167,12 +159,12 @@ if (0) {
   APS = cbind( APS, fit$summary.fitted.values[ which(M$tag=="predictions"), ] )
 
   APS$iyr = match(APS$yr_factor, p$yrs)
-  APS$istrata = match( APS$StrataID, sppoly$StrataID )
+  APS$istrata = match( APS$AUID, sppoly$AUID )
 
   # reformat predictions into matrix form
-  out = matrix(NA, nrow=length(sppoly$StrataID), ncol=length(p$yrs), dimnames=list( sppoly$StrataID, p$yrs) )
+  out = matrix(NA, nrow=length(sppoly$AUID), ncol=length(p$yrs), dimnames=list( sppoly$AUID, p$yrs) )
   out[ cbind(APS$istrata, APS$iyr) ] = APS$mean
-  RES$habitat_strata_CAR.yr_iid = colSums( {out * sppoly$sa_strata_km2 }[sppoly$strata_to_keep,], na.rm=TRUE ) /sum(sppoly$sa_strata_km2[sppoly$strata_to_keep]) # sa weighted average prob habitat
+  RES$habitat_strata_CAR.yr_iid = colSums( {out * sppoly$au_sa_km2 }[sppoly$strata_to_keep,], na.rm=TRUE ) /sum(sppoly$au_sa_km2[sppoly$strata_to_keep]) # sa weighted average prob habitat
 
 
 }
@@ -189,7 +181,7 @@ if (0) {
 
   if ( DS=="carstm_inputs") {
 
-    fn = file.path( p$modeldir, paste( "snowcrab", "carstm_inputs", p$auid,
+    fn = file.path( p$modeldir, paste( "snowcrab", "carstm_inputs", p$areal_unit_type,
       p$variabletomodel,
       p$inputdata_spatial_discretization_planar_km,
       round(p$inputdata_temporal_discretization_yr, 6),
@@ -224,7 +216,7 @@ if (0) {
     M = M[ which( M$lon > p$corners$lon[1] & M$lon < p$corners$lon[2]  & M$lat > p$corners$lat[1] & M$lat < p$corners$lat[2] ), ]
     # levelplot(z.mean~plon+plat, data=M, aspect="iso")
 
-    M$StrataID = over( SpatialPoints( M[, c("lon", "lat")], crs_lonlat ), spTransform(sppoly, crs_lonlat ) )$StrataID # match each datum to an area
+    M$AUID = over( SpatialPoints( M[, c("lon", "lat")], crs_lonlat ), spTransform(sppoly, crs_lonlat ) )$AUID # match each datum to an area
 
     names(M)[which(names(M)=="yr") ] = "year"
     # M = M[ which(M$year %in% p$yrs), ]
@@ -281,27 +273,27 @@ if (0) {
     }
 
 
-    # if any still missing then use a mean depth by StrataID
+    # if any still missing then use a mean depth by AUID
     kk =  which( !is.finite(M[, pB$variabletomodel]))
     if (length(kk) > 0) {
       AD = bathymetry.db ( p=pB, DS="aggregated_data"  )  # 16 GB in RAM just to store!
       AD = AD[ which( AD$lon > p$corners$lon[1] & AD$lon < p$corners$lon[2]  & AD$lat > p$corners$lat[1] & AD$lat < p$corners$lat[2] ), ]
       # levelplot( eval(paste(p$variabletomodel, "mean", sep="."))~plon+plat, data=M, aspect="iso")
-      AD$StrataID = over( SpatialPoints( AD[, c("lon", "lat")], crs_lonlat ), spTransform(sppoly, crs_lonlat ) )$StrataID # match each datum to an area
-      oo = tapply( AD[, paste(pB$variabletomodel, "mean", sep="." )], AD$StrataID, FUN=median, na.rm=TRUE )
-      jj = match( as.character( M$StrataID[kk]), as.character( names(oo )) )
+      AD$AUID = over( SpatialPoints( AD[, c("lon", "lat")], crs_lonlat ), spTransform(sppoly, crs_lonlat ) )$AUID # match each datum to an area
+      oo = tapply( AD[, paste(pB$variabletomodel, "mean", sep="." )], AD$AUID, FUN=median, na.rm=TRUE )
+      jj = match( as.character( M$AUID[kk]), as.character( names(oo )) )
       M[kk, pB$variabletomodel] = oo[jj ]
     }
 
-    # if any still missing then use a mean substrate by StrataID
+    # if any still missing then use a mean substrate by AUID
     kk =  which( !is.finite(M[, pS$variabletomodel]))
     if (length(kk) > 0) {
       AD = substrate.db ( p=pS, DS="aggregated_data"  )  # 16 GB in RAM just to store!
       AD = AD[ which( AD$lon > p$corners$lon[1] & AD$lon < p$corners$lon[2]  & AD$lat > p$corners$lat[1] & AD$lat < p$corners$lat[2] ), ]
       # levelplot( eval(paste(p$variabletomodel, "mean", sep="."))~plon+plat, data=M, aspect="iso")
-      AD$StrataID = over( SpatialPoints( AD[, c("lon", "lat")], crs_lonlat ), spTransform(sppoly, crs_lonlat ) )$StrataID # match each datum to an area
-      oo = tapply( AD[, paste(pS$variabletomodel, "mean", sep="." )], AD$StrataID, FUN=median, na.rm=TRUE )
-      jj = match( as.character( M$StrataID[kk]), as.character( names(oo )) )
+      AD$AUID = over( SpatialPoints( AD[, c("lon", "lat")], crs_lonlat ), spTransform(sppoly, crs_lonlat ) )$AUID # match each datum to an area
+      oo = tapply( AD[, paste(pS$variabletomodel, "mean", sep="." )], AD$AUID, FUN=median, na.rm=TRUE )
+      jj = match( as.character( M$AUID[kk]), as.character( names(oo )) )
       M[kk, pS$variabletomodel] = oo[jj ]
     }
 
@@ -309,23 +301,23 @@ if (0) {
     kk =  which( !is.finite(M[, pS$variabletomodel]))
     if (length(kk) > 0) {
       SI = carstm_model ( p=pS, DS="carstm_modelled" )
-      jj = match( as.character( M$StrataID[kk]), as.character( SI$StrataID) )
+      jj = match( as.character( M$AUID[kk]), as.character( SI$AUID) )
       M[kk, pS$variabletomodel] = SI[[ paste(pS$variabletomodel,"predicted",sep="." )]] [jj]
     }
 
 
-    # if any still missing then use a mean temp by StrataID
+    # if any still missing then use a mean temp by AUID
     kk =  which( !is.finite(M[, pT$variabletomodel]))
     if (length(kk) > 0) {
       AD = temperature.db ( p=pT, DS="aggregated_data"  )  # 16 GB in RAM just to store!
       AD = AD[ which( AD$lon > p$corners$lon[1] & AD$lon < p$corners$lon[2]  & AD$lat > p$corners$lat[1] & AD$lat < p$corners$lat[2] ), ]
       # levelplot( eval(paste(p$variabletomodel, "mean", sep="."))~plon+plat, data=M, aspect="iso")
 
-      AD$StrataID = over( SpatialPoints( AD[, c("lon", "lat")], crs_lonlat ), spTransform(sppoly, crs_lonlat ) )$StrataID # match each datum to an area
-      AD$uid = paste(AD$StrataID, AD$year, AD$dyear, sep=".")
+      AD$AUID = over( SpatialPoints( AD[, c("lon", "lat")], crs_lonlat ), spTransform(sppoly, crs_lonlat ) )$AUID # match each datum to an area
+      AD$uid = paste(AD$AUID, AD$year, AD$dyear, sep=".")
 
       M_dyear_discret = discretize_data( M$dyear, p$discretization$dyear )  # AD$dyear is discretized. . match discretization
-      M$uid =  paste(M$StrataID, M$year, M_dyear_discret, sep=".")
+      M$uid =  paste(M$AUID, M$year, M_dyear_discret, sep=".")
 
       oo = tapply( AD[, paste(pT$variabletomodel, "mean", sep="." )], AD$uid, FUN=median, na.rm=TRUE )
 
@@ -340,17 +332,17 @@ if (0) {
     if (length(kk) > 0) {
       pc1 = speciescomposition.db( p=pPC1, DS="speciescomposition"  )
       pc1 = planar2lonlat( pc1, proj.type=p$aegis_proj4string_planar_km )
-      pc1$StrataID = over( SpatialPoints( pc1[, c("lon", "lat")], crs_lonlat ), spTransform(sppoly, crs_lonlat ) )$StrataID # match each datum to an area
-      oo = tapply( pc1[, pPC1$variabletomodel ], pc1$StrataID, FUN=median, na.rm=TRUE )
-      jj = match( as.character( M$StrataID[kk]), as.character( names(oo )) )
+      pc1$AUID = over( SpatialPoints( pc1[, c("lon", "lat")], crs_lonlat ), spTransform(sppoly, crs_lonlat ) )$AUID # match each datum to an area
+      oo = tapply( pc1[, pPC1$variabletomodel ], pc1$AUID, FUN=median, na.rm=TRUE )
+      jj = match( as.character( M$AUID[kk]), as.character( names(oo )) )
       if (length(jj) > 0) M[kk, pPC1$variabletomodel] = oo[jj ]
     }
     kk =  which( !is.finite(M[, pPC1$variabletomodel]))
     if (length(kk) > 0) {
       PI = carstm_model ( p=pPC1, DS="carstm_modelled" )
-      strata_map = match( as.numeric(M$StrataID[kk]), levels(sppoly$StrataID[as.numeric(dimnames(PI)$strata)]  ) )
+      au_map = match( as.numeric(M$AUID[kk]), levels(sppoly$AUID[as.numeric(dimnames(PI)$strata)]  ) )
       year_map = match( as.character(M$year[kk]), dimnames(PI)$year )
-      dindex = cbind(strata_map, year_map )
+      dindex = cbind(au_map, year_map )
       M[kk, pPC1$variabletomodel] = PI [dindex]
     }
 
@@ -360,17 +352,17 @@ if (0) {
     if (length(kk) > 0) {
       pc2 = speciescomposition.db( p=pPC2, DS="speciescomposition"  )
       pc2 = planar2lonlat( pc2, proj.type=p$aegis_proj4string_planar_km )
-      pc2$StrataID = over( SpatialPoints( pc2[, c("lon", "lat")], crs_lonlat ), spTransform(sppoly, crs_lonlat ) )$StrataID # match each datum to an area
-      oo = tapply( pc2[, pPC2$variabletomodel ], pc2$StrataID, FUN=median, na.rm=TRUE )
-      jj = match( as.character( M$StrataID[kk]), as.character( names(oo )) )
+      pc2$AUID = over( SpatialPoints( pc2[, c("lon", "lat")], crs_lonlat ), spTransform(sppoly, crs_lonlat ) )$AUID # match each datum to an area
+      oo = tapply( pc2[, pPC2$variabletomodel ], pc2$AUID, FUN=median, na.rm=TRUE )
+      jj = match( as.character( M$AUID[kk]), as.character( names(oo )) )
       if (length(jj) > 0) M[kk, pPC2$variabletomodel] = oo[jj ]
     }
     kk =  which( !is.finite(M[, pPC2$variabletomodel]))
     if (length(kk) > 0) {
       PI = carstm_model ( p=pPC2, DS="carstm_modelled" )
-      strata_map = match( as.numeric(M$StrataID[kk]), levels(sppoly$StrataID[as.numeric(dimnames(PI)$strata)]  ) )
+      au_map = match( as.numeric(M$AUID[kk]), levels(sppoly$AUID[as.numeric(dimnames(PI)$strata)]  ) )
       year_map = match( as.character(M$year[kk]), dimnames(PI)$year )
-      dindex = cbind(strata_map, year_map )
+      dindex = cbind(au_map, year_map )
       M[kk, pPC2$variabletomodel] = PI [dindex]
     }
 
@@ -384,26 +376,26 @@ if (0) {
     M = M[ which(is.finite(M[, pB$variabletomodel] )),]
     M = M[ which(is.finite(M[, pS$variabletomodel] )),]
     M = M[ which(is.finite(M[, pT$variabletomodel] )),]
-    M = M[ which(is.finite(M$StrataID)),]
-    M$StrataID = as.character( M$StrataID )  # match each datum to an area
+    M = M[ which(is.finite(M$AUID)),]
+    M$AUID = as.character( M$AUID )  # match each datum to an area
 
     M$tag = "observations"
 
 
     APS = as.data.frame(sppoly)
-    APS$StrataID = as.character( APS$StrataID )
+    APS$AUID = as.character( APS$AUID )
     APS$tag ="predictions"
     APS[,p$variabletomodel] = NA
 
 
     BI = carstm_model ( p=pB, DS="carstm_modelled" )
-    jj = match( as.character( APS$StrataID), as.character( BI$StrataID) )
+    jj = match( as.character( APS$AUID), as.character( BI$AUID) )
     APS[, pB$variabletomodel] = BI[[ paste(pB$variabletomodel,"predicted",sep="." ) ]] [jj]
     jj =NULL
     BI = NULL
 
     SI = carstm_model ( p=pS, DS="carstm_modelled" )
-    jj = match( as.character( APS$StrataID), as.character( SI$StrataID) )
+    jj = match( as.character( APS$AUID), as.character( SI$AUID) )
     APS[, pS$variabletomodel] = SI[[ paste(pS$variabletomodel,"predicted",sep="." )]] [jj]
     jj =NULL
     SI = NULL
@@ -411,7 +403,7 @@ if (0) {
     # to this point APS is static, now add time dynamics (teperature)
     # ---------------------
 
-    vn = c( p$variabletomodel, pB$variabletomodel,  pS$variabletomodel, "tag", "StrataID" )
+    vn = c( p$variabletomodel, pB$variabletomodel,  pS$variabletomodel, "tag", "AUID" )
     APS = APS[, vn]
 
     # expand APS to all time slices
@@ -424,28 +416,28 @@ if (0) {
 
     TI = carstm_model ( p=pT, DS="carstm_modelled" )
     TI = TI[[ paste(pT$variabletomodel,"predicted",sep="." )]]
-    strata_map = match( as.numeric(APS$StrataID),levels(sppoly$StrataID[as.numeric(dimnames(TI)$strata)]  ) )
+    au_map = match( as.numeric(APS$AUID),levels(sppoly$AUID[as.numeric(dimnames(TI)$strata)]  ) )
     year_map = match( as.character(APS$year), dimnames(TI)$year )
     dyear_breaks = c(p$dyears, p$dyears[length(p$dyears)]+ diff(p$dyears)[1] )
     dyear_map = as.numeric( cut( APS$dyear, breaks=dyear_breaks, include.lowest=TRUE, ordered_result=TRUE, right=FALSE ) )
-    dindex = cbind(strata_map, year_map, dyear_map )
+    dindex = cbind(au_map, year_map, dyear_map )
     APS[, pT$variabletomodel] = TI[ dindex]
     TI = NULL
 
 
     PI = carstm_model ( p=pPC1, DS="carstm_modelled" )
     PI = PI[[ paste(pPC1$variabletomodel,"predicted",sep="." )]]
-    strata_map = match( as.numeric(APS$StrataID), levels(sppoly$StrataID[as.numeric(dimnames(PI)$strata)]  ) )
+    au_map = match( as.numeric(APS$AUID), levels(sppoly$AUID[as.numeric(dimnames(PI)$strata)]  ) )
     year_map = match( as.character(APS$year), dimnames(PI)$year )
-    dindex = cbind(strata_map, year_map )
+    dindex = cbind(au_map, year_map )
     APS[, pPC1$variabletomodel] = PI [dindex]
     PI = NULL
 
     PI = carstm_model ( p=pPC2, DS="carstm_modelled" )
     PI = PI[[ paste(pPC2$variabletomodel,"predicted",sep="." )]]
-    strata_map = match( as.numeric(APS$StrataID), levels(sppoly$StrataID[as.numeric(dimnames(PI)$strata)]  ) )
+    au_map = match( as.numeric(APS$AUID), levels(sppoly$AUID[as.numeric(dimnames(PI)$strata)]  ) )
     year_map = match( as.character(APS$year), dimnames(PI)$year )
-    dindex = cbind(strata_map, year_map  )
+    dindex = cbind(au_map, year_map  )
     APS[, pPC2$variabletomodel] = PI [dindex]
     PI = NULL
 
@@ -459,8 +451,8 @@ if (0) {
     APS = NULL
 
 
-    M$StrataID  = factor( as.character(M$StrataID), levels=levels( sppoly$StrataID ) ) # revert to factors
-    M$strata  = as.numeric( M$StrataID)
+    M$AUID  = as.character(M$AUID)  # revert to factors
+    M$strata  = as.numeric( factor(M$AUID) )
 
     M$zi  = discretize_data( M[, pB$variabletomodel], p$discretization[[pB$variabletomodel]] )
     M$ti  = discretize_data( M[, pT$variabletomodel], p$discretization[[pT$variabletomodel]] )
