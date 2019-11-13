@@ -2,6 +2,9 @@
 interpolation.db = function( ip=NULL, DS=NULL, p=NULL,
   varnames = c("snowcrab.large.males_abundance", "snowcrab.large.males_presence_absence"), annot.cex=2 ) {
 
+  stop( "this method uses stmv .. no longer supported")
+
+
   if (DS %in% c( "fishable.biomass", "fishable.biomass.redo" )) {
 
     outdir = file.path( project.datadirectory("bio.snowcrab"), "modelled", "biomass" )
@@ -13,6 +16,7 @@ interpolation.db = function( ip=NULL, DS=NULL, p=NULL,
       if ( file.exists( fn) ) load(fn)
       return (B)
     }
+
 
     bm = snowcrab_stmv( p=p, DS="baseline", ret="mean", varnames=varnames )
     bl = snowcrab_stmv( p=p, DS="baseline", ret="lb", varnames=varnames )
@@ -273,6 +277,7 @@ interpolation.db = function( ip=NULL, DS=NULL, p=NULL,
 
 
   if (DS =="habitat.temperatures") {
+
 
     bm = interpolation.db( p=p, DS="fishable.biomass" )
     ps = snowcrab_stmv(p=p, DS="output_data" )

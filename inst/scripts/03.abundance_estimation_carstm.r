@@ -7,6 +7,15 @@
 
 # areal units definitions
 
+
+  # adjust based upon RAM requirements and ncores
+
+  inla.setOption(num.threads=2)
+  inla.setOption(blas.num.threads=2)
+
+
+
+
   assessment.years = 1999:2018
   groundfish_species_code = 2526
   runtype="number"
@@ -79,6 +88,8 @@
   # bathymetry -- ensure the data assimilation in bathymetry is first completed :: 01.bathymetry_data.R
   # about 50 hrs to redo; 25 configs @ 2 hrs each
     pB = bathymetry_carstm( p=p, DS="parameters_override" )
+    pB$carstm_inputs_aggregated = TRUE
+
     M = bathymetry.db( p=pB, DS="aggregated_data", redo=TRUE )
     M = bathymetry_carstm( p=pB, DS="carstm_inputs", redo=TRUE  ) # will redo if not found
 
@@ -117,9 +128,6 @@
 # Posterior marginals for the linear predictor and
 #  the fitted values are computed
 
-        inla_nthreads = ifelse( exists("inla_nthreads", pB ), pB$inla_nthreads, 1 )
-        inla_nthreads_blas = ifelse ( exists("inla_nthreads_blas", pB ), pB$inla_nthreads_blas, 1 )
-
         pB$carstm_model_label = "production"
 
         pB$carstm_modelcall = paste(
@@ -135,12 +143,9 @@
             # control.inla=list(int.strategy="eb", reordering="metis") ,# to get empirical Bayes results much faster.
             # control.inla=list( strategy="gaussian", diagonal=100, int.strategy="eb", cutoff=1e-6, correct=TRUE, correct.verbose=FALSE ), # quick estim
             control.inla=list( strategy="laplace", cutoff=1e-6, correct=TRUE, correct.verbose=FALSE ),
-            num.threads=', inla_nthreads, ' ,
-            blas.num.threads=', inla_nthreads_blas, ' ,
             verbose=TRUE
           ) ' )
 
-    pB$carstm_inputs_aggregated = TRUE
 
     res = carstm_model( p=pB, M='bathymetry_carstm( p=pB, DS="carstm_inputs" )', DS="redo", carstm_model_label="production"  ) # run model and obtain predictions
 
@@ -158,15 +163,13 @@
 # substrate -- ensure the data assimilation in substrate is first completed :: 01.substrate_data.R
 # 25 configs @ 2 hrs each, total time 32 hrs
     pS = substrate_carstm(p=p, DS="parameters_override" )
+    pS$carstm_inputs_aggregated = TRUE
     M = substrate.db( p=pS, DS="aggregated_data", redo=TRUE )  # used for data matching/lookup in other aegis projects that use substrate
     M = substrate_carstm( p=pS, DS="carstm_inputs", redo=TRUE )  # will redo if not found
     # zi too close together relative to the range ... force ignore
 
 
     # run model and obtain predictions
-
-        inla_nthreads = ifelse( exists("inla_nthreads", pS ), pS$inla_nthreads, 1 )
-        inla_nthreads_blas = ifelse ( exists("inla_nthreads_blas", pS ), pS$inla_nthreads_blas, 1 )
 
         pS$carstm_modelcall = paste('
           inla(
@@ -181,13 +184,10 @@
             control.fixed=H$fixed,  # priors for fixed effects, generic is ok
             # control.inla=list(int.strategy="eb") ,# to get empirical Bayes results much faster.
             control.inla=list( strategy="laplace", cutoff=1e-6, correct=TRUE, correct.verbose=FALSE ),  # extra work to get tails
-            num.threads=', inla_nthreads, ' ,
-            blas.num.threads=', inla_nthreads_blas, ' ,
             verbose=TRUE
           ) ' )
       }
 
-    pS$carstm_inputs_aggregated = TRUE
     res = carstm_model( p=pS, M='substrate_carstm( p=pS, DS="carstm_inputs")', DS="redo", carstm_model_label="production"  )
 
     if(0) {
@@ -205,12 +205,12 @@
 # temperature -- ensure the data assimilation in temperature is first completed :: 01.temperature_data.R
 # total: 30 min, 80 configs .. fast
     pT = temperature_carstm(p=p, DS="parameters_override" )
+    pT$carstm_inputs_aggregated = FALSE
+
     M = temperature.db( p=pT, DS="aggregated_data", redo=TRUE )  #  used for data matching/lookup in other aegis projects that use temperature
     M = temperature_carstm( p=pT, DS="carstm_inputs", redo=TRUE )  # will redo if not found
 
 
-  inla_nthreads = ifelse( exists("inla_nthreads", pT ), pT$inla_nthreads, 1 )
-        inla_nthreads_blas = ifelse ( exists("inla_nthreads_blas", pT ), pT$inla_nthreads_blas, 1 )
 
         pT$carstm_model_label = "production"
         pT$carstm_modelcall = paste('
@@ -229,8 +229,6 @@
             # control.inla=list(strategy="gaussian", int.strategy="eb") ,# to get empirical Bayes results much faster.
             # control.inla=list(int.strategy="eb") ,# to get empirical Bayes results much faster.
             control.inla=list( strategy="laplace", cutoff=1e-6, correct=TRUE, correct.verbose=FALSE ),
-            num.threads=', inla_nthreads, ' ,
-            blas.num.threads=', inla_nthreads_blas, ' ,
             verbose=TRUE
           ) ' )
       }
