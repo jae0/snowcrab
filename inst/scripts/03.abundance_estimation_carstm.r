@@ -3,70 +3,27 @@
 # Snow crab --- Areal unit modelling of habitat  -- no reliance upon stmv fields
 
 
-# adjust based upon RAM requirements and ncores
-  inla.setOption(num.threads=2)
-  inla.setOption(blas.num.threads=2)
-
-
 # construct basic parameter list defining the main characteristics of the study
-  assessment.years = 1999:2018
-  groundfish_species_code = 2526
-  runtype="number"  # operate upon numerical abundance (vs biomass)
-
-  p = bio.snowcrab::snowcrab_carstm(
-    DS = "parameters",
-    speciesname = "Snow crab",
-    groundfish_species_code = groundfish_species_code,
-    runtype = "number",  # "biomass", "presence_absence", "number"
-    spatial_domain = "snowcrab",  # defines spatial area, currenty: "snowcrab" or "SSE"
-    yrs = assessment.years,
-    inputdata_spatial_discretization_planar_km = 1,  # 1 km .. some thinning .. requires 32 GB RAM and limit of speed -- controls resolution of data prior to modelling to reduce data set and speed up modelling
-    inputdata_temporal_discretization_yr = 1/12,
-    areal_units_fn = "snowcrab_assessment_25",  # identifyer for areal units polygon filename
-    areal_units_resolution_km = 25, # km dim of lattice ~ 1 hr
-    areal_units_proj4string_planar_km = aegis::projection_proj4string("utm20"),  # coord system to use for areal estimation and gridding for carstm
-    areal_units_source = "lattice", # "stmv_fields" to use ageis fields instead of carstm fields ... note variables are not the same
-    areal_units_overlay = "snowcrab_managementareas",
-    trawlable_units = "sweptarea",  # <<<<<<<<<<<<<<<<<< also:  "standardtow", "sweptarea" (for groundfish surveys)
-    quantile_bounds =c(0, 0.99), # trim upper bounds
-    selection=list(
-      type = runtype,
-      biologicals=list(
-        spec_bio=bio.taxonomy::taxonomy.recode( from="spec", to="parsimonious", tolookup=groundfish_species_code ),
-        sex=0, # male
-        mat=1, # do not use maturity status in groundfish data as it is suspect ..
-        len= c( 95, 200 )/10, #  mm -> cm ; aegis_db in cm
-        ranged_data="len"
-      ),
-      survey=list(
-        data.source = ifelse (runtype=="number", c("snowcrab"), c("snowcrab", "groundfish")),
-        yr = assessment.years,      # time frame for comparison specified above
-        settype = 1, # same as geartype in groundfish db
-        polygon_enforce=TRUE,  # make sure mis-classified stations or incorrectly entered positions get filtered out
-        strata_toremove = NULL,  # emphasize that all data enters analysis initially ..
-        ranged_data = c("dyear")  # not used .. just to show how to use range_data
-      )
-    ),
-    variables = list(Y="totno"),  # name to give (using stmv access methods)  .. redundant .. to remove (needed for now)
-    variabletomodel = "totno"
- )
-
-
-  # the underlying observations/data
-  MS = snowcrab.db( p=p, DS="biological_data"  )  # domain is  sse
-
-  sppoly = areal_units( p=p, areal_units_constraint=MS[, c("lon", "lat")], redo=TRUE )
-
-  if (0) {
-    sppoly = areal_units( p=p )
-    plot(sppoly)
-  }
-
+  p = bio.snowcrab::snowcrab_carstm( DS="parameters", assessment.years=1999:2018 )
+  # p$inla_num.threads =2
+  # p$inla_blas.num.threads =2
 
 
   REDO = FALSE
-
   if (REDO) {
+
+    # -----------------
+    # the underlying observations/data
+    MS = snowcrab.db( p=p, DS="biological_data"  )  # domain is  sse
+
+    # create constrained polygons
+    sppoly = areal_units( p=p, areal_units_constraint=MS[, c("lon", "lat")], redo=TRUE )
+    if (0) {
+      sppoly = areal_units( p=p )
+      plot(sppoly)
+      spplot( sppoly, "AUID", main="AUID", sp.layout=p$coastLayout )
+    }
+
     # ensure if polys exist and create if required
     for (au in c("cfanorth", "cfasouth", "cfa4x", "cfaall" )) plot(polygons_managementarea( species="snowcrab", au))
     #  sppoly = neighbourhood_structure( sppoly=sppoly )
@@ -75,7 +32,7 @@
 
     # -----------------
     # bathymetry -- ensure the data assimilation in bathymetry is first completed :: 01.bathymetry_data.R
-    # about 50 hrs to redo; 25 configs @ 2 hrs each
+    # about 4.4 hrs to redo; 15 configs @ 0.5 hrs each
     pB = bathymetry_carstm( p=p, DS="parameters_override" )
     M = bathymetry.db( p=pB, DS="aggregated_data", redo=TRUE )
     M = bathymetry_carstm( p=pB, DS="carstm_inputs", redo=TRUE  ) # will redo if not found

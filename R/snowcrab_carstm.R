@@ -55,16 +55,44 @@ snowcrab_carstm = function( p=NULL, DS="parameters", redo=FALSE, ...) {
 
     if ( !exists("project_name", p)) p$project_name = "snowcrab"
 
-    if ( !exists("areal_units_source", p)) p$areal_units_source = "lattice" # "stmv_lattice" to use ageis fields instead of carstm fields ... note variables are not the same
+    if ( !exists("groundfish_species_code", p)) p$groundfish_species_code = 2526
+    if ( !exists("speciesname", p)) p$p$speciesname = "Snow crab"
+    if ( !exists("runtype", p)) p$runtype = "number"  # "biomass", "presence_absence", "number"
+    if ( !exists("spatial_domain", p)) p$spatial_domain = "snowcrab"  # defines spatial area, currenty: "snowcrab" or "SSE"
 
+    if ( !exists("assessment.years", p)) stop( "must ddefine assessment.years")
+
+    if ( !exists("yrs", p)) p$yrs = p$assessment.years
+    if ( !exists("inputdata_spatial_discretization_planar_km", p)) p$inputdata_spatial_discretization_planar_km = 1  # 1 km .. some thinning .. requires 32 GB RAM and limit of speed -- controls resolution of data prior to modelling to reduce data set and speed up modelling
+    if ( !exists("inputdata_temporal_discretization_yr", p)) p$inputdata_temporal_discretization_yr = 1/12
+    if ( !exists("trawlable_units", p)) p$trawlable_units = "sweptarea"  # <<<<<<<<<<<<<<<<<< also:  "standardtow", "sweptarea" (for groundfish surveys)
+    if ( !exists("areal_units_source", p)) p$areal_units_source = "lattice" # "stmv_lattice" to use ageis fields instead of carstm fields ... note variables are not the same
     if ( !exists("areal_units_overlay", p)) p$areal_units_overlay = "snowcrab_managementareas" # currently: "snowcrab_managementareas",  "groundfish_strata" .. additional polygon layers for subsequent analysis for now ..
     if ( !exists("areal_units_resolution_km", p)) p$areal_units_resolution_km = 25 # km dim of lattice ~ 1 hr
-    if ( !exists("areal_units_proj4string_planar_km", p)) p$areal_units_proj4string_planar_km = projection_proj4string("utm20")  # coord system to use for areal estimation and gridding for carstm
     if ( !exists("areal_units_constrain_to_data", p)) p$areal_units_constrain_to_data = TRUE
-
-    # if ( !exists("areal_units_proj4string_planar_km", p)) p$areal_units_proj4string_planar_km = projection_proj4string("omerc_nova_scotia")  # coord system to use for areal estimation and gridding for carstm
-    p$inputdata_spatial_discretization_planar_km = p$pres  # 1 km .. requires 32 GB RAM and limit of speed -- controls resolution of data prior to modelling to reduce data set and speed up modelling
-    p$inputdata_temporal_discretization_yr = 1/12  # ie., monthly .. controls resolution of data prior to modelling to reduce data set and speed up modelling }
+    if ( !exists("areal_units_fn", p)) p$areal_units_fn = "snowcrab_assessment_25",  # identifyer for areal units polygon filename
+    if ( !exists("areal_units_proj4string_planar_km", p)) p$areal_units_proj4string_planar_km = aegis::projection_proj4string("utm20")  # coord system to use for areal estimation and gridding for carstm
+    if ( !exists("quantile_bounds", p)) p$quantile_bounds =c(0, 0.99) # trim upper bounds
+    if ( !exists("selection", p)) p$selection=list(
+      type = p$runtype,
+      biologicals=list(
+        spec_bio=bio.taxonomy::taxonomy.recode( from="spec", to="parsimonious", tolookup=p$groundfish_species_code ),
+        sex=0, # male
+        mat=1, # do not use maturity status in groundfish data as it is suspect ..
+        len= c( 95, 200 )/10, #  mm -> cm ; aegis_db in cm
+        ranged_data="len"
+      ),
+      survey=list(
+        data.source = ifelse (p$runtype=="number", c("snowcrab"), c("snowcrab", "groundfish")),
+        yr = p$assessment.years,      # time frame for comparison specified above
+        settype = 1, # same as geartype in groundfish db
+        polygon_enforce=TRUE,  # make sure mis-classified stations or incorrectly entered positions get filtered out
+        strata_toremove = NULL,  # emphasize that all data enters analysis initially ..
+        ranged_data = c("dyear")  # not used .. just to show how to use range_data
+      )
+    )
+    if ( !exists("variables", p)) p$variables = list(Y="totno"),  # name to give (using stmv access methods)  .. redundant .. to remove (needed for now)
+    if ( !exists("variabletomodel", p)) p$variabletomodel = "totno"
 
     if ( !exists("carstm_modelengine", p)) p$carstm_modelengine = "inla.default"  # {model engine}.{label to use to store}
 
