@@ -70,7 +70,7 @@ snowcrab_carstm = function( p=NULL, DS="parameters", redo=FALSE, ...) {
     if ( !exists("areal_units_overlay", p)) p$areal_units_overlay = "snowcrab_managementareas" # currently: "snowcrab_managementareas",  "groundfish_strata" .. additional polygon layers for subsequent analysis for now ..
     if ( !exists("areal_units_resolution_km", p)) p$areal_units_resolution_km = 25 # km dim of lattice ~ 1 hr
     if ( !exists("areal_units_constrain_to_data", p)) p$areal_units_constrain_to_data = TRUE
-    if ( !exists("areal_units_fn", p)) p$areal_units_fn = "snowcrab_assessment_25",  # identifyer for areal units polygon filename
+    if ( !exists("areal_units_fn", p)) p$areal_units_fn = "snowcrab_assessment_25"  # identifyer for areal units polygon filename
     if ( !exists("areal_units_proj4string_planar_km", p)) p$areal_units_proj4string_planar_km = aegis::projection_proj4string("utm20")  # coord system to use for areal estimation and gridding for carstm
     if ( !exists("quantile_bounds", p)) p$quantile_bounds =c(0, 0.99) # trim upper bounds
     if ( !exists("selection", p)) p$selection=list(
@@ -91,7 +91,7 @@ snowcrab_carstm = function( p=NULL, DS="parameters", redo=FALSE, ...) {
         ranged_data = c("dyear")  # not used .. just to show how to use range_data
       )
     )
-    if ( !exists("variables", p)) p$variables = list(Y="totno"),  # name to give (using stmv access methods)  .. redundant .. to remove (needed for now)
+    if ( !exists("variables", p)) p$variables = list(Y="totno")  # name to give (using stmv access methods)  .. redundant .. to remove (needed for now)
     if ( !exists("variabletomodel", p)) p$variabletomodel = "totno"
 
     if ( !exists("carstm_modelengine", p)) p$carstm_modelengine = "inla.default"  # {model engine}.{label to use to store}
