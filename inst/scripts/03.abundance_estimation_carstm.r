@@ -22,7 +22,7 @@
     yrs = assessment.years,
     inputdata_spatial_discretization_planar_km = 1,  # 1 km .. some thinning .. requires 32 GB RAM and limit of speed -- controls resolution of data prior to modelling to reduce data set and speed up modelling
     inputdata_temporal_discretization_yr = 1/12,
-    areal_unit_type = "snowcrab_assessment_25",  # identifyer for areal units polygon filename
+    areal_units_fn = "snowcrab_assessment_25",  # identifyer for areal units polygon filename
     areal_units_resolution_km = 25, # km dim of lattice ~ 1 hr
     areal_units_proj4string_planar_km = aegis::projection_proj4string("utm20"),  # coord system to use for areal estimation and gridding for carstm
     areal_units_source = "lattice", # "stmv_fields" to use ageis fields instead of carstm fields ... note variables are not the same
