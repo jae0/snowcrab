@@ -98,13 +98,13 @@
 
     # Random effects:
     #   Name	  Model
-    #     strata BYM2 model
+    #     auid BYM2 model
 
     # Model hyperparameters:
     #                                             mean     sd 0.025quant 0.5quant 0.975quant    mode
     # Precision for the lognormal observations 752.050  3.198    745.879  752.003    758.450 751.849
-    # Precision for strata                     286.200 23.004    239.367  287.143    329.336 291.721
-    # Phi for strata                             0.979  0.021      0.922    0.985      0.999   0.996
+    # Precision for auid                     286.200 23.004    239.367  287.143    329.336 291.721
+    # Phi for auid                             0.979  0.021      0.922    0.985      0.999   0.996
 
     # Expected number of effective parameters(stdev): 698.31(1.78)
     # Number of equivalent replicates : 161.11
@@ -161,7 +161,7 @@
     #     year_factor AR1 model
     #   dyri RW2 model
     #   zi RW2 model
-    #   strata BYM2 model
+    #   auid BYM2 model
 
     # Model hyperparameters:
     #                                         mean    sd 0.025quant 0.5quant 0.975quant  mode
@@ -170,8 +170,8 @@
     # Rho for year_factor                     0.458 0.022      0.398    0.452   1.00e+00 0.466
     # Precision for dyri                      1.131 0.061      1.005    1.121   1.30e+00 1.085
     # Precision for zi                        0.001 0.000      0.001    0.001   1.06e-01 0.001
-    # Precision for strata                    0.220 0.001      0.214    0.220   2.23e-01 0.220
-    # Phi for strata                          0.993 0.000      0.992    0.993   1.00e+00 0.994
+    # Precision for auid                    0.220 0.001      0.214    0.220   2.23e-01 0.220
+    # Phi for auid                          0.993 0.000      0.992    0.993   1.00e+00 0.994
 
     # Expected number of effective parameters(stdev): 215.49(0.00)
     # Number of equivalent replicates : 146.64
@@ -197,7 +197,7 @@
     #     year_factor AR1 model
     #   dyri RW2 model
     #   zi RW2 model
-    #   strata BYM2 model
+    #   auid BYM2 model
 
     # Model hyperparameters:
     #                                         mean    sd 0.025quant 0.5quant 0.975quant  mode
@@ -206,9 +206,9 @@
     # Rho for year_factor                     0.440 0.176      0.090    0.444      0.761 0.442
     # Precision for dyri                      0.556 0.305      0.167    0.492      1.331 0.375
     # Precision for zi                        0.001 0.000      0.000    0.001      0.001 0.001
-    # Precision for strata                    0.328 0.027      0.280    0.325      0.387 0.319
-    # Phi for strata                          0.992 0.010      0.966    0.995      1.000 1.000
-    # GroupRho for strata                     0.843 0.015      0.810    0.844      0.868 0.848
+    # Precision for auid                    0.328 0.027      0.280    0.325      0.387 0.319
+    # Phi for auid                          0.992 0.010      0.966    0.995      1.000 1.000
+    # GroupRho for auid                     0.843 0.015      0.810    0.844      0.868 0.848
 
     # Expected number of effective parameters(stdev): 1216.66(0.00)
     # Number of equivalent replicates : 25.97
@@ -268,7 +268,7 @@
           + f(tiyr, model="ar1", hyper=H$ar1 )
           + f(year, model="ar1", hyper=H$ar1 )
           + f(zi, model="rw2", scale.model=TRUE, diagonal=1e-6, hyper=H$rw2)
-          + f(strata, model="bym2", graph=sppoly@nb, scale.model=TRUE, constr=TRUE, hyper=H$bym2),
+          + f(auid, model="bym2", graph=sppoly@nb, scale.model=TRUE, constr=TRUE, hyper=H$bym2),
         family = "normal",
         data= M,
         control.compute=list(dic=TRUE, config=TRUE),
@@ -308,7 +308,7 @@
     vn = paste(p$variabletomodel, "random_sample_iid", sep=".")
     if (exists(vn, res)) carstm_plot( p=p, res=res, vn=vn, time_match=list(year="1950", dyear="0") )
 
-    vn = paste(p$variabletomodel, "random_strata_nonspatial", sep=".")
+    vn = paste(p$variabletomodel, "random_auid_nonspatial", sep=".")
     if (exists(vn, res)) {
       res_dim = dim( res[[vn]] )
       if (res_dim == 1 ) time_match = NULL
@@ -317,7 +317,7 @@
       carstm_plot( p=p, res=res, vn=vn, time_match=time_match )
     }
 
-    vn = paste(p$variabletomodel, "random_strata_spatial", sep=".")
+    vn = paste(p$variabletomodel, "random_auid_spatial", sep=".")
     if (exists(vn, res)) {
       res_dim = dim( res[[vn]] )
       if (res_dim == 1 ) time_match = NULL
@@ -372,8 +372,8 @@
     plot(fit, plot.prior=TRUE, plot.hyperparameters=TRUE, plot.fixed.effects=FALSE )
 
 
-    plot( fit$marginals.hyperpar$"Phi for strata", type="l")  # posterior distribution of phi nonspatial dominates
-    plot( fit$marginals.hyperpar$"Precision for strata", type="l")
+    plot( fit$marginals.hyperpar$"Phi for auid", type="l")  # posterior distribution of phi nonspatial dominates
+    plot( fit$marginals.hyperpar$"Precision for auid", type="l")
     plot( fit$marginals.hyperpar$"Precision for setno", type="l")
 
 
@@ -420,7 +420,7 @@ out = reformat_to_array(
   matchto   = list( AUID=as.character(sppoly$AUID), year_factor=as.character(factor(p$yrs)) )
 )
 # out[ out>1e10] = NA
-# convert numbers/km to biomass/strata (kg)..
+# convert numbers/km to biomass/auid (kg)..
 
 
 # / 10^6  # 10^6 kg -> kt .. kg/km * km
@@ -457,7 +457,7 @@ spplot( sppoly, vn, col.regions=p$mypalette, main=vn, at=brks, sp.layout=p$coast
 # simple gam
 require(mgcv)
 fit = gam(
-  formula = Y ~ 1 + offset( log( data_offset) ) + AUID + yr_factor + s(strata, year, bs="ts"),
+  formula = Y ~ 1 + offset( log( data_offset) ) + AUID + yr_factor + s(auid, year, bs="ts"),
   family = "poisson", # "zeroinflatedpoisson0",
   data= M[ which(M$tag=="observations"), ]
 )
@@ -559,7 +559,7 @@ lines( poisson_basic_cfa4x ~ yr, data=RES, lty=1, lwd=2.5, col="green", type="b"
 fit = inla(
   formula =
     Y ~ 1 + offset( log( data_offset) )
-      + f(strata, model="iid", hyper=H$iid)
+      + f(auid, model="iid", hyper=H$iid)
       + f(year, model="iid", hyper=H$iid )
    ,
   family = "poisson", # "zeroinflatedpoisson0",
@@ -585,7 +585,7 @@ fn3 ="~/tmp/snowcrab_30km_iid_space_time.Rdata"
 
 # Random effects:
 #   Name	  Model
-#     strata BYM2 model
+#     auid BYM2 model
 #    year IID model
 #    iid_error IID model
 #    ti RW2 model
@@ -597,8 +597,8 @@ fn3 ="~/tmp/snowcrab_30km_iid_space_time.Rdata"
 
 # Model hyperparameters:
 #                           mean    sd 0.025quant 0.5quant 0.975quant   mode
-# Precision for strata     0.738 0.017      0.707    0.738      0.772  0.736
-# Phi for strata           0.328 0.007      0.314    0.328      0.343  0.328
+# Precision for auid     0.738 0.017      0.707    0.738      0.772  0.736
+# Phi for auid           0.328 0.007      0.314    0.328      0.343  0.328
 # Precision for year      18.798 0.425     17.974   18.794     19.645 18.788
 # Precision for iid_error  1.140 0.021      1.099    1.140      1.182  1.140
 # Precision for ti         3.352 0.070      3.216    3.351      3.493  3.349
@@ -650,7 +650,7 @@ spplot( sppoly, vn, col.regions=p$mypalette, main=vn, at=brks, sp.layout=p$coast
 fit = inla(
   formula =
     Y ~ 1 + offset( log( data_offset) )
-      + f(strata, model="bym2", graph=sppoly@nb, scale.model=TRUE, constr=TRUE, hyper=H$bym2)
+      + f(auid, model="bym2", graph=sppoly@nb, scale.model=TRUE, constr=TRUE, hyper=H$bym2)
       + f(year, model="iid", hyper=H$iid )
     ,
   family = "poisson", # "zeroinflatedpoisson0",
@@ -703,7 +703,7 @@ spplot( sppoly, vn, col.regions=p$mypalette, main=vn, at=brks, sp.layout=p$coast
 fit = inla(
   formula =
     Y ~ 1 + offset( log( data_offset) )
-      + f(strata, model="bym2", graph=sppoly@nb, group=year, scale.model=TRUE, constr=TRUE, hyper=H$bym2)
+      + f(auid, model="bym2", graph=sppoly@nb, group=year, scale.model=TRUE, constr=TRUE, hyper=H$bym2)
       + f(year, model="iid", hyper=H$iid )
       # + f(ti, model="rw2", scale.model=TRUE, diagonal=1e-6, hyper=H$rw2)
       # + f(tisd, model="rw2", scale.model=TRUE, diagonal=1e-6, hyper=H$rw2)
@@ -740,15 +740,15 @@ s$dic$p.eff # 5124
 
 # Random effects:
 # Name	  Model
-#  strata   BYM2 model
+#  auid   BYM2 model
 # year   IID model
 # iid_error   IID model
 
 # Model hyperparameters:
 #                           mean     sd 0.025quant 0.5quant 0.975quant   mode
-# Precision for strata    0.3016 0.0408     0.2274   0.2996     0.3879 0.2963
-# Phi for strata          0.9970 0.0051     0.9827   0.9991     1.0000 0.9999
-# GroupRho for strata     0.9176 0.0146     0.8864   0.9185     0.9434 0.9201
+# Precision for auid    0.3016 0.0408     0.2274   0.2996     0.3879 0.2963
+# Phi for auid          0.9970 0.0051     0.9827   0.9991     1.0000 0.9999
+# GroupRho for auid     0.9176 0.0146     0.8864   0.9185     0.9434 0.9201
 # Precision for year      6.3591 2.4395     2.9280   5.9114    12.3501 5.1296
 # Precision for iid_error 0.7329 0.0203     0.6955   0.7320     0.7751 0.7291
 
@@ -791,7 +791,7 @@ spplot( sppoly, vn, col.regions=p$mypalette, main=vn, at=brks, sp.layout=p$coast
 fit = inla(
   formula =
     Y ~ 1 + offset( log( data_offset) )
-      + f(strata, model="bym2", graph=sppoly@nb, scale.model=TRUE, constr=TRUE, hyper=H$bym2)
+      + f(auid, model="bym2", graph=sppoly@nb, scale.model=TRUE, constr=TRUE, hyper=H$bym2)
       + f(year, model="iid", hyper=H$iid )
       + f(ti, model="rw2", scale.model=TRUE, diagonal=1e-6, hyper=H$rw2)
       # + f(tisd, model="rw2", scale.model=TRUE, diagonal=1e-6, hyper=H$rw2)
@@ -828,7 +828,7 @@ s$dic$p.eff # 4942
 
 # Random effects:
 # Name	  Model
-#  strata   BYM2 model
+#  auid   BYM2 model
 # year   IID model
 # iid_error   IID model
 # ti   RW2 model
@@ -836,8 +836,8 @@ s$dic$p.eff # 4942
 
 # Model hyperparameters:
 #                            mean     sd 0.025quant 0.5quant 0.975quant   mode
-# Precision for strata     0.3665 0.0582     0.2686   0.3606     0.4970 0.3479
-# Phi for strata           0.4514 0.1155     0.2228   0.4554     0.6655 0.4796
+# Precision for auid     0.3665 0.0582     0.2686   0.3606     0.4970 0.3479
+# Phi for auid           0.4514 0.1155     0.2228   0.4554     0.6655 0.4796
 # Precision for year       0.5738 0.1993     0.2793   0.5421     1.0536 0.4841
 # Precision for iid_error  0.6356 0.0168     0.6032   0.6354     0.6693 0.6349
 # Precision for ti        12.5146 9.8082     2.0243   9.9645    38.1867 5.4997
@@ -882,7 +882,7 @@ spplot( sppoly, vn, col.regions=p$mypalette, main=vn, at=brks, sp.layout=p$coast
 fit = inla(
   formula =
     Y ~ 1 + offset( log( data_offset) )
-      + f(strata, model="bym2", graph=sppoly@nb, scale.model=TRUE, constr=TRUE, hyper=H$bym2)
+      + f(auid, model="bym2", graph=sppoly@nb, scale.model=TRUE, constr=TRUE, hyper=H$bym2)
       + f(year, model="iid", hyper=H$iid )
       + f(ti, model="rw2", scale.model=TRUE, diagonal=1e-6, hyper=H$rw2)
       + f(tisd, model="rw2", scale.model=TRUE, diagonal=1e-6, hyper=H$rw2)
@@ -919,7 +919,7 @@ s$dic$p.eff # 4942
 
 # Random effects:
 # Name	  Model
-#  strata   BYM2 model
+#  auid   BYM2 model
 # year   IID model
 # iid_error   IID model
 # ti   RW2 model
@@ -927,8 +927,8 @@ s$dic$p.eff # 4942
 
 # Model hyperparameters:
 #                            mean     sd 0.025quant 0.5quant 0.975quant   mode
-# Precision for strata     0.3665 0.0582     0.2686   0.3606     0.4970 0.3479
-# Phi for strata           0.4514 0.1155     0.2228   0.4554     0.6655 0.4796
+# Precision for auid     0.3665 0.0582     0.2686   0.3606     0.4970 0.3479
+# Phi for auid           0.4514 0.1155     0.2228   0.4554     0.6655 0.4796
 # Precision for year       0.5738 0.1993     0.2793   0.5421     1.0536 0.4841
 # Precision for iid_error  0.6356 0.0168     0.6032   0.6354     0.6693 0.6349
 # Precision for ti        12.5146 9.8082     2.0243   9.9645    38.1867 5.4997
@@ -1004,7 +1004,7 @@ APS$data_offset=1
 APS$yr = APS$year
 APS$yr_factor = factor( APS$year, levels=p$yrs)
 APS$iyr = match(APS$yr_factor, p$yrs)
-APS$istrata = match( APS$AUID, sppoly$AUID )
+APS$iauid = match( APS$AUID, sppoly$AUID )
 
 predictions = predict(fit, APS, type="response", se.fit=TRUE  )
 APS$predictions = predictions$fit
@@ -1012,11 +1012,11 @@ APS$predictions.se = predictions$se.fit
 
 # reformat predictions into matrix form
 out = matrix(NA, nrow=length(sppoly$AUID), ncol=length(p$yrs), dimnames=list( sppoly$AUID, p$yrs) )
-out[ cbind(APS$istrata, APS$iyr) ] = APS$predictions
+out[ cbind(APS$iauid, APS$iyr) ] = APS$predictions
 RES$habitat_glm = colSums( {out * sppoly$au_sa_km2 }, na.rm=TRUE ) /sum(sppoly$au_sa_km2) # sa weighted average prob habitat
 
 
-# map it onto strata means of temperature and depth
+# map it onto auid means of temperature and depth
 aps = APS[ APS$year==2017,  ]
 iy = match( as.character(sppoly$AUID), aps$AUID )
 vn = "pred"
@@ -1069,7 +1069,7 @@ APS$data_offset=1
 APS$yr = APS$year
 APS$yr_factor = factor( APS$year, levels=p$yrs)
 APS$iyr = match(APS$yr_factor, p$yrs)
-APS$istrata = match( APS$AUID, sppoly$AUID )
+APS$iauid = match( APS$AUID, sppoly$AUID )
 
 predictions = predict(fit, APS, type="response", se.fit=TRUE  )
 APS$predictions = predictions$fit
@@ -1077,7 +1077,7 @@ APS$predictions.se = predictions$se.fit
 
 # reformat predictions into matrix form
 out = matrix(NA, nrow=length(sppoly$AUID), ncol=length(p$yrs), dimnames=list( sppoly$AUID, p$yrs) )
-out[ cbind(APS$istrata, APS$iyr) ] = APS$predictions
+out[ cbind(APS$iauid, APS$iyr) ] = APS$predictions
 
 RES$habitat_gam = colSums( {out * sppoly$au_sa_km2 }, na.rm=TRUE ) /sum(sppoly$au_sa_km2) # sa weighted average prob habitat
 
@@ -1141,11 +1141,11 @@ s$dic$p.eff # 17.73
 
 APS = cbind( APS, fit$summary.fitted.values[ which(M$tag=="predictions"), ] )
 APS$iyr = match(APS$yr_factor, p$yrs)
-APS$istrata = match( APS$AUID, sppoly$AUID )
+APS$iauid = match( APS$AUID, sppoly$AUID )
 
 # reformat predictions into matrix form
 out = matrix(NA, nrow=length(sppoly$AUID), ncol=length(p$yrs), dimnames=list( sppoly$AUID, p$yrs) )
-out[ cbind(APS$istrata, APS$iyr) ] = APS$mean
+out[ cbind(APS$iauid, APS$iyr) ] = APS$mean
 RES$habitat_inla = colSums( {out * sppoly$au_sa_km2 }, na.rm=TRUE ) /sum(sppoly$au_sa_km2) # sa weighted average prob habitat
 
 # map it
@@ -1184,7 +1184,7 @@ M$z[!is.finite(M$z)] = median(M$z, na.rm=TRUE )  # missing data .. quick fix .. 
 
 M$yr_factor = factor( as.character(M$yr) )
 M$AUID  = factor( M$AUID, levels=levels(sppoly$AUID ))
-M$strata  = as.numeric( factor(M$AUID))
+M$auid  = as.numeric( factor(M$AUID))
 M$year  = as.numeric( M$yr_factor)
 
 
@@ -1199,7 +1199,7 @@ fit = inla(
   + f(zi, model="rw2", scale.model=TRUE, hyper=H$rw2)
   + f(di, model="rw2", scale.model=TRUE, hyper=H$rw2)
   + f(year, model="iid", hyper=H$iid)
-  + f(strata, model="bym2", graph=sppoly@nb, scale.model=TRUE, constr=TRUE, hyper=H$bym2),
+  + f(auid, model="bym2", graph=sppoly@nb, scale.model=TRUE, constr=TRUE, hyper=H$bym2),
   family="binomial",  # alternates family="zeroinflatedbinomial0", family="zeroinflatedbinomial1",
   data=M,
   control.family=list(control.link=list(model="logit")),
@@ -1218,11 +1218,11 @@ s$dic$p.eff #163.8
 APS = cbind( APS, fit$summary.fitted.values[ which(M$tag=="predictions"), ] )
 
 APS$iyr = match(APS$yr_factor, p$yrs)
-APS$istrata = match( APS$AUID, sppoly$AUID )
+APS$iauid = match( APS$AUID, sppoly$AUID )
 
 # reformat predictions into matrix form
 out = matrix(NA, nrow=length(sppoly$AUID), ncol=length(p$yrs), dimnames=list( sppoly$AUID, p$yrs) )
-out[ cbind(APS$istrata, APS$iyr) ] = APS$mean
+out[ cbind(APS$iauid, APS$iyr) ] = APS$mean
 RES$habitat_bym_yriid = colSums( {out * sppoly$au_sa_km2 }, na.rm=TRUE ) /sum(sppoly$au_sa_km2) # sa weighted average prob habitat
 
 # map it
@@ -1248,7 +1248,7 @@ pch = c(20, 21, 22, 23)#, 24, 25, 26, 27, 20)
 lty = c(1, 3, 4, 5)# , 6, 7, 1, 3, 4 )
 lwd = c(4, 4, 4, 4)# , 4, 4, 4, 4, 4 )
 type =c("l", "l", "l", "l")#, "l", "l", "l", "l", "l")
-legend=c("GLM", "GAM", "INLA", "INLA CAR")#, "INLA Envir AR1 CAR", "INLA Envir AR1 CAR|year", "INLA Envir AR1|strata CAR", "INLA Envir AR1|strata CAR|year", "INLA Envir CAR|year")
+legend=c("GLM", "GAM", "INLA", "INLA CAR")#, "INLA Envir AR1 CAR", "INLA Envir AR1 CAR|year", "INLA Envir AR1|auid CAR", "INLA Envir AR1|auid CAR|year", "INLA Envir CAR|year")
 
 plot( habitat_glm  ~ yr, data=RES, lty=lty[1], lwd=lwd[1], col=col[1], pch=pch[1], type=type[1], ylim=c(0.375,0.825), xlab="Year", ylab="kg")
 lines( habitat_gam ~ yr, data=RES, lty=lty[2], lwd=lwd[2], col=col[2], pch=pch[2], type=type[2])
@@ -1256,8 +1256,8 @@ lines( habitat_inla ~ yr, data=RES, lty=lty[3], lwd=lwd[3], col=col[3], pch=pch[
 lines( habitat_bym_yriid ~ yr, data=RES, lty=lty[4], lwd=lwd[4], col=col[4], pch=pch[4], type=type[4])  # yr_iid
 # lines( model1 ~ yr, data=RES, lty=lty[5], lwd=lwd[5], col=col[5], pch=pch[5], type=type[5])
 # lines( INLA.Envir.AR1.CAR_year ~ yr, data=RES, lty=lty[6], lwd=lwd[6], col=col[6], pch=pch[6], type=type[6])
-# lines( INLA.Envir.AR1_strata.CAR ~ yr, data=RES, lty=lty[7], lwd=lwd[7], col=col[7], pch=pch[7], type=type[7])
-# lines( INLA.Envir.AR1_strata.CAR_year ~ yr, data=RES, lty=lty[8], lwd=lwd[8], col=col[8], pch=pch[8], type=type[8])
+# lines( INLA.Envir.AR1_auid.CAR ~ yr, data=RES, lty=lty[7], lwd=lwd[7], col=col[7], pch=pch[7], type=type[7])
+# lines( INLA.Envir.AR1_auid.CAR_year ~ yr, data=RES, lty=lty[8], lwd=lwd[8], col=col[8], pch=pch[8], type=type[8])
 # lines( INLA.Envir.yr_iid.CAR_year ~ yr, data=RES, lty=lty[9], lwd=lwd[9], col=col[9], pch=pch[9], type=type[9])
 
 
