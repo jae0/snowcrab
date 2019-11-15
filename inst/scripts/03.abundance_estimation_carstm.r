@@ -110,7 +110,7 @@
       fit = carstm_model(  p=pT, DS="carstm_modelled_fit", carstm_model_label="production" )  # extract currently saved model fit
       summary(fit)
       vn = paste(pT$variabletomodel, "predicted", sep=".")
-      carstm_plot( p=pT, res=res, vn=vn, time_match=list(year="2000", dyear="0.8" ) )       # maps of some of the results
+      carstm_plot( p=pT, res=res, vn=vn, time_match=list(year="2000", dyear="0.85" ) )       # maps of some of the results
     }
 
     # Time used:
@@ -272,14 +272,14 @@
     carstm_plot( p=p, res=res, vn=vn )
 
     vn = paste(p$variabletomodel, "random_sample_iid", sep=".")
-    if (exists(vn, res)) carstm_plot( p=p, res=res, vn=vn, time_match=list(year="1950", dyear="0") )
+    if (exists(vn, res)) carstm_plot( p=p, res=res, vn=vn, time_match=list(year="1950", dyear="0.05") )
 
     vn = paste(p$variabletomodel, "random_auid_nonspatial", sep=".")
     if (exists(vn, res)) {
       res_dim = dim( res[[vn]] )
       if (res_dim == 1 ) time_match = NULL
       if (res_dim == 2 ) time_match = list(year="2000")
-      if (res_dim == 3 ) time_match = list(year="2000", dyear="0.8" )
+      if (res_dim == 3 ) time_match = list(year="2000", dyear="0.85" )
       carstm_plot( p=p, res=res, vn=vn, time_match=time_match )
     }
 
@@ -288,7 +288,7 @@
       res_dim = dim( res[[vn]] )
       if (res_dim == 1 ) time_match = NULL
       if (res_dim == 2 ) time_match = list(year="2000")
-      if (res_dim == 3 ) time_match = list(year="2000", dyear="0.8" )
+      if (res_dim == 3 ) time_match = list(year="2000", dyear="0.85" )
       carstm_plot( p=p, res=res, vn=vn, time_match=time_match )
     }
 
