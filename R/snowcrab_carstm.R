@@ -41,7 +41,8 @@ snowcrab_carstm = function( p=NULL, DS="parameters", redo=FALSE, ...) {
       inputdata_spatial_discretization_planar_km = p$inputdata_spatial_discretization_planar_km,  # 1 km .. some thinning .. requires 32 GB RAM and limit of speed -- controls resolution of data prior to modelling to reduce data set and speed up modelling
       inputdata_temporal_discretization_yr = p$inputdata_temporal_discretization_yr,  # ie., weekly .. controls resolution of data prior to modelling to reduce data set and speed up modelling
       areal_units_fn = p$areal_units_fn,
-      inla_blas
+      inla_num.threads= p$inla_num.threads,
+      inla_blas.num.threads= p$inla_blas.num.threads
     )
     return(pc)
   }
@@ -53,9 +54,7 @@ snowcrab_carstm = function( p=NULL, DS="parameters", redo=FALSE, ...) {
 
   if (DS=="parameters") {
 
-
     if ( !exists("project_name", p)) p$project_name = "snowcrab"
-
     if ( !exists("groundfish_species_code", p)) p$groundfish_species_code = 2526
     if ( !exists("speciesname", p)) p$p$speciesname = "Snow crab"
     if ( !exists("runtype", p)) p$runtype = "number"  # "biomass", "presence_absence", "number"

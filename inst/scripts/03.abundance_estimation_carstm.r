@@ -275,40 +275,13 @@
   }
 
 
-  # construct meanweights matrix
-  M = snowcrab_carstm( p=p, DS="carstm_inputs" )
-  M$yr = M$year  # req for meanweights
-  sppoly = areal_units( p=p )
+  snowcrab_abundance_index( p=p, operation="compute" )
 
-  weight_year = meanweights_by_arealunit(
-    set=M[M$tag=="observations",],
-    AUID=as.character( sppoly$AUID ),
-    yrs=p$yrs,
-    fillall=TRUE,
-    annual_breakdown=TRUE
-  )
-  # weight_year = weight_year[, match(as.character(p$yrs), colnames(weight_year) )]
-  # weight_year = weight_year[ match(as.character(sppoly$AUID), rownames(weight_year) )]
+  RES = snowcrab_abundance_index(p=p, DS="load_timeseries" )
+  out = snowcrab_abundance_index(p=p, DS="load_spatial" )
 
-  # / 10^6  # 10^6 kg -> kt .. kg/km * km
-  out = res[[ paste( p$variabletomodel, "predicted", sep=".")]]
-  out[!is.finite(out)] = NA
-  out[out > 1e10] = NA
-  RES$model1 = list(
-    yrs = p$yrs,
-    cfaall    = colSums( out * weight_year * sppoly$au_sa_km2/ 10^6, na.rm=TRUE )  ,
-    cfanorth  = colSums( out * weight_year * sppoly$cfanorth_surfacearea/ 10^6, na.rm=TRUE ) ,
-    cfasouth  = colSums( out * weight_year * sppoly$cfasouth_surfacearea/ 10^6, na.rm=TRUE ) ,
-    cfa23     = colSums( out * weight_year * sppoly$cfa23_surfacearea/ 10^6, na.rm=TRUE ) ,
-    cfa24     = colSums( out * weight_year * sppoly$cfa24_surfacearea/ 10^6, na.rm=TRUE ) ,
-    cfa4x     = colSums( out * weight_year * sppoly$cfa4x_surfacearea/ 10^6, na.rm=TRUE )
-  )
 
-  fn_RES = file.path(p$modeldir, p$carstm_model_label, "RES_ts.rdata")
-  save( RES, fn_RES )
-  load( fn_RES )
-
-  plot( model1 ~ yr, data=RES$model1, lty=1, lwd=2.5, col="red", type="b")
+  plot( cfaall ~ yr, data=RES, lty=1, lwd=2.5, col="red", type="b")
 
   # map it ..mean density
   vn = "pred"
@@ -317,9 +290,7 @@
   spplot( sppoly, vn, col.regions=p$mypalette, main=vn, at=brks, sp.layout=p$coastLayout, col="transparent" )
 
 
-  plot(fit, plot.prior=TRUE, plot.hyperparameters=TRUE, plot.fixed.effects=FALSE )
-
-
+  plot( fit, plot.prior=TRUE, plot.hyperparameters=TRUE, plot.fixed.effects=FALSE )
   plot( fit$marginals.hyperpar$"Phi for auid", type="l")  # posterior distribution of phi nonspatial dominates
   plot( fit$marginals.hyperpar$"Precision for auid", type="l")
   plot( fit$marginals.hyperpar$"Precision for setno", type="l")
