@@ -5,12 +5,15 @@
 
 # construct basic parameter list defining the main characteristics of the study
   p = bio.snowcrab::snowcrab_carstm( DS="parameters", assessment.years=1999:2018 )
-  # p$inla_num.threads =2
-  # p$inla_blas.num.threads =2
 
 
   REDO = FALSE
   if (REDO) {
+
+    # misc run params
+    p$inla_num.threads =2
+    p$inla_blas.num.threads =2
+
 
     # -----------------
     # the underlying observations/data
@@ -36,6 +39,7 @@
     pB = bathymetry_carstm( p=p, DS="parameters_override" )
     M = bathymetry.db( p=pB, DS="aggregated_data", redo=TRUE )
     M = bathymetry_carstm( p=pB, DS="carstm_inputs", redo=TRUE  ) # will redo if not found
+    M = NULL
     res = carstm_model( p=pB, M='bathymetry_carstm( p=pB, DS="carstm_inputs" )', DS="redo", carstm_model_label="production"  ) # run model and obtain predictions
 
     if (0) {
@@ -81,6 +85,7 @@
     pS = substrate_carstm(p=p, DS="parameters_override" )
     M = substrate.db( p=pS, DS="aggregated_data", redo=TRUE )  # used for data matching/lookup in other aegis projects that use substrate
     M = substrate_carstm( p=pS, DS="carstm_inputs", redo=TRUE )  # will redo if not found
+    M = NULL
     res = carstm_model( p=pS, M='substrate_carstm( p=pS, DS="carstm_inputs")', DS="redo", carstm_model_label="production"  )  # run model and obtain predictions
     if(0) {
       res = carstm_model( p=pS, DS="carstm_modelled", carstm_model_label="production"   ) # run model and obtain predictions
@@ -98,6 +103,7 @@
     pT = temperature_carstm(p=p, DS="parameters_override" )
     M = temperature.db( p=pT, DS="aggregated_data", redo=TRUE )  #  used for data matching/lookup in other aegis projects that use temperature
     M = temperature_carstm( p=pT, DS="carstm_inputs", redo=TRUE )  # will redo if not found
+    M = NULL
     res = carstm_model( p=pT, M='temperature_carstm( p=pT, DS="carstm_inputs")', DS="redo", carstm_model_label="production"  ) # run model and obtain predictions
     if (0) {
       res = carstm_model( p=pT, DS="carstm_modelled", carstm_model_label="production" ) # run model and obtain predictions
@@ -185,6 +191,7 @@
     # 30 min, 150 configs
     pPC1 = speciescomposition_carstm(p=p, DS="parameters_override", varnametomodel="pca1" )
     M = speciescomposition_carstm( p=pPC1, DS="carstm_inputs", varnametomodel="pca1", redo=TRUE )  # will redo if not found
+    M = NULL
     res = carstm_model( p=pPC1, M='speciescomposition_carstm( p=p, DS="carstm_inputs", varnametomodel="pca1" )', DS="redo", carstm_model_label="production"   ) # run model and obtain predictions
     if (0) {
       res = carstm_model( p=pPC1, DS="carstm_modelled", carstm_model_label="production"  ) # run model and obtain predictions
@@ -203,6 +210,7 @@
     # etc.30 min, 30 min
     pPC2 = speciescomposition_carstm(p=p, DS="parameters_override", varnametomodel="pca2" )
     M = speciescomposition_carstm( p=pPC2, DS="carstm_inputs", redo=TRUE )  # will redo if not found
+    M = NULL
     res = carstm_model( p=pPC2, M='speciescomposition_carstm( p=p, DS="carstm_inputs", varnametomodel="pca2" )', DS="redo" , carstm_model_label="production"  ) # run model and obtain predictions
     if (0) {
       res = carstm_model( p=pPC2, DS="carstm_modelled", carstm_model_label="production"   ) # run model and obtain predictions
@@ -240,6 +248,7 @@
   }
 
   M = snowcrab_carstm( p=p, DS="carstm_inputs", redo=TRUE )  # will redo if not found
+  M = NULL
   res = carstm_model( p=p, M='snowcrab_carstm( p=p, DS="carstm_inputs" )' ) # 151 configs and long optim .. 19 hrs
 
 

@@ -31,6 +31,7 @@ snowcrab_carstm = function( p=NULL, DS="parameters", redo=FALSE, ...) {
     pc = snowcrab_carstm(
       DS = "parameters",
       project_name = "snowcrab",
+      modeldir = p$modeldir,  # outputs all go the the main project's model output directory
       yrs = p$yrs,
       variabletomodel = "totno",
       spatial_domain = p$spatial_domain,  # defines spatial area, currenty: "snowcrab" or "SSE"
@@ -39,8 +40,8 @@ snowcrab_carstm = function( p=NULL, DS="parameters", redo=FALSE, ...) {
       areal_units_proj4string_planar_km = p$areal_units_proj4string_planar_km,  # coord system to use for areal estimation and gridding for carstm
       inputdata_spatial_discretization_planar_km = p$inputdata_spatial_discretization_planar_km,  # 1 km .. some thinning .. requires 32 GB RAM and limit of speed -- controls resolution of data prior to modelling to reduce data set and speed up modelling
       inputdata_temporal_discretization_yr = p$inputdata_temporal_discretization_yr,  # ie., weekly .. controls resolution of data prior to modelling to reduce data set and speed up modelling
-      modeldir = p$modeldir,  # outputs all go the the main project's model output directory
-      areal_units_fn = p$areal_units_fn
+      areal_units_fn = p$areal_units_fn,
+      inla_blas
     )
     return(pc)
   }
