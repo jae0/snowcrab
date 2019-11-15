@@ -119,7 +119,8 @@ snowcrab_carstm = function( p=NULL, DS="parameters", redo=FALSE, ...) {
             control.results=list(return.marginals.random=TRUE, return.marginals.predictor=TRUE ),
             control.predictor=list(compute=FALSE, link=1 ),
             control.fixed=H$fixed,  # priors for fixed effects, generic is ok
-            control.inla=list( strategy="laplace", cutoff=1e-6, correct=TRUE, correct.verbose=FALSE ),
+            control.inla = list(cmin = 0 ),
+            # control.inla=list( strategy="laplace", cutoff=1e-6, correct=TRUE, correct.verbose=FALSE ),
             verbose=TRUE
           )'
         )
