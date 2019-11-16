@@ -12,7 +12,7 @@ snowcrab_abundance_index = function( p=NULL, RES=NULL, filename=NULL, operation=
   required.vars = c("areal_units_fn", "inputdata_spatial_discretization_planar_km", "inputdata_temporal_discretization_yr", "variabletomodel",
     "carstm_modelengine", "modeldir", "carstm_model_label", "yrs", "variabletomodel" )
 
-  for (i %in% required.vars) {
+  for (i in required.vars) {
     if (!exists(i, p)) {
       message( "Missing parameter" )
       message( i )
