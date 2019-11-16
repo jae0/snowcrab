@@ -40,13 +40,13 @@ snowcrab_abundance_index = function( p=NULL, RES=NULL, filename=NULL, operation=
     return(fn)
   }
 
-  if ( operation="load_timeseries" ) {
+  if ( operation=="load_timeseries" ) {
     RES = NA
     if (file.exists(fn)) load( fn)
     return( RES )
   }
 
-  if ( operation="load_spatial" ) {
+  if ( operation=="load_spatial" ) {
     out = NA
     if (file.exists(fn_out)) load( fn_out )
     return( out )
