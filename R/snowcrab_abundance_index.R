@@ -9,6 +9,18 @@ snowcrab_abundance_index = function( p=NULL, RES=NULL, filename=NULL, operation=
   i = which(duplicated(names(p), fromLast = TRUE ) )
   if ( length(i) > 0 ) p = p[-i] # give any passed parameters a higher priority, overwriting pre-existing variable
 
+  required.vars = c("areal_units_fn", "inputdata_spatial_discretization_planar_km", "inputdata_temporal_discretization_yr", "variabletomodel",
+    "carstm_modelengine", "modeldir", "carstm_model_label", "yrs", "variabletomodel" )
+
+  for (i %in% required.vars) {
+    if (!exists(i, p)) {
+      message( "Missing parameter" )
+      message( i )
+      stop()
+    }
+  }
+
+
   # same file naming as in carstm ..
 
   if ( is.null(filename) ) {

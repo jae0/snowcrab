@@ -163,17 +163,13 @@
       }
 
       # biomass data: post-fishery biomass are determined by survey B)
+      pSC = bio.snowcrab::snowcrab_carstm( DS="parameters", assessment.years=2000:p$year.assessment )
 
-        K = interpolation.db( DS="interpolation.simulation", p=p, varnames="R0.mass" )
-        areas=c("cfanorth", "cfasouth", "cfa4x")
-        td = K[ which( K$region %in% areas) ,]
-
-        B = tapply( td$total, INDEX=td[,c("yr", "region")], FUN=sum, na.rm=T )  # summation is really returning identity as there is only 1 element
-        B = B / 1000 # kt
-        B = B[ , areas]
-        B = as.data.frame(B)
-        save( B, file=fn, compress=T )
-        return (B)
+      B = snowcrab_abundance_index( p=pSC, DS="load_timeseries" )
+      areas=c("cfanorth", "cfasouth", "cfa4x", "cfa23", "cfa24")
+      # B[,areas] = B[,areas] / 1000 # kt
+      save( B, file=fn, compress=T )
+      return (B)
 
     }
 
@@ -212,7 +208,7 @@
       v = "R1.no"
       fm = formula( paste(v, "~yr+cfa"))
 
-      set = snowcrab.db( DS ="set.biologicals", p=p, yrs=1996:p$year.assessment )
+      set = snowcrab.db( DS ="set.biologicals", p=p, yrs=2000:p$year.assessment )
       B = set[, c( v, "yr", "cfa" )]
       B[,v] = bio.snowcrab::variable.recode( B[,v], v, direction="forward", lookup.table=lookup.table )
 
@@ -221,8 +217,8 @@
 
       Bx = xtabs( fm, data=Bg )
 
-      Bx[ which( rownames(Bx) %in% c(1996:2001) ),"cfa4x"] = NA
-      Bx[ which( rownames(Bx) %in% c(1996) ),"cfanorth"] = NA
+      Bx[ which( rownames(Bx) %in% c(2000:2001) ),"cfa4x"] = NA
+      Bx[ which( rownames(Bx) %in% c(2000) ),"cfanorth"] = NA
       Bx = Bx[,c("cfanorth", "cfasouth", "cfa4x" ) ]
 
       Bx[ which(Bx < 0.0001 )] = 0
@@ -246,7 +242,7 @@
       v = "R0.mass"
       fm = formula( paste(v, "~yr+cfa"))
 
-      set = snowcrab.db( DS ="set.biologicals", p=p, yrs=1996:p$year.assessment )
+      set = snowcrab.db( DS ="set.biologicals", p=p, yrs=2000:p$year.assessment )
       B = set[, c( v, "yr", "cfa" )]
       B[,v] = bio.snowcrab::variable.recode( B[,v], v, direction="forward", lookup.table=lookup.table )
 
@@ -255,8 +251,8 @@
 
       Bx = xtabs( fm, data=Bg )
 
-      Bx[ which( rownames(Bx) %in% c(1996:2001) ),"cfa4x"] = NA
-      Bx[ which( rownames(Bx) %in% c(1996) ),"cfanorth"] = NA
+      Bx[ which( rownames(Bx) %in% c(2000:2001) ),"cfa4x"] = NA
+      Bx[ which( rownames(Bx) %in% c(2000) ),"cfanorth"] = NA
       Bx = Bx[,c("cfanorth", "cfasouth", "cfa4x" ) ]
 
       save( Bx, file=fn, compress=T )
@@ -277,7 +273,7 @@
       v = "R0.mass"
       fm = formula( paste(v, "~yr+cfa"))
 
-      set = snowcrab.db( DS ="set.biologicals", p=p, yrs=1996:p$year.assessment )
+      set = snowcrab.db( DS ="set.biologicals", p=p, yrs=2000:p$year.assessment )
       B = set[, c( v, "yr", "cfa" )]
       B[,v] = bio.snowcrab::variable.recode( B[,v], v, direction="forward", lookup.table=lookup.table )
 
@@ -286,8 +282,8 @@
 
       Bx = xtabs( fm, data=Bg )
 
-      Bx[ which( rownames(Bx) %in% c(1996:2001) ),"cfa4x"] = NA
-      Bx[ which( rownames(Bx) %in% c(1996) ),"cfanorth"] = NA
+      Bx[ which( rownames(Bx) %in% c(2000:2001) ),"cfa4x"] = NA
+      Bx[ which( rownames(Bx) %in% c(2000) ),"cfanorth"] = NA
       Bx = Bx[, c("cfanorth", "cfasouth", "cfa4x" ) ]
 
       save( Bx, file=fn, compress=T )
@@ -308,7 +304,7 @@
       v = "R1.no"
       fm = formula( paste(v, "~yr+cfa"))
 
-      set = snowcrab.db( DS ="set.biologicals", p=p, yrs=1996:p$year.assessment )
+      set = snowcrab.db( DS ="set.biologicals", p=p, yrs=2000:p$year.assessment )
       B = set[, c( v, "yr", "cfa" )]
       B[,v] = bio.snowcrab::variable.recode( B[,v], v, direction="forward", lookup.table=lookup.table )
 
@@ -317,8 +313,8 @@
 
       Bx = xtabs( fm, data=Bg )
 
-      Bx[ which( rownames(Bx) %in% c(1996:2001) ),"cfa4x"] = NA
-      Bx[ which( rownames(Bx) %in% c(1996) ),"cfanorth"] = NA
+      Bx[ which( rownames(Bx) %in% c(2000:2001) ),"cfa4x"] = NA
+      Bx[ which( rownames(Bx) %in% c(2000) ),"cfanorth"] = NA
       Bx = Bx[,c("cfanorth", "cfasouth", "cfa4x" ) ]
 
       save( Bx, file=fn, compress=T )
