@@ -76,7 +76,7 @@ snowcrab_abundance_index = function( p=NULL, RES=NULL, filename=NULL, operation=
     RES$cfasouth  = colSums( out * weight_year * sppoly$cfasouth_surfacearea/ 10^6, na.rm=TRUE )
     RES$cfa23     = colSums( out * weight_year * sppoly$cfa23_surfacearea/ 10^6, na.rm=TRUE )
     RES$cfa24     = colSums( out * weight_year * sppoly$cfa24_surfacearea/ 10^6, na.rm=TRUE )
-    RES$cfa4x     = colSums( out * weight_year * sppoly$cfa4x_surfacearea/ 10^6, na.rm=TRUE
+    RES$cfa4x     = colSums( out * weight_year * sppoly$cfa4x_surfacearea/ 10^6, na.rm=TRUE )
     save( RES, file=fn, compress=TRUE )
     return( fn )
   }
