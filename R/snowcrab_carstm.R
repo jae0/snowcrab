@@ -107,20 +107,23 @@ snowcrab_carstm = function( p=NULL, DS="parameters", redo=FALSE, ...) {
           ' ~ 1
             + offset( log(data_offset))
             + f(year_factor, model="ar1", hyper=H$ar1 )
-            + f(dyri, model="rw2", scale.model=TRUE, diagonal=1e-6, hyper=H$rw2 )
-            + f(ti, model="rw2", scale.model=TRUE, diagonal=1e-6, hyper=H$rw2)
-            + f(zi, model="rw2", scale.model=TRUE, diagonal=1e-6, hyper=H$rw2)
-            + f(gsi, model="rw2", scale.model=TRUE, diagonal=1e-6, hyper=H$rw2)
-            + f(pca1i, model="rw2", scale.model=TRUE, diagonal=1e-6, hyper=H$rw2)
-            + f(pca2i, model="rw2", scale.model=TRUE, diagonal=1e-6, hyper=H$rw2)
-            + f(strata, model="bym2", graph=sppoly@nb, group=year_factor, scale.model=TRUE, constr=TRUE, hyper=H$bym2),
+            + f(dyri, model="rw2", scale.model=TRUE, diagonal=1e-4, hyper=H$rw2 )
+            + f(ti, model="rw2", scale.model=TRUE, diagonal=1e-4, hyper=H$rw2)
+            + f(zi, model="rw2", scale.model=TRUE, diagonal=1e-4, hyper=H$rw2)
+            + f(gsi, model="rw2", scale.model=TRUE, diagonal=1e-4, hyper=H$rw2)
+            + f(pca1i, model="rw2", scale.model=TRUE, diagonal=1e-4, hyper=H$rw2)
+            + f(pca2i, model="rw2", scale.model=TRUE, diagonal=1e-4, hyper=H$rw2)
+            + f(strata, model="bym2", graph=sppoly@nb, scale.model=TRUE, constr=TRUE, hyper=H$bym2),
+          #  + f(strata, model="bym2", graph=sppoly@nb, group=year_factor, scale.model=TRUE, constr=TRUE, hyper=H$bym2),
             family = "poisson",
             data= M,
             control.compute=list(dic=TRUE, config=TRUE),
             control.results=list(return.marginals.random=TRUE, return.marginals.predictor=TRUE ),
             control.predictor=list(compute=FALSE, link=1 ),
             control.fixed=H$fixed,  # priors for fixed effects, generic is ok
-            control.inla = list(cmin = 0 ),
+            # control.inla = list( h=1e-6, tolerance=1e-12), # increase in case values are too close to zero
+            # control.mode = list( restart=TRUE, result=RES ), # restart from previous estimates
+            # control.inla = list(cmin = 0 ),
             # control.inla=list( strategy="laplace", cutoff=1e-6, correct=TRUE, correct.verbose=FALSE ),
             verbose=TRUE
           )'

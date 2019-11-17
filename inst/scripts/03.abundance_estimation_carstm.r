@@ -44,6 +44,13 @@
     # maps of some of the results
     vn = paste(pB$variabletomodel, "predicted", sep=".")
     carstm_plot( p=pB, res=res, vn=vn )
+
+    vn = paste(pB$variabletomodel, "random_auid_nonspatial", sep=".")
+    carstm_plot( p=pB, res=res, vn=vn )
+
+    vn = paste(pB$variabletomodel, "random_auid_spatial", sep=".")
+    carstm_plot( p=pB, res=res, vn=vn )
+
   }
 
     # Time used:
@@ -90,6 +97,10 @@
     summary(fit)
     vn = paste(pS$variabletomodel, "predicted", sep=".")
     carstm_plot( p=pS, res=res, vn=vn ) # maps of some of the results
+    vn = paste(pS$variabletomodel, "random_auid_nonspatial", sep=".")
+    carstm_plot( p=pS, res=res, vn=vn )
+    vn = paste(pS$variabletomodel, "random_auid_spatial", sep=".")
+    carstm_plot( p=pS, res=res, vn=vn )
   }
 
 
@@ -109,6 +120,10 @@
     fit = carstm_model(  p=pT, DS="carstm_modelled_fit", carstm_model_label="production" )  # extract currently saved model fit
     summary(fit)
     vn = paste(pT$variabletomodel, "predicted", sep=".")
+    carstm_plot( p=pT, res=res, vn=vn, time_match=list(year="2000", dyear="0.85" ) )       # maps of some of the results
+    vn = paste(pT$variabletomodel, "random_auid_nonspatial", sep=".")
+    carstm_plot( p=pT, res=res, vn=vn, time_match=list(year="2000", dyear="0.85" ) )       # maps of some of the results
+    vn = paste(pT$variabletomodel, "random_auid_spatial", sep=".")
     carstm_plot( p=pT, res=res, vn=vn, time_match=list(year="2000", dyear="0.85" ) )       # maps of some of the results
   }
 
