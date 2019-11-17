@@ -54,7 +54,9 @@ snowcrab_carstm = function( p=NULL, DS="parameters", redo=FALSE, ...) {
 
   if (DS=="parameters") {
 
+
     if ( !exists("project_name", p)) p$project_name = "snowcrab"
+
     if ( !exists("groundfish_species_code", p)) p$groundfish_species_code = 2526
     if ( !exists("speciesname", p)) p$p$speciesname = "Snow crab"
     if ( !exists("runtype", p)) p$runtype = "number"  # "biomass", "presence_absence", "number"
@@ -202,6 +204,13 @@ if (0) {
     p = carstm_parameters( p=p, DS="basic" )  # fill in anything missing and some checks
 
   #  boundingbox = list( xlim = c(-70.5, -56.5), ylim=c(39.5, 47.5)), # bounding box for plots using spplot
+
+  MS = snowcrab.db( p=p, DS="biological_data"  )  # domain is  sse     # the underlying observations/data
+  p$range_limit = list(
+    z = range( MS$z, na.rm=TRUE ),
+    t = range( MS$t, na.rm=TRUE)
+  )
+
 
     return(p)
   }
@@ -394,6 +403,9 @@ if (0) {
       dindex = cbind(au_map, year_map )
       M[kk, pPC2$variabletomodel] = PI [dindex]
     }
+
+
+    if( exists("spatial_domain", p)) M = geo_subset( spatial_domain=p$spatial_domain, Z=M ) # need to be careful with extrapolation ...  filter depths
 
 
     PI = NULL
