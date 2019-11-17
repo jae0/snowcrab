@@ -213,6 +213,10 @@
     summary(fit)
     vn = paste(pPC1$variabletomodel, "predicted", sep=".")
     carstm_plot( p=pPC1, res=res, vn=vn, time_match=list(year="2000" ) ) # maps of some of the results
+    vn = paste(pPC1$variabletomodel, "random_auid_nonspatial", sep=".")
+    carstm_plot( p=pPC1, res=res, vn=vn, time_match=list(year="2000" ) )       # maps of some of the results , dyear="0.85"
+    vn = paste(pPC1$variabletomodel, "random_auid_spatial", sep=".")
+    carstm_plot( p=pPC1, res=res, vn=vn, time_match=list(year="2000" ) )       # maps of some of the results , dyear="0.85"
   }
 
 
@@ -233,6 +237,10 @@
     summary(fit)
     vn = paste(pPC2$variabletomodel, "predicted", sep=".")
     carstm_plot( p=pPC2, res=res, vn=vn, time_match=list(year="2000" ) )       # maps of some of the results
+    vn = paste(pPC2$variabletomodel, "random_auid_nonspatial", sep=".")
+    carstm_plot( p=pPC2, res=res, vn=vn, time_match=list(year="2000" ) )       # maps of some of the results , dyear="0.85"
+    vn = paste(pPC2$variabletomodel, "random_auid_spatial", sep=".")
+    carstm_plot( p=pPC2, res=res, vn=vn, time_match=list(year="2000" ) )       # maps of some of the results , dyear="0.85"
   }
 
 
@@ -292,15 +300,18 @@
 
   snowcrab_abundance_index( p=p, operation="compute" )
 
-  RES = snowcrab_abundance_index(p=p, DS="load_timeseries" )
-  out = snowcrab_abundance_index(p=p, DS="load_spatial" )
+  RES = snowcrab_abundance_index(p=p, operation="load_timeseries" )
+
+  bio = snowcrab_abundance_index(p=p, operation="load_spacetime_biomass" )
+  num = snowcrab_abundance_index(p=p, operation="load_spacetime_number" )
+  wt = snowcrab_abundance_index(p=p, operation="load_spacetime_weights" )
 
 
-  plot( cfaall ~ yr, data=RES, lty=1, lwd=2.5, col="red", type="b")
+  plot( cfaall ~ yrs, data=RES, lty=1, lwd=2.5, col="red", type="b")
 
   # map it ..mean density
   vn = "pred"
-  sppoly@data[,vn] = out[,"2017"]
+  sppoly@data[,vn] = bio[,"2017"]
   brks = interval_break(X= sppoly[[vn]], n=length(p$mypalette), style="quantile")
   spplot( sppoly, vn, col.regions=p$mypalette, main=vn, at=brks, sp.layout=p$coastLayout, col="transparent" )
 

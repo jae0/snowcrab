@@ -113,8 +113,7 @@ snowcrab_carstm = function( p=NULL, DS="parameters", redo=FALSE, ...) {
             + f(gsi, model="rw2", scale.model=TRUE, diagonal=1e-4, hyper=H$rw2)
             + f(pca1i, model="rw2", scale.model=TRUE, diagonal=1e-4, hyper=H$rw2)
             + f(pca2i, model="rw2", scale.model=TRUE, diagonal=1e-4, hyper=H$rw2)
-            + f(strata, model="bym2", graph=sppoly@nb, scale.model=TRUE, constr=TRUE, hyper=H$bym2),
-          #  + f(strata, model="bym2", graph=sppoly@nb, group=year_factor, scale.model=TRUE, constr=TRUE, hyper=H$bym2),
+            + f(auid, model="bym2", graph=sppoly@nb, group=year_factor, scale.model=TRUE, constr=TRUE, hyper=H$bym2),
             family = "poisson",
             data= M,
             control.compute=list(dic=TRUE, config=TRUE),
@@ -177,7 +176,7 @@ if (0) {
     + f(zi, model="rw2", scale.model=TRUE, hyper=H$rw2)
     + f(di, model="rw2", scale.model=TRUE, hyper=H$rw2)
     + f(year, model="iid", hyper=H$iid)
-    + f(strata, model="bym2", graph=sppoly@nb, scale.model=TRUE, constr=TRUE, hyper=H$bym2),
+    + f(auid, model="bym2", graph=sppoly@nb, scale.model=TRUE, constr=TRUE, hyper=H$bym2),
     family="binomial",  # alternates family="zeroinflatedbinomial0", family="zeroinflatedbinomial1",
     data=M,
     control.family=list(control.link=list(model="logit")),
@@ -193,11 +192,11 @@ if (0) {
   APS = cbind( APS, fit$summary.fitted.values[ which(M$tag=="predictions"), ] )
 
   APS$iyr = match(APS$yr_factor, p$yrs)
-  APS$istrata = match( APS$AUID, sppoly$AUID )
+  APS$iauid = match( APS$AUID, sppoly$AUID )
 
   # reformat predictions into matrix form
   out = matrix(NA, nrow=length(sppoly$AUID), ncol=length(p$yrs), dimnames=list( sppoly$AUID, p$yrs) )
-  out[ cbind(APS$istrata, APS$iyr) ] = APS$mean
+  out[ cbind(APS$iauid, APS$iyr) ] = APS$mean
   RES$habitat_strata_CAR.yr_iid = colSums( {out * sppoly$au_sa_km2 }[sppoly$strata_to_keep,], na.rm=TRUE ) /sum(sppoly$au_sa_km2[sppoly$strata_to_keep]) # sa weighted average prob habitat
 
 
@@ -381,7 +380,7 @@ if (0) {
     kk =  which( !is.finite(M[, pPC1$variabletomodel]))
     if (length(kk) > 0) {
       PI = carstm_model ( p=pPC1, DS="carstm_modelled" )
-      au_map = match( as.numeric(M$AUID[kk]), levels(sppoly$AUID[as.numeric(dimnames(PI)$strata)]  ) )
+      au_map = match( as.numeric(M$AUID[kk]), levels(sppoly$AUID[as.numeric(dimnames(PI)$auid)]  ) )
       year_map = match( as.character(M$year[kk]), dimnames(PI)$year )
       dindex = cbind(au_map, year_map )
       M[kk, pPC1$variabletomodel] = PI [dindex]
@@ -401,7 +400,7 @@ if (0) {
     kk =  which( !is.finite(M[, pPC2$variabletomodel]))
     if (length(kk) > 0) {
       PI = carstm_model ( p=pPC2, DS="carstm_modelled" )
-      au_map = match( as.numeric(M$AUID[kk]), levels(sppoly$AUID[as.numeric(dimnames(PI)$strata)]  ) )
+      au_map = match( as.numeric(M$AUID[kk]), levels(sppoly$AUID[as.numeric(dimnames(PI)$auid)]  ) )
       year_map = match( as.character(M$year[kk]), dimnames(PI)$year )
       dindex = cbind(au_map, year_map )
       M[kk, pPC2$variabletomodel] = PI [dindex]
@@ -460,7 +459,7 @@ if (0) {
 
     TI = carstm_model ( p=pT, DS="carstm_modelled" )
     TI = TI[[ paste(pT$variabletomodel,"predicted",sep="." )]]
-    au_map = match( as.numeric(APS$AUID),levels(sppoly$AUID[as.numeric(dimnames(TI)$strata)]  ) )
+    au_map = match( as.numeric(APS$AUID),levels(sppoly$AUID[as.numeric(dimnames(TI)$auid)]  ) )
     year_map = match( as.character(APS$year), dimnames(TI)$year )
     dyear_breaks = c(p$dyears, p$dyears[length(p$dyears)]+ diff(p$dyears)[1] )
     dyear_map = as.numeric( cut( APS$dyear, breaks=dyear_breaks, include.lowest=TRUE, ordered_result=TRUE, right=FALSE ) )
@@ -471,7 +470,7 @@ if (0) {
 
     PI = carstm_model ( p=pPC1, DS="carstm_modelled" )
     PI = PI[[ paste(pPC1$variabletomodel,"predicted",sep="." )]]
-    au_map = match( as.numeric(APS$AUID), levels(sppoly$AUID[as.numeric(dimnames(PI)$strata)]  ) )
+    au_map = match( as.numeric(APS$AUID), levels(sppoly$AUID[as.numeric(dimnames(PI)$auid)]  ) )
     year_map = match( as.character(APS$year), dimnames(PI)$year )
     dindex = cbind(au_map, year_map )
     APS[, pPC1$variabletomodel] = PI [dindex]
@@ -479,7 +478,7 @@ if (0) {
 
     PI = carstm_model ( p=pPC2, DS="carstm_modelled" )
     PI = PI[[ paste(pPC2$variabletomodel,"predicted",sep="." )]]
-    au_map = match( as.numeric(APS$AUID), levels(sppoly$AUID[as.numeric(dimnames(PI)$strata)]  ) )
+    au_map = match( as.numeric(APS$AUID), levels(sppoly$AUID[as.numeric(dimnames(PI)$auid)]  ) )
     year_map = match( as.character(APS$year), dimnames(PI)$year )
     dindex = cbind(au_map, year_map  )
     APS[, pPC2$variabletomodel] = PI [dindex]
@@ -496,7 +495,7 @@ if (0) {
 
 
     M$AUID  = as.character(M$AUID)  # revert to factors
-    M$strata  = as.numeric( factor(M$AUID) )
+    M$auid  = as.numeric( factor(M$AUID) )
 
     M$zi  = discretize_data( M[, pB$variabletomodel], p$discretization[[pB$variabletomodel]] )
     M$ti  = discretize_data( M[, pT$variabletomodel], p$discretization[[pT$variabletomodel]] )
