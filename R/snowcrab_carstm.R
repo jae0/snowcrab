@@ -264,17 +264,6 @@ if (0) {
     # M$dyear = M$tiyr - M$year
 
 
-    # tailored specifically for snow crab resolution -- override defaults
-    p$discretization = list()
-    p$discretization$z = c(0, 5, 10, 20, 40, 60, 80, 100, 150, 200, 250, 300, 350, 400, 500, 1000, 2000, 5000 )  # depth cut points
-    p$discretization$substrate.grainsize = c( 0, 1, 2, 4, 6, 8, 10, 12, 16, 24, 32 )
-    p$discretization$pca1 = c( -1, -0.5, -0.4, -0.3, -0.2, -0.1, 0, 0.1, 0.2, 0.3, 0.4, 0.5, 1 )
-    p$discretization$pca2 = c( -1, -0.5, -0.4, -0.3, -0.2, -0.1, 0, 0.1, 0.2, 0.3, 0.4, 0.5, 1 )
-    p$discretization$t = c( -4, -2, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 12, 14, 28 )
-    p$discretization$dyear = c(0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0)
-    p$n.season = length(p$discretization[["dyear"]]) - 1
-
-
     pB = bathymetry_carstm( p=p, DS="parameters_override" ) # transcribes relevant parts of p to load bathymetry
     pS = substrate_carstm( p=p, DS="parameters_override" ) # transcribes relevant parts of p to load bathymetry
     pT = temperature_carstm( p=p, DS="parameters_override" ) # transcribes relevant parts of p to load
