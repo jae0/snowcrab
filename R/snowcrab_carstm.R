@@ -124,7 +124,10 @@ snowcrab_carstm = function( p=NULL, DS="parameters", redo=FALSE, ...) {
             # control.mode = list( restart=TRUE, result=RES ), # restart from previous estimates
             # control.inla = list(cmin = 0 ),
             # control.inla=list( strategy="laplace", cutoff=1e-6, correct=TRUE, correct.verbose=FALSE ),
-            verbose=TRUE
+            # control.inla = list( h=1e-6, tolerance=1e-12), # increase in case values are too close to zero
+            control.inla = list(h=1e-3, tolerance=1e-9, cmin=0), # restart=3), # restart a few times in case posteriors are poorly defined
+            # control.mode = list( restart=TRUE, result=RES ), # restart from previous estimates
+          verbose=TRUE
           )'
         )
       }
@@ -203,15 +206,7 @@ if (0) {
 }
 
 
-    p = carstm_parameters( p=p, DS="basic" )  # fill in anything missing and some checks
-
-  #  boundingbox = list( xlim = c(-70.5, -56.5), ylim=c(39.5, 47.5)), # bounding box for plots using spplot
-
-  MS = snowcrab.db( p=p, DS="biological_data"  )  # domain is  sse     # the underlying observations/data
-  p$range_limit = list(
-    z = range( MS$z, na.rm=TRUE ),
-    t = range( MS$t, na.rm=TRUE)
-  )
+    p = carstm_parameters( p=p)  # fill in anything missing and some checks
 
 
     return(p)

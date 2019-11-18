@@ -212,11 +212,11 @@
     fit = carstm_model( p=pPC1, DS="carstm_modelled_fit", carstm_model_label="production" )  # extract currently saved model fit
     summary(fit)
     vn = paste(pPC1$variabletomodel, "predicted", sep=".")
-    carstm_plot( p=pPC1, res=res, vn=vn, time_match=list(year="2000" ) ) # maps of some of the results
+    carstm_plot( p=pPC1, res=res, vn=vn, time_match=list(year="2000" ), dyear="0.85" ) # maps of some of the results
     vn = paste(pPC1$variabletomodel, "random_auid_nonspatial", sep=".")
-    carstm_plot( p=pPC1, res=res, vn=vn, time_match=list(year="2000" ) )       # maps of some of the results , dyear="0.85"
+    carstm_plot( p=pPC1, res=res, vn=vn, time_match=list(year="2000" ), dyear="0.85" )       # maps of some of the results , dyear="0.85"
     vn = paste(pPC1$variabletomodel, "random_auid_spatial", sep=".")
-    carstm_plot( p=pPC1, res=res, vn=vn, time_match=list(year="2000" ) )       # maps of some of the results , dyear="0.85"
+    carstm_plot( p=pPC1, res=res, vn=vn, time_match=list(year="2000" ), dyear="0.85" )       # maps of some of the results , dyear="0.85"
   }
 
 
@@ -236,11 +236,11 @@
     fit = carstm_model( p=pPC2, DS="carstm_modelled_fit", carstm_model_label="production"  )  # extract currently saved model fit
     summary(fit)
     vn = paste(pPC2$variabletomodel, "predicted", sep=".")
-    carstm_plot( p=pPC2, res=res, vn=vn, time_match=list(year="2000" ) )       # maps of some of the results
+    carstm_plot( p=pPC2, res=res, vn=vn, time_match=list(year="2000" ), dyear="0.85" )       # maps of some of the results
     vn = paste(pPC2$variabletomodel, "random_auid_nonspatial", sep=".")
-    carstm_plot( p=pPC2, res=res, vn=vn, time_match=list(year="2000" ) )       # maps of some of the results , dyear="0.85"
+    carstm_plot( p=pPC2, res=res, vn=vn, time_match=list(year="2000" ), dyear="0.85" )       # maps of some of the results , dyear="0.85"
     vn = paste(pPC2$variabletomodel, "random_auid_spatial", sep=".")
-    carstm_plot( p=pPC2, res=res, vn=vn, time_match=list(year="2000" ) )       # maps of some of the results , dyear="0.85"
+    carstm_plot( p=pPC2, res=res, vn=vn, time_match=list(year="2000" ), dyear="0.85" )       # maps of some of the results , dyear="0.85"
   }
 
 
@@ -271,8 +271,6 @@
     s$dic$p.eff
 
     # maps of some of the results
-    vn = paste(p$variabletomodel, "predicted", sep=".")
-    carstm_plot( p=p, res=res, vn=vn )
 
     vn = paste(p$variabletomodel, "random_sample_iid", sep=".")
     if (exists(vn, res)) carstm_plot( p=p, res=res, vn=vn, time_match=list(year="1950", dyear="0.05") )
@@ -308,6 +306,14 @@
 
 
   plot( cfaall ~ yrs, data=RES, lty=1, lwd=2.5, col="red", type="b")
+  plot( cfasouth ~ yrs, data=RES, lty=1, lwd=2.5, col="red", type="b")
+
+  p$boundingbox = list( xlim=p$corners$lon, ylim=p$corners$lat) # bounding box for plots using spplot
+
+  p$coastLayout = aegis.coastline::coastline_layout(p=p)
+  p$mypalette=RColorBrewer::brewer.pal(9, "YlOrRd")
+    sppoly = areal_units( p=p )  # to reload
+
 
   # map it ..mean density
   vn = "pred"
