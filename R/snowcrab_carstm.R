@@ -364,7 +364,7 @@ if (0) {
     kk =  which( !is.finite(M[, pPC1$variabletomodel]))
     if (length(kk) > 0) {
       PI = carstm_model ( p=pPC1, DS="carstm_modelled" )
-      au_map = match( as.numeric(M$AUID[kk]), levels(sppoly$AUID[as.numeric(dimnames(PI)$auid)]  ) )
+      au_map = match( M$AUID[kk], dimnames(PI)$AUID )
       year_map = match( as.character(M$year[kk]), dimnames(PI)$year )
       dindex = cbind(au_map, year_map )
       M[kk, pPC1$variabletomodel] = PI [dindex]
@@ -384,7 +384,7 @@ if (0) {
     kk =  which( !is.finite(M[, pPC2$variabletomodel]))
     if (length(kk) > 0) {
       PI = carstm_model ( p=pPC2, DS="carstm_modelled" )
-      au_map = match( as.numeric(M$AUID[kk]), levels(sppoly$AUID[as.numeric(dimnames(PI)$auid)]  ) )
+      au_map = match( M$AUID[kk], dimnames(PI)$AUID )
       year_map = match( as.character(M$year[kk]), dimnames(PI)$year )
       dindex = cbind(au_map, year_map )
       M[kk, pPC2$variabletomodel] = PI [dindex]
@@ -443,7 +443,7 @@ if (0) {
 
     TI = carstm_model ( p=pT, DS="carstm_modelled" )
     TI = TI[[ paste(pT$variabletomodel,"predicted",sep="." )]]
-    au_map = match( as.numeric(APS$AUID),levels(sppoly$AUID[as.numeric(dimnames(TI)$auid)]  ) )
+    au_map = match( APS$AUID, dimnames(TI)$AUID )
     year_map = match( as.character(APS$year), dimnames(TI)$year )
     dyear_breaks = c(p$dyears, p$dyears[length(p$dyears)]+ diff(p$dyears)[1] )
     dyear_map = as.numeric( cut( APS$dyear, breaks=dyear_breaks, include.lowest=TRUE, ordered_result=TRUE, right=FALSE ) )
@@ -454,7 +454,7 @@ if (0) {
 
     PI = carstm_model ( p=pPC1, DS="carstm_modelled" )
     PI = PI[[ paste(pPC1$variabletomodel,"predicted",sep="." )]]
-    au_map = match( as.numeric(APS$AUID), levels(sppoly$AUID[as.numeric(dimnames(PI)$auid)]  ) )
+    au_map = match( APS$AUID, dimnames(PI)$AUID )
     year_map = match( as.character(APS$year), dimnames(PI)$year )
     dindex = cbind(au_map, year_map )
     APS[, pPC1$variabletomodel] = PI [dindex]
@@ -462,7 +462,7 @@ if (0) {
 
     PI = carstm_model ( p=pPC2, DS="carstm_modelled" )
     PI = PI[[ paste(pPC2$variabletomodel,"predicted",sep="." )]]
-    au_map = match( as.numeric(APS$AUID), levels(sppoly$AUID[as.numeric(dimnames(PI)$auid)]  ) )
+    au_map = match( APS$AUID, dimnames(PI)$AUID )
     year_map = match( as.character(APS$year), dimnames(PI)$year )
     dindex = cbind(au_map, year_map  )
     APS[, pPC2$variabletomodel] = PI [dindex]
