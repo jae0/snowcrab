@@ -481,9 +481,9 @@ if (0) {
     M$AUID  = as.character(M$AUID)  # revert to factors
     M$auid  = as.numeric( factor(M$AUID) )
 
-    M$zi  = discretize_data( M[, pB$variabletomodel], p$discretization[[pB$variabletomodel]] )
+    M$zi  = log( discretize_data( M[, pB$variabletomodel], p$discretization[[pB$variabletomodel]] ) )
     M$ti  = discretize_data( M[, pT$variabletomodel], p$discretization[[pT$variabletomodel]] )
-    M$gsi = discretize_data( M[, pS$variabletomodel], p$discretization[[pS$variabletomodel]] )
+    M$gsi = log( discretize_data( M[, pS$variabletomodel], p$discretization[[pS$variabletomodel]] ) )
 
     M$pca1i = discretize_data( M[, pPC1$variabletomodel], p$discretization[[pPC1$variabletomodel]] )
     M$pca2i = discretize_data( M[, pPC2$variabletomodel], p$discretization[[pPC2$variabletomodel]] )

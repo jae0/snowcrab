@@ -14,6 +14,7 @@
 
 # -------------------------------------------------
 # Part 2 -- create polygon structure
+  p$areal_units_constraint_nmin = 5 # must have at least this number of stations over the full time series to be considered
   MS = snowcrab.db( p=p, DS="biological_data"  )  # domain is  sse     # the underlying observations/data
   sppoly = areal_units( p=p, areal_units_constraint=MS[, c("lon", "lat")], redo=TRUE )  # create constrained polygons with neighbourhood as an attribute
   if (0) {
