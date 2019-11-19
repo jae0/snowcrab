@@ -123,9 +123,9 @@
     vn = paste(pT$variabletomodel, "predicted", sep=".")
     carstm_plot( p=pT, res=res, vn=vn, time_match=list(year="2000", dyear="0.85" ) )       # maps of some of the results
     vn = paste(pT$variabletomodel, "random_auid_nonspatial", sep=".")
-    carstm_plot( p=pT, res=res, vn=vn, time_match=list(year="2000", dyear="0.85" ) )       # maps of some of the results
+    carstm_plot( p=pT, res=res, vn=vn, time_match=list(year="2000"  ) )       # maps of some of the results
     vn = paste(pT$variabletomodel, "random_auid_spatial", sep=".")
-    carstm_plot( p=pT, res=res, vn=vn, time_match=list(year="2000", dyear="0.85" ) )       # maps of some of the results
+    carstm_plot( p=pT, res=res, vn=vn, time_match=list(year="2000"  ) )       # maps of some of the results
   }
 
   # Time used:
