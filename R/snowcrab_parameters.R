@@ -30,15 +30,24 @@ snowcrab_parameters = function( p=NULL, year.assessment=NULL, project_class="def
 
   # ---------------------
   # define focal year. not required for pure spatial models but ignored by the spatial methods anyways
-  if (!is.null(year.assessment) ) p$year.assessment = year.assessment
-  if (!exists( "year.assessment", p)) if ( exists("yrs", p)) p$year.assessment = max(p$yrs)
-  if (!exists( "year.assessment", p)) p$year.assessment = lubridate::year(lubridate::now())
+  if ( exists( "assessment.years", p)) {
+    if ( !exists("year.assessment", p)) p$year.assessment = max( p$assessment.years )
+    if ( !exists("yrs", p)) p$yrs = p$assessment.years
+  }
+  if (!is.null(year.assessment) ) {
+    if ( !exists("year.assessment", p)) p$year.assessment = year.assessment  # over-ride
+    if ( !exists(p$yrs)) p$yrs = c(1999:p$year.assessment)
+  }
+  if (!exists( "year.assessment", p)) {
+    if ( exists("yrs", p)) p$year.assessment = max(p$yrs)
+  }
+  if (!exists( "year.assessment", p)) stop("year.assessment not defined" )
+  if (!exists("yrs", p)) p$yrs = c(1999:p$year.assessment)
 
   # ---------------------
   # define years to map when mapping various variables, defaults to last four years
   if (!exists("mapyears", p)) p$mapyears = (as.numeric(p$year.assessment)-3):p$year.assessment
 
-  if (!exists("yrs", p)) p$yrs = c(1999:p$year.assessment)
 
   p$seabird.yToload = intersect( p$yrs, 2012:p$year.assessment)
   p$minilog.yToload = intersect( p$yrs, 1999:p$year.assessment)

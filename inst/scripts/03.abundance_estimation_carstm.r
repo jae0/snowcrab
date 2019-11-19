@@ -8,8 +8,8 @@
   p = bio.snowcrab::snowcrab_carstm( DS="parameters", assessment.years=1999:2018 )
 
   # misc run params adjustments here:
-  p$inla_num.threads =2
-  p$inla_blas.num.threads =2
+  p$inla_num.threads = 4
+  p$inla_blas.num.threads = 4
 
 
 # -------------------------------------------------
