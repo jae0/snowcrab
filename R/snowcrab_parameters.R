@@ -126,6 +126,11 @@ snowcrab_parameters = function( p=NULL, year.assessment=NULL, project_class="def
 
 
     # due to formulae being potentially created on the fly, these are required params
+
+    if (!exists("Y", p$variables)) {
+      if (exists("variabletomodel", p)) p$variables$Y = p$variabletomodel
+    }
+
     if (!exists("Y", p$variables)) {
       if (exists("stmv_local_modelformula", p))  {
         if (!is.null(p$stmv_local_modelformula)) {
@@ -135,6 +140,9 @@ snowcrab_parameters = function( p=NULL, year.assessment=NULL, project_class="def
           }
         }
       }
+    }
+
+    if (!exists("Y", p$variables)) {
       if (exists("stmv_global_modelformula", p))  {
         if (!is.null(p$stmv_global_modelformula)) {
           if (p$stmv_global_modelformula != "none") {
@@ -144,6 +152,7 @@ snowcrab_parameters = function( p=NULL, year.assessment=NULL, project_class="def
         }
       }
     }
+
     if (!exists("Y", p$variables)) p$variables$Y = "not_defined" # this can be called to get covars.. do not stop
 
 

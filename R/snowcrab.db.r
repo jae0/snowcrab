@@ -1101,7 +1101,7 @@ snowcrab.db = function( DS, p=NULL, yrs=NULL) {
 
     if ( p$selection$type=="presence_absence") {
       # must run here as we need the wgt from this for both PA and abundance
-      if ( grepl( "snowcrab.large.males", p$variables$Y ) ) {
+      if ( grepl( "snowcrab.large.males", p$variabletomodel ) ) {
         # add commerical fishery data --
         # depth data is problematic ... drop for now
         lgbk = logbook.db( DS="fisheries.complete", p=p )
@@ -1131,7 +1131,7 @@ snowcrab.db = function( DS, p=NULL, yrs=NULL) {
       set = set[ which(is.finite(set$plon + set$plat)),]
     }
 
-    # set = set[ which(is.finite(set[, p$variables$Y])),]
+    # set = set[ which(is.finite(set[, p$variabletomodel])),]
     crs = projection_proj4string("lonlat_wgs84")
     coastline_source="eastcoast_gadm"
     coast = coastline.db( p=p, DS=coastline_source, crs=crs )
