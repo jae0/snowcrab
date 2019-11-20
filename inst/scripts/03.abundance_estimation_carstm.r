@@ -339,30 +339,39 @@
 
 if (0) {
 
-  p$carstm_model_label = "testing"
-  p$carstm_modelcall = paste('
-    inla(
-      formula =', p$variabletomodel, ' ~ 1
-        + f(tiyr, model="ar1", hyper=H$ar1 )
-        + f(year, model="ar1", hyper=H$ar1 )
-        + f(zi, model="rw2", scale.model=TRUE, diagonal=1e-6, hyper=H$rw2)
-        + f(auid, model="bym2", graph=sppoly@nb, scale.model=TRUE, constr=TRUE, hyper=H$bym2),
-      family = "normal",
+
+  p$carstm_model_label = "zeroinflatedpoisson0"
+  p$carstm_modelcall = paste(
+    'inla( formula =', p$variabletomodel,
+    ' ~ 1
+      + offset( log(data_offset))
+      + f(year_factor, model="ar1", hyper=H$ar1 )
+      + f(dyri, model="rw2", scale.model=TRUE, hyper=H$rw2 )
+      + f(ti, model="rw2", scale.model=TRUE, hyper=H$rw2)
+      + f(zi, model="rw2", scale.model=TRUE, hyper=H$rw2)
+      + f(gsi, model="rw2", scale.model=TRUE, hyper=H$rw2)
+      + f(pca1i, model="rw2", scale.model=TRUE, hyper=H$rw2)
+      + f(pca2i, model="rw2", scale.model=TRUE, hyper=H$rw2)
+      + f(auid, model="bym2", graph=sppoly@nb, group=year_factor, scale.model=TRUE, constr=TRUE, hyper=H$bym2),
+      family = "zeroinflatedpoisson0",
       data= M,
       control.compute=list(dic=TRUE, config=TRUE),
       control.results=list(return.marginals.random=TRUE, return.marginals.predictor=TRUE ),
       control.predictor=list(compute=FALSE, link=1 ),
       control.fixed=H$fixed,  # priors for fixed effects, generic is ok
-      control.inla=list(strategy="gaussian", int.strategy="eb") ,# to get empirical Bayes results much faster.
-      # control.inla=list(int.strategy="eb") ,# to get empirical Bayes results much faster.
+      # control.inla = list( h=1e-6, tolerance=1e-12), # increase in case values are too close to zero
+      # control.mode = list( restart=TRUE, result=RES ), # restart from previous estimates
+      # control.inla = list(cmin = 0 ),
       # control.inla=list( strategy="laplace", cutoff=1e-6, correct=TRUE, correct.verbose=FALSE ),
-      verbose=TRUE
-    ) '
+      # control.inla = list( h=1e-6, tolerance=1e-12), # increase in case values are too close to zero
+      # control.inla = list(h=1e-3, tolerance=1e-9, cmin=0), # restart=3), # restart a few times in case posteriors are poorly defined
+      # control.mode = list( restart=TRUE, result=RES ), # restart from previous estimates
+    verbose=TRUE
+    )'
   )
 
+
 }
-
-
 
 # -------------------------------------
 # simpler models:

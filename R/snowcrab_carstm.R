@@ -11,7 +11,6 @@ snowcrab_carstm = function( p=NULL, DS="parameters", redo=FALSE, ...) {
       p = bio.snowcrab::snowcrab_parameters(p=p, ...)
     }
 
-
   # ---------------------
   # create/update library list
   p$libs = c( p$libs, RLibrary ( "colorspace",  "fields", "geosphere", "lubridate",  "lattice",
@@ -58,7 +57,7 @@ snowcrab_carstm = function( p=NULL, DS="parameters", redo=FALSE, ...) {
     if ( !exists("project_name", p)) p$project_name = "snowcrab"
 
     if ( !exists("groundfish_species_code", p)) p$groundfish_species_code = 2526
-    if ( !exists("speciesname", p)) p$p$speciesname = "Snow crab"
+    if ( !exists("speciesname", p)) p$speciesname = "Snow crab"
     if ( !exists("runtype", p)) p$runtype = "number"  # "biomass", "presence_absence", "number"
     if ( !exists("spatial_domain", p)) p$spatial_domain = "snowcrab"  # defines spatial area, currenty: "snowcrab" or "SSE"
 
@@ -481,9 +480,9 @@ if (0) {
     M$AUID  = as.character(M$AUID)  # revert to factors
     M$auid  = as.numeric( factor(M$AUID) )
 
-    M$zi  = log( discretize_data( M[, pB$variabletomodel], p$discretization[[pB$variabletomodel]] ) )
+    M$zi  = discretize_data( M[, pB$variabletomodel], p$discretization[[pB$variabletomodel]] )
     M$ti  = discretize_data( M[, pT$variabletomodel], p$discretization[[pT$variabletomodel]] )
-    M$gsi = log( discretize_data( M[, pS$variabletomodel], p$discretization[[pS$variabletomodel]] ) )
+    M$gsi = discretize_data( M[, pS$variabletomodel], p$discretization[[pS$variabletomodel]] )
 
     M$pca1i = discretize_data( M[, pPC1$variabletomodel], p$discretization[[pPC1$variabletomodel]] )
     M$pca2i = discretize_data( M[, pPC2$variabletomodel], p$discretization[[pPC2$variabletomodel]] )
