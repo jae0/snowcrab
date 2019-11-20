@@ -9,6 +9,7 @@ snowcrab_abundance_index = function( p=NULL, operation="load_RES", ... ) {
   i = which(duplicated(names(p), fromLast = TRUE ) )
   if ( length(i) > 0 ) p = p[-i] # give any passed parameters a higher priority, overwriting pre-existing variable
 
+
   required.vars = c("areal_units_fn", "inputdata_spatial_discretization_planar_km", "inputdata_temporal_discretization_yr", "variabletomodel",
     "carstm_modelengine", "modeldir", "carstm_model_label", "yrs", "variabletomodel" )
 
@@ -67,17 +68,20 @@ snowcrab_abundance_index = function( p=NULL, operation="load_RES", ... ) {
       AUID=as.character( sppoly$AUID ),
       yrs=p$yrs,
       fillall=TRUE,
-      annual_breakdown=TRUE
+      annual_breakdown=TRUE,
+      robustify_quantiles=c(0, 0.95)  # high upper bounds are more dangerous
     )
 
     save (weight_year, file=fn_wgts, compress=TRUE)
 
-    res = carstm_model( p=p, DS="carstm_modelled" ) # to load currently saved res
+    res = carstm_model( p=p, DS="carstm_modelled", carstm_model_label=p$carstm_model_label ) # to load currently saved res
 
     # convert numerical density to total number and convert to biomass:  / 10^6  # 10^6 kg -> kt .. kg/km * km
     nums = res[[ paste( p$variabletomodel, "predicted", sep=".")]]
     nums[!is.finite(nums)] = NA
-    nums[nums > 1e10] = NA
+    qnt = quantiles( nums, probs=0.95, na.rm=TRUE)
+
+    nums[nums > qnt] = qnt
     save( nums, file=fn_no, compress=TRUE )
 
     biom = nums * weight_year

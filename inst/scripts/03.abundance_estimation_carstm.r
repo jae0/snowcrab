@@ -13,18 +13,19 @@
 
 
 # -------------------------------------------------
-# Part 2 -- create polygon structure
-  p$areal_units_constraint_nmin = 5 # must have at least this number of stations over the full time series to be considered
-  MS = snowcrab.db( p=p, DS="biological_data"  )  # domain is  sse     # the underlying observations/data
-  sppoly = areal_units( p=p, areal_units_constraint=MS[, c("lon", "lat")], redo=TRUE )  # create constrained polygons with neighbourhood as an attribute
+# Part 2 -- polygon structure
+  sppoly = areal_units( p=p )  # to reload
+  plot(sppoly)
+  spplot( sppoly, "au_sa_km2", main="AUID", sp.layout=p$coastLayout )
   if (0) {
-    sppoly = areal_units( p=p )  # to reload
-    plot(sppoly)
-    spplot( sppoly, "AUID", main="AUID", sp.layout=p$coastLayout )
+    # create if not yet made
+    MS = snowcrab.db( p=p, DS="biological_data"  )  # domain is  sse     # the underlying observations/data
+    # ensure if polys exist and create if required
+    for (au in c("cfanorth", "cfasouth", "cfa4x", "cfaall" )) plot(polygons_managementarea( species="snowcrab", au))
+    sppoly = areal_units( p=p, areal_units_constraint=MS[, c("lon", "lat")], redo=TRUE )  # create constrained polygons with neighbourhood as an attribute
+    coastLayout = aegis.coastline::coastline_layout( p=p, redo=TRUE )
+    MS = NULL
   }
-  # ensure if polys exist and create if required
-  for (au in c("cfanorth", "cfasouth", "cfa4x", "cfaall" )) plot(polygons_managementarea( species="snowcrab", au))
-  MS = NULL
 
 
 # -------------------------------------------------
@@ -297,7 +298,7 @@
   }
 
 
-  snowcrab_abundance_index( p=p, operation="compute" )
+  snowcrab_abundance_index( p=p, operation="compute", carstm_model_label=p$carstm_model_label )
 
   RES = snowcrab_abundance_index(p=p, operation="load_timeseries" )
 
