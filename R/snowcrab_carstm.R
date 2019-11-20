@@ -92,7 +92,8 @@ snowcrab_carstm = function( p=NULL, DS="parameters", redo=FALSE, ...) {
         # ranged_data = c("dyear")  # not used .. just to show how to use range_data
       )
     )
-    if ( !exists("variables", p)) p$variables = list(Y="totno")  # name to give (using stmv access methods)  .. redundant .. to remove (needed for now)
+
+    # if ( !exists("variables", p)) p$variables = list(Y="totno")  # name to give (using stmv access methods)  .. redundant .. to remove (needed for now)
     if ( !exists("variabletomodel", p)) p$variabletomodel = "totno"
 
     if ( !exists("carstm_modelengine", p)) p$carstm_modelengine = "inla.default"  # {model engine}.{label to use to store}
@@ -159,52 +160,6 @@ snowcrab_carstm = function( p=NULL, DS="parameters", redo=FALSE, ...) {
     }
 
 
-
-if (0) {
-  # formulafor binomials
-
-  pa = presence.absence( X={set$totno / set$data_offset}, px=0.05 )  # determine presence absence and weighting
-  set[, "pa"] = pa$pa
-  set[, "wt"] = pa$probs
-  pa = NULL
-
-  # generic PC priors
-  H = carstm_hyperparameters( sd(set$pa) )
-
-
-  fit = inla(
-    formula = pa ~ 1
-    + f(ti, model="rw2", scale.model=TRUE, hyper=H$rw2)
-    + f(zi, model="rw2", scale.model=TRUE, hyper=H$rw2)
-    + f(di, model="rw2", scale.model=TRUE, hyper=H$rw2)
-    + f(year, model="iid", hyper=H$iid)
-    + f(auid, model="bym2", graph=sppoly@nb, scale.model=TRUE, constr=TRUE, hyper=H$bym2),
-    family="binomial",  # alternates family="zeroinflatedbinomial0", family="zeroinflatedbinomial1",
-    data=M,
-    control.family=list(control.link=list(model="logit")),
-    control.compute=list(dic=TRUE, config=TRUE),
-    control.results=list(return.marginals.random=TRUE, return.marginals.predictor=TRUE ),
-    control.predictor=list(compute=TRUE, link=1 ), # compute=TRUE on each data location
-    control.fixed=H$fixed,  # priors for fixed effects
-    control.inla=list(  correct=TRUE, correct.verbose=FALSE ), # strategy="laplace", cutoff=1e-6,
-    verbose=TRUE
-  )
-
-
-  APS = cbind( APS, fit$summary.fitted.values[ which(M$tag=="predictions"), ] )
-
-  APS$iyr = match(APS$yr_factor, p$yrs)
-  APS$iauid = match( APS$AUID, sppoly$AUID )
-
-  # reformat predictions into matrix form
-  out = matrix(NA, nrow=length(sppoly$AUID), ncol=length(p$yrs), dimnames=list( sppoly$AUID, p$yrs) )
-  out[ cbind(APS$iauid, APS$iyr) ] = APS$mean
-  RES$habitat_strata_CAR.yr_iid = colSums( {out * sppoly$au_sa_km2 }[sppoly$strata_to_keep,], na.rm=TRUE ) /sum(sppoly$au_sa_km2[sppoly$strata_to_keep]) # sa weighted average prob habitat
-
-
-}
-
-
     p = carstm_parameters( p=p)  # fill in anything missing and some checks
 
 
@@ -241,6 +196,52 @@ if (0) {
     M$totwgt = M$totwgt_adjusted / M$cf_set_mass # convert density to total wgt
 
     M$data_offset = 1 / M$cf_set_no  ## offset only used in poisson model
+
+
+    if (0) {
+      # formulafor binomials
+
+      pa = presence.absence( X={set$totno / set$data_offset}, px=0.05 )  # determine presence absence and weighting
+      set[, "pa"] = pa$pa
+      set[, "wt"] = pa$probs
+      pa = NULL
+
+      # generic PC priors
+      H = carstm_hyperparameters( sd(set$pa) )
+
+
+      fit = inla(
+        formula = pa ~ 1
+        + f(ti, model="rw2", scale.model=TRUE, hyper=H$rw2)
+        + f(zi, model="rw2", scale.model=TRUE, hyper=H$rw2)
+        + f(di, model="rw2", scale.model=TRUE, hyper=H$rw2)
+        + f(year, model="iid", hyper=H$iid)
+        + f(auid, model="bym2", graph=sppoly@nb, scale.model=TRUE, constr=TRUE, hyper=H$bym2),
+        family="binomial",  # alternates family="zeroinflatedbinomial0", family="zeroinflatedbinomial1",
+        data=M,
+        control.family=list(control.link=list(model="logit")),
+        control.compute=list(dic=TRUE, config=TRUE),
+        control.results=list(return.marginals.random=TRUE, return.marginals.predictor=TRUE ),
+        control.predictor=list(compute=TRUE, link=1 ), # compute=TRUE on each data location
+        control.fixed=H$fixed,  # priors for fixed effects
+        control.inla=list(  correct=TRUE, correct.verbose=FALSE ), # strategy="laplace", cutoff=1e-6,
+        verbose=TRUE
+      )
+
+
+      APS = cbind( APS, fit$summary.fitted.values[ which(M$tag=="predictions"), ] )
+
+      APS$iyr = match(APS$yr_factor, p$yrs)
+      APS$iauid = match( APS$AUID, sppoly$AUID )
+
+      # reformat predictions into matrix form
+      out = matrix(NA, nrow=length(sppoly$AUID), ncol=length(p$yrs), dimnames=list( sppoly$AUID, p$yrs) )
+      out[ cbind(APS$iauid, APS$iyr) ] = APS$mean
+      RES$habitat_strata_CAR.yr_iid = colSums( {out * sppoly$au_sa_km2 }[sppoly$strata_to_keep,], na.rm=TRUE ) /sum(sppoly$au_sa_km2[sppoly$strata_to_keep]) # sa weighted average prob habitat
+
+
+    }
+
 
     # globally remove all unrealistic data
     # p$quantile_bounds_data = c(0.0005, 0.9995)
