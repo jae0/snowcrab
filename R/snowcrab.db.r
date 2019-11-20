@@ -1146,14 +1146,14 @@ snowcrab.db = function( DS, p=NULL, yrs=NULL) {
 
     # set = aegis_db_lookup(
     #   X=set,
-    #   lookupvars=p$variables$COV,
+    #   lookupvars=p$stmv_variables$COV,
     #   xy_vars=c("lon", "lat"),
     #   time_var="timestamp"
     # )
 
     # if (!alldata) {
-    #  set = set[, which(names(set) %in% c( p$variables$LOCS, p$variables$COV, p$variables$Y, p$variables$TIME, "dyear", "yr",  "wt") ) ]  # a data frame
-    #   oo = setdiff( c( p$variables$LOCS, p$variables$COV ), names(set))
+    #  set = set[, which(names(set) %in% c( p$stmv_variables$LOCS, p$stmv_variables$COV, p$stmv_variables$Y, p$stmv_variables$TIME, "dyear", "yr",  "wt") ) ]  # a data frame
+    #   oo = setdiff( c( p$stmv_variables$LOCS, p$stmv_variables$COV ), names(set))
     #   if (length(oo) > 0 ) {
     #     print(oo )
     #     warning("Some variables are missing in the input data")
@@ -1164,7 +1164,7 @@ snowcrab.db = function( DS, p=NULL, yrs=NULL) {
     # cap quantiles of dependent vars
     # if (exists("quantile_bounds", p)) {
     #   dr = list()
-    #   for (pvn in p$variables$COV) {
+    #   for (pvn in p$stmv_variables$COV) {
     #     dr[[pvn]] = quantile( set[,pvn], probs=p$quantile_bounds, na.rm=TRUE ) # use 95%CI
     #     il = which( set[,pvn] < dr[[pvn]][1] )
     #     if ( length(il) > 0 ) set[il,pvn] = dr[[pvn]][1]

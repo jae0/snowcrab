@@ -45,7 +45,7 @@ snowcrab_parameters = function( p=NULL, year.assessment=NULL, project_class="def
   if (!exists("yrs", p)) p$yrs = c(1999:p$year.assessment)
 
   # ---------------------
-  # define years to map when mapping various variables, defaults to last four years
+  # define years to map when mapping various stmv_variables, defaults to last four years
   if (!exists("mapyears", p)) p$mapyears = (as.numeric(p$year.assessment)-3):p$year.assessment
 
 
@@ -103,9 +103,9 @@ snowcrab_parameters = function( p=NULL, year.assessment=NULL, project_class="def
 
     p$libs = unique( c( p$libs, project.library ( "stmv" ) ) )
     if (!exists("varstomodel", p) ) p$varstomodel = c( "pca1", "pca2", "ca1", "ca2" )
-    if (!exists("variables", p)) p$variables = list()
-    if (!exists("LOCS", p$variables)) p$variables$LOCS=c("plon", "plat")
-    if (!exists("TIME", p$variables)) p$variables$TIME="tiyr"
+    if (!exists("stmv_variables", p)) p$stmv_variables = list()
+    if (!exists("LOCS", p$stmv_variables)) p$stmv_variables$LOCS=c("plon", "plat")
+    if (!exists("TIME", p$stmv_variables)) p$stmv_variables$TIME="tiyr"
 
     p$inputdata_spatial_discretization_planar_km = p$pres  # 1 km .. requires 32 GB RAM and limit of speed -- controls resolution of data prior to modelling to reduce data set and speed up modelling
     p$inputdata_temporal_discretization_yr = 1/12  # ie., monthly .. controls resolution of data prior to modelling to reduce data set and speed up modelling }
@@ -127,33 +127,33 @@ snowcrab_parameters = function( p=NULL, year.assessment=NULL, project_class="def
 
     # due to formulae being potentially created on the fly, these are required params
 
-    if (!exists("Y", p$variables)) {
-      if (exists("variabletomodel", p)) p$variables$Y = p$variabletomodel
+    if (!exists("Y", p$stmv_variables)) {
+      if (exists("variabletomodel", p)) p$stmv_variables$Y = p$variabletomodel
     }
 
-    if (!exists("Y", p$variables)) {
+    if (!exists("Y", p$stmv_variables)) {
       if (exists("stmv_local_modelformula", p))  {
         if (!is.null(p$stmv_local_modelformula)) {
           if (p$stmv_local_modelformula != "none") {
             oo = all.vars( p$stmv_local_modelformula[[2]] )
-            if (length(oo) > 0) p$variables$Y = oo
+            if (length(oo) > 0) p$stmv_variables$Y = oo
           }
         }
       }
     }
 
-    if (!exists("Y", p$variables)) {
+    if (!exists("Y", p$stmv_variables)) {
       if (exists("stmv_global_modelformula", p))  {
         if (!is.null(p$stmv_global_modelformula)) {
           if (p$stmv_global_modelformula != "none") {
             oo = all.vars( p$stmv_global_modelformula[[2]] )
-            if (length(oo) > 0) p$variables$Y = oo
+            if (length(oo) > 0) p$stmv_variables$Y = oo
           }
         }
       }
     }
 
-    if (!exists("Y", p$variables)) p$variables$Y = "not_defined" # this can be called to get covars.. do not stop
+    if (!exists("Y", p$stmv_variables)) p$stmv_variables$Y = "not_defined" # this can be called to get covars.. do not stop
 
 
     # additional variable to extract from aegis_db for inputs
@@ -163,7 +163,7 @@ snowcrab_parameters = function( p=NULL, year.assessment=NULL, project_class="def
     for (id in p$aegis_project_datasources ) {
 
       pz = aegis_parameters( p=p, DS=id )
-      pz_vars = intersect( pz$varstomodel, p$variables$COV )  # these are aegis vars to model
+      pz_vars = intersect( pz$varstomodel, p$stmv_variables$COV )  # these are aegis vars to model
       if (length(pz_vars) > 0) p$aegis_variables[[id]] = pz_vars
     }
 
@@ -174,7 +174,7 @@ snowcrab_parameters = function( p=NULL, year.assessment=NULL, project_class="def
     # using covariates as a first pass essentially makes it ~ kriging with external drift .. no time or space here
     if (!exists("stmv_global_modelformula", p)) {
       p$stmv_global_modelformula = formula( paste(
-        p$variables$Y,
+        p$stmv_variables$Y,
         ' ~ s( t, k=3, bs="ts") + s( tsd, k=3, bs="ts") + s( tmax, k=3, bs="ts") + s( degreedays, k=3, bs="ts") ',
         ' + s( log(z), k=3, bs="ts") + s( log(dZ), k=3, bs="ts") + s( log(ddZ), k=3, bs="ts") ',
         ' + s( log(substrate.grainsize), k=3, bs="ts") + s(pca1, k=3, bs="ts") + s(pca2, k=3, bs="ts")  '
@@ -184,7 +184,7 @@ snowcrab_parameters = function( p=NULL, year.assessment=NULL, project_class="def
     if (p$stmv_local_modelengine =="twostep") {
       # this is the time component (mostly) .. space enters as a rough constraint
       # if (!exists("stmv_local_modelformula", p))  p$stmv_local_modelformula = formula( paste(
-      #   p$variables$Y, '~ s(yr, k=10, bs="ts") + s(cos.w, k=3, bs="ts") + s(sin.w, k=3, bs="ts") ',
+      #   p$stmv_variables$Y, '~ s(yr, k=10, bs="ts") + s(cos.w, k=3, bs="ts") + s(sin.w, k=3, bs="ts") ',
       #     ' + s(cos.w, sin.w, yr, bs="ts", k=20) ',
       #     ' + s(plon, k=3, bs="ts") + s(plat, k=3, bs="ts") + s(plon, plat, k=20, bs="ts") ' ) )
       if (!exists("stmv_local_model_distanceweighted", p)) p$stmv_local_model_distanceweighted = TRUE
@@ -195,7 +195,7 @@ snowcrab_parameters = function( p=NULL, year.assessment=NULL, project_class="def
       if (p$stmv_twostep_time == "gam") {
         if (!exists("stmv_local_modelformula_time", p)) {
           p$stmv_local_modelformula_time = formula( paste(
-            p$variables$Y,
+            p$stmv_variables$Y,
             ' ~ s(yr, k=12, bs="ts") + s(cos.w, k=3, bs="ts") + s(sin.w, k=3, bs="ts") ',
             ' + s(cos.w, sin.w, yr, bs="ts", k=30) ',
             ' + s( log(z), k=3, bs="ts" ) + s(plon, k=3, bs="ts") + s(plat, k=3, bs="ts") + s(log(z), plon, plat, k=30, bs="ts") '
@@ -207,14 +207,14 @@ snowcrab_parameters = function( p=NULL, year.assessment=NULL, project_class="def
       if (!exists("stmv_twostep_space", p))  p$stmv_twostep_space = "fft"
       if (p$stmv_twostep_space == "gam") {
         if (!exists("stmv_local_modelformula_space", p))  p$stmv_local_modelformula_space = formula( paste(
-        p$variables$Y, '~ s(log(z), k=3, bs="ts") + s(plon, k=3, bs="ts") + s(plat, k=3, bs="ts") + s( log(z), plon, plat, k=27, bs="ts")  ') )
+        p$stmv_variables$Y, '~ s(log(z), k=3, bs="ts") + s(plon, k=3, bs="ts") + s(plat, k=3, bs="ts") + s( log(z), plon, plat, k=27, bs="ts")  ') )
       }
       if (!exists("stmv_fft_filter", p)) p$stmv_fft_filter="matern" #  matern, krige (very slow), lowpass, lowpass_matern
 
     }  else if (p$stmv_local_modelengine == "gam") {
 
       if (!exists("stmv_local_modelformula", p))  p$stmv_local_modelformula = formula( paste(
-        p$variables$Y, '~ s(yr, bs="ts") + s(cos.w, k=3, bs="ts") + s(sin.w, k=3, bs="ts") ',
+        p$stmv_variables$Y, '~ s(yr, bs="ts") + s(cos.w, k=3, bs="ts") + s(sin.w, k=3, bs="ts") ',
           ' + s(cos.w, sin.w, yr, bs="ts", k=25)  ',
           ' + s(plon, k=3, bs="ts") + s(plat, k=3, bs="ts") + s(plon, plat, k=25, bs="ts") ' ) )
       if (!exists("stmv_local_model_distanceweighted", p)) p$stmv_local_model_distanceweighted = TRUE
@@ -226,7 +226,7 @@ snowcrab_parameters = function( p=NULL, year.assessment=NULL, project_class="def
       # then the next does the transformation internal to the "stmv__bayesx"
       # alternative models .. testing .. problem is that SE of fit is not accessible?
       p$stmv_local_modelformula = formula( paste(
-        p$variables$Y, ' ~ sx(yr, bs="ps") + sx(cos.w, bs="ps") + s(sin.w, bs="ps") +s(z, bs="ps") + sx(plon, bs="ps") + sx(plat,  bs="ps")',
+        p$stmv_variables$Y, ' ~ sx(yr, bs="ps") + sx(cos.w, bs="ps") + s(sin.w, bs="ps") +s(z, bs="ps") + sx(plon, bs="ps") + sx(plat,  bs="ps")',
           ' + sx(plon, plat, cos.w, sin.w, yr, bs="te") ' )
           # te is tensor spline
       )

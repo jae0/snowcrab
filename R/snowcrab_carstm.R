@@ -93,7 +93,6 @@ snowcrab_carstm = function( p=NULL, DS="parameters", redo=FALSE, ...) {
       )
     )
 
-    # if ( !exists("variables", p)) p$variables = list(Y="totno")  # name to give (using stmv access methods)  .. redundant .. to remove (needed for now)
     if ( !exists("variabletomodel", p)) p$variabletomodel = "totno"
 
     if ( !exists("carstm_modelengine", p)) p$carstm_modelengine = "inla.default"  # {model engine}.{label to use to store}
