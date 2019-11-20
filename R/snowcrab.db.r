@@ -1080,7 +1080,6 @@ snowcrab.db = function( DS, p=NULL, yrs=NULL) {
         ii = which( set$totno_adjusted < lowestpossible )
         set$totno_adjusted[ii] = 0
       }
-      set[, p$variables$Y] = set$totno_adjusted
       set$wt = 1 / set$cf_set_no
     }
 
@@ -1097,7 +1096,6 @@ snowcrab.db = function( DS, p=NULL, yrs=NULL) {
         ii = which( set$totwgt_adjusted < lowestpossible )
         set$totwgt_adjusted[ii] = 0 ## arbitrary but close to detection limit
       }
-      set[, p$variables$Y] = set$totwgt_adjusted
       set$wt = 1 / set$cf_set_mass
     }
 
@@ -1127,13 +1125,13 @@ snowcrab.db = function( DS, p=NULL, yrs=NULL) {
       }
 
       pa = presence.absence( X=set$zm, px=p$habitat.threshold.quantile )  # determine presence absence and weighting
-      set[, p$variables$Y] = pa$pa
+      set$pa = pa$pa
       set[, "wt"] = pa$probs
       pa = NULL
       set = set[ which(is.finite(set$plon + set$plat)),]
     }
 
-    set = set[ which(is.finite(set[, p$variables$Y])),]
+    # set = set[ which(is.finite(set[, p$variables$Y])),]
     crs = projection_proj4string("lonlat_wgs84")
     coastline_source="eastcoast_gadm"
     coast = coastline.db( p=p, DS=coastline_source, crs=crs )
@@ -1175,7 +1173,7 @@ snowcrab.db = function( DS, p=NULL, yrs=NULL) {
     #   }
     # }
 
-    set$Y = set$totno  # unadjusted value is used as we are usinmg offsets ...
+    #set$Y = set$totno  # unadjusted value is used as we are usinmg offsets ...
     set$data_offset  = 1 / set[, ifelse( p$runtype=="number", "cf_set_no", "cf_set_wgt")]  # as "sa"
     set$data_offset[which(!is.finite(set$data_offset))] = median(set$data_offset, na.rm=TRUE )  # just in case missing data
 

@@ -88,8 +88,8 @@ snowcrab_carstm = function( p=NULL, DS="parameters", redo=FALSE, ...) {
         yr = p$assessment.years,      # time frame for comparison specified above
         settype = 1, # same as geartype in groundfish db
         polygon_enforce=TRUE,  # make sure mis-classified stations or incorrectly entered positions get filtered out
-        strata_toremove = NULL,  # emphasize that all data enters analysis initially ..
-        ranged_data = c("dyear")  # not used .. just to show how to use range_data
+        strata_toremove = NULL #,  # emphasize that all data enters analysis initially ..
+        # ranged_data = c("dyear")  # not used .. just to show how to use range_data
       )
     )
     if ( !exists("variables", p)) p$variables = list(Y="totno")  # name to give (using stmv access methods)  .. redundant .. to remove (needed for now)
@@ -236,6 +236,8 @@ if (0) {
 
     # do this immediately to reduce storage for sppoly (before adding other variables)
     M = snowcrab.db( p=p, DS="biological_data" )  # will redo if not found .. not used here but used for data matching/lookup in other aegis projects that use bathymetry
+    M$totno = M$totno_adjusted
+    M$totwgt = M$totwgt_adjusted
 
     # globally remove all unrealistic data
     # p$quantile_bounds_data = c(0.0005, 0.9995)
