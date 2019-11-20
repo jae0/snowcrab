@@ -236,8 +236,9 @@ if (0) {
 
     # do this immediately to reduce storage for sppoly (before adding other variables)
     M = snowcrab.db( p=p, DS="biological_data" )  # will redo if not found .. not used here but used for data matching/lookup in other aegis projects that use bathymetry
-    M$totno = M$totno_adjusted
-    M$totwgt = M$totwgt_adjusted
+
+    M$totno = M$totno_adjusted / M$cf_set_no   # convert density to counts
+    M$totwgt = M$totwgt_adjusted / M$cf_set_mass # convert density to total wgt
 
     # globally remove all unrealistic data
     # p$quantile_bounds_data = c(0.0005, 0.9995)
