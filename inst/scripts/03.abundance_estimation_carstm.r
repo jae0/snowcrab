@@ -122,10 +122,22 @@
     carstm_plot( p=pS, res=res, vn=vn )
 
 
-    p$carstm_model_label = "production_inla.group_quantile_25"
-    p$carstm_modelcall = paste('
+    #------------
+    # 6567.727 sec = 1.8hrs
+    # DIC:
+    # Mean of Deviance ................. 41730.4
+    # Deviance at Mean ................. 41538.1
+    # Effective number of parameters ... 192.34
+    # DIC .............................. 41922.8
+    # DIC (Saturated):
+    # Mean of Deviance ................. 96229.9
+    # Deviance at Mean ................. 96037.6
+    # Effective number of parameters ... 192.34
+    # DIC .............................. 96422.3
+    pS$carstm_model_label = "production_inla.group_quantile_25"
+    pS$carstm_modelcall = paste('
       inla(
-        formula =', p$variabletomodel, ' ~ 1
+        formula =', pS$variabletomodel, ' ~ 1
           + f( inla.group(z, method="quantile", n=25) ,  model="rw2", scale.model=TRUE, hyper=H$rw2)
           + f(auid, model="bym2", graph=sppoly@nb, scale.model=TRUE, constr=TRUE, hyper=H$bym2),
         family = "lognormal",
@@ -144,6 +156,8 @@
         # control.mode = list( restart=TRUE, result=RES ), # restart from previous estimates
         verbose=TRUE
       ) ' )
+    res = carstm_model( p=pS, M='substrate_carstm( p=pS, DS="carstm_inputs")', DS="redo", carstm_model_label=pS$carstm_model_label  )  # run model and obtain predictions
+    fit = carstm_model( p=pS, DS="carstm_modelled_fit", carstm_model_label=pS$carstm_model_label )  # extract currently saved model fit
 
   }
 
