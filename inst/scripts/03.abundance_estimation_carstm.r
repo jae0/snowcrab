@@ -124,21 +124,39 @@
 
     #------------
     # 6567.727 sec = 1.8hrs
-    # DIC:
-    # Mean of Deviance ................. 41730.4
-    # Deviance at Mean ................. 41538.1
-    # Effective number of parameters ... 192.34
-    # DIC .............................. 41922.8
-    # DIC (Saturated):
-    # Mean of Deviance ................. 96229.9
-    # Deviance at Mean ................. 96037.6
-    # Effective number of parameters ... 192.34
-    # DIC .............................. 96422.3
+
     pS$carstm_model_label = "production_inla.group_quantile_25"
+    # DIC:
+    #   Mean of Deviance ................. 33840.1
+    #   Deviance at Mean ................. 33636.8
+    #   Effective number of parameters ... 203.318
+    #   DIC .............................. 34043.4
+    # DIC (Saturated):
+    #   Mean of Deviance ................. 95897.9
+    #   Deviance at Mean ................. 95694.6
+    #   Effective number of parameters ... 203.318
+    #   DIC .............................. 96101.3
+
+
+
+
+    pS$carstm_model_label = "production_inla.group_quantile_20"
+    # DIC:
+    # 	Mean of Deviance ................. 33995.4
+    # 	Deviance at Mean ................. 33794.6
+    # 	Effective number of parameters ... 200.881
+    # 	DIC .............................. 34196.3
+    # DIC (Saturated):
+    # 	Mean of Deviance ................. 96187.3
+    # 	Deviance at Mean ................. 95986.4
+    # 	Effective number of parameters ... 200.881
+    # 	DIC .............................. 96388.2
+
+
     pS$carstm_modelcall = paste('
       inla(
         formula =', pS$variabletomodel, ' ~ 1
-          + f( inla.group(z, method="quantile", n=25) ,  model="rw2", scale.model=TRUE, hyper=H$rw2)
+          + f( inla.group(z, method="quantile", n=20) ,  model="rw2", scale.model=TRUE, hyper=H$rw2)
           + f(auid, model="bym2", graph=sppoly@nb, scale.model=TRUE, constr=TRUE, hyper=H$bym2),
         family = "lognormal",
         data= M,
@@ -177,14 +195,6 @@
     res = carstm_model( p=pT, DS="carstm_modelled", carstm_model_label="production" ) # run model and obtain predictions
     fit = carstm_model(  p=pT, DS="carstm_modelled_fit", carstm_model_label="production" )  # extract currently saved model fit
     summary(fit)
-    vn = paste(pT$variabletomodel, "predicted", sep=".")
-    carstm_plot( p=pT, res=res, vn=vn, time_match=list(year="2000", dyear="0.85" ) )       # maps of some of the results
-    vn = paste(pT$variabletomodel, "random_auid_nonspatial", sep=".")
-    carstm_plot( p=pT, res=res, vn=vn, time_match=list(year="2000"  ) )       # maps of some of the results
-    vn = paste(pT$variabletomodel, "random_auid_spatial", sep=".")
-    carstm_plot( p=pT, res=res, vn=vn, time_match=list(year="2000"  ) )       # maps of some of the results
-  }
-
   # Time used:
   #     Pre = 2.67, Running = 559, Post = 2.69, Total = 564
   # Fixed effects:
@@ -253,6 +263,49 @@
   # Effective number of parameters .....................: 1216.63
 
   # Marginal log-Likelihood:  -60756.52
+
+    vn = paste(pT$variabletomodel, "predicted", sep=".")
+    carstm_plot( p=pT, res=res, vn=vn, time_match=list(year="2000", dyear="0.85" ) )       # maps of some of the results
+    vn = paste(pT$variabletomodel, "random_auid_nonspatial", sep=".")
+    carstm_plot( p=pT, res=res, vn=vn, time_match=list(year="2000"  ) )       # maps of some of the results
+    vn = paste(pT$variabletomodel, "random_auid_spatial", sep=".")
+    carstm_plot( p=pT, res=res, vn=vn, time_match=list(year="2000"  ) )       # maps of some of the results
+
+
+
+        pT$carstm_model_label = "production"
+        pT$carstm_modelcall = paste('
+          inla(
+            formula = ', pT$variabletomodel, ' ~ 1
+              + f( year_factor, model="ar1", hyper=H$ar1 )
+              + f( dyri, model="ar1", scale.model=TRUE, hyper=H$ar1 )
+              + f( inla.group( z, method="quantile", n=25 ), model="rw2", scale.model=TRUE, hyper=H$rw2)
+              + f( auid, model="bym2", graph=sppoly@nb, group=year_factor, scale.model=TRUE, constr=TRUE, hyper=H$bym2),
+            family = "normal",
+            data= M,
+            control.compute=list(dic=TRUE, config=TRUE),
+            control.results=list(return.marginals.random=TRUE, return.marginals.predictor=TRUE ),
+            control.predictor=list(compute=FALSE, link=1 ),
+            control.fixed=H$fixed,  # priors for fixed effects, generic is ok
+            # control.inla=list( strategy="laplace", cutoff=1e-6, correct=TRUE, correct.verbose=FALSE ),
+            # control.inla = list( h=1e-6, tolerance=1e-12), # increase in case values are too close to zero
+            # control.mode = list( restart=TRUE, result=RES ), # restart from previous estimates
+            # control.inla = list(cmin = 0 ),
+            # control.inla=list( strategy="laplace", cutoff=1e-6, correct=TRUE, correct.verbose=FALSE ),
+            # control.inla = list( h=1e-6, tolerance=1e-12), # increase in case values are too close to zero
+            # control.inla = list(h=1e-3, tolerance=1e-9, cmin=0), # restart=3), # restart a few times in case posteriors are poorly defined
+            # control.mode = list( restart=TRUE, result=RES ), # restart from previous estimates
+            verbose=TRUE
+          ) ' )
+
+        #  + f(tiyr2, model="seasonal", season.length=10 )
+        #  + f(dyear, model="ar1", hyper=H$ar1 )
+        #  + f(seasonal, model="seasonal", season.length=', pT$n.season, ', scale.model=TRUE )  # using seasonal effect is not recommended as it is not smoothed well .. rw2 is better
+
+
+
+  }
+
 
 
 
