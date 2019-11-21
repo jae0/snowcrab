@@ -79,7 +79,7 @@ snowcrab_abundance_index = function( p=NULL, operation="load_RES", ... ) {
     # convert numerical density to total number and convert to biomass:  / 10^6  # 10^6 kg -> kt .. kg/km * km
     nums = res[[ paste( p$variabletomodel, "predicted", sep=".")]]
     nums[!is.finite(nums)] = NA
-    qnt = quantiles( nums, probs=0.95, na.rm=TRUE)
+    qnt = quantile( nums, probs=0.95, na.rm=TRUE)
 
     nums[nums > qnt] = qnt
     save( nums, file=fn_no, compress=TRUE )

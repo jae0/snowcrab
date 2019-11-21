@@ -52,9 +52,6 @@
 
     vn = paste(pB$variabletomodel, "random_auid_spatial", sep=".")
     carstm_plot( p=pB, res=res, vn=vn )
-
-  }
-
     # Time used:
     #     Pre = 4.71, Running = 10928, Post = 4.51, Total = 10938
     # Fixed effects:
@@ -82,6 +79,10 @@
     # Posterior marginals for the linear predictor and
     #  the fitted values are computed
 
+  }
+
+
+
 
 # -------------------------------------------------
 # Part 4 -- create covariate field for  substrate
@@ -97,12 +98,53 @@
     res = carstm_model( p=pS, DS="carstm_modelled", carstm_model_label="production"   ) # run model and obtain predictions
     fit = carstm_model( p=pS, DS="carstm_modelled_fit", carstm_model_label="production" )  # extract currently saved model fit
     summary(fit)
+    # Model hyperparameters:
+    #                                           mean    sd 0.025quant 0.5quant 0.975quant  mode
+    # Precision for the lognormal observations 1.405 0.006      1.392    1.405      1.417 1.405
+    # Precision for zi                         4.318 2.467      1.105    3.822     10.495 2.771
+    # Precision for auid                       0.840 0.124      0.652    0.820      1.134 0.770
+    # Phi for auid                             0.959 0.034      0.867    0.969      0.995 0.986
+
+    # Expected number of effective parameters(stdev): 191.31(0.21)
+    # Number of equivalent replicates : 502.93
+
+    # Deviance Information Criterion (DIC) ...............: 41922.78
+    # Deviance Information Criterion (DIC, saturated) ....: 96422.26
+    # Effective number of parameters .....................: 192.34
+
+    # Marginal log-Likelihood:  -21357.76
+
     vn = paste(pS$variabletomodel, "predicted", sep=".")
     carstm_plot( p=pS, res=res, vn=vn ) # maps of some of the results
     vn = paste(pS$variabletomodel, "random_auid_nonspatial", sep=".")
     carstm_plot( p=pS, res=res, vn=vn )
     vn = paste(pS$variabletomodel, "random_auid_spatial", sep=".")
     carstm_plot( p=pS, res=res, vn=vn )
+
+
+    p$carstm_model_label = "production_inla.group_quantile_25"
+    p$carstm_modelcall = paste('
+      inla(
+        formula =', p$variabletomodel, ' ~ 1
+          + f( inla.group(z, method="quantile", n=25) ,  model="rw2", scale.model=TRUE, hyper=H$rw2)
+          + f(auid, model="bym2", graph=sppoly@nb, scale.model=TRUE, constr=TRUE, hyper=H$bym2),
+        family = "lognormal",
+        data= M,
+        control.compute=list(dic=TRUE, config=TRUE),
+        control.results=list(return.marginals.random=TRUE, return.marginals.predictor=TRUE ),
+        control.predictor=list(compute=FALSE, link=1 ),
+        control.fixed=H$fixed,  # priors for fixed effects, generic is ok
+        # control.inla=list( strategy="laplace", cutoff=1e-6, correct=TRUE, correct.verbose=FALSE ),  # extra work to get tails
+        # control.inla = list( h=1e-6, tolerance=1e-12), # increase in case values are too close to zero
+        # control.mode = list( restart=TRUE, result=RES ), # restart from previous estimates
+        # control.inla = list(cmin = 0 ),
+        # control.inla=list( strategy="laplace", cutoff=1e-6, correct=TRUE, correct.verbose=FALSE ),
+        # control.inla = list( h=1e-6, tolerance=1e-12), # increase in case values are too close to zero
+        # control.inla = list(h=1e-3, tolerance=1e-9, cmin=0), # restart=3), # restart a few times in case posteriors are poorly defined
+        # control.mode = list( restart=TRUE, result=RES ), # restart from previous estimates
+        verbose=TRUE
+      ) ' )
+
   }
 
 
@@ -270,7 +312,10 @@
     plot(fit, plot.prior=TRUE, plot.hyperparameters=TRUE, plot.fixed.effects=FALSE )
     s = summary(fit)
     s$dic$dic
+# [1] 47779.408  # poisson
+
     s$dic$p.eff
+# [1] 1962.805 # poisson
 
     # maps of some of the results
 
@@ -300,15 +345,17 @@
 
   snowcrab_abundance_index( p=p, operation="compute", carstm_model_label=p$carstm_model_label )
 
-  RES = snowcrab_abundance_index(p=p, operation="load_timeseries" )
+  RES = snowcrab_abundance_index(p=p, operation="load_timeseries", carstm_model_label=p$carstm_model_label  )
 
-  bio = snowcrab_abundance_index(p=p, operation="load_spacetime_biomass" )
-  num = snowcrab_abundance_index(p=p, operation="load_spacetime_number" )
-  wt = snowcrab_abundance_index(p=p, operation="load_spacetime_weights" )
+  bio = snowcrab_abundance_index(p=p, operation="load_spacetime_biomass", carstm_model_label=p$carstm_model_label  )
+  num = snowcrab_abundance_index(p=p, operation="load_spacetime_number", carstm_model_label=p$carstm_model_label  )
+  wt = snowcrab_abundance_index(p=p, operation="load_spacetime_weights", carstm_model_label=p$carstm_model_label  )
 
 
   plot( cfaall ~ yrs, data=RES, lty=1, lwd=2.5, col="red", type="b")
   plot( cfasouth ~ yrs, data=RES, lty=1, lwd=2.5, col="red", type="b")
+  plot( cfanorth ~ yrs, data=RES, lty=1, lwd=2.5, col="red", type="b")
+  plot( cfa4x ~ yrs, data=RES, lty=1, lwd=2.5, col="red", type="b")
 
   p$boundingbox = list( xlim=p$corners$lon, ylim=p$corners$lat) # bounding box for plots using spplot
 
@@ -340,6 +387,11 @@
 
 if (0) {
 
+  # 7 hrs
+	# Mean of Deviance ................. 45495.7
+	# Deviance at Mean ................. 43774.3
+	# Effective number of parameters ... 1721.47
+	# DIC .............................. 47217.2
 
   p$carstm_model_label = "zeroinflatedpoisson0"
   p$carstm_modelcall = paste(
