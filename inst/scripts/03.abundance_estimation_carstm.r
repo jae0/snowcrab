@@ -365,6 +365,9 @@
   M = snowcrab_carstm( p=p, DS="carstm_inputs", redo=TRUE )  # will redo if not found
   M = NULL; gc()
   res = carstm_model( p=p, M='snowcrab_carstm( p=p, DS="carstm_inputs" )' ) # 151 configs and long optim .. 19 hrs
+  m = get("inla.models", INLA:::inla.get.inlaEnv())
+	m$latent$rw2$min.diff = NULL
+	assign("inla.models", m, INLA:::inla.get.inlaEnv())
 
   if (0) {
 
