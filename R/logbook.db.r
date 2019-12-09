@@ -103,14 +103,18 @@
       # additional constraint ..
       # remove data that are strange in location .. land
 
+
       V = SpatialPoints( lgbk[,c("lon", "lat")], sp::CRS(projection_proj4string("lonlat_wgs84")) )
 
-      coastlineSp =  aegis.coastline::coastline.db( p=p, DS="mapdata.coastPolygon", crs="+proj=longlat +datum=WGS84" )
-      coastlineSp = spTransform( coastlineSp, sp::CRS(V) )
+      coastlineSp =  aegis.coastline::coastline.db( p=p)
+      #, DS="mapdata.coastPolygon", crs="+proj=longlat +datum=WGS84" )
+      coastlineSp = spTransform( coastlineSp, sp::CRS(projection_proj4string("lonlat_wgs84"))  )
 
       # coastline = maps::map( database="worldHires", regions=c("Canada", "US"), fill=TRUE, plot=FALSE )
       # coastlineSp = maptools::map2SpatialPolygons( coastline, IDs=coastline$names, proj4string=projection_proj4string("lonlat_wgs84")  )
       bboxSP = boundingbox(p$corners$lon, p$corners$lat)
+      bboxSP = spTransform( bboxSP, sp::CRS(projection_proj4string("lonlat_wgs84"))  )
+
       keep <- rgeos::gContains( bboxSP, coastlineSp, byid=TRUE ) | rgeos::gOverlaps( bboxSP, coastlineSp, byid=TRUE )
 
       stopifnot( ncol(keep)==1 )
