@@ -295,10 +295,10 @@ snowcrab.db = function( DS, p=NULL, yrs=NULL) {
     sex.e$error <- 'sex.e'
     #Cw.e: Carapace Width below 5 or greater than 185
     cw.e <- det[ which(det$cw<5 | det$cw>185 ),]
-    cw.e$error <- 'cw.e'
+    if ( !is.na(cw.e$trip[1])) cw.e$error <- 'cw.e'
     #Chela.e: Chela less than 1 or greater than 50
     chela.e <- det[which(det$chela < 1 | det$chela > 50  ),]
-    chela.e$error <- 'chela.e'
+    if ( !is.na(chela.e$trip[1])) chela.e$error <- 'chela.e'
     #Abdomen.e:Abdomen less than 1 and greater than 66
     abdomen.e <- det[which(det$abdomen < 1 | det$abdomen > 66 ),]
     #abdomen.e$error <- 'abdomen.e' #BZ 2018 no abdomen lengths met "error" condition, broke script #
