@@ -72,9 +72,9 @@ if (obtain.database.snapshot) {
   }
 
   seabird.db( DS="load", Y=p$seabird.yToload ) # this begins 2012;duplicates are often due to seabird files not being restarted each morning
- 
+
   minilog.db( DS="load", Y=p$minilog.yToload ) # minilog data series "begins" in 1999 -- 60 min?
-  
+
   #netmind.db( DS='esonar2netmind.conversion',Y=p$esonar.yToload ) #may no longer need to be run BZ
   netmind.db( DS="load", Y=p$netmind.yToload) # netmind data series "begins" in 1998 -- 60 min?
   #JC note: 1998:2002 have about 60 files with no data, just a short header
@@ -85,7 +85,7 @@ if (obtain.database.snapshot) {
   netmind.db (DS="stats.redo", Y=p$netmind.yToload )
 
 
-  
+
 # -------------------------------------------------------------------------------------
 # merge in netmind, minilog, seabird, esonar data and do some sanity checks
 # Can add any datachecks that might improve overall data quality
@@ -126,7 +126,7 @@ if (obtain.database.snapshot) {
 # -------------------------------------------------------------------------------------
 # create some simple/crude timeseries by each CFA
   snowcrab.timeseries.db( DS="observer.redo", p=p )
-  snowcrab.timeseries.db( DS="biologicals.redo", p=p )  
+  snowcrab.timeseries.db( DS="biologicals.redo", p=p )
   snowcrab.timeseries.db(DS="groundfish.t.redo", p=p )
   # snowcrab.timeseries.db( DS="biologicals.2014.redo" )  # reduced subset that matches 2014 station id's ..
 
