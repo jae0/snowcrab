@@ -47,11 +47,17 @@
     vn = paste(pB$variabletomodel, "predicted", sep=".")
     carstm_plot( p=pB, res=res, vn=vn )
 
+    vn = paste(pB$variabletomodel, "predicted_se", sep=".")
+    carstm_plot( p=pB, res=res, vn=vn )
+
     vn = paste(pB$variabletomodel, "random_auid_nonspatial", sep=".")
     carstm_plot( p=pB, res=res, vn=vn )
 
     vn = paste(pB$variabletomodel, "random_auid_spatial", sep=".")
     carstm_plot( p=pB, res=res, vn=vn )
+
+    plot(fit, plot.prior=TRUE, plot.hyperparameters=TRUE, plot.fixed.effects=FALSE, single=TRUE )
+
     # Time used:
     #     Pre = 4.71, Running = 10928, Post = 4.51, Total = 10938
     # Fixed effects:
@@ -116,11 +122,19 @@
 
     vn = paste(pS$variabletomodel, "predicted", sep=".")
     carstm_plot( p=pS, res=res, vn=vn ) # maps of some of the results
+
+    vn = paste(pS$variabletomodel, "predicted_se", sep=".")
+    carstm_plot( p=pS, res=res, vn=vn )
+
     vn = paste(pS$variabletomodel, "random_auid_nonspatial", sep=".")
     carstm_plot( p=pS, res=res, vn=vn )
+
     vn = paste(pS$variabletomodel, "random_auid_spatial", sep=".")
     carstm_plot( p=pS, res=res, vn=vn )
 
+
+
+    plot(fit, plot.prior=TRUE, plot.hyperparameters=TRUE, plot.fixed.effects=FALSE, single=TRUE )
 
     #------------
     # 6567.727 sec = 1.8hrs
@@ -195,6 +209,44 @@
     res = carstm_model( p=pT, DS="carstm_modelled", carstm_model_label="production" ) # run model and obtain predictions
     fit = carstm_model(  p=pT, DS="carstm_modelled_fit", carstm_model_label="production" )  # extract currently saved model fit
     summary(fit)
+
+# Time used:
+#     Pre = 3.23, Running = 3680, Post = 16.4, Total = 3700
+# Fixed effects:
+#              mean    sd 0.025quant 0.5quant 0.975quant  mode kld
+# (Intercept) 4.454 0.388      3.682    4.453      5.228 4.451   0
+
+# Random effects:
+#   Name	  Model
+#     year_factor AR1 model
+#    dyri AR1 model
+#    inla.group(z, method = "quantile", n = 25) RW2 model
+#    auid BYM2 model
+
+# Model hyperparameters:
+#                                                           mean    sd 0.025quant 0.5quant 0.975quant  mode
+# Precision for the Gaussian observations                  0.429 0.003      0.422    0.429      0.436 0.429
+# Precision for year_factor                                2.878 0.841      1.549    2.772      4.821 2.571
+# Rho for year_factor                                      0.386 0.155      0.059    0.395      0.663 0.411
+# Precision for dyri                                       3.092 1.126      1.383    2.934      5.749 2.622
+# Rho for dyri                                             0.601 0.147      0.268    0.617      0.838 0.653
+# Precision for inla.group(z, method = "quantile", n = 25) 0.128 0.028      0.079    0.126      0.190 0.122
+# Precision for auid                                       0.410 0.033      0.352    0.408      0.482 0.401
+# Phi for auid                                             0.996 0.005      0.983    0.998      1.000 1.000
+# GroupRho for auid                                        0.723 0.025      0.670    0.725      0.767 0.731
+
+# Expected number of effective parameters(stdev): 1563.56(31.92)
+# Number of equivalent replicates : 22.46
+
+# Deviance Information Criterion (DIC) ...............: 130925.13
+# Deviance Information Criterion (DIC, saturated) ....: 36676.07
+# Effective number of parameters .....................: 1565.21
+
+# Marginal log-Likelihood:  -64612.59
+# Posterior marginals for the linear predictor and
+#  the fitted values are computed
+
+
   # Time used:
   #     Pre = 2.67, Running = 559, Post = 2.69, Total = 564
   # Fixed effects:
@@ -264,13 +316,22 @@
 
   # Marginal log-Likelihood:  -60756.52
 
+
+
     vn = paste(pT$variabletomodel, "predicted", sep=".")
     carstm_plot( p=pT, res=res, vn=vn, time_match=list(year="2000", dyear="0.85" ) )       # maps of some of the results
+
+    vn = paste(pT$variabletomodel, "predicted_se", sep=".")
+    carstm_plot( p=pT, res=res, vn=vn, time_match=list(year="2000", dyear="0.85" ) )       # maps of some of the results
+
     vn = paste(pT$variabletomodel, "random_auid_nonspatial", sep=".")
     carstm_plot( p=pT, res=res, vn=vn, time_match=list(year="2000"  ) )       # maps of some of the results
     vn = paste(pT$variabletomodel, "random_auid_spatial", sep=".")
     carstm_plot( p=pT, res=res, vn=vn, time_match=list(year="2000"  ) )       # maps of some of the results
 
+
+
+    plot(fit, plot.prior=TRUE, plot.hyperparameters=TRUE, plot.fixed.effects=FALSE, single=TRUE )
 
 
         pT$carstm_model_label = "production"
@@ -379,7 +440,7 @@
     carstm_plot( p=p, res=res, vn=vn, time_match=list(year="2000" ) )     # maps of some of the results
 
     plot(fit)
-    plot(fit, plot.prior=TRUE, plot.hyperparameters=TRUE, plot.fixed.effects=FALSE )
+    plot(fit, plot.prior=TRUE, plot.hyperparameters=TRUE, plot.fixed.effects=FALSE, single=TRUE )
     s = summary(fit)
     s$dic$dic
 # [1] 47779.408  # poisson

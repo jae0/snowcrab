@@ -76,17 +76,29 @@ snowcrab_abundance_index = function( p=NULL, operation="load_RES", ... ) {
 
     res = carstm_model( p=p, DS="carstm_modelled", carstm_model_label=p$carstm_model_label ) # to load currently saved res
 
-    # convert numerical density to total number and convert to biomass:  / 10^6  # 10^6 kg -> kt .. kg/km * km
-    nums = res[[ paste( p$variabletomodel, "predicted", sep=".")]]
-    nums[!is.finite(nums)] = NA
-    qnt = quantile( nums, probs=0.95, na.rm=TRUE)
+    if (p$variabletomodel == "totwgt") {
+      # convert numerical density to total number and convert to biomass:  / 10^6  # 10^6 kg -> kt .. kg/km * km
+      biom = res[[ paste( p$variabletomodel, "predicted", sep=".")]]
+      biom[!is.finite(biom)] = NA
+      qnt = quantile( biom, probs=0.99, na.rm=TRUE)
+      biom[biom > qnt] = qnt
+      save( biom, file=fn_bio, compress=TRUE )
+      nums = biom / weight_year
+      save( nums, file=fn_no, compress=TRUE )
+    }
 
-    nums[nums > qnt] = qnt
-    save( nums, file=fn_no, compress=TRUE )
 
-    biom = nums * weight_year
-    save( biom, file=fn_bio, compress=TRUE )
+    if (p$variabletomodel == "totno") {
+      # convert numerical density to total number and convert to biomass:  / 10^6  # 10^6 kg -> kt .. kg/km * km
+      nums = res[[ paste( p$variabletomodel, "predicted", sep=".")]]
+      nums[!is.finite(nums)] = NA
+      qnt = quantile( nums, probs=0.99, na.rm=TRUE)
 
+      nums[nums > qnt] = qnt
+      save( nums, file=fn_no, compress=TRUE )
+      biom = nums * weight_year
+      save( biom, file=fn_bio, compress=TRUE )
+    }
 
 
     RES = data.frame( yrs = p$yrs )
