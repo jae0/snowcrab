@@ -69,7 +69,7 @@ snowcrab_abundance_index = function( p=NULL, operation="load_RES", ... ) {
       yrs=p$yrs,
       fillall=TRUE,
       annual_breakdown=TRUE,
-      robustify_quantiles=c(0, 0.95)  # high upper bounds are more dangerous
+      robustify_quantiles=c(0, 0.99)  # high upper bounds are more dangerous
     )
 
     save (weight_year, file=fn_wgts, compress=TRUE)
@@ -77,30 +77,26 @@ snowcrab_abundance_index = function( p=NULL, operation="load_RES", ... ) {
     res = carstm_model( p=p, DS="carstm_modelled", carstm_model_label=p$carstm_model_label ) # to load currently saved res
 
     if (p$variabletomodel == "totwgt") {
-      # convert numerical density to total number and convert to biomass:  / 10^6  # 10^6 kg -> kt .. kg/km * km
       biom = res[[ paste( p$variabletomodel, "predicted", sep=".")]]
       biom[!is.finite(biom)] = NA
       qnt = quantile( biom, probs=0.99, na.rm=TRUE)
       biom[biom > qnt] = qnt
-      save( biom, file=fn_bio, compress=TRUE )
       nums = biom / weight_year
-      save( nums, file=fn_no, compress=TRUE )
     }
 
 
     if (p$variabletomodel == "totno") {
-      # convert numerical density to total number and convert to biomass:  / 10^6  # 10^6 kg -> kt .. kg/km * km
       nums = res[[ paste( p$variabletomodel, "predicted", sep=".")]]
       nums[!is.finite(nums)] = NA
       qnt = quantile( nums, probs=0.99, na.rm=TRUE)
-
       nums[nums > qnt] = qnt
-      save( nums, file=fn_no, compress=TRUE )
       biom = nums * weight_year
-      save( biom, file=fn_bio, compress=TRUE )
     }
 
+    save( biom, file=fn_bio, compress=TRUE )
+    save( nums, file=fn_no, compress=TRUE )
 
+    # {no, kg} /km^2 -> {kn, kt}/ km^2
     RES = data.frame( yrs = p$yrs )
     RES$cfaall    = colSums( biom * sppoly$au_sa_km2/ 10^6, na.rm=TRUE )
     RES$cfanorth  = colSums( biom * sppoly$cfanorth_surfacearea/ 10^6, na.rm=TRUE )
