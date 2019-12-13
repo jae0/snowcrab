@@ -60,8 +60,10 @@ snowcrab_abundance_index = function( p=NULL, operation="load_RES", ... ) {
 
   if (operation=="compute") {
     # construct meanweights matrix used to convert number to weight
-    M = snowcrab_carstm( p=p, DS="carstm_inputs" )
-    M$yr = M$year  # req for meanweights
+    if (is.null(M)) {
+      M = snowcrab_carstm( p=p, DS="carstm_inputs" )
+      M$yr = M$year  # req for meanweights
+    }
     sppoly = areal_units( p=p )
     weight_year = meanweights_by_arealunit(
       set=M[M$tag=="observations",],
@@ -76,7 +78,7 @@ snowcrab_abundance_index = function( p=NULL, operation="load_RES", ... ) {
 
     res = carstm_model( p=p, DS="carstm_modelled", carstm_model_label=p$carstm_model_label ) # to load currently saved res
 
-    if (p$variabletomodel == "totwgt") {
+    if (p$variabletomodel_type == "biomass") {
       biom = res[[ paste( p$variabletomodel, "predicted", sep=".")]]
       biom[!is.finite(biom)] = NA
       qnt = quantile( biom, probs=0.99, na.rm=TRUE)
@@ -85,7 +87,7 @@ snowcrab_abundance_index = function( p=NULL, operation="load_RES", ... ) {
     }
 
 
-    if (p$variabletomodel == "totno") {
+    if (p$variabletomodel_type == "number") {
       nums = res[[ paste( p$variabletomodel, "predicted", sep=".")]]
       nums[!is.finite(nums)] = NA
       qnt = quantile( nums, probs=0.99, na.rm=TRUE)

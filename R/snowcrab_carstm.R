@@ -33,6 +33,7 @@ snowcrab_carstm = function( p=NULL, DS="parameters", redo=FALSE, ...) {
       modeldir = p$modeldir,  # outputs all go the the main project's model output directory
       yrs = p$yrs,
       variabletomodel = "totno",
+      variabletomodel_type = "number",
       spatial_domain = p$spatial_domain,  # defines spatial area, currenty: "snowcrab" or "SSE"
       areal_units_overlay = p$areal_units_overlay, # currently: "snowcrab_managementareas",  "groundfish_strata" .. additional polygon layers for subsequent analysis for now ..
       areal_units_resolution_km = p$areal_units_resolution_km, # km dim of lattice ~ 1 hr
@@ -94,6 +95,7 @@ snowcrab_carstm = function( p=NULL, DS="parameters", redo=FALSE, ...) {
     )
 
     if ( !exists("variabletomodel", p)) p$variabletomodel = "totno"
+    if ( !exists("variabletomodel_type", p)) p$variabletomodel_type = "number"
 
     if ( !exists("carstm_modelengine", p)) p$carstm_modelengine = "inla.default"  # {model engine}.{label to use to store}
 
