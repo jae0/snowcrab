@@ -113,12 +113,11 @@ library(aegis.temperature)
     M = temperature.db( p=pT, DS="aggregated_data", redo=TRUE )  
 
 #need to create a symlink through windows to the bathymetry file create through aegis.bathymetry
-#run the following line in windows command prompt
-    
+#run the following line in windows command prompt:
 #mklink "C:/bio.data/bio.snowcrab/data/bathymetry.canada.east.lonlat.rawdata.rdata" "C:/bio.data/aegis/bathymetry/data/bathymetry.canada.east.lonlat.rawdata.rdata"
 
 #reinitialize parameters specific to the snow crab project    
-p = bio.snowcrab::load.environment( year.assessment=year.assessment ) #reestablish parameters for snowcrab processes
+#p = bio.snowcrab::load.environment( year.assessment=year.assessment ) #reestablish parameters for snowcrab processes
         
 # -------------------------------------------------------------------------------------
 # Finalize the data sets
