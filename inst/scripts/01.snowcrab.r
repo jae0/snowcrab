@@ -1,5 +1,7 @@
 
 require(aegis)
+require(aegis.bathymetry)
+require(bio.snowcrab)
 
 if (!exists("year.assessment")) {
   year.assessment=lubridate::year(Sys.Date())      # year.assessment
@@ -50,16 +52,6 @@ if (obtain.database.snapshot) {
     problems = data.quality.check( type="stations", p=p)  # duplicates
     problems = data.quality.check( type="count.stations", p=p)
     problems = data.quality.check( type="position", p=p) #MG try checking the end position of the tow, if there is an error
-    #BZ ToDo 2019- getting an error with line 52 but runing the function directly works
-
-    # was in above. Split off as a separate function it is not essential
-    # and can break without the right ESRI drivers. JC
-              #export.to.shapefile(
-                #inp=snowcrab.db( DS="setInitial", p=p ),
-                #out=file.path(project.datadirectory("bio.snowcrab"), "maps", "shapefiles", "survey"),
-               # fn="SurveyDataUpdate"
-              #)
-
 
 # -------------------------------------------------------------------------------------
 # process the net configuration and the temperatures from seabird, netmind, etc ..
@@ -108,7 +100,7 @@ if (obtain.database.snapshot) {
 # local lookup trables are required for the following snowcrab.db steps
 
 library(aegis.bathymetry)
-    p = bio.snowcrab::snowcrab_carstm( DS="parameters", assessment.years=1999:year.assessment ) #is this needed??  
+    p = bio.snowcrab::snowcrab_carstm( DS="parameters", assessment.years=1999:year.assessment ) 
     pB = bathymetry_carstm( p=p, DS="parameters_override" )
     M = bathymetry.db( p=pB, DS="aggregated_data", redo=TRUE ) 
     
@@ -119,8 +111,13 @@ library(aegis.substrate)
 library(aegis.temperature)
     pT = temperature_carstm(p=p, DS="parameters_override" )
     M = temperature.db( p=pT, DS="aggregated_data", redo=TRUE )  
-    
-p = bio.snowcrab::load.environment( year.assessment=year.assessment ) #reestablish parameters for snowcrab processes
+
+#need to create a symlink through windows to the bathymetry file create through aegis.bathymetry
+#run the following line in windows command prompt:
+#mklink "C:/bio.data/bio.snowcrab/data/bathymetry.canada.east.lonlat.rawdata.rdata" "C:/bio.data/aegis/bathymetry/data/bathymetry.canada.east.lonlat.rawdata.rdata"
+
+#reinitialize parameters specific to the snow crab project    
+#p = bio.snowcrab::load.environment( year.assessment=year.assessment ) #reestablish parameters for snowcrab processes
         
 # -------------------------------------------------------------------------------------
 # Finalize the data sets
