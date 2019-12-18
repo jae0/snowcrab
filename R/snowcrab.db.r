@@ -981,7 +981,7 @@ snowcrab.db = function( DS, p=NULL, yrs=NULL) {
     # bring in time invariant features:: depth
     ii = which(!is.finite(set$z))
     if (length(ii)>0){
-      set$z[ii] = lookup_bathymetry_from_surveys( p=p, locs=set[ii,c("lon", "lat")] )
+      set$z[ii] = lookup_bathymetry_from_surveys( p=carstm::bathymetry_carstm(p=p, DS="parameters_override" ), locs=set[ii,c("lon", "lat")] )
     }
     set$z = log( set$z )
     # as of 2016, there are 11 locations where there are missing depths, because they are outside the area defined for snow crab ... they are all bad sets too (set_type=4) in NENS ... ignoring for now
@@ -989,7 +989,7 @@ snowcrab.db = function( DS, p=NULL, yrs=NULL) {
     # bring in time varing features:: temperature
     ii = which(!is.finite(set$t))
     if (length(ii)>0){
-      set$t[ii] = lookup_temperature_from_surveys( p=p, locs=set[ii, c("lon", "lat")], timestamp=set$timestamp[ii] )
+      set$t[ii] = lookup_temperature_from_surveys( p=carstm::temperature_carstm(p=p, DS="parameters_override" ), locs=set[ii, c("lon", "lat")], timestamp=set$timestamp[ii] )
     }
 
     # return planar coords to correct resolution

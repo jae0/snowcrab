@@ -105,29 +105,21 @@ if (obtain.database.snapshot) {
 
 
 # -------------------------------------------------------------------------------------
-# local lookup trables are required for the following snowcrab.db steps
+# local lookup tables are required for the following snowcrab.db steps
 
-library(aegis.bathymetry)
-    p = bio.snowcrab::snowcrab_carstm( DS="parameters", assessment.years=1999:year.assessment ) #is this needed??  
-    pB = bathymetry_carstm( p=p, DS="parameters_override" )
-    M = bathymetry.db( p=pB, DS="aggregated_data", redo=TRUE ) 
-    
-library(aegis.substrate)
-    pS = substrate_carstm(p=p, DS="parameters_override" )
-    M = substrate.db( p=pS, DS="aggregated_data", redo=TRUE ) 
-    
-library(aegis.temperature)
-    pT = temperature_carstm(p=p, DS="parameters_override" )
-    M = temperature.db( p=pT, DS="aggregated_data", redo=TRUE )  
-    
-p = bio.snowcrab::load.environment( year.assessment=year.assessment ) #reestablish parameters for snowcrab processes
-        
+pC = bio.snowcrab::snowcrab_carstm( DS="parameters", assessment.years=1999:year.assessment )
+
+M = aegis.bathymetry::bathymetry.db( p=carstm::bathymetry_carstm( p=pC, DS="parameters_override" ), DS="aggregated_data", redo=TRUE )
+M = aegis.substrate::substrate.db( p=carstm::substrate_carstm(p=pC, DS="parameters_override" ), DS="aggregated_data", redo=TRUE )
+M = aegis.temperature::temperature.db( p=carstm::temperature_carstm(p=pC, DS="parameters_override" ), DS="aggregated_data", redo=TRUE )
+
+
 # -------------------------------------------------------------------------------------
 # Finalize the data sets
 # MG det.initial.redo updates and processes morphology. This code now identifies morphology errors, which must be
 # checked with written logs, then sent to database and put in debugging here and re-run
 
-    
+
   snowcrab.db( DS="det.initial.redo", p=p )
   snowcrab.db( DS="det.georeferenced.redo", p=p )
 
