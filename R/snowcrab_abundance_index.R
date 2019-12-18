@@ -60,10 +60,8 @@ snowcrab_abundance_index = function( p=NULL, operation="load_RES", ... ) {
 
   if (operation=="compute") {
     # construct meanweights matrix used to convert number to weight
-    if (is.null(M)) {
-      M = snowcrab_carstm( p=p, DS="carstm_inputs" )
-      M$yr = M$year  # req for meanweights
-    }
+    M = snowcrab_carstm( p=p, DS="carstm_inputs" )
+    M$yr = M$year  # req for meanweights
     sppoly = areal_units( p=p )
     weight_year = meanweights_by_arealunit(
       set=M[M$tag=="observations",],

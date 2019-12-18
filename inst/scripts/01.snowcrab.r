@@ -1,5 +1,7 @@
 
 require(aegis)
+require(aegis.bathymetry)
+require(bio.snowcrab)
 
 if (!exists("year.assessment")) {
   year.assessment=lubridate::year(Sys.Date())      # year.assessment
@@ -50,16 +52,6 @@ if (obtain.database.snapshot) {
     problems = data.quality.check( type="stations", p=p)  # duplicates
     problems = data.quality.check( type="count.stations", p=p)
     problems = data.quality.check( type="position", p=p) #MG try checking the end position of the tow, if there is an error
-    #BZ ToDo 2019- getting an error with line 52 but runing the function directly works
-
-    # was in above. Split off as a separate function it is not essential
-    # and can break without the right ESRI drivers. JC
-              #export.to.shapefile(
-                #inp=snowcrab.db( DS="setInitial", p=p ),
-                #out=file.path(project.datadirectory("bio.snowcrab"), "maps", "shapefiles", "survey"),
-               # fn="SurveyDataUpdate"
-              #)
-
 
 # -------------------------------------------------------------------------------------
 # process the net configuration and the temperatures from seabird, netmind, etc ..
@@ -107,11 +99,11 @@ if (obtain.database.snapshot) {
 # -------------------------------------------------------------------------------------
 # local lookup tables are required for the following snowcrab.db steps
 
-pC = bio.snowcrab::snowcrab_carstm( DS="parameters", assessment.years=1999:year.assessment )
+  pC = bio.snowcrab::snowcrab_carstm( DS="parameters", assessment.years=1999:year.assessment )
 
-M = aegis.bathymetry::bathymetry.db( p=carstm::bathymetry_carstm( p=pC, DS="parameters_override" ), DS="aggregated_data", redo=TRUE )
-M = aegis.substrate::substrate.db( p=carstm::substrate_carstm(p=pC, DS="parameters_override" ), DS="aggregated_data", redo=TRUE )
-M = aegis.temperature::temperature.db( p=carstm::temperature_carstm(p=pC, DS="parameters_override" ), DS="aggregated_data", redo=TRUE )
+  M = aegis.bathymetry::bathymetry.db( p=carstm::bathymetry_carstm( p=pC, DS="parameters_override" ), DS="aggregated_data", redo=TRUE )
+  M = aegis.substrate::substrate.db( p=carstm::substrate_carstm(p=pC, DS="parameters_override" ), DS="aggregated_data", redo=TRUE )
+  M = aegis.temperature::temperature.db( p=carstm::temperature_carstm(p=pC, DS="parameters_override" ), DS="aggregated_data", redo=TRUE )
 
 
 # -------------------------------------------------------------------------------------
