@@ -109,11 +109,11 @@ snowcrab_carstm = function( p=NULL, DS="parameters", redo=FALSE, ...) {
             + offset( log(data_offset))
             + f( year_factor, model="ar1", hyper=H$ar1 )
             + f( dyri, model="ar1", hyper=H$ar1 )
-            + f( inla.group( t, method="quantile", n=20 ), model="rw2", scale.model=TRUE, hyper=H$rw2)
-            + f( inla.group( z, method="quantile", n=20 ), model="rw2", scale.model=TRUE, hyper=H$rw2)
+            + f( inla.group( t, method="quantile", n=10 ), model="rw2", scale.model=TRUE, hyper=H$rw2)
+            + f( inla.group( z, method="quantile", n=10 ), model="rw2", scale.model=TRUE, hyper=H$rw2)
             + f( inla.group( substrate.grainsize, method="quantile", n=10 ), model="rw2", scale.model=TRUE, hyper=H$rw2)
-            + f( inla.group( pca1, method="quantile", n=20 ), model="rw2", scale.model=TRUE, hyper=H$rw2)
-            + f( inla.group( pca2, method="quantile", n=20 ), model="rw2", scale.model=TRUE, hyper=H$rw2)
+            + f( inla.group( pca1, method="quantile", n=10 ), model="rw2", scale.model=TRUE, hyper=H$rw2)
+            + f( inla.group( pca2, method="quantile", n=10 ), model="rw2", scale.model=TRUE, hyper=H$rw2)
             + f( auid, model="bym2", graph=sppoly@nb, group=year_factor_iid, scale.model=TRUE, constr=TRUE, hyper=H$bym2),
             family = "poisson",
             data= M,
