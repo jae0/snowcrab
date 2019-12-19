@@ -170,7 +170,7 @@
     pS$carstm_modelcall = paste('
       inla(
         formula =', pS$variabletomodel, ' ~ 1
-          + f( inla.group(z, method="quantile", n=20) ,  model="rw2", scale.model=TRUE, hyper=H$rw2)
+          + f( inla.group(z, method="quantile", n=13) ,  model="rw2", scale.model=TRUE, hyper=H$rw2)
           + f(auid, model="bym2", graph=sppoly@nb, scale.model=TRUE, constr=TRUE, hyper=H$bym2),
         family = "lognormal",
         data= M,
@@ -340,7 +340,7 @@
             formula = ', pT$variabletomodel, ' ~ 1
               + f( year_factor, model="ar1", hyper=H$ar1 )
               + f( dyri, model="ar1", scale.model=TRUE, hyper=H$ar1 )
-              + f( inla.group( z, method="quantile", n=25 ), model="rw2", scale.model=TRUE, hyper=H$rw2)
+              + f( inla.group( z, method="quantile", n=13 ), model="rw2", scale.model=TRUE, hyper=H$rw2)
               + f( auid, model="bym2", graph=sppoly@nb, group=year_factor, scale.model=TRUE, constr=TRUE, hyper=H$bym2),
             family = "normal",
             data= M,

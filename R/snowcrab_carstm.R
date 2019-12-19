@@ -103,17 +103,18 @@ snowcrab_carstm = function( p=NULL, DS="parameters", redo=FALSE, ...) {
       if ( grepl("inla", p$carstm_modelengine) ) {
         p$libs = unique( c( p$libs, project.library ( "INLA" ) ) )
         p$carstm_model_label = "production"
+        # 281 configs .. 8hrs
         p$carstm_modelcall = paste(
           'inla( formula =', p$variabletomodel,
           ' ~ 1
             + offset( log(data_offset))
             + f( year_factor, model="ar1", hyper=H$ar1 )
             + f( dyri, model="ar1", hyper=H$ar1 )
-            + f( inla.group( t, method="quantile", n=10 ), model="rw2", scale.model=TRUE, hyper=H$rw2)
-            + f( inla.group( z, method="quantile", n=10 ), model="rw2", scale.model=TRUE, hyper=H$rw2)
-            + f( inla.group( substrate.grainsize, method="quantile", n=10 ), model="rw2", scale.model=TRUE, hyper=H$rw2)
-            + f( inla.group( pca1, method="quantile", n=10 ), model="rw2", scale.model=TRUE, hyper=H$rw2)
-            + f( inla.group( pca2, method="quantile", n=10 ), model="rw2", scale.model=TRUE, hyper=H$rw2)
+            + f( inla.group( t, method="quantile", n=13 ), model="rw2", scale.model=TRUE, hyper=H$rw2)
+            + f( inla.group( z, method="quantile", n=13 ), model="rw2", scale.model=TRUE, hyper=H$rw2)
+            + f( inla.group( substrate.grainsize, method="quantile", n=13 ), model="rw2", scale.model=TRUE, hyper=H$rw2)
+            + f( inla.group( pca1, method="quantile", n=13 ), model="rw2", scale.model=TRUE, hyper=H$rw2)
+            + f( inla.group( pca2, method="quantile", n=13 ), model="rw2", scale.model=TRUE, hyper=H$rw2)
             + f( auid, model="bym2", graph=sppoly@nb, group=year_factor_iid, scale.model=TRUE, constr=TRUE, hyper=H$bym2),
             family = "poisson",
             data= M,
