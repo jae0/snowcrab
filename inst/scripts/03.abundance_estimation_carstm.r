@@ -93,7 +93,7 @@
 # -------------------------------------------------
 # Part 4 -- create covariate field for  substrate
 # ensure the data assimilation in substrate is first completed :: 01.substrate_data.R
-# 25 configs @ 2 hrs each, total time 32 hrs
+# 25 configs @ 5 min each, total time 2 hrs
   pS = substrate_carstm(p=p, DS="parameters_override" )
   M = substrate.db( p=pS, DS="aggregated_data", redo=TRUE )  # used for data matching/lookup in other aegis projects that use substrate
   M = substrate_carstm( p=pS, DS="carstm_inputs", redo=TRUE )  # will redo if not found
@@ -104,21 +104,31 @@
     res = carstm_model( p=pS, DS="carstm_modelled", carstm_model_label="production"   ) # run model and obtain predictions
     fit = carstm_model( p=pS, DS="carstm_modelled_fit", carstm_model_label="production" )  # extract currently saved model fit
     summary(fit)
-    # Model hyperparameters:
-    #                                           mean    sd 0.025quant 0.5quant 0.975quant  mode
-    # Precision for the lognormal observations 1.405 0.006      1.392    1.405      1.417 1.405
-    # Precision for zi                         4.318 2.467      1.105    3.822     10.495 2.771
-    # Precision for auid                       0.840 0.124      0.652    0.820      1.134 0.770
-    # Phi for auid                             0.959 0.034      0.867    0.969      0.995 0.986
 
-    # Expected number of effective parameters(stdev): 191.31(0.21)
-    # Number of equivalent replicates : 502.93
+# Fixed effects:
+#               mean    sd 0.025quant 0.5quant 0.975quant   mode kld
+# (Intercept) -1.038 0.024     -1.086   -1.038     -0.991 -1.038   0
 
-    # Deviance Information Criterion (DIC) ...............: 41922.78
-    # Deviance Information Criterion (DIC, saturated) ....: 96422.26
-    # Effective number of parameters .....................: 192.34
+# Random effects:
+#   Name	  Model
+#     inla.group(z, method = "quantile", n = 13) RW2 model
+#    auid BYM2 model
 
-    # Marginal log-Likelihood:  -21357.76
+# Model hyperparameters:
+#                                                           mean    sd 0.025quant 0.5quant 0.975quant  mode
+# Precision for the lognormal observations                 1.519 0.007      1.506    1.519      1.533 1.519
+# Precision for inla.group(z, method = "quantile", n = 13) 5.833 2.643      2.047    5.401     12.175 4.490
+# Precision for auid                                       0.903 0.110      0.714    0.893      1.144 0.871
+# Phi for auid                                             0.962 0.034      0.871    0.972      0.996 0.989
+
+# Expected number of effective parameters(stdev): 195.14(0.203)
+# Number of equivalent replicates : 493.07
+
+# Deviance Information Criterion (DIC) ...............: 34384.88
+# Deviance Information Criterion (DIC, saturated) ....: 96394.93
+# Effective number of parameters .....................: 196.18
+
+# Marginal log-Likelihood:  -17603.13
 
     vn = paste(pS$variabletomodel, "predicted", sep=".")
     carstm_plot( p=pS, res=res, vn=vn ) # maps of some of the results
@@ -166,7 +176,6 @@
     # 	Effective number of parameters ... 200.881
     # 	DIC .............................. 96388.2
 
-
     pS$carstm_modelcall = paste('
       inla(
         formula =', pS$variabletomodel, ' ~ 1
@@ -178,14 +187,6 @@
         control.results=list(return.marginals.random=TRUE, return.marginals.predictor=TRUE ),
         control.predictor=list(compute=FALSE, link=1 ),
         control.fixed=H$fixed,  # priors for fixed effects, generic is ok
-        # control.inla=list( strategy="laplace", cutoff=1e-6, correct=TRUE, correct.verbose=FALSE ),  # extra work to get tails
-        # control.inla = list( h=1e-6, tolerance=1e-12), # increase in case values are too close to zero
-        # control.mode = list( restart=TRUE, result=RES ), # restart from previous estimates
-        # control.inla = list(cmin = 0 ),
-        # control.inla=list( strategy="laplace", cutoff=1e-6, correct=TRUE, correct.verbose=FALSE ),
-        # control.inla = list( h=1e-6, tolerance=1e-12), # increase in case values are too close to zero
-        # control.inla = list(h=1e-3, tolerance=1e-9, cmin=0), # restart=3), # restart a few times in case posteriors are poorly defined
-        # control.mode = list( restart=TRUE, result=RES ), # restart from previous estimates
         verbose=TRUE
       ) ' )
     res = carstm_model( p=pS, M='substrate_carstm( p=pS, DS="carstm_inputs")', DS="redo", carstm_model_label=pS$carstm_model_label  )  # run model and obtain predictions
@@ -210,41 +211,40 @@
     fit = carstm_model(  p=pT, DS="carstm_modelled_fit", carstm_model_label="production" )  # extract currently saved model fit
     summary(fit)
 
+
 # Time used:
-#     Pre = 3.23, Running = 3680, Post = 16.4, Total = 3700
+#     Pre = 3.31, Running = 2959, Post = 15.4, Total = 2978
 # Fixed effects:
 #              mean    sd 0.025quant 0.5quant 0.975quant  mode kld
-# (Intercept) 4.454 0.388      3.682    4.453      5.228 4.451   0
+# (Intercept) 4.521 0.374      3.783     4.52       5.26 4.519   0
 
 # Random effects:
 #   Name	  Model
 #     year_factor AR1 model
 #    dyri AR1 model
-#    inla.group(z, method = "quantile", n = 25) RW2 model
+#    inla.group(z, method = "quantile", n = 13) RW2 model
 #    auid BYM2 model
 
 # Model hyperparameters:
 #                                                           mean    sd 0.025quant 0.5quant 0.975quant  mode
-# Precision for the Gaussian observations                  0.429 0.003      0.422    0.429      0.436 0.429
-# Precision for year_factor                                2.878 0.841      1.549    2.772      4.821 2.571
-# Rho for year_factor                                      0.386 0.155      0.059    0.395      0.663 0.411
-# Precision for dyri                                       3.092 1.126      1.383    2.934      5.749 2.622
-# Rho for dyri                                             0.601 0.147      0.268    0.617      0.838 0.653
-# Precision for inla.group(z, method = "quantile", n = 25) 0.128 0.028      0.079    0.126      0.190 0.122
-# Precision for auid                                       0.410 0.033      0.352    0.408      0.482 0.401
-# Phi for auid                                             0.996 0.005      0.983    0.998      1.000 1.000
-# GroupRho for auid                                        0.723 0.025      0.670    0.725      0.767 0.731
+# Precision for the Gaussian observations                  0.426 0.003      0.419    0.426      0.432 0.426
+# Precision for year_factor                                3.011 0.847      1.623    2.924      4.931 2.755
+# Rho for year_factor                                      0.377 0.150      0.074    0.380      0.654 0.380
+# Precision for dyri                                       3.127 1.127      1.382    2.982      5.743 2.683
+# Rho for dyri                                             0.607 0.143      0.283    0.623      0.837 0.658
+# Precision for inla.group(z, method = "quantile", n = 13) 1.130 0.337      0.603    1.086      1.917 1.002
+# Precision for auid                                       0.412 0.034      0.354    0.410      0.486 0.402
+# Phi for auid                                             1.000 0.000      1.000    1.000      1.000   NaN
+# GroupRho for auid                                        0.722 0.025      0.667    0.724      0.766 0.731
 
-# Expected number of effective parameters(stdev): 1563.56(31.92)
-# Number of equivalent replicates : 22.46
+# Expected number of effective parameters(stdev): 1541.25(23.03)
+# Number of equivalent replicates : 22.78
 
-# Deviance Information Criterion (DIC) ...............: 130925.13
-# Deviance Information Criterion (DIC, saturated) ....: 36676.07
-# Effective number of parameters .....................: 1565.21
+# Deviance Information Criterion (DIC) ...............: 131164.54
+# Deviance Information Criterion (DIC, saturated) ....: 36672.25
+# Effective number of parameters .....................: 1543.11
 
-# Marginal log-Likelihood:  -64612.59
-# Posterior marginals for the linear predictor and
-#  the fitted values are computed
+# Marginal log-Likelihood:  -64636.41
 
 
   # Time used:
@@ -389,6 +389,58 @@
     carstm_plot( p=pPC1, res=res, vn=vn, time_match=list(year="2000" ), dyear="0.85" )       # maps of some of the results , dyear="0.85"
     vn = paste(pPC1$variabletomodel, "random_auid_spatial", sep=".")
     carstm_plot( p=pPC1, res=res, vn=vn, time_match=list(year="2000" ), dyear="0.85" )       # maps of some of the results , dyear="0.85"
+
+#  Time used:
+#     Pre = 2.81, Running = 1623, Post = 8.2, Total = 1634
+# Fixed effects:
+#              mean    sd 0.025quant 0.5quant 0.975quant  mode kld
+# (Intercept) 0.144 0.034      0.076    0.145      0.202 0.146   0
+
+# Random effects:
+#   Name	  Model
+#     year_factor AR1 model
+#    dyri AR1 model
+#    inla.group(t, method = "quantile", n = 13) RW2 model
+#    inla.group(z, method = "quantile", n = 13) RW2 model
+#    inla.group(substrate.grainsize, method = "quantile", n = 13) RW2 model
+#    auid BYM2 model
+
+# Model hyperparameters:
+#                                                                                mean       sd 0.025quant 0.5quant
+# Precision for the Gaussian observations                                    1.92e+02 2.84e+00    186.640 1.92e+02
+# Precision for year_factor                                                  7.80e+02 3.94e+02    192.498 7.27e+02
+# Rho for year_factor                                                        8.01e-01 1.14e-01      0.550 8.17e-01
+# Precision for dyri                                                         9.03e+02 5.06e+02    247.972 8.00e+02
+# Rho for dyri                                                               8.10e-02 2.35e-01     -0.352 7.20e-02
+# Precision for inla.group(t, method = "quantile", n = 13)                   2.85e+04 2.94e+04   3647.288 1.99e+04
+# Precision for inla.group(z, method = "quantile", n = 13)                   1.61e+02 7.49e+01     56.493 1.48e+02
+# Precision for inla.group(substrate.grainsize, method = "quantile", n = 13) 2.95e+02 6.06e+02     11.110 1.30e+02
+# Precision for auid                                                         1.77e+02 1.72e+01    143.759 1.77e+02
+# Phi for auid                                                               9.94e-01 8.00e-03      0.974 9.97e-01
+# GroupRho for auid                                                          8.68e-01 1.80e-02      0.834 8.68e-01
+#                                                                            0.975quant     mode
+# Precision for the Gaussian observations                                      1.98e+02  191.903
+# Precision for year_factor                                                    1.67e+03  539.805
+# Rho for year_factor                                                          9.67e-01    0.889
+# Precision for dyri                                                           2.17e+03  594.757
+# Rho for dyri                                                                 5.49e-01    0.017
+# Precision for inla.group(t, method = "quantile", n = 13)                     1.06e+05 9532.957
+# Precision for inla.group(z, method = "quantile", n = 13)                     3.45e+02  122.218
+# Precision for inla.group(substrate.grainsize, method = "quantile", n = 13)   1.62e+03   27.315
+# Precision for auid                                                           2.11e+02  176.982
+# Phi for auid                                                                 1.00e+00    1.000
+# GroupRho for auid                                                            9.02e-01    0.867
+
+# Expected number of effective parameters(stdev): 769.85(33.57)
+# Number of equivalent replicates : 14.06
+
+# Deviance Information Criterion (DIC) ...............: -25408.95
+# Deviance Information Criterion (DIC, saturated) ....: 11591.30
+# Effective number of parameters .....................: 772.98
+
+# Marginal log-Likelihood:  14060.02
+
+
   }
 
 
@@ -413,6 +465,57 @@
     carstm_plot( p=pPC2, res=res, vn=vn, time_match=list(year="2000" ), dyear="0.85" )       # maps of some of the results , dyear="0.85"
     vn = paste(pPC2$variabletomodel, "random_auid_spatial", sep=".")
     carstm_plot( p=pPC2, res=res, vn=vn, time_match=list(year="2000" ), dyear="0.85" )       # maps of some of the results , dyear="0.85"
+
+  #   Time used:
+  #     Pre = 4.86, Running = 1768, Post = 11.8, Total = 1785
+  # Fixed effects:
+  #             mean    sd 0.025quant 0.5quant 0.975quant  mode   kld
+  # (Intercept) 0.013 0.032      -0.05    0.014      0.072 0.014 0.007
+
+  # Random effects:
+  #   Name	  Model
+  #     year_factor AR1 model
+  #   dyri AR1 model
+  #   inla.group(t, method = "quantile", n = 13) RW2 model
+  #   inla.group(z, method = "quantile", n = 13) RW2 model
+  #   inla.group(substrate.grainsize, method = "quantile", n = 13) RW2 model
+  #   auid BYM2 model
+
+  # Model hyperparameters:
+  #                                                                               mean       sd 0.025quant 0.5quant
+  # Precision for the Gaussian observations                                     249.493    3.911    242.160  249.350
+  # Precision for year_factor                                                  1126.871  831.853    104.778  933.654
+  # Rho for year_factor                                                           0.906    0.077      0.716    0.927
+  # Precision for dyri                                                          395.689  245.945     47.181  353.140
+  # Rho for dyri                                                                  0.908    0.065      0.760    0.922
+  # Precision for inla.group(t, method = "quantile", n = 13)                   3388.886 3692.945    500.318 2286.034
+  # Precision for inla.group(z, method = "quantile", n = 13)                    342.246  169.399    116.458  308.972
+  # Precision for inla.group(substrate.grainsize, method = "quantile", n = 13) 1607.268 2600.176    125.155  856.528
+  # Precision for auid                                                          334.180   37.633    269.886  330.624
+  # Phi for auid                                                                  0.951    0.037      0.851    0.961
+  # GroupRho for auid                                                             0.759    0.037      0.673    0.764
+  #                                                                           0.975quant     mode
+  # Precision for the Gaussian observations                                      2.58e+02  248.886
+  # Precision for year_factor                                                    3.14e+03  313.934
+  # Rho for year_factor                                                          9.95e-01    0.987
+  # Precision for dyri                                                           9.75e+02  156.802
+  # Rho for dyri                                                                 9.94e-01    0.982
+  # Precision for inla.group(t, method = "quantile", n = 13)                     1.30e+04 1188.188
+  # Precision for inla.group(z, method = "quantile", n = 13)                     7.64e+02  247.987
+  # Precision for inla.group(substrate.grainsize, method = "quantile", n = 13)   7.76e+03  312.351
+  # Precision for auid                                                           4.17e+02  322.041
+  # Phi for auid                                                                 9.92e-01    0.977
+  # GroupRho for auid                                                            8.17e-01    0.779
+
+  # Expected number of effective parameters(stdev): 859.67(27.66)
+  # Number of equivalent replicates : 12.59
+
+  # Deviance Information Criterion (DIC) ...............: -28164.77
+  # Deviance Information Criterion (DIC, saturated) ....: 11648.63
+  # Effective number of parameters .....................: 859.56
+
+  # Marginal log-Likelihood:  15463.31
+
   }
 
 
@@ -423,6 +526,8 @@
 
 # -------------------------------------------------
 # Part 8 -- Snow crab anbundance -- main mode used for production
+# 9 hrs 281 configs
+
   M = snowcrab_carstm( p=p, DS="carstm_inputs", redo=TRUE )  # will redo if not found
   M = NULL; gc()
   res = carstm_model( p=p, M='snowcrab_carstm( p=p, DS="carstm_inputs" )' ) # 151 configs and long optim .. 19 hrs
@@ -436,6 +541,61 @@
     res = carstm_model( p=p, DS="carstm_modelled" ) # to load currently saved res
     fit = carstm_model( p=p, DS="carstm_modelled_fit" )  # extract currently saved model fit
     summary(fit)
+
+    #     Time used:
+    #     Pre = 5.46, Running = 36557, Post = 14.5, Total = 36577
+    # Fixed effects:
+    #             mean    sd 0.025quant 0.5quant 0.975quant  mode kld
+    # (Intercept) 5.56 0.204      5.166    5.558      5.971 5.556   0
+
+    # Random effects:
+    #   Name	  Model
+    #     year_factor AR1 model
+    #   dyri AR1 model
+    #   inla.group(t, method = "quantile", n = 13) RW2 model
+    #   inla.group(z, method = "quantile", n = 13) RW2 model
+    #   inla.group(substrate.grainsize, method = "quantile", n = 13) RW2 model
+    #   inla.group(pca1, method = "quantile", n = 13) RW2 model
+    #   inla.group(pca2, method = "quantile", n = 13) RW2 model
+    #   auid BYM2 model
+
+    # Model hyperparameters:
+    #                                                                             mean     sd 0.025quant 0.5quant 0.975quant
+    # Precision for year_factor                                                  14.543  6.575      4.947   13.534     30.228
+    # Rho for year_factor                                                         0.739  0.121      0.460    0.755      0.923
+    # Precision for dyri                                                         23.107 13.229      6.935   20.089     56.893
+    # Rho for dyri                                                               -0.027  0.179     -0.382   -0.022      0.312
+    # Precision for inla.group(t, method = "quantile", n = 13)                    4.413  1.857      1.827    4.071      9.001
+    # Precision for inla.group(z, method = "quantile", n = 13)                    5.583  2.341      2.314    5.155     11.360
+    # Precision for inla.group(substrate.grainsize, method = "quantile", n = 13)  0.251  0.084      0.126    0.238      0.452
+    # Precision for inla.group(pca1, method = "quantile", n = 13)                 7.630  3.286      3.051    7.031     15.734
+    # Precision for inla.group(pca2, method = "quantile", n = 13)                18.666  8.216      7.176   17.198     38.801
+    # Precision for auid                                                          0.408  0.041      0.332    0.407      0.494
+    # Phi for auid                                                                0.764  0.049      0.660    0.766      0.852
+    # GroupRho for auid                                                           0.682  0.029      0.623    0.682      0.737
+    #                                                                             mode
+    # Precision for year_factor                                                  11.247
+    # Rho for year_factor                                                         0.798
+    # Precision for dyri                                                         15.118
+    # Rho for dyri                                                               -0.004
+    # Precision for inla.group(t, method = "quantile", n = 13)                    3.463
+    # Precision for inla.group(z, method = "quantile", n = 13)                    4.391
+    # Precision for inla.group(substrate.grainsize, method = "quantile", n = 13)  0.214
+    # Precision for inla.group(pca1, method = "quantile", n = 13)                 5.948
+    # Precision for inla.group(pca2, method = "quantile", n = 13)                14.457
+    # Precision for auid                                                          0.404
+    # Phi for auid                                                                0.771
+    # GroupRho for auid                                                           0.682
+
+    # Expected number of effective parameters(stdev): 1994.79(12.63)
+    # Number of equivalent replicates : 3.81
+
+    # Deviance Information Criterion (DIC) ...............: 47097.26
+    # Deviance Information Criterion (DIC, saturated) ....: 29031.17
+    # Effective number of parameters .....................: 1966.99
+
+    # Marginal log-Likelihood:  -23623.31
+
     vn = paste(p$variabletomodel, "predicted", sep=".")
     carstm_plot( p=p, res=res, vn=vn, time_match=list(year="2000" ) )     # maps of some of the results
 
