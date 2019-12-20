@@ -83,7 +83,10 @@ snowcrab_parameters = function( p=NULL, year.assessment=NULL, project_class="def
   p$ofname = file.path(p$annual.results, paste("TSresults", p$year.assessment, "rdata", sep=".") )
 
   p$fisheries.grid.resolution = 2
+
+  # required for lookups
   p$inputdata_spatial_discretization_planar_km = 1
+  p$inputdata_temporal_discretization_yr = 1/12
 
   p$regions.to.model = c( "cfanorth", "cfasouth", "cfa4x", "cfaall" )
   p$plottimes=c("annual", "globalaverage")
