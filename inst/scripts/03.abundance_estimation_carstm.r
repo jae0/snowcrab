@@ -439,59 +439,58 @@
     fit = carstm_model( p=p, DS="carstm_modelled_fit" )  # extract currently saved model fit
     summary(fit)
 
-    #     Time used:
-    #     Pre = 5.46, Running = 36557, Post = 14.5, Total = 36577
-    # Fixed effects:
-    #             mean    sd 0.025quant 0.5quant 0.975quant  mode kld
-    # (Intercept) 5.56 0.204      5.166    5.558      5.971 5.556   0
 
-    # Random effects:
-    #   Name	  Model
-    #     year_factor AR1 model
-    #   dyri AR1 model
-    #   inla.group(t, method = "quantile", n = 13) RW2 model
-    #   inla.group(z, method = "quantile", n = 13) RW2 model
-    #   inla.group(substrate.grainsize, method = "quantile", n = 13) RW2 model
-    #   inla.group(pca1, method = "quantile", n = 13) RW2 model
-    #   inla.group(pca2, method = "quantile", n = 13) RW2 model
-    #   auid BYM2 model
 
-    # Model hyperparameters:
-    #                                                                             mean     sd 0.025quant 0.5quant 0.975quant
-    # Precision for year_factor                                                  14.543  6.575      4.947   13.534     30.228
-    # Rho for year_factor                                                         0.739  0.121      0.460    0.755      0.923
-    # Precision for dyri                                                         23.107 13.229      6.935   20.089     56.893
-    # Rho for dyri                                                               -0.027  0.179     -0.382   -0.022      0.312
-    # Precision for inla.group(t, method = "quantile", n = 13)                    4.413  1.857      1.827    4.071      9.001
-    # Precision for inla.group(z, method = "quantile", n = 13)                    5.583  2.341      2.314    5.155     11.360
-    # Precision for inla.group(substrate.grainsize, method = "quantile", n = 13)  0.251  0.084      0.126    0.238      0.452
-    # Precision for inla.group(pca1, method = "quantile", n = 13)                 7.630  3.286      3.051    7.031     15.734
-    # Precision for inla.group(pca2, method = "quantile", n = 13)                18.666  8.216      7.176   17.198     38.801
-    # Precision for auid                                                          0.408  0.041      0.332    0.407      0.494
-    # Phi for auid                                                                0.764  0.049      0.660    0.766      0.852
-    # GroupRho for auid                                                           0.682  0.029      0.623    0.682      0.737
-    #                                                                             mode
-    # Precision for year_factor                                                  11.247
-    # Rho for year_factor                                                         0.798
-    # Precision for dyri                                                         15.118
-    # Rho for dyri                                                               -0.004
-    # Precision for inla.group(t, method = "quantile", n = 13)                    3.463
-    # Precision for inla.group(z, method = "quantile", n = 13)                    4.391
-    # Precision for inla.group(substrate.grainsize, method = "quantile", n = 13)  0.214
-    # Precision for inla.group(pca1, method = "quantile", n = 13)                 5.948
-    # Precision for inla.group(pca2, method = "quantile", n = 13)                14.457
-    # Precision for auid                                                          0.404
-    # Phi for auid                                                                0.771
-    # GroupRho for auid                                                           0.682
+# Time used:
+#     Pre = 2.67, Running = 17238, Post = 3.15, Total = 17243
+# Fixed effects:
+#              mean    sd 0.025quant 0.5quant 0.975quant mode kld
+# (Intercept) 5.483 0.117      5.244    5.486       5.71 5.49   0
 
-    # Expected number of effective parameters(stdev): 1994.79(12.63)
-    # Number of equivalent replicates : 3.81
+# Random effects:
+#   Name	  Model
+#     dyri AR1 model
+#    inla.group(t, method = "quantile", n = 13) RW2 model
+#    inla.group(z, method = "quantile", n = 13) RW2 model
+#    inla.group(substrate.grainsize, method = "quantile", n = 13) RW2 model
+#    inla.group(pca1, method = "quantile", n = 13) RW2 model
+#    inla.group(pca2, method = "quantile", n = 13) RW2 model
+#    auid BYM2 model
 
-    # Deviance Information Criterion (DIC) ...............: 47097.26
-    # Deviance Information Criterion (DIC, saturated) ....: 29031.17
-    # Effective number of parameters .....................: 1966.99
+# Model hyperparameters:
+#                                                                              mean     sd 0.025quant 0.5quant 0.975quant
+# Precision for dyri                                                         24.644 13.295      7.198   21.987     57.758
+# Rho for dyri                                                               -0.010  0.132     -0.273   -0.008      0.245
+# Precision for inla.group(t, method = "quantile", n = 13)                    6.078  2.716      2.367    5.559     12.835
+# Precision for inla.group(z, method = "quantile", n = 13)                    4.846  2.067      2.060    4.431     10.025
+# Precision for inla.group(substrate.grainsize, method = "quantile", n = 13)  0.243  0.081      0.125    0.229      0.439
+# Precision for inla.group(pca1, method = "quantile", n = 13)                 7.210  3.278      2.842    6.549     15.399
+# Precision for inla.group(pca2, method = "quantile", n = 13)                20.402  9.195      8.012   18.592     43.366
+# Precision for auid                                                          0.430  0.035      0.364    0.429      0.502
+# Phi for auid                                                                0.688  0.056      0.571    0.691      0.790
+# GroupRho for auid                                                           0.817  0.013      0.790    0.818      0.843
+#                                                                              mode
+# Precision for dyri                                                         16.790
+# Rho for dyri                                                               -0.001
+# Precision for inla.group(t, method = "quantile", n = 13)                    4.642
+# Precision for inla.group(z, method = "quantile", n = 13)                    3.734
+# Precision for inla.group(substrate.grainsize, method = "quantile", n = 13)  0.204
+# Precision for inla.group(pca1, method = "quantile", n = 13)                 5.425
+# Precision for inla.group(pca2, method = "quantile", n = 13)                15.463
+# Precision for auid                                                          0.427
+# Phi for auid                                                                0.696
+# GroupRho for auid                                                           0.818
 
-    # Marginal log-Likelihood:  -23623.31
+# Expected number of effective parameters(stdev): 1920.79(15.10)
+# Number of equivalent replicates : 3.96
+
+# Deviance Information Criterion (DIC) ...............: 47009.33
+# Deviance Information Criterion (DIC, saturated) ....: 28943.24
+# Effective number of parameters .....................: 1894.56
+
+# Marginal log-Likelihood:  -23611.26
+# Posterior marginals for the linear predictor and
+#  the fitted values are computed
 
     vn = paste(p$variabletomodel, "predicted", sep=".")
     carstm_plot( p=p, res=res, vn=vn, time_match=list(year="2000" ) )     # maps of some of the results

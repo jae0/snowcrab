@@ -88,14 +88,14 @@
 
       L = biomass.summary.db( DS="L.redo", p=p  )  # must go first as part of biomass estimates
       B = biomass.summary.db( DS="B.redo", p=p )  # rename to avoid confusion below as B is also used
-      Bsd = biomass.summary.db( DS="Bsd.redo", p=p )  # rename to avoid confusion below as B is also used
+      # Bsd = biomass.summary.db( DS="Bsd.redo", p=p )  # rename to avoid confusion below as B is also used
       CPUE=biomass.summary.db(DS="CPUE.redo") #brings in catch rate estimates in kg
      #  R = biomass.summary.db( DS="R.redo", p=p  )  # rename to avoid confusion below as B is also used
      #  Rsd = biomass.summary.db( DS="Rsd.redo", p=p  )  # rename to avoid confusion below as B is also used
 
       # geometric means -- sd are on log scale
-      Bg = biomass.summary.db( DS="B_geomean.redo", p=p  )
-      Bgsd = biomass.summary.db( DS="B_geomeansd.redo", p=p  )
+     Bg = biomass.summary.db( DS="B_geomean.redo", p=p  )
+     # Bgsd = biomass.summary.db( DS="B_geomeansd.redo", p=p  )
      # Rg = biomass.summary.db( DS="R_geomean.redo", p=p  )
      # Rgsd = biomass.summary.db( DS="R_geomeansd.redo", p=p  )
 
@@ -107,15 +107,16 @@
 
       L = L[ which(rownames(L) %in% rownames(B) ),  ]
       CPUE = CPUE[ which(rownames(CPUE) %in% rownames(B) ),  ]
-      Bsd = Bsd[ which(rownames(Bsd) %in% rownames(B) ),  ]
+    #  Bsd = Bsd[ which(rownames(Bsd) %in% rownames(B) ),  ]
     #  R = R[ which(rownames(R) %in% rownames(B) ),  ]
     #  Rsd = Rsd[ which(rownames(Rsd) %in% rownames(B) ),  ]
       Bg = Bg[ which(rownames(Bg) %in% rownames(B) ),  ]
-      Bgsd = Bgsd[ which(rownames(Bgsd) %in% rownames(B) ),  ]
+    #  Bgsd = Bgsd[ which(rownames(Bgsd) %in% rownames(B) ),  ]
     #  Rg = Rg[ which(rownames(Rg) %in% rownames(B) ),  ]
     #  Rgsd = Rgsd[ which(rownames(Rgsd) %in% rownames(B) ),  ]
 
-     out = list( L=L, B=B, Bsd=Bsd,Bg=Bg, Bgsd=Bgsd, CPUE=CPUE )
+     out = list( L=L, B=B, Bg=Bg, CPUE=CPUE )
+    # out = list( L=L, B=B, Bsd=Bsd,Bg=Bg, Bgsd=Bgsd, CPUE=CPUE )
 
     #  out = list( L=L, B=B, R=R, Bsd=Bsd, Rsd=Rsd, Bg=Bg, Bgsd=Bgsd, Rg=Rg, Rgsd=Rgsd )
 
@@ -164,9 +165,9 @@
 
       # biomass data: post-fishery biomass are determined by survey B)
       pSC = bio.snowcrab::snowcrab_carstm( DS="parameters", assessment.years=2000:p$year.assessment )
+      B = snowcrab_abundance_index(p=pSC, operation="load_timeseries", carstm_model_label=pSC$carstm_model_label  )
 
-      B = snowcrab_abundance_index( p=pSC, DS="load_timeseries" )
-      areas=c("cfanorth", "cfasouth", "cfa4x", "cfa23", "cfa24")
+     # areas=c("cfanorth", "cfasouth", "cfa4x", "cfa23", "cfa24")
       # B[,areas] = B[,areas] / 1000 # kt
       save( B, file=fn, compress=T )
       return (B)
