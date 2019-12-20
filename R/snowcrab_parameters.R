@@ -45,7 +45,7 @@ snowcrab_parameters = function( p=NULL, year.assessment=NULL, project_class="def
   if (!exists( "year.assessment", p)) stop("year.assessment not defined" )
   if (!exists("yrs", p)) p$yrs = c(1999:p$year.assessment)
 
-  
+
   # ---------------------
   # define years to map when mapping various stmv_variables, defaults to last four years
   if (!exists("mapyears", p)) p$mapyears = (as.numeric(p$year.assessment)-3):p$year.assessment
@@ -83,6 +83,7 @@ snowcrab_parameters = function( p=NULL, year.assessment=NULL, project_class="def
   p$ofname = file.path(p$annual.results, paste("TSresults", p$year.assessment, "rdata", sep=".") )
 
   p$fisheries.grid.resolution = 2
+  p$inputdata_spatial_discretization_planar_km = 1
 
   p$regions.to.model = c( "cfanorth", "cfasouth", "cfa4x", "cfaall" )
   p$plottimes=c("annual", "globalaverage")
