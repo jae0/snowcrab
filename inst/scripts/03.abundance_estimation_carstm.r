@@ -201,6 +201,9 @@
 # Part 5 -- create covariate field for temperature
 # ensure the data assimilation in temperature is first completed :: 01.temperature_data.R
 # total: 30 min, 80 configs .. fast
+# -------------------------------------------------
+# Part 1 -- construct basic parameter list defining the main characteristics of the study
+
   pT = temperature_carstm(p=p, DS="parameters_override" )
   M = temperature.db( p=pT, DS="aggregated_data", redo=TRUE )  #  used for data matching/lookup in other aegis projects that use temperature
   M = temperature_carstm( p=pT, DS="carstm_inputs", redo=TRUE )  # will redo if not found
@@ -216,105 +219,32 @@
 #     Pre = 3.31, Running = 2959, Post = 15.4, Total = 2978
 # Fixed effects:
 #              mean    sd 0.025quant 0.5quant 0.975quant  mode kld
-# (Intercept) 4.521 0.374      3.783     4.52       5.26 4.519   0
+# (Intercept) 4.575 0.342      3.889    4.574      5.267 4.573   0
 
 # Random effects:
 #   Name	  Model
-#     year_factor AR1 model
-#    dyri AR1 model
+#     dyri AR1 model
 #    inla.group(z, method = "quantile", n = 13) RW2 model
 #    auid BYM2 model
 
 # Model hyperparameters:
 #                                                           mean    sd 0.025quant 0.5quant 0.975quant  mode
-# Precision for the Gaussian observations                  0.426 0.003      0.419    0.426      0.432 0.426
-# Precision for year_factor                                3.011 0.847      1.623    2.924      4.931 2.755
-# Rho for year_factor                                      0.377 0.150      0.074    0.380      0.654 0.380
-# Precision for dyri                                       3.127 1.127      1.382    2.982      5.743 2.683
-# Rho for dyri                                             0.607 0.143      0.283    0.623      0.837 0.658
-# Precision for inla.group(z, method = "quantile", n = 13) 1.130 0.337      0.603    1.086      1.917 1.002
-# Precision for auid                                       0.412 0.034      0.354    0.410      0.486 0.402
-# Phi for auid                                             1.000 0.000      1.000    1.000      1.000   NaN
-# GroupRho for auid                                        0.722 0.025      0.667    0.724      0.766 0.731
+# Precision for the Gaussian observations                  0.420 0.003      0.413    0.420      0.427 0.419
+# Precision for dyri                                       3.119 1.143      1.417    2.943      5.853 2.612
+# Rho for dyri                                             0.589 0.154      0.243    0.605      0.838 0.642
+# Precision for inla.group(z, method = "quantile", n = 13) 1.137 0.340      0.602    1.094      1.923 1.012
+# Precision for auid                                       0.407 0.021      0.365    0.407      0.449 0.409
+# Phi for auid                                             0.449 0.032      0.386    0.449      0.514 0.448
+# GroupRho for auid                                        0.828 0.011      0.806    0.828      0.851 0.826
 
-# Expected number of effective parameters(stdev): 1541.25(23.03)
-# Number of equivalent replicates : 22.78
+# Expected number of effective parameters(stdev): 1976.69(32.72)
+# Number of equivalent replicates : 17.76
 
-# Deviance Information Criterion (DIC) ...............: 131164.54
-# Deviance Information Criterion (DIC, saturated) ....: 36672.25
-# Effective number of parameters .....................: 1543.11
+# Deviance Information Criterion (DIC) ...............: 132097.21
+# Deviance Information Criterion (DIC, saturated) ....: 37062.41
+# Effective number of parameters .....................: 1977.19
 
-# Marginal log-Likelihood:  -64636.41
-
-
-  # Time used:
-  #     Pre = 2.67, Running = 559, Post = 2.69, Total = 564
-  # Fixed effects:
-  #             mean    sd 0.025quant 0.5quant 0.975quant  mode kld
-  # (Intercept) 5.127 0.309       4.52    5.127      5.734 5.127   0
-
-  # Random effects:
-  #   Name	  Model
-  #     year_factor AR1 model
-  #   dyri RW2 model
-  #   zi RW2 model
-  #   auid BYM2 model
-
-  # Model hyperparameters:
-  #                                         mean    sd 0.025quant 0.5quant 0.975quant  mode
-  # Precision for the Gaussian observations 0.421 0.000      0.421    0.421   4.52e-01 0.421
-  # Precision for year_factor               1.325 0.057      1.181    1.308   2.29e+05 1.344
-  # Rho for year_factor                     0.458 0.022      0.398    0.452   1.00e+00 0.466
-  # Precision for dyri                      1.131 0.061      1.005    1.121   1.30e+00 1.085
-  # Precision for zi                        0.001 0.000      0.001    0.001   1.06e-01 0.001
-  # Precision for auid                    0.220 0.001      0.214    0.220   2.23e-01 0.220
-  # Phi for auid                          0.993 0.000      0.992    0.993   1.00e+00 0.994
-
-  # Expected number of effective parameters(stdev): 215.49(0.00)
-  # Number of equivalent replicates : 146.64
-
-  # Deviance Information Criterion (DIC) ...............: 128672.37
-  # Deviance Information Criterion (DIC, saturated) ....: 43266.47
-  # Effective number of parameters .....................: 215.48
-
-  # Marginal log-Likelihood:  -64703.07
-  # Posterior marginals for the linear predictor and
-  # the fitted values are computed
-
-
-
-  # Time used:
-  #     Pre = 1.5, Running = 848, Post = 2.71, Total = 852
-  # Fixed effects:
-  #             mean    sd 0.025quant 0.5quant 0.975quant  mode kld
-  # (Intercept) 5.101 0.206      4.698    5.101      5.504 5.101   0
-
-  # Random effects:
-  #   Name	  Model
-  #     year_factor AR1 model
-  #   dyri RW2 model
-  #   zi RW2 model
-  #   auid BYM2 model
-
-  # Model hyperparameters:
-  #                                         mean    sd 0.025quant 0.5quant 0.975quant  mode
-  # Precision for the Gaussian observations 0.355 0.003      0.349    0.355      0.361 0.355
-  # Precision for year_factor               2.417 0.850      1.036    2.335      4.306 2.137
-  # Rho for year_factor                     0.440 0.176      0.090    0.444      0.761 0.442
-  # Precision for dyri                      0.556 0.305      0.167    0.492      1.331 0.375
-  # Precision for zi                        0.001 0.000      0.000    0.001      0.001 0.001
-  # Precision for auid                    0.328 0.027      0.280    0.325      0.387 0.319
-  # Phi for auid                          0.992 0.010      0.966    0.995      1.000 1.000
-  # GroupRho for auid                     0.843 0.015      0.810    0.844      0.868 0.848
-
-  # Expected number of effective parameters(stdev): 1216.66(0.00)
-  # Number of equivalent replicates : 25.97
-
-  # Deviance Information Criterion (DIC) ...............: 123610.43
-  # Deviance Information Criterion (DIC, saturated) ....: 32822.21
-  # Effective number of parameters .....................: 1216.63
-
-  # Marginal log-Likelihood:  -60756.52
+# Marginal log-Likelihood:  -65482.69
 
 
 
@@ -332,37 +262,6 @@
 
 
     plot(fit, plot.prior=TRUE, plot.hyperparameters=TRUE, plot.fixed.effects=FALSE, single=TRUE )
-
-
-        pT$carstm_model_label = "production"
-        pT$carstm_modelcall = paste('
-          inla(
-            formula = ', pT$variabletomodel, ' ~ 1
-              + f( year_factor, model="ar1", hyper=H$ar1 )
-              + f( dyri, model="ar1", scale.model=TRUE, hyper=H$ar1 )
-              + f( inla.group( z, method="quantile", n=13 ), model="rw2", scale.model=TRUE, hyper=H$rw2)
-              + f( auid, model="bym2", graph=sppoly@nb, group=year_factor, scale.model=TRUE, constr=TRUE, hyper=H$bym2),
-            family = "normal",
-            data= M,
-            control.compute=list(dic=TRUE, config=TRUE),
-            control.results=list(return.marginals.random=TRUE, return.marginals.predictor=TRUE ),
-            control.predictor=list(compute=FALSE, link=1 ),
-            control.fixed=H$fixed,  # priors for fixed effects, generic is ok
-            # control.inla=list( strategy="laplace", cutoff=1e-6, correct=TRUE, correct.verbose=FALSE ),
-            # control.inla = list( h=1e-6, tolerance=1e-12), # increase in case values are too close to zero
-            # control.mode = list( restart=TRUE, result=RES ), # restart from previous estimates
-            # control.inla = list(cmin = 0 ),
-            # control.inla=list( strategy="laplace", cutoff=1e-6, correct=TRUE, correct.verbose=FALSE ),
-            # control.inla = list( h=1e-6, tolerance=1e-12), # increase in case values are too close to zero
-            # control.inla = list(h=1e-3, tolerance=1e-9, cmin=0), # restart=3), # restart a few times in case posteriors are poorly defined
-            # control.mode = list( restart=TRUE, result=RES ), # restart from previous estimates
-            verbose=TRUE
-          ) ' )
-
-        #  + f(tiyr2, model="seasonal", season.length=10 )
-        #  + f(dyear, model="ar1", hyper=H$ar1 )
-        #  + f(seasonal, model="seasonal", season.length=', pT$n.season, ', scale.model=TRUE )  # using seasonal effect is not recommended as it is not smoothed well .. rw2 is better
-
 
 
   }
@@ -390,16 +289,15 @@
     vn = paste(pPC1$variabletomodel, "random_auid_spatial", sep=".")
     carstm_plot( p=pPC1, res=res, vn=vn, time_match=list(year="2000" ), dyear="0.85" )       # maps of some of the results , dyear="0.85"
 
-#  Time used:
-#     Pre = 2.81, Running = 1623, Post = 8.2, Total = 1634
+# Time used:
+#     Pre = 2.67, Running = 667, Post = 4.98, Total = 675
 # Fixed effects:
 #              mean    sd 0.025quant 0.5quant 0.975quant  mode kld
-# (Intercept) 0.144 0.034      0.076    0.145      0.202 0.146   0
+# (Intercept) 0.143 0.015       0.11    0.143      0.173 0.144   0
 
 # Random effects:
 #   Name	  Model
-#     year_factor AR1 model
-#    dyri AR1 model
+#     dyri AR1 model
 #    inla.group(t, method = "quantile", n = 13) RW2 model
 #    inla.group(z, method = "quantile", n = 13) RW2 model
 #    inla.group(substrate.grainsize, method = "quantile", n = 13) RW2 model
@@ -407,38 +305,34 @@
 
 # Model hyperparameters:
 #                                                                                mean       sd 0.025quant 0.5quant
-# Precision for the Gaussian observations                                    1.92e+02 2.84e+00    186.640 1.92e+02
-# Precision for year_factor                                                  7.80e+02 3.94e+02    192.498 7.27e+02
-# Rho for year_factor                                                        8.01e-01 1.14e-01      0.550 8.17e-01
-# Precision for dyri                                                         9.03e+02 5.06e+02    247.972 8.00e+02
-# Rho for dyri                                                               8.10e-02 2.35e-01     -0.352 7.20e-02
-# Precision for inla.group(t, method = "quantile", n = 13)                   2.85e+04 2.94e+04   3647.288 1.99e+04
-# Precision for inla.group(z, method = "quantile", n = 13)                   1.61e+02 7.49e+01     56.493 1.48e+02
-# Precision for inla.group(substrate.grainsize, method = "quantile", n = 13) 2.95e+02 6.06e+02     11.110 1.30e+02
-# Precision for auid                                                         1.77e+02 1.72e+01    143.759 1.77e+02
-# Phi for auid                                                               9.94e-01 8.00e-03      0.974 9.97e-01
-# GroupRho for auid                                                          8.68e-01 1.80e-02      0.834 8.68e-01
+# Precision for the Gaussian observations                                    1.91e+02 2.88e+00    185.644 1.91e+02
+# Precision for dyri                                                         1.03e+03 6.60e+02    273.266 8.62e+02
+# Rho for dyri                                                               5.50e-02 2.47e-01     -0.430 5.90e-02
+# Precision for inla.group(t, method = "quantile", n = 13)                   1.70e+04 1.45e+04   2813.038 1.30e+04
+# Precision for inla.group(z, method = "quantile", n = 13)                   1.61e+02 7.50e+01     53.252 1.49e+02
+# Precision for inla.group(substrate.grainsize, method = "quantile", n = 13) 7.29e+02 2.72e+03      9.795 1.95e+02
+# Precision for auid                                                         1.71e+02 1.21e+01    147.609 1.71e+02
+# Phi for auid                                                               5.19e-01 3.80e-02      0.442 5.20e-01
+# GroupRho for auid                                                          9.19e-01 7.00e-03      0.905 9.19e-01
 #                                                                            0.975quant     mode
-# Precision for the Gaussian observations                                      1.98e+02  191.903
-# Precision for year_factor                                                    1.67e+03  539.805
-# Rho for year_factor                                                          9.67e-01    0.889
-# Precision for dyri                                                           2.17e+03  594.757
-# Rho for dyri                                                                 5.49e-01    0.017
-# Precision for inla.group(t, method = "quantile", n = 13)                     1.06e+05 9532.957
-# Precision for inla.group(z, method = "quantile", n = 13)                     3.45e+02  122.218
-# Precision for inla.group(substrate.grainsize, method = "quantile", n = 13)   1.62e+03   27.315
-# Precision for auid                                                           2.11e+02  176.982
-# Phi for auid                                                                 1.00e+00    1.000
-# GroupRho for auid                                                            9.02e-01    0.867
+# Precision for the Gaussian observations                                      1.97e+02  191.036
+# Precision for dyri                                                           2.75e+03  612.450
+# Rho for dyri                                                                 5.19e-01    0.069
+# Precision for inla.group(t, method = "quantile", n = 13)                     5.54e+04 7245.080
+# Precision for inla.group(z, method = "quantile", n = 13)                     3.41e+02  121.730
+# Precision for inla.group(substrate.grainsize, method = "quantile", n = 13)   4.73e+03   19.393
+# Precision for auid                                                           1.95e+02  170.771
+# Phi for auid                                                                 5.92e-01    0.523
+# GroupRho for auid                                                            9.33e-01    0.919
 
-# Expected number of effective parameters(stdev): 769.85(33.57)
-# Number of equivalent replicates : 14.06
+# Expected number of effective parameters(stdev): 1129.49(30.74)
+# Number of equivalent replicates : 9.58
 
-# Deviance Information Criterion (DIC) ...............: -25408.95
-# Deviance Information Criterion (DIC, saturated) ....: 11591.30
-# Effective number of parameters .....................: 772.98
+# Deviance Information Criterion (DIC) ...............: -24998.14
+# Deviance Information Criterion (DIC, saturated) ....: 11953.32
+# Effective number of parameters .....................: 1132.66
 
-# Marginal log-Likelihood:  14060.02
+# Marginal log-Likelihood:  13670.07
 
 
   }
@@ -451,6 +345,13 @@
 # Part 7 -- create covariate field for species composition 2
 # ensure that survey data is assimilated : bio.snowcrab::01snowcb_data.R, aegis.survey::01.surveys.data.R ,
 # etc.30 min, 30 min
+ p = bio.snowcrab::snowcrab_carstm( DS="parameters", assessment.years=1999:2018 )
+
+  # misc run params adjustments here:
+  p$inla_num.threads = 4
+  p$inla_blas.num.threads = 4
+
+
   pPC2 = speciescomposition_carstm(p=p, DS="parameters_override", varnametomodel="pca2" )
   M = speciescomposition_carstm( p=pPC2, DS="carstm_inputs", redo=TRUE )  # will redo if not found
   M = NULL; gc()
@@ -469,52 +370,48 @@
   #   Time used:
   #     Pre = 4.86, Running = 1768, Post = 11.8, Total = 1785
   # Fixed effects:
-  #             mean    sd 0.025quant 0.5quant 0.975quant  mode   kld
-  # (Intercept) 0.013 0.032      -0.05    0.014      0.072 0.014 0.007
+    #             mean    sd 0.025quant 0.5quant 0.975quant mode kld
+    # (Intercept) 0.02 0.021     -0.024     0.02      0.065 0.02   0
 
-  # Random effects:
-  #   Name	  Model
-  #     year_factor AR1 model
-  #   dyri AR1 model
-  #   inla.group(t, method = "quantile", n = 13) RW2 model
-  #   inla.group(z, method = "quantile", n = 13) RW2 model
-  #   inla.group(substrate.grainsize, method = "quantile", n = 13) RW2 model
-  #   auid BYM2 model
+    # Random effects:
+    #   Name	  Model
+    #     dyri AR1 model
+    #   inla.group(t, method = "quantile", n = 13) RW2 model
+    #   inla.group(z, method = "quantile", n = 13) RW2 model
+    #   inla.group(substrate.grainsize, method = "quantile", n = 13) RW2 model
+    #   auid BYM2 model
 
-  # Model hyperparameters:
-  #                                                                               mean       sd 0.025quant 0.5quant
-  # Precision for the Gaussian observations                                     249.493    3.911    242.160  249.350
-  # Precision for year_factor                                                  1126.871  831.853    104.778  933.654
-  # Rho for year_factor                                                           0.906    0.077      0.716    0.927
-  # Precision for dyri                                                          395.689  245.945     47.181  353.140
-  # Rho for dyri                                                                  0.908    0.065      0.760    0.922
-  # Precision for inla.group(t, method = "quantile", n = 13)                   3388.886 3692.945    500.318 2286.034
-  # Precision for inla.group(z, method = "quantile", n = 13)                    342.246  169.399    116.458  308.972
-  # Precision for inla.group(substrate.grainsize, method = "quantile", n = 13) 1607.268 2600.176    125.155  856.528
-  # Precision for auid                                                          334.180   37.633    269.886  330.624
-  # Phi for auid                                                                  0.951    0.037      0.851    0.961
-  # GroupRho for auid                                                             0.759    0.037      0.673    0.764
-  #                                                                           0.975quant     mode
-  # Precision for the Gaussian observations                                      2.58e+02  248.886
-  # Precision for year_factor                                                    3.14e+03  313.934
-  # Rho for year_factor                                                          9.95e-01    0.987
-  # Precision for dyri                                                           9.75e+02  156.802
-  # Rho for dyri                                                                 9.94e-01    0.982
-  # Precision for inla.group(t, method = "quantile", n = 13)                     1.30e+04 1188.188
-  # Precision for inla.group(z, method = "quantile", n = 13)                     7.64e+02  247.987
-  # Precision for inla.group(substrate.grainsize, method = "quantile", n = 13)   7.76e+03  312.351
-  # Precision for auid                                                           4.17e+02  322.041
-  # Phi for auid                                                                 9.92e-01    0.977
-  # GroupRho for auid                                                            8.17e-01    0.779
+    # Model hyperparameters:
+    #                                                                               mean       sd 0.025quant 0.5quant
+    # Precision for the Gaussian observations                                     255.139 3.86e+00    247.336  255.239
+    # Precision for dyri                                                          972.573 5.21e+02    267.742  875.460
+    # Rho for dyri                                                                  0.601 2.19e-01      0.123    0.627
+    # Precision for inla.group(t, method = "quantile", n = 13)                   7071.547 1.04e+04    757.266 4032.628
+    # Precision for inla.group(z, method = "quantile", n = 13)                    340.448 2.10e+02    109.684  285.481
+    # Precision for inla.group(substrate.grainsize, method = "quantile", n = 13) 1267.298 1.65e+03     97.368  769.744
+    # Precision for auid                                                          398.917 3.31e+01    335.265  398.669
+    # Phi for auid                                                                  0.538 7.00e-02      0.383    0.546
+    # GroupRho for auid                                                             0.914 8.00e-03      0.897    0.915
+    #                                                                           0.975quant     mode
+    # Precision for the Gaussian observations                                      2.63e+02  255.632
+    # Precision for dyri                                                           2.25e+03  661.698
+    # Rho for dyri                                                                 9.32e-01    0.750
+    # Precision for inla.group(t, method = "quantile", n = 13)                     3.22e+04 1784.791
+    # Precision for inla.group(z, method = "quantile", n = 13)                     8.90e+02  210.519
+    # Precision for inla.group(substrate.grainsize, method = "quantile", n = 13)   5.51e+03  259.117
+    # Precision for auid                                                           4.65e+02  399.531
+    # Phi for auid                                                                 6.53e-01    0.578
+    # GroupRho for auid                                                            9.30e-01    0.915
 
-  # Expected number of effective parameters(stdev): 859.67(27.66)
-  # Number of equivalent replicates : 12.59
+    # Expected number of effective parameters(stdev): 921.94(40.80)
+    # Number of equivalent replicates : 11.74
 
-  # Deviance Information Criterion (DIC) ...............: -28164.77
-  # Deviance Information Criterion (DIC, saturated) ....: 11648.63
-  # Effective number of parameters .....................: 859.56
+    # Deviance Information Criterion (DIC) ...............: -28335.04
+    # Deviance Information Criterion (DIC, saturated) ....: 11769.79
+    # Effective number of parameters .....................: 928.42
 
-  # Marginal log-Likelihood:  15463.31
+    # Marginal log-Likelihood:  15491.21
+
 
   }
 
