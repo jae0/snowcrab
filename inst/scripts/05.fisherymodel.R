@@ -21,12 +21,12 @@ p$fishery_model$method = "stan"  # "jags", etc.
 p$fishery_model$outdir = file.path(project.datadirectory('bio.snowcrab'), "assessments", p$year.assessment )
 p$fishery_model$fnres  = file.path(p$fishery_model$outdir, paste( "surplus.prod.mcmc", p$year.assessment, p$fishery_model$method, "rdata", sep=".") )
 p$fishery_model$standata = snowcrab_tsdata( p=p, assessment_years=p$assessment_years )
-p$fishery_model$standata$Kmu =  c( 5, 50, 1)
-p$fishery_model$standata$rmu = rep(1, 3)
-p$fishery_model$standata$qmu = rep(1, 3)
-p$fishery_model$standata$Ksd =  c(0.25, 0.25, 0.25) * p$fishery_model$standata$Kmu  # c( 2, 20, 0.5)
-p$fishery_model$standata$rsd =  c(0.25, 0.25, 0.25) * p$fishery_model$standata$rmu  # rep( 0.3, 3)
-p$fishery_model$standata$qsd =  c(0.25, 0.25, 0.25) * p$fishery_model$standata$qmu  # rep( 0.3, 3)
+p$fishery_model$standata$Kmu =  c( 6, 60, 2)
+p$fishery_model$standata$rmu = c(1, 1, 1)
+p$fishery_model$standata$qmu = c(1, 1, 0.8)
+p$fishery_model$standata$Ksd =  c(0.2, 0.2, 0.2) * p$fishery_model$standata$Kmu  # c( 2, 20, 0.5)
+p$fishery_model$standata$rsd =  c(0.2, 0.2, 0.2) * p$fishery_model$standata$rmu  # rep( 0.3, 3)
+p$fishery_model$standata$qsd =  c(0.2, 0.2, 0.2) * p$fishery_model$standata$qmu  # rep( 0.3, 3)
 
 p$fishery_model$stancode = fishery_model( p=p, DS="stan_surplus_production" )
 p$fishery_model$stancode_compiled = rstan::stan_model( model_code=p$fishery_model$stancode )
@@ -43,11 +43,11 @@ p$fishery_model$stancode_compiled = rstan::stan_model( model_code=p$fishery_mode
 # later:::ensureInitialized()  # solve mode error
 
 res = fishery_model( p=p, DS="stan",
-  chains=4,
+  chains=6,
   iter=10000,
-  warmup=4000,
+  warmup=5000,
   refresh = 1000,
-  control = list(adapt_delta = 0.96, max_treedepth=15)
+  control = list(adapt_delta = 0.975, max_treedepth=16)
 )
   # warmup = 200,          # number of warmup iterations per chain
   # control = list(adapt_delta = 0.9),

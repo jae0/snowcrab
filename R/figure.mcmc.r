@@ -1,11 +1,11 @@
 
-  figure.mcmc = function( vname="", type="density", res=NULL, fn=NULL, labs=c("N-ENS","S-ENS","4X") , save.plot=TRUE, ...) {
+  figure.mcmc = function( vname="", type="density", res=NULL, fn=NULL, aulabels=c("N-ENS","S-ENS","4X") , save.plot=TRUE, ...) {
 
     y = res$mcmc
     sb= res$p$fishery_model$standata
 
     ntacs = sb$nProj
-    yrs0 = as.numeric( as.character( rownames(sb$IOA) ) )
+    yrs0 = res$p$assessment_years
     yrs = c( yrs0, (max(yrs0)+c(1:sb$M) ) )
     yrs.last = max(yrs0) + 0.5
     ndata = length(yrs0)
@@ -31,7 +31,7 @@
           yrange = range( 0, postdat$density, na.rm=T ) * 1.02
           hist( pdat, freq=FALSE, breaks=br, xlim=xrange, ylim=yrange, main="", xlab="", ylab="Density", col="lightgray", border="gray")
           YR = rownames(sb$IOA) [yr]
-          legend( "topright", bty="n", legend=paste( labs[i], YR, "r", " = ", qs[2,i], " {", qs[1,i], ", ",  qs[3,i], "}  ", sep="" ), cex=0.9 )
+          legend( "topright", bty="n", legend=paste( aulabels[i], YR, "r", " = ", qs[2,i], " {", qs[1,i], ", ",  qs[3,i], "}  ", sep="" ), cex=0.9 )
         }}
 
      if(save.plot) savePlot( filename=fn, type="png" )
@@ -69,7 +69,7 @@
            prr$sdlog = sqrt(sb$Ksd[i])
           plot.freq.distribution.prior.posterior( prior=prr, posterior=pdat, ... )
 
-          legend( "topright", bty="n", legend=paste( labs[i], "\n", vname, " = ", qs[2,i], " {", qs[1,i], ", ",  qs[3,i], "}  ", sep="" ))
+          legend( "topright", bty="n", legend=paste( aulabels[i], "\n", vname, " = ", qs[2,i], " {", qs[1,i], ", ",  qs[3,i], "}  ", sep="" ))
       }
     }
 
@@ -83,7 +83,7 @@
           prr$sd=sqrt(sb$rsd[i])
           pdat = as.vector(y$r[,i])
           plot.freq.distribution.prior.posterior( prior=prr, posterior=pdat, ...  )
-          legend( "topright", bty="n", legend=paste( labs[i], "\n", vname, " = ", qs[2,i], " {", qs[1,i], ", ",  qs[3,i], "}  ", sep="" ) )
+          legend( "topright", bty="n", legend=paste( aulabels[i], "\n", vname, " = ", qs[2,i], " {", qs[1,i], ", ",  qs[3,i], "}  ", sep="" ) )
       }}
 
 
@@ -98,7 +98,7 @@
           prr$mean=sb$qmu[i]
           prr$sd=sb$qsd[i]
           plot.freq.distribution.prior.posterior( prior=prr, posterior=pdat, ...  )
-          legend( "topright", bty="n", legend=paste( labs[i], "\n", vname, " = ", qs[2,i], " {", qs[1,i], ", ",  qs[3,i], "}  ", sep="" )
+          legend( "topright", bty="n", legend=paste( aulabels[i], "\n", vname, " = ", qs[2,i], " {", qs[1,i], ", ",  qs[3,i], "}  ", sep="" )
       )}}
 
       if ( vname=="qs" ) {
@@ -111,7 +111,7 @@
           # prr$mean=sb$q0x[i]
           # prr$sd=sb$q0x[i]*sb$cv
           plot.freq.distribution.prior.posterior( prior=prr, posterior=pdat, ...  )
-          legend( "topright", bty="n", legend=paste( labs[i], "\n", vname, " = ", QQ[2,i], " {", QQ[1,i], ", ",  QQ[3,i], "}  ", sep="" )
+          legend( "topright", bty="n", legend=paste( aulabels[i], "\n", vname, " = ", QQ[2,i], " {", QQ[1,i], ", ",  QQ[3,i], "}  ", sep="" )
       )}}
 
 
@@ -124,7 +124,7 @@
           prr$class="none"
           plot.freq.distribution.prior.posterior( prior=prr, posterior=pdat, ...  )
           legend( "topright", bty="n",
-            legend=paste( labs[i], " ", vname, " = ", qs[2,i], " {", qs[1,i], ", ",  qs[3,i], "}", sep="" )
+            legend=paste( aulabels[i], " ", vname, " = ", qs[2,i], " {", qs[1,i], ", ",  qs[3,i], "}", sep="" )
       )}}
 
       if ( vname=="FMSY" ) {
@@ -136,7 +136,7 @@
           prr$class="none"
           plot.freq.distribution.prior.posterior( prior=prr, posterior=pdat, ...  )
           legend( "topright", bty="n",
-            legend=paste( labs[i], " ", vname, " = ", qs[2,i], " {", qs[1,i], ", ",  qs[3,i], "}", sep="" )
+            legend=paste( aulabels[i], " ", vname, " = ", qs[2,i], " {", qs[1,i], ", ",  qs[3,i], "}", sep="" )
       )}}
 
 
@@ -151,7 +151,7 @@
           prr$sdlog=sqrt(sb$bosdp)
           plot.freq.distribution.prior.posterior( prior=prr, posterior=pdat, ...  )
           legend( "topright", bty="n",
-            legend=paste( labs[i], " ", vname, " = ", qs[2,i], " {", qs[1,i], ", ",  qs[3,i], "}", sep="" )
+            legend=paste( aulabels[i], " ", vname, " = ", qs[2,i], " {", qs[1,i], ", ",  qs[3,i], "}", sep="" )
       )}}
 
       if ( vname=="bpsd" ) {
@@ -168,7 +168,7 @@
           #prr$sdlog=sqrt(sb$bpsdp)
           plot.freq.distribution.prior.posterior( prior=prr, posterior=pdat, ...  )
           legend( "topright", bty="n",
-            legend=paste( labs[i], " ", vname, " = ", qs[2,i], " {", qs[1,i], ", ",  qs[3,i], "}", sep="" )
+            legend=paste( aulabels[i], " ", vname, " = ", qs[2,i], " {", qs[1,i], ", ",  qs[3,i], "}", sep="" )
       )}}
 
 
@@ -209,32 +209,32 @@
           if (i==3) title( xlab="Year" )
           points( yrs0, qIOA, pch=20, col="darkgreen" )
           lines ( yrs0, qIOA, lwd=3, col="darkgreen", lty="dashed" )
-          lines ( yrs0, meanval, lwd=2, col="blue", lty="dotted" )
+          lines ( yrs, meanval, lwd=2, col="blue", lty="dotted" )
           points( yrs0, IOA, pch=20, col="darkred" )
           lines( yrs0, IOA, lwd=3, lty="dotdash", col="red" )
-          legend( "topright", bty="n", legend=labs[i])
+          legend( "topright", bty="n", legend=aulabels[i])
       }
     }
 
     if (vname=="fishingmortality") {
-        Fmsy = apply( y$FMSY, 2, mean, na.rm=T )
-        for (i in 1:3) {
-          prs = seq( from=0.025, to=0.975, length.out=600)
-          Fi = apply( y$F[,1:sb$N,i], 2, quantile, probs=prs, na.rm=T )
-          yran = range(c(0, max(c(Fi,Fmsy))), na.rm=T )*1.01
-          yran = pmin( yran, 1.2 )
-          plot( yrs0, Fi[1,], type="n", ylim=yran, xlab="", ylab="" )
-          cols = gray.colors( floor(length( prs)/2) )
-          cols2 = c(cols[length(cols):1], cols )
-          for ( j in 1:length(prs) ) {
-            lines ( yrs0, Fi[j,], lwd=4, col=cols2[j] )
-          }
-          if (i==2) title( ylab="Fishing mortality" )
-          if (i==3) title( xlab="Year" )
-          legend( "topright", bty="n", legend=labs[i])
-          abline (h=-log(1-0.2), lwd=2, lty="dashed" )
-          abline (h=Fmsy[i], lwd=2, lty="solid", col="red" )
-      }}
+      Fmsy = apply( y$FMSY, 2, mean, na.rm=T )
+      for (i in 1:3) {
+        prs = seq( from=0.025, to=0.975, length.out=600)
+        Fi = apply( y$F[,1:sb$N,i], 2, quantile, probs=prs, na.rm=T )
+        yran = range(c(0, max(c(Fi,Fmsy))), na.rm=T )*1.01
+        yran = pmin( yran, 1.2 )
+        plot( yrs0, Fi[1,], type="n", ylim=yran, xlab="", ylab="" )
+        cols = gray.colors( floor(length( prs)/2) )
+        cols2 = c(cols[length(cols):1], cols )
+        for ( j in 1:length(prs) ) {
+          lines ( yrs0, Fi[j,], lwd=4, col=cols2[j] )
+        }
+        if (i==2) title( ylab="Fishing mortality" )
+        if (i==3) title( xlab="Year" )
+        legend( "topright", bty="n", legend=aulabels[i])
+        abline (h=-log(1-0.2), lwd=2, lty="dashed" )
+        abline (h=Fmsy[i], lwd=2, lty="solid", col="red" )
+      }
     }
 
     if (type=="hcr") {
@@ -310,15 +310,15 @@
           points( B[ndata,i], F[ndata,i],  pch=21, bg='darkorange', cex= 1.4 )
           text( B[ndata,i], F[ndata,i],  labels=yrs0[ndata], pos=3, cex= 1.4, font=2 )
 
-          text( 0, ylims[2]*0.9,  labels=labs[i], pos=3, cex= 0.85 )
+          text( 0, ylims[2]*0.9,  labels=aulabels[i], pos=3, cex= 0.85 )
 
           # abline (v=Bhistorical, lty="dashed")
           # text( Bhistorical-0.01*K[i], yl, "Mean" , srt=90, pos=3,  lwd=2)
 
-#Enable below to see the annual F estimates for inclusion in the document          
-Print(F[hdat,1] )
-Print(F[hdat,2] )
-Print(F[hdat,3] )
+      #Enable below to see the annual F estimates for inclusion in the document
+        print(F[hdat,1] )
+        print(F[hdat,2] )
+        print(F[hdat,3] )
 
 
         }
@@ -392,7 +392,7 @@ Print(F[hdat,3] )
           text( BK25-0.01*K[i], yl, "K/4" , srt=90, pos=3)
           text( B[hdat,i], F[hdat,i],  labels=yrs0, pos=3, cex= 0.8 )
 
-          text( 0, ylims[2]*0.9,  labels=labs[i], pos=3, cex= 0.85 )
+          text( 0, ylims[2]*0.9,  labels=aulabels[i], pos=3, cex= 0.85 )
 
 
 
@@ -413,7 +413,7 @@ Print(F[hdat,3] )
           FMSY = apply( y$FMSY, c(2), mean, na.rm=T  )
           BMSY = apply( y$BMSY, c(2), mean, na.rm=T  )
 
-          labs = c("N-ENS", "S-ENS", "4X")
+          aulabels = c("N-ENS", "S-ENS", "4X")
 
         for (i in 1:3 ) {
           ylims = max(C[,i] )* c(0, 1.1)
@@ -427,7 +427,7 @@ Print(F[hdat,3] )
           points( B[hdat,i], C[hdat,i], col="orange", cex=0.8, pch=20 )
           text( B[hdat,i], C[hdat,i],  labels=yrs0, pos=3, cex= 0.85 )
 
-          text( 0, ylims[2]*0.9,  labels=labs[i], pos=3, cex= 0.85 )
+          text( 0, ylims[2]*0.9,  labels=aulabels[i], pos=3, cex= 0.85 )
 
           # nn = as.matrix( cbind( Bx=as.vector( y$B[,ndata,i] ), Fx = as.vector( y$F[,ndata,i] ) ))
           # ellipse.2d(nn[,1], nn[,2], pv=0.05, sc=30)

@@ -10,6 +10,7 @@ snowcrab_tsdata = function( p, assessment_years=2000:p$year.assessment, areas=c(
   # biomass data: post-fishery biomass are determined by survey B)
   pSC = bio.snowcrab::snowcrab_carstm( DS="parameters", assessment.years=2000:p$year.assessment )
   B = snowcrab_abundance_index(p=pSC, operation="load_timeseries", carstm_model_label=pSC$carstm_model_label  )
+  rownames(B) = B$yrs
   B = as.data.frame( B[ match( assessment_years, B$yrs ), areas ] )
 
   # cfa4x have had no estimates prior to 2004
