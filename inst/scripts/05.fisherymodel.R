@@ -9,7 +9,7 @@ if (!exists("year.assessment")) {
 }
 p = bio.snowcrab::load.environment(
   year.assessment=year.assessment,
-  assessment_years = 2000:p$year.assessment,
+  assessment_years = 2000:year.assessment,
   vars.tomodel="R0.mass"
 )
 
