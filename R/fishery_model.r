@@ -511,32 +511,12 @@ fishery_model = function(  p, DS="stan", plotresults=TRUE, ... ) {
 }
 
 
+
   if (DS=="stan_data" ) {
-
-    library(rstan)
-    rstan_options(auto_write = TRUE)
-    options(mc.cores = parallel::detectCores())
-
-    sb = biomass.summary.db(p=p, DS="surplusproduction" )
-
-    # ----------------------------------
-    # these are already on log-scale
-    sb$Kmu =  exp(sb$Kmu)
-    sb$Ksd =  c(0.25, 0.25, 0.25) * sb$Kmu
-
-    sb$rsd =  c(0.25, 0.25, 0.25) * sb$rmu
-    sb$qsd =  c(0.25, 0.25, 0.25) * sb$qmu
-
-    sb$missing = ifelse(is.finite(sb$IOA),0,1)
-    sb$missing_n = colSums(sb$missing)
-    sb$missing_ntot = sum(sb$missing_n)
-    sb$IOA[  which(!is.finite(sb$IOA)) ] = 0  # reset NAs to 0 as stan does not take NAs
-
-    ii = which(!is.finite(sb$CAT))
-    sb$CAT[ii] = 0.001 # remove NA's
-
+    sb = snowcrab_tsdata(p=p, assessment_yrs=2000:p$year.assessment)
     return(sb)
   }
+
 
 
   if (DS=="stan" ) {
@@ -603,7 +583,7 @@ fishery_model = function(  p, DS="stan", plotresults=TRUE, ... ) {
 
     n.iter.total = p$fishery_model$n.iter * p$fishery_model$n.thin
 
-    sb = biomass.summary.db(p=p, DS="surplusproduction" )
+    sb = snowcrab_tsdata( p=p, assessment_years=p$assessment_years )
 
     sb$tomonitor = c( "r", "K", "q", "qs", "rmu", "rsd", "b","bpsd", "bosd","b0", "b0sd", "rem", "remsd", "remmu","REM", "MSY", "BMSY", "FMSY", "Fcrash", "Bdrop", "BX2MSY", "F", "TAC",
       "C", "P", "B" )
@@ -886,7 +866,7 @@ model {
     require(LaplacesDemonCpp)
 
 
-    sb = biomass.summary.db(p=p, DS="surplusproduction" )
+    sb = snowcrab_tsdata( p=p, assessment_years=p$assessment_years )
 
     debug.region="cfa4x"
     debug.region="cfasouth"
@@ -1278,7 +1258,7 @@ model {
     require(aegis)
 
 
-    sb = biomass.summary.db(p=p, DS="surplusproduction" )
+    sb = snowcrab_tsdata( p=p, assessment_years=p$assessment_years )
 
 
     debug.region="cfa4x"
@@ -1354,11 +1334,8 @@ model {
     project.library( "bio.models")
 
     ###  all data follow this sequence: c("cfanorth", "cfasouth", "cfa4x")
-    redo.data=F
-    if (redo.data) {
-      biomass.summary.db("complete.redo", p=p )
-    }
-    res = biomass.summary.db( p=p )
+
+    res = snowcrab_tsdata( p=p, assessment_years=p$assessment_years )
 
 
     sb = list(
@@ -1554,32 +1531,6 @@ model {
   }
 
 
-if (DS=="stan_data" ) {
-
-  library(rstan)
-  rstan_options(auto_write = TRUE)
-  options(mc.cores = parallel::detectCores())
-
-  sb = biomass.summary.db(p=p, DS="surplusproduction" )
-
-  # ----------------------------------
-  # these are already on log-scale
-  sb$Kmu =  exp(sb$Kmu)
-  sb$Ksd =  c(0.25, 0.25, 0.25) * sb$Kmu
-
-  sb$rsd =  c(0.25, 0.25, 0.25) * sb$rmu
-  sb$qsd =  c(0.25, 0.25, 0.25) * sb$qmu
-
-  sb$missing = ifelse(is.finite(sb$IOA),0,1)
-  sb$missing_n = colSums(sb$missing)
-  sb$missing_ntot = sum(sb$missing_n)
-  sb$IOA[  which(!is.finite(sb$IOA)) ] = 0  # reset NAs to 0 as stan does not take NAs
-
-  ii = which(!is.finite(sb$CAT))
-  sb$CAT[ii] = 0.001 # remove NA's
-
-  return(sb)
-}
 
 
 

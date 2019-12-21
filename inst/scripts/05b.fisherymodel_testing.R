@@ -15,7 +15,7 @@ p$vars.tomodel="R0.mass"
 biomass.summary.db("complete.redo", p=p) #Uses the model results to create a habitat area expanded survey index
 
 
-#Choose one of the below  model runs 
+#Choose one of the below  model runs
 ##stmv biomass estimates only
 p$fishery_model = list()
 p$fishery_model$method = "stan"  # "jags", etc.
@@ -51,10 +51,10 @@ p$fishery_model$stancode_compiled = rstan::stan_model( model_code=p$fishery_mode
       p$fishery_model$fnres  = file.path(p$fishery_model$outdir, paste( "surplus.prod.mcmc", p$year.assessment, p$fishery_model$method, "rdata", sep=".") )
       p$fishery_model$standata = fishery_model( p=p, DS="stan_data" )
 
-#new bad kludge  
+#new bad kludge
     p$fishery_model$standata$IOA = p$fishery_model$standata$IOAG
     p$fishery_model$standata$IOA[1:5,3] <- 0
-    
+
     #sa of habitat from Stmv
     area.from.stmv = F
     if(area.from.stmv){
@@ -65,7 +65,7 @@ p$fishery_model$stancode_compiled = rstan::stan_model( model_code=p$fishery_mode
         p$fishery_model$standata$IOA[,2] = p$fishery_model$standata$IOA[,2] * td[,3]
         p$fishery_model$standata$IOA[,3] = p$fishery_model$standata$IOA[,3] * td[,4]
     }
-    
+
     area.from.survey.chull=T
     if(area.from.survey.chull){
     Area # from 98.ConvexhullSurveyArea
@@ -88,11 +88,11 @@ p$fishery_model$stancode_compiled = rstan::stan_model( model_code=p$fishery_mode
     p$fishery_model$outdir = file.path(project.datadirectory('bio.snowcrab'), "assessments", p$year.assessment )
     p$fishery_model$fnres  = file.path(p$fishery_model$outdir, paste( "surplus.prod.mcmc", p$year.assessment, p$fishery_model$method, "rdata", sep=".") )
     p$fishery_model$standata = fishery_model( p=p, DS="stan_data" )
-    
-    #new bad kludge  
-    
+
+    #new bad kludge
+
     p$fishery_model$standata$IOAG[1:5,3] <- 0
-    
+
     #sa of habitat from Stmv
     area.from.stmv = F
     if(area.from.stmv){
@@ -103,7 +103,7 @@ p$fishery_model$stancode_compiled = rstan::stan_model( model_code=p$fishery_mode
       p$fishery_model$standata$IOA[,2] = p$fishery_model$standata$IOA[,2] * td[,3]
       p$fishery_model$standata$IOA[,3] = p$fishery_model$standata$IOA[,3] * td[,4]
     }
-    
+
     area.from.survey.chull=T
     if(area.from.survey.chull){
       Area # from 98.ConvexhullSurveyArea
@@ -119,8 +119,8 @@ p$fishery_model$stancode_compiled = rstan::stan_model( model_code=p$fishery_mode
     p$fishery_model$stancode = fishery_model( p=p, DS="stan_surplus_production_stmv_survey_expanded" )
     p$fishery_model$stancode_compiled = rstan::stan_model( model_code=p$fishery_model$stancode )
     ##########################
-    
-    
+
+
 # later:::ensureInitialized()  # solve mode error
 
 res = fishery_model( p=p, DS="stan",
@@ -137,7 +137,7 @@ res = fishery_model( p=p, DS="stan",
 #below figure code best run in R terminal rather than RStudio
 
 #uncomment to reload fishery model for plotting
-# load( p$fishery_model$fnres ) 
+# load( p$fishery_model$fnres )
 
 # frequency density of key parameters
 figure.mcmc( "K", res=res, fn=file.path(p$fishery_model$outdir, "K.density.png" ) )

@@ -7,12 +7,11 @@ if (!exists("year.assessment")) {
    year.assessment=lubridate::year(Sys.Date())
    year.assessment=lubridate::year(Sys.Date()) - 1
 }
-p = bio.snowcrab::load.environment( year.assessment=year.assessment )
-
-
-# update data summaries
-p$vars.tomodel="R0.mass"
-biomass.summary.db("complete.redo", p=p) #Uses the model results to create a habitat area expanded survey index
+p = bio.snowcrab::load.environment(
+  year.assessment=year.assessment,
+  assessment_years = 2000:p$year.assessment,
+  vars.tomodel="R0.mass"
+)
 
 
 #Choose one of the below  model runs
@@ -21,14 +20,13 @@ p$fishery_model = list()
 p$fishery_model$method = "stan"  # "jags", etc.
 p$fishery_model$outdir = file.path(project.datadirectory('bio.snowcrab'), "assessments", p$year.assessment )
 p$fishery_model$fnres  = file.path(p$fishery_model$outdir, paste( "surplus.prod.mcmc", p$year.assessment, p$fishery_model$method, "rdata", sep=".") )
-p$fishery_model$standata = fishery_model( p=p, DS="stan_data" )
-p$fishery_model$standata$rmu = rep( 1, 3)
-p$fishery_model$standata$rsd = rep( 0.3, 3)
-p$fishery_model$standata$Kmu = c( 5, 50, 1 )
-p$fishery_model$standata$Ksd = c( 2, 20, 0.5)
-p$fishery_model$standata$qmu = rep( 1, 3)
-p$fishery_model$standata$qsd = rep( 0.3, 3)
-p$fishery_model$standata$bmax = 1.25
+p$fishery_model$standata = snowcrab_tsdata( p=p, assessment_years=p$assessment_years )
+p$fishery_model$standata$Kmu =  c( 5, 50, 1)
+p$fishery_model$standata$rmu = rep(1, 3)
+p$fishery_model$standata$qmu = rep(1, 3)
+p$fishery_model$standata$Ksd =  c(0.25, 0.25, 0.25) * p$fishery_model$standata$Kmu  # c( 2, 20, 0.5)
+p$fishery_model$standata$rsd =  c(0.25, 0.25, 0.25) * p$fishery_model$standata$rmu  # rep( 0.3, 3)
+p$fishery_model$standata$qsd =  c(0.25, 0.25, 0.25) * p$fishery_model$standata$qmu  # rep( 0.3, 3)
 
 p$fishery_model$stancode = fishery_model( p=p, DS="stan_surplus_production" )
 p$fishery_model$stancode_compiled = rstan::stan_model( model_code=p$fishery_model$stancode )

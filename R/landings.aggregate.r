@@ -1,9 +1,9 @@
 
   landings.aggregate = function( format="default"  ) {
 
-    landings = landings.db() 
+    landings = landings.db()
     # year is year of capture
-    # yr is "fishing year" relative to the assessment cycle 
+    # yr is "fishing year" relative to the assessment cycle
 
     if (format=="default") {
       landings.north = landings[ which(landings$cfa =="cfanorth"), ]
@@ -35,7 +35,7 @@
     if (format=="bugs") {
       regs =  c( "cfanorth", "cfasouth", "cfa4x" )
       landings = landings[ which (landings$cfa %in% regs) , ]
-      yrs = sort(unique( landings$yr ) ) 
+      yrs = sort(unique( landings$yr ) )
       L = tapply( landings$landings, INDEX=landings[,c("yr", "cfa")], FUN=sum, na.rm=T )
       cfaall = tapply( landings$landings, INDEX=landings[,c("yr")], FUN=sum, na.rm=T )
       L = cbind( L, cfaall )

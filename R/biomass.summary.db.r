@@ -1,6 +1,7 @@
 
   biomass.summary.db = function( DS="complete", p=NULL ) {
     #browser()
+    warning("This function is deprecated")
 
     sum_outdir = file.path( project.datadirectory("bio.snowcrab"), "output", "timeseries" )
 
@@ -36,7 +37,7 @@
         IOA = as.matrix(res$B), # observed index of abundance
         IOCPUE = as.matrix(res$CPUE), # observed index of catch rate
         IOAG = as.matrix(res$Bg), # observed index of abundance as geometric mean catches
-       # IOAcv = as.matrix( log(res$Bsd )), # observed index of log abundance SD estimates ~ CV
+        IOAcv = as.matrix( log(res$Bsd )), # observed index of log abundance SD estimates ~ CV
         #IREC = as.matrix(res$R), # observed index of abundance
         #IRECcv = as.matrix(res$Rsd ), # observed index of log abundance SD estimates ~CV
         CAT = as.matrix(res$L) , # catches  , assume 20% handling mortality and illegal landings
@@ -56,18 +57,18 @@
       cfa.north =  1 # column index
       cfa.north.bad.data = which( as.numeric(rownames(sb$IOA)) <= 1997 )
       sb$IOA[ cfa.north.bad.data, cfa.north ] = NA
-      #sb$IOAcv[ cfa.north.bad.data, cfa.north ] = mean( sb$IOAcv[,cfa.north ] ,na.rm=T )
+      sb$IOAcv[ cfa.north.bad.data, cfa.north ] = mean( sb$IOAcv[,cfa.north ] ,na.rm=T )
       #sb$IRECcv[ cfa.north.bad.data, cfa.north ] = mean( sb$IRECcv[,cfa.north ] ,na.rm=T )
       #sb$IREC[ cfa.north.bad.data, cfa.north ] = mean( sb$IREC[,cfa.north ] ,na.rm=T )
 
       cfa.south =  2 # column index
       cfa.south.bad.data = which( as.numeric(rownames(sb$IOA)) <= 1998 )
       sb$IOA[ cfa.south.bad.data, cfa.south ] = NA
-      #sb$IOAcv[ cfa.south.bad.data, cfa.south ] = mean( sb$IOAcv[,cfa.south ] ,na.rm=T )
+      sb$IOAcv[ cfa.south.bad.data, cfa.south ] = mean( sb$IOAcv[,cfa.south ] ,na.rm=T )
 
       cfa.nodata =   which( as.numeric(rownames(sb$IOA)) <= 2003 )
       sb$IOA[ cfa.nodata , sb$cfa4x ] = NA
-      #sb$IOAcv[ cfa.nodata , sb$cfa4x ] = mean( sb$IOAcv[,sb$cfa4x] ,na.rm=T )
+      sb$IOAcv[ cfa.nodata , sb$cfa4x ] = mean( sb$IOAcv[,sb$cfa4x] ,na.rm=T )
 
       # recruitment index has no process model right now ... use min value
       #sb$IREC[ cfa.nodata , sb$cfa4x ] = min( sb$IREC[,sb$cfa4x] ,na.rm=T )
@@ -115,8 +116,7 @@
     #  Rg = Rg[ which(rownames(Rg) %in% rownames(B) ),  ]
     #  Rgsd = Rgsd[ which(rownames(Rgsd) %in% rownames(B) ),  ]
 
-     out = list( L=L, B=B, Bg=Bg, CPUE=CPUE )
-    # out = list( L=L, B=B, Bsd=Bsd,Bg=Bg, Bgsd=Bgsd, CPUE=CPUE )
+     out = list( L=L, B=B, Bsd=Bsd,Bg=Bg, Bgsd=Bgsd, CPUE=CPUE )
 
     #  out = list( L=L, B=B, R=R, Bsd=Bsd, Rsd=Rsd, Bg=Bg, Bgsd=Bgsd, Rg=Rg, Rgsd=Rgsd )
 
@@ -166,9 +166,8 @@
       # biomass data: post-fishery biomass are determined by survey B)
       pSC = bio.snowcrab::snowcrab_carstm( DS="parameters", assessment.years=2000:p$year.assessment )
       B = snowcrab_abundance_index(p=pSC, operation="load_timeseries", carstm_model_label=pSC$carstm_model_label  )
-      rownames(B) = B$yrs
-      areas=c("cfanorth", "cfasouth", "cfa4x" )
-      B = B[,areas]
+
+     # areas=c("cfanorth", "cfasouth", "cfa4x", "cfa23", "cfa24")
       # B[,areas] = B[,areas] / 1000 # kt
       save( B, file=fn, compress=T )
       return (B)
