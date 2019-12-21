@@ -213,28 +213,30 @@
           points( yrs0, IOA, pch=20, col="darkred" )
           lines( yrs0, IOA, lwd=3, lty="dotdash", col="red" )
           legend( "topright", bty="n", legend=aulabels[i])
-      }
-    }
-
-    if (vname=="fishingmortality") {
-      Fmsy = apply( y$FMSY, 2, mean, na.rm=T )
-      for (i in 1:3) {
-        prs = seq( from=0.025, to=0.975, length.out=600)
-        Fi = apply( y$F[,1:sb$N,i], 2, quantile, probs=prs, na.rm=T )
-        yran = range(c(0, max(c(Fi,Fmsy))), na.rm=T )*1.01
-        yran = pmin( yran, 1.2 )
-        plot( yrs0, Fi[1,], type="n", ylim=yran, xlab="", ylab="" )
-        cols = gray.colors( floor(length( prs)/2) )
-        cols2 = c(cols[length(cols):1], cols )
-        for ( j in 1:length(prs) ) {
-          lines ( yrs0, Fi[j,], lwd=4, col=cols2[j] )
         }
-        if (i==2) title( ylab="Fishing mortality" )
-        if (i==3) title( xlab="Year" )
-        legend( "topright", bty="n", legend=aulabels[i])
-        abline (h=-log(1-0.2), lwd=2, lty="dashed" )
-        abline (h=Fmsy[i], lwd=2, lty="solid", col="red" )
       }
+
+      if (vname=="fishingmortality") {
+        Fmsy = apply( y$FMSY, 2, mean, na.rm=T )
+        for (i in 1:3) {
+          prs = seq( from=0.025, to=0.975, length.out=600)
+          Fi = apply( y$F[,1:sb$N,i], 2, quantile, probs=prs, na.rm=T )
+          yran = range(c(0, max(c(Fi,Fmsy))), na.rm=T )*1.01
+          yran = pmin( yran, 1.2 )
+          plot( yrs0, Fi[1,], type="n", ylim=yran, xlab="", ylab="" )
+          cols = gray.colors( floor(length( prs)/2) )
+          cols2 = c(cols[length(cols):1], cols )
+          for ( j in 1:length(prs) ) {
+            lines ( yrs0, Fi[j,], lwd=4, col=cols2[j] )
+          }
+          if (i==2) title( ylab="Fishing mortality" )
+          if (i==3) title( xlab="Year" )
+          legend( "topright", bty="n", legend=aulabels[i])
+          abline (h=-log(1-0.2), lwd=2, lty="dashed" )
+          abline (h=Fmsy[i], lwd=2, lty="solid", col="red" )
+        }
+      }
+
     }
 
     if (type=="hcr") {
