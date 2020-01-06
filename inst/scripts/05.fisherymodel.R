@@ -49,12 +49,6 @@ res = fishery_model( p=p, DS="stan",
   refresh = 1000,
   control = list(adapt_delta = 0.975, max_treedepth=16)
 )
-  # warmup = 200,          # number of warmup iterations per chain
-  # control = list(adapt_delta = 0.9),
-  # # refresh = 500,          # show progress every 'refresh' iterations
-  # iter = 1000,            # total number of iterations per chain
-  # chains = 5,             # number of Markov chains
-  # cores = 5              # number of cores (using 2 just for the vignette)
 
 #below figure code best run in R terminal rather than RStudio
 
