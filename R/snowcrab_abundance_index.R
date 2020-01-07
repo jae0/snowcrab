@@ -1,4 +1,4 @@
-snowcrab_abundance_index = function( p=NULL, operation="load_RES", ... ) {
+snowcrab_abundance_index = function( p=NULL, operation="load_RES", extrapolation=FALSE, ... ) {
 
   # require areal_units_fn,
 
@@ -79,6 +79,14 @@ snowcrab_abundance_index = function( p=NULL, operation="load_RES", ... ) {
     if (p$variabletomodel_type == "biomass") {
       biom = res[[ paste( p$variabletomodel, "predicted", sep=".")]]
       biom[!is.finite(biom)] = NA
+      if (!extrapolation) {
+        ul = max(M$totwgt/M$data_offset, na.rm=T) # 28921.8426
+        uu = which( biom > ul )
+        if (length(uu) > 0 ) {
+          biom[ uu] = ul
+          warning("Extreme-valued predictions were found, capping them to max observed rates .. you might want to have more informed priors, or otherwise set extrapolation=TRUE")
+        }
+      }
       qnt = quantile( biom, probs=0.99, na.rm=TRUE)
       biom[biom > qnt] = qnt
       nums = biom / weight_year
@@ -87,6 +95,14 @@ snowcrab_abundance_index = function( p=NULL, operation="load_RES", ... ) {
 
     if (p$variabletomodel_type == "number") {
       nums = res[[ paste( p$variabletomodel, "predicted", sep=".")]]
+      if (!extrapolation) {
+        ul = max(M$totno/M$data_offset, na.rm=T) # 17301.5199
+        uu = which( nums > ul )
+        if (length(uu) > 0 ) {
+          nums[ uu] = ul
+          warning("Extreme-valued predictions were found, capping them to max observed rates .. you might want to have more informed priors, or otherwise set extrapolation=TRUE")
+        }
+      }
       nums[!is.finite(nums)] = NA
       qnt = quantile( nums, probs=0.99, na.rm=TRUE)
       nums[nums > qnt] = qnt
