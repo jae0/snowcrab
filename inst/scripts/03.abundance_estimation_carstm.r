@@ -281,13 +281,19 @@
   if (0) {
     res = carstm_model( p=pPC1, DS="carstm_modelled", carstm_model_label="production"  ) # run model and obtain predictions
     fit = carstm_model( p=pPC1, DS="carstm_modelled_fit", carstm_model_label="production" )  # extract currently saved model fit
+
+    plot( fit, plot.prior=TRUE, plot.hyperparameters=TRUE, plot.fixed.effects=FALSE )
+
     summary(fit)
     vn = paste(pPC1$variabletomodel, "predicted", sep=".")
-    carstm_plot( p=pPC1, res=res, vn=vn, time_match=list(year="2000" ), dyear="0.85" ) # maps of some of the results
+    carstm_plot( p=pPC1, res=res, vn=vn, time_match=list(year="2017" ), dyear="0.85" ) # maps of some of the results
+    vn = paste(pPC1$variabletomodel, "predicted_se", sep=".")
+    carstm_plot( p=pPC1, res=res, vn=vn, time_match=list(year="2017" ), dyear="0.85" ) # maps of some of the results
+
     vn = paste(pPC1$variabletomodel, "random_auid_nonspatial", sep=".")
-    carstm_plot( p=pPC1, res=res, vn=vn, time_match=list(year="2000" ), dyear="0.85" )       # maps of some of the results , dyear="0.85"
+    carstm_plot( p=pPC1, res=res, vn=vn, time_match=list(year="2017" ), dyear="0.85" )       # maps of some of the results , dyear="0.85"
     vn = paste(pPC1$variabletomodel, "random_auid_spatial", sep=".")
-    carstm_plot( p=pPC1, res=res, vn=vn, time_match=list(year="2000" ), dyear="0.85" )       # maps of some of the results , dyear="0.85"
+    carstm_plot( p=pPC1, res=res, vn=vn, time_match=list(year="2017" ), dyear="0.85" )       # maps of some of the results , dyear="0.85"
 
 # Time used:
 #     Pre = 2.67, Running = 667, Post = 4.98, Total = 675
@@ -360,12 +366,17 @@
     res = carstm_model( p=pPC2, DS="carstm_modelled", carstm_model_label="production"   ) # run model and obtain predictions
     fit = carstm_model( p=pPC2, DS="carstm_modelled_fit", carstm_model_label="production"  )  # extract currently saved model fit
     summary(fit)
+    plot( fit, plot.prior=TRUE, plot.hyperparameters=TRUE, plot.fixed.effects=FALSE )
+
     vn = paste(pPC2$variabletomodel, "predicted", sep=".")
-    carstm_plot( p=pPC2, res=res, vn=vn, time_match=list(year="2000" ), dyear="0.85" )       # maps of some of the results
+    carstm_plot( p=pPC2, res=res, vn=vn, time_match=list(year="2017" ), dyear="0.85" )       # maps of some of the results
+    vn = paste(pPC2$variabletomodel, "predicted_se", sep=".")
+    carstm_plot( p=pPC2, res=res, vn=vn, time_match=list(year="2017" ), dyear="0.85" ) # maps of some of the results
+
     vn = paste(pPC2$variabletomodel, "random_auid_nonspatial", sep=".")
-    carstm_plot( p=pPC2, res=res, vn=vn, time_match=list(year="2000" ), dyear="0.85" )       # maps of some of the results , dyear="0.85"
+    carstm_plot( p=pPC2, res=res, vn=vn, time_match=list(year="2017" ), dyear="0.85" )       # maps of some of the results , dyear="0.85"
     vn = paste(pPC2$variabletomodel, "random_auid_spatial", sep=".")
-    carstm_plot( p=pPC2, res=res, vn=vn, time_match=list(year="2000" ), dyear="0.85" )       # maps of some of the results , dyear="0.85"
+    carstm_plot( p=pPC2, res=res, vn=vn, time_match=list(year="2017" ), dyear="0.85" )       # maps of some of the results , dyear="0.85"
 
   #   Time used:
   #     Pre = 4.86, Running = 1768, Post = 11.8, Total = 1785

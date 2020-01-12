@@ -83,7 +83,7 @@ snowcrab_abundance_index = function( p=NULL, operation="load_RES", extrapolation
       if (is.na(extrapolation_limit)) extrapolation_limit = max(M$totwgt/M$data_offset, na.rm=T) # 28921.8426
       uu = which( biom > extrapolation_limit )
       if (length(uu) > 0 ) {
-        if (extrapolation_replacement=="extrapolation_limit" ) extrapolation_replacement = extrapolation_limit
+        if (is.character(extrapolation_replacement)) if (extrapolation_replacement=="extrapolation_limit" ) extrapolation_replacement = extrapolation_limit
         biom[ uu] = extrapolation_replacement
         warning("\n Extreme-valued predictions were found, capping them to max observed rates .. \n you might want to have more informed priors, or otherwise set extrapolation_replacement=NA to replacement value \n")
       }
@@ -100,7 +100,7 @@ snowcrab_abundance_index = function( p=NULL, operation="load_RES", extrapolation
       if (is.na(extrapolation_limit)) extrapolation_limit = max(M$totno/M$data_offset, na.rm=T) # 17301.5199
       uu = which( nums > extrapolation_limit )
       if (length(uu) > 0 ) {
-        if (extrapolation_replacement=="extrapolation_limit" ) extrapolation_replacement = extrapolation_limit
+        if (is.character(extrapolation_replacement)) if (extrapolation_replacement=="extrapolation_limit" ) extrapolation_replacement = extrapolation_limit
         nums[ uu] = extrapolation_replacement
         warning("\n Extreme-valued predictions were found, capping them to max observed rates .. \n you might want to have more informed priors, or otherwise set extrapolation=NA to replacement value \n")
       }
