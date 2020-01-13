@@ -119,6 +119,8 @@ if (obtain.database.snapshot) {
   snowcrab.db( DS="cat.georeferenced.redo", p=p )
 
   snowcrab.db( DS="set.biologicals.redo", p=p )
+ 
+  require(aegis.temperature)
   snowcrab.db( DS="set.complete.redo", p=p )
 
 
