@@ -35,8 +35,9 @@ snowcrab.db = function( DS, p=NULL, yrs=NULL) {
 		for ( YR in yrs ) {
 			fny = file.path( fn.root, paste( YR,"rdata", sep="."))
 			SNCRABSETS = NULL
-			SNCRABSETS = ROracle::dbGetQuery(con,
-								paste("select * from SNCRABSETS where EXTRACT(YEAR from BOARD_DATE) = ", YR) )
+			SNCRABSETS = ROracle::dbGetQuery(con, paste("select * from SNCRABSETS 
+			                                            where EXTRACT(YEAR from BOARD_DATE) = ", YR , " 
+			                                            OR (EXTRACT(YEAR from BOARD_DATE) = ", YR+1 , " AND EXTRACT(MONTH FROM Board_DATE)=1)") )
 			save( SNCRABSETS, file=fny, compress=TRUE)
 			gc()  # garbage collection
 			print(YR)
@@ -71,7 +72,9 @@ snowcrab.db = function( DS, p=NULL, yrs=NULL) {
 			SNCRABDETAILS = NULL
 			#in following line replaced sqlQuery (Rrawdata) with  ROracle::dbGetQuery (ROracle)
 			SNCRABDETAILS = ROracle::dbGetQuery(con,
-                paste("select * from SNCRABDETAILS where EXTRACT(YEAR from BOARD_DATE) = ", YR) )
+                paste("select * from SNCRABDETAILS
+                      where EXTRACT(YEAR from BOARD_DATE) = ", YR , " 
+			                                            OR (EXTRACT(YEAR from BOARD_DATE) = ", YR+1 , " AND EXTRACT(MONTH FROM Board_DATE)=1)") )
 			save( SNCRABDETAILS, file=fny, compress=TRUE)
 			gc()  # garbage collection
 			print(YR)
@@ -106,7 +109,9 @@ snowcrab.db = function( DS, p=NULL, yrs=NULL) {
 			SNTRAWLBYCATCH = NULL
 			#in following line replaced sqlQuery (Rrawdata) with  ROracle::dbGetQuery (ROracle)
 			SNTRAWLBYCATCH = ROracle::dbGetQuery(con,
-                paste("select * from SNTRAWLBYCATCH where EXTRACT(YEAR from BOARD_DATE) = ", YR) )
+                paste("select * from SNTRAWLBYCATCH 
+                      where EXTRACT(YEAR from BOARD_DATE) = ", YR , " 
+			                                            OR (EXTRACT(YEAR from BOARD_DATE) = ", YR+1 , " AND EXTRACT(MONTH FROM Board_DATE)=1)") )
 			save( SNTRAWLBYCATCH, file=fny, compress=TRUE)
 			gc()  # garbage collection
 			print(YR)
@@ -231,8 +236,9 @@ snowcrab.db = function( DS, p=NULL, yrs=NULL) {
 
     set$julian = lubridate::yday( set$timestamp )
     set$julian.compressed=set$julian-227 #allows for informative mapping of survey timing. Days after Aug 15
-    set$yr = lubridate::year( set$timestamp )
-
+    set$monthoffset=set$timestamp-2592000 #Subtract 30 days from time stamp, corrects for year when survey in January
+    #set$yr = lubridate::year( set$timestamp ) #replaced by following line with 30 day time offset
+    set$yr = lubridate::year( set$monthoffset )
     save( set, file=fn, compress=TRUE )
 
     return ( fn )
