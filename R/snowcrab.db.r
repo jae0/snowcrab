@@ -35,8 +35,8 @@ snowcrab.db = function( DS, p=NULL, yrs=NULL) {
 		for ( YR in yrs ) {
 			fny = file.path( fn.root, paste( YR,"rdata", sep="."))
 			SNCRABSETS = NULL
-			SNCRABSETS = ROracle::dbGetQuery(con, paste("select * from SNCRABSETS 
-			                                            where EXTRACT(YEAR from BOARD_DATE) = ", YR , " 
+			SNCRABSETS = ROracle::dbGetQuery(con, paste("select * from SNCRABSETS
+			                                            where EXTRACT(YEAR from BOARD_DATE) = ", YR , "
 			                                            OR (EXTRACT(YEAR from BOARD_DATE) = ", YR+1 , " AND EXTRACT(MONTH FROM Board_DATE)=1)") )
 			save( SNCRABSETS, file=fny, compress=TRUE)
 			gc()  # garbage collection
@@ -73,7 +73,7 @@ snowcrab.db = function( DS, p=NULL, yrs=NULL) {
 			#in following line replaced sqlQuery (Rrawdata) with  ROracle::dbGetQuery (ROracle)
 			SNCRABDETAILS = ROracle::dbGetQuery(con,
                 paste("select * from SNCRABDETAILS
-                      where EXTRACT(YEAR from BOARD_DATE) = ", YR , " 
+                      where EXTRACT(YEAR from BOARD_DATE) = ", YR , "
 			                                            OR (EXTRACT(YEAR from BOARD_DATE) = ", YR+1 , " AND EXTRACT(MONTH FROM Board_DATE)=1)") )
 			save( SNCRABDETAILS, file=fny, compress=TRUE)
 			gc()  # garbage collection
@@ -109,8 +109,8 @@ snowcrab.db = function( DS, p=NULL, yrs=NULL) {
 			SNTRAWLBYCATCH = NULL
 			#in following line replaced sqlQuery (Rrawdata) with  ROracle::dbGetQuery (ROracle)
 			SNTRAWLBYCATCH = ROracle::dbGetQuery(con,
-                paste("select * from SNTRAWLBYCATCH 
-                      where EXTRACT(YEAR from BOARD_DATE) = ", YR , " 
+                paste("select * from SNTRAWLBYCATCH
+                      where EXTRACT(YEAR from BOARD_DATE) = ", YR , "
 			                                            OR (EXTRACT(YEAR from BOARD_DATE) = ", YR+1 , " AND EXTRACT(MONTH FROM Board_DATE)=1)") )
 			save( SNTRAWLBYCATCH, file=fny, compress=TRUE)
 			gc()  # garbage collection
@@ -1107,35 +1107,43 @@ snowcrab.db = function( DS, p=NULL, yrs=NULL) {
 
     if ( p$selection$type=="presence_absence") {
       # must run here as we need the wgt from this for both PA and abundance
-      if ( grepl( "snowcrab.large.males", p$variabletomodel ) ) {
-        # add commerical fishery data --
-        # depth data is problematic ... drop for now
-        lgbk = logbook.db( DS="fisheries.complete", p=p )
-        lgbk = lgbk[ which( is.finite( lgbk$landings)), ]
-        lgbk = lgbk[ which( lgbk$year > 2005), ]  # previous to this all sorts of traps were used
-        lgbk = lgbk[ which( as.numeric(lgbk$soak.time) >= 12 & as.numeric(lgbk$soak.time) <= 48), ]   # avoid nonlinearity in catch with time
-        lgbk$cpue_time = lgbk$cpue / as.numeric(lgbk$soak.time)  # approx with realtive catch rate in time
+      if ( "logbook" %in% p$selection$survey$data.source ) {
 
-        lgbk$qm = NA   # default when no data
-        oo = which( lgbk$cpue_time == 0 )  # retain as zero values
-        if (length(oo)>0 ) lgbk$qm[oo] = 0
-        ii = which( lgbk$cpue_time != 0 )
-        lgbk$qm[ii] = quantile_estimate( lgbk$cpue_time[ii]  )  # convert to quantiles
-        lgbk$zm = quantile_to_normal( lgbk$qm )
+        if (p$selection$biologicals$sex == 0 &
+            p$selection$biologicals$mat == 1 &
+            p$selection$biologicals$len > 95/10 &
+            p$selection$biologicals$len < 200/10
+        ) {
+          # add commerical fishery data --
+          # depth data is problematic ... drop for now
+          lgbk = logbook.db( DS="fisheries.complete", p=p )
+          lgbk = lgbk[ which( is.finite( lgbk$landings)), ]
+          lgbk = lgbk[ which( lgbk$year > 2005), ]  # previous to this all sorts of traps were used
+          lgbk = lgbk[ which( as.numeric(lgbk$soak.time) >= 12 & as.numeric(lgbk$soak.time) <= 48), ]   # avoid nonlinearity in catch with time
+          lgbk$cpue_time = lgbk$cpue / as.numeric(lgbk$soak.time)  # approx with realtive catch rate in time
 
-        lgbk$totmass = NA # dummy to bring in mass as well
-        lgbk$data.source = "logbooks"
-        lgbk$z = exp( lgbk$z )
-        nms = intersect( names(set) , names( lgbk) )
-        set = rbind( set[, nms], lgbk[,nms] )
+          lgbk$qm = NA   # default when no data
+          oo = which( lgbk$cpue_time == 0 )  # retain as zero values
+          if (length(oo)>0 ) lgbk$qm[oo] = 0
+          ii = which( lgbk$cpue_time != 0 )
+          lgbk$qm[ii] = quantile_estimate( lgbk$cpue_time[ii]  )  # convert to quantiles
+          lgbk$zm = quantile_to_normal( lgbk$qm )
+
+          lgbk$totmass = NA # dummy to bring in mass as well
+          lgbk$data.source = "logbooks"
+          lgbk$z = exp( lgbk$z )
+          nms = intersect( names(set) , names( lgbk) )
+          set = rbind( set[, nms], lgbk[,nms] )
+        }
       }
 
       pa = presence.absence( X=set$zm, px=p$habitat.threshold.quantile )  # determine presence absence and weighting
-      set$pa = pa$pa
-      set[, "wt"] = pa$probs
+      set[, p$variabletomodel] = pa$pa
+      set[, paste(p$variabletomodel, "wt", sep=".")] = pa$probs
       pa = NULL
-      set = set[ which(is.finite(set$plon + set$plat)),]
     }
+
+    set = set[ which(is.finite(set$plon + set$plat)),]
 
     # set = set[ which(is.finite(set[, p$variabletomodel])),]
     crs = projection_proj4string("lonlat_wgs84")
