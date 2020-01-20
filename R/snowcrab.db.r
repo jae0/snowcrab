@@ -1111,8 +1111,8 @@ snowcrab.db = function( DS, p=NULL, yrs=NULL) {
 
         if (p$selection$biologicals$sex == 0 &
             p$selection$biologicals$mat == 1 &
-            p$selection$biologicals$len > 95/10 &
-            p$selection$biologicals$len < 200/10
+            min(p$selection$biologicals$len) >= 95/10 &
+            max(p$selection$biologicals$len) <= 200/10
         ) {
           # add commerical fishery data --
           # depth data is problematic ... drop for now
