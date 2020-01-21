@@ -1188,7 +1188,7 @@ snowcrab.db = function( DS, p=NULL, yrs=NULL) {
     # }
 
     #set$Y = set$totno  # unadjusted value is used as we are usinmg offsets ...
-    set$data_offset  = 1 / set[, ifelse( p$runtype=="number", "cf_set_no", "cf_set_wgt")]  # as "sa"
+    set$data_offset  = 1 / set[, ifelse( p$selection$type=="number", "cf_set_no", "cf_set_wgt")]  # as "sa"
     set$data_offset[which(!is.finite(set$data_offset))] = median(set$data_offset, na.rm=TRUE )  # just in case missing data
 
     return( set )

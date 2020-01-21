@@ -22,7 +22,7 @@
 # Model -- nonspatial, nontemporal -- glm
   p$carstm_model_label = "factorial_gaussian_biomass_glm"
   p$variabletomodel = "totwgt"
-  p$variabletomodel_type = "biomass" # d efault is "number"  ... specify to override
+  p$selection = list(type = "biomass") # d efault is "number"  ... specify to override
   p$carstm_modelengine = "glm"
   p$carstm_modelcall = paste( '
     glm( formula = ', p$variabletomodel, '  ~ AUID:year -1,
@@ -59,7 +59,7 @@
 
   p$carstm_model_label = "factorial_gaussian"
   p$variabletomodel = "totwgt"
-  p$variabletomodel_type = "biomass" # d efault is "number"  ... specify to override
+  p$selection = list(type = "biomass") # d efault is "number"  ... specify to override
   p$carstm_modelengine = "inla"
   p$carstm_modelcall = paste(
     'inla( formula =', p$variabletomodel, ' ~ -1 + year_factor:auid ,
