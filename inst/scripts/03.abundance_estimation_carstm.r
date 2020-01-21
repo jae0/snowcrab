@@ -538,6 +538,7 @@
 
     sppoly = areal_units( p=p )  # to reload
     M = snowcrab_carstm( p=p, DS="carstm_inputs" )
+    M$yr = M$year  # req for meanweights
 
     # mean weight by auidxyear
     wgts = meanweights_by_arealunit(
@@ -556,7 +557,6 @@
 
     bio = carstm_summary(p=p, operation="load_spacetime_biomass", carstm_model_label=p$carstm_model_label  )
     num = carstm_summary(p=p, operation="load_spacetime_number", carstm_model_label=p$carstm_model_label  )
-    wt = carstm_summary(p=p, operation="load_spacetime_weights", carstm_model_label=p$carstm_model_label  )
 
 
     plot( cfaall ~ yrs, data=RES, lty=1, lwd=2.5, col="red", type="b")
