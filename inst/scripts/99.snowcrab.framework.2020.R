@@ -1,6 +1,6 @@
 
 
-# Snow crab --- Areal unit modelling of habitat  
+# Snow crab --- Areal unit modelling of habitat
 
 
 # -------------------------------------------------
@@ -581,12 +581,26 @@
   # s$dic$dic
   # s$dic$p.eff
 
-  snowcrab_abundance_index( p=p, operation="compute", carstm_model_label=p$carstm_model_label )
 
-  RES = snowcrab_abundance_index(p=p, operation="load_timeseries", carstm_model_label=p$carstm_model_label  )
-  bio = snowcrab_abundance_index(p=p, operation="load_spacetime_biomass", carstm_model_label=p$carstm_model_label  )
-  num = snowcrab_abundance_index(p=p, operation="load_spacetime_number", carstm_model_label=p$carstm_model_label  )
-  wt = snowcrab_abundance_index(p=p, operation="load_spacetime_weights", carstm_model_label=p$carstm_model_label  )
+  sppoly = areal_units( p=p )  # to reload
+  M = snowcrab_carstm( p=p, DS="carstm_inputs" )
+
+  # mean weight by auidxyear
+  wgts = meanweights_by_arealunit(
+    set=M[M$tag=="observations",],
+    AUID=as.character( sppoly$AUID ),
+    yrs=p$yrs,
+    fillall=TRUE,
+    annual_breakdown=TRUE,
+    robustify_quantiles=c(0, 0.99)  # high upper bounds are more dangerous
+  )
+
+  carstm_summary( p=p, operation="compute", carstm_model_label=p$carstm_model_label, wgts=wgts )
+
+  RES = carstm_summary(p=p, operation="load_timeseries", carstm_model_label=p$carstm_model_label  )
+  bio = carstm_summary(p=p, operation="load_spacetime_biomass", carstm_model_label=p$carstm_model_label  )
+  num = carstm_summary(p=p, operation="load_spacetime_number", carstm_model_label=p$carstm_model_label  )
+  wt = carstm_summary(p=p, operation="load_spacetime_weights", carstm_model_label=p$carstm_model_label  )
 
   plot( cfaall ~ yrs, data=RES, lty=1, lwd=2.5, col="red", type="b")
   plot( cfasouth ~ yrs, data=RES, lty=1, lwd=2.5, col="red", type="b")
@@ -661,7 +675,7 @@
       p$carstm_modelengine = "glm"
       p$variabletomodel = "totwgt"
     }
-    res_ts[[lab]] = snowcrab_abundance_index(p=p, operation="load_timeseries", carstm_model_label=lab  )
+    res_ts[[lab]] = carstm_summary(p=p, operation="load_timeseries", carstm_model_label=lab  )
   }
 
   dev.new(width=11, height=7)

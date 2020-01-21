@@ -503,6 +503,7 @@
 # Posterior marginals for the linear predictor and
 #  the fitted values are computed
 
+
     vn = paste(p$variabletomodel, "predicted", sep=".")
     carstm_plot( p=p, res=res, vn=vn, time_match=list(year="2000" ) )     # maps of some of the results
 
@@ -535,14 +536,27 @@
     }
 
 
+    sppoly = areal_units( p=p )  # to reload
+    M = snowcrab_carstm( p=p, DS="carstm_inputs" )
 
-    snowcrab_abundance_index( p=p, operation="compute", carstm_model_label=p$carstm_model_label )
+    # mean weight by auidxyear
+    wgts = meanweights_by_arealunit(
+      set=M[M$tag=="observations",],
+      AUID=as.character( sppoly$AUID ),
+      yrs=p$yrs,
+      fillall=TRUE,
+      annual_breakdown=TRUE,
+      robustify_quantiles=c(0, 0.99)  # high upper bounds are more dangerous
+    )
 
-    RES = snowcrab_abundance_index(p=p, operation="load_timeseries", carstm_model_label=p$carstm_model_label  )
 
-    bio = snowcrab_abundance_index(p=p, operation="load_spacetime_biomass", carstm_model_label=p$carstm_model_label  )
-    num = snowcrab_abundance_index(p=p, operation="load_spacetime_number", carstm_model_label=p$carstm_model_label  )
-    wt = snowcrab_abundance_index(p=p, operation="load_spacetime_weights", carstm_model_label=p$carstm_model_label  )
+    carstm_summary( p=p, operation="compute", carstm_model_label=p$carstm_model_label, wgts=wgts )
+
+    RES = carstm_summary(p=p, operation="load_timeseries", carstm_model_label=p$carstm_model_label  )
+
+    bio = carstm_summary(p=p, operation="load_spacetime_biomass", carstm_model_label=p$carstm_model_label  )
+    num = carstm_summary(p=p, operation="load_spacetime_number", carstm_model_label=p$carstm_model_label  )
+    wt = carstm_summary(p=p, operation="load_spacetime_weights", carstm_model_label=p$carstm_model_label  )
 
 
     plot( cfaall ~ yrs, data=RES, lty=1, lwd=2.5, col="red", type="b")

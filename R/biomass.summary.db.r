@@ -165,7 +165,7 @@
 
       # biomass data: post-fishery biomass are determined by survey B)
       pSC = bio.snowcrab::snowcrab_carstm( DS="parameters", assessment.years=2000:p$year.assessment )
-      B = snowcrab_abundance_index(p=pSC, operation="load_timeseries", carstm_model_label=pSC$carstm_model_label  )
+      B = carstm::carstm_summary(p=pSC, operation="load_timeseries", carstm_model_label=pSC$carstm_model_label  )
 
      # areas=c("cfanorth", "cfasouth", "cfa4x", "cfa23", "cfa24")
       # B[,areas] = B[,areas] / 1000 # kt
