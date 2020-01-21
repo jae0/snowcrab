@@ -1128,8 +1128,6 @@ snowcrab.db = function( DS, p=NULL, yrs=NULL) {
           ii = which( lgbk$cpue_time != 0 )
           lgbk$qm[ii] = quantile_estimate( lgbk$cpue_time[ii]  )  # convert to quantiles
           lgbk$zm = quantile_to_normal( lgbk$qm )
-
-          lgbk$totmass = NA # dummy to bring in mass as well
           lgbk$data.source = "logbooks"
           lgbk$z = exp( lgbk$z )
           nms = intersect( names(set) , names( lgbk) )
@@ -1188,7 +1186,10 @@ snowcrab.db = function( DS, p=NULL, yrs=NULL) {
     # }
 
     #set$Y = set$totno  # unadjusted value is used as we are usinmg offsets ...
-    set$data_offset  = 1 / set[, ifelse( p$selection$type=="number", "cf_set_no", "cf_set_wgt")]  # as "sa"
+    if (p$selection$type=="number")  set$data_offset  = 1 / set[, "cf_set_no"]
+    if (p$selection$type=="biomass") set$data_offset  = 1 / set[, "cf_set_wgt"]
+    if (p$selection$type=="pa")      set$data_offset  = 1 / set[, "cf_set_no"]
+
     set$data_offset[which(!is.finite(set$data_offset))] = median(set$data_offset, na.rm=TRUE )  # just in case missing data
 
     return( set )
