@@ -1086,7 +1086,7 @@ snowcrab.db = function( DS, p=NULL, yrs=NULL) {
         ii = which( set$totno_adjusted < lowestpossible )
         set$totno_adjusted[ii] = 0
       }
-      set$wt = 1 / set$cf_set_no
+      set$data_offset  = 1 / set[, "cf_set_no"]
     }
 
     if ( p$selection$type=="biomass") {
@@ -1102,7 +1102,7 @@ snowcrab.db = function( DS, p=NULL, yrs=NULL) {
         ii = which( set$totwgt_adjusted < lowestpossible )
         set$totwgt_adjusted[ii] = 0 ## arbitrary but close to detection limit
       }
-      set$wt = 1 / set$cf_set_mass
+      set$data_offset  = 1 / set[, "cf_set_wgt"]
     }
 
     if ( p$selection$type=="presence_absence") {
@@ -1128,7 +1128,7 @@ snowcrab.db = function( DS, p=NULL, yrs=NULL) {
           ii = which( lgbk$cpue_time != 0 )
           lgbk$qm[ii] = quantile_estimate( lgbk$cpue_time[ii]  )  # convert to quantiles
           lgbk$zm = quantile_to_normal( lgbk$qm )
-          lgbk$data.source = "logbooks"
+          lgbk$data.source = "logbook"
           lgbk$z = exp( lgbk$z )
 
           # transparently create NA filled vars to pass all variables through
@@ -1141,7 +1141,7 @@ snowcrab.db = function( DS, p=NULL, yrs=NULL) {
 
       pa = presence.absence( X=set$zm, px=p$habitat.threshold.quantile )  # determine presence absence and weighting
       set[, p$variabletomodel] = pa$pa
-      set[, paste(p$variabletomodel, "wt", sep=".")] = pa$probs
+      set$data_offset  = pa$probs  # just a dummy value to make sure offsets are filled (with another dummy value)
       pa = NULL
     }
 
@@ -1190,11 +1190,9 @@ snowcrab.db = function( DS, p=NULL, yrs=NULL) {
     # }
 
     #set$Y = set$totno  # unadjusted value is used as we are usinmg offsets ...
-    if (p$selection$type=="number")  set$data_offset  = 1 / set[, "cf_set_no"]
-    if (p$selection$type=="biomass") set$data_offset  = 1 / set[, "cf_set_wgt"]
-    if (p$selection$type=="pa")      set$data_offset  = 1  # just a dummy value to make sure offsets are filled (with another dummy value)
 
     set$data_offset[which(!is.finite(set$data_offset))] = median(set$data_offset, na.rm=TRUE )  # just in case missing data
+    set$wt = set$data_offset
 
     return( set )
   }

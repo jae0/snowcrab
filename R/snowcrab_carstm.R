@@ -171,7 +171,7 @@ snowcrab_carstm = function( p=NULL, DS="parameters", redo=FALSE, ...) {
   if ( DS=="carstm_inputs") {
 
     fn = file.path( p$modeldir, paste( "snowcrab", "carstm_inputs", p$areal_units_fn,
-      p$variabletomodel,
+      p$variabletomodel, paste0(p$selection$survey$data.source, collapse=""),
       p$inputdata_spatial_discretization_planar_km,
       round(p$inputdata_temporal_discretization_yr, 6),
       "rdata", sep=".") )
@@ -192,8 +192,9 @@ snowcrab_carstm = function( p=NULL, DS="parameters", redo=FALSE, ...) {
     # do this immediately to reduce storage for sppoly (before adding other variables)
     M = snowcrab.db( p=p, DS="biological_data" )  # will redo if not found .. not used here but used for data matching/lookup in other aegis projects that use bathymetry
 
-    M$totno = M$totno_adjusted / M$cf_set_no   # convert density to counts
-    M$totwgt = M$totwgt_adjusted / M$cf_set_mass # convert density to total wgt
+
+    # M$totno = M$totno_adjusted / M$cf_set_no   # convert density to counts
+    # M$totwgt = M$totwgt_adjusted / M$cf_set_mass # convert density to total wgt
 
     # M$data_offset = 1 / M$cf_set_no  ## offset only used in poisson model
 
