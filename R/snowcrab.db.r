@@ -1130,6 +1130,7 @@ snowcrab.db = function( DS, p=NULL, yrs=NULL) {
           lgbk$zm = quantile_to_normal( lgbk$qm )
           lgbk$data.source = "logbooks"
           lgbk$z = exp( lgbk$z )
+          lgbk$cf_set_no = 1  # dummy value
           nms = intersect( names(set) , names( lgbk) )
           set = rbind( set[, nms], lgbk[,nms] )
         }
