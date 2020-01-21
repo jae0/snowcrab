@@ -1131,12 +1131,9 @@ snowcrab.db = function( DS, p=NULL, yrs=NULL) {
           lgbk$data.source = "logbooks"
           lgbk$z = exp( lgbk$z )
 
-          # dummy values
-          lgbk$totno_adjusted = 1
-          lgbk$totwgt_adjusted = 1
-          lgbk$cf_set_mass = 1  # dummy value
-
-          lgbk$cf_set_no = 1  # dummy value
+          # transparently create NA filled vars to pass all variables through
+          missingvars = setdiff( names(set) , names( lgbk) )
+          for (nn in missingvars) lgbk[,nn] = NA
           nms = intersect( names(set) , names( lgbk) )
           set = rbind( set[, nms], lgbk[,nms] )
         }
@@ -1195,7 +1192,7 @@ snowcrab.db = function( DS, p=NULL, yrs=NULL) {
     #set$Y = set$totno  # unadjusted value is used as we are usinmg offsets ...
     if (p$selection$type=="number")  set$data_offset  = 1 / set[, "cf_set_no"]
     if (p$selection$type=="biomass") set$data_offset  = 1 / set[, "cf_set_wgt"]
-    if (p$selection$type=="pa")      set$data_offset  = 1 / set[, "cf_set_no"]  # just a dummy value to make sure offsets are filled (with another dummy value)
+    if (p$selection$type=="pa")      set$data_offset  = 1  # just a dummy value to make sure offsets are filled (with another dummy value)
 
     set$data_offset[which(!is.finite(set$data_offset))] = median(set$data_offset, na.rm=TRUE )  # just in case missing data
 
