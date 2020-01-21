@@ -213,6 +213,7 @@ snowcrab_carstm = function( p=NULL, DS="parameters", redo=FALSE, ...) {
     # levelplot(z.mean~plon+plat, data=M, aspect="iso")
 
     M$AUID = over( SpatialPoints( M[, c("lon", "lat")], crs_lonlat ), spTransform(sppoly, crs_lonlat ) )$AUID # match each datum to an area
+    M = M[!is.na(M$AUID),]
 
     names(M)[which(names(M)=="yr") ] = "year"
     # M = M[ which(M$year %in% p$yrs), ]
