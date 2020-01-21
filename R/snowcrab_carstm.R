@@ -195,7 +195,7 @@ snowcrab_carstm = function( p=NULL, DS="parameters", redo=FALSE, ...) {
     M$totno = M$totno_adjusted / M$cf_set_no   # convert density to counts
     M$totwgt = M$totwgt_adjusted / M$cf_set_mass # convert density to total wgt
 
-    M$data_offset = 1 / M$cf_set_no  ## offset only used in poisson model
+    # M$data_offset = 1 / M$cf_set_no  ## offset only used in poisson model
 
 
     # globally remove all unrealistic data
