@@ -9,7 +9,7 @@ g$prop = g$P.x/g$P.y
 nN = list()
 m=0
 for(i in 2004:2018){
-      m = m+1 
+      m = m+1
        nor=set[which(set$cfa=='cfanorth'&set$yr==i),]
       #AREA OF NORTH BASED ON CONVEX HULL OF SURVEY
            nor$x = nor$lon
@@ -51,7 +51,7 @@ for(i in 2004:2018) {
         plotPolys(norcord)
         attr(norcord,'projection') <- "LL"
         sE[[m]] = c(i,calcArea(norcord))
-        
+
         nor=set[which(set$cfa=='cfasouth' & set$lon< -62& set$yr==i),]
         nor$x = nor$lon
         nor$y = nor$lat
@@ -100,10 +100,10 @@ for(i in c(2004:2013,2015:2018)) {
         gX = subset(g,cfa=='cfa4x')
         gX$Area = gX$prop *5854 #PROXY FOR HABITAT
         td = reshape(td,idvar='yr',timevar='region',direction='wide')
-        
+
         Area = rbind(rbind(gX[,c('cfa','yr','Area')],gS[,c('cfa','yr','Area')]),gN[,c('cfa','yr','Area')])
         Area = reshape(Area,idvar='yr',timevar='cfa',direction='wide')
         Area = Area[order(Area$yr),]
         Area = subset(Area,yr>1998)
         Area$Area.cfa4x[which(Area$yr<2004)] <- 0
-        
+
