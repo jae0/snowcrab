@@ -5,7 +5,9 @@
 
 # -------------------------------------------------
 # Part 1 -- construct basic parameter list defining the main characteristics of the study
-  p = bio.snowcrab::snowcrab_carstm( DS="parameters", assessment.years=1999:2018 )
+require(aegis) 
+
+ p = bio.snowcrab::snowcrab_carstm( DS="parameters", assessment.years=1999:2018 )
 
   # misc run params adjustments here:
   p$inla_num.threads = 4
