@@ -5,7 +5,7 @@
 
 # -------------------------------------------------
 # Part 1 -- construct basic parameter list defining the main characteristics of the study
-require(aegis) 
+require(aegis)
 
  p = bio.snowcrab::snowcrab_carstm( DS="parameters", assessment.years=1999:2018 )
 
@@ -61,31 +61,33 @@ require(aegis)
     plot(fit, plot.prior=TRUE, plot.hyperparameters=TRUE, plot.fixed.effects=FALSE, single=TRUE )
 
     # Time used:
-    #     Pre = 4.71, Running = 10928, Post = 4.51, Total = 10938
+    #     Pre = 2.71, Running = 4366, Post = 3.26, Total = 4372
     # Fixed effects:
-    #              mean    sd 0.025quant 0.5quant 0.975quant  mode kld
-    # (Intercept) 7.883 0.001      7.882    7.883      7.885 7.883   0
+    #             mean sd 0.025quant 0.5quant 0.975quant  mode kld
+    # (Intercept) 7.872  0      7.871    7.872      7.873 7.872   0
 
     # Random effects:
     #   Name	  Model
     #     auid BYM2 model
 
     # Model hyperparameters:
-    #                                             mean     sd 0.025quant 0.5quant 0.975quant    mode
-    # Precision for the lognormal observations 752.050  3.198    745.879  752.003    758.450 751.849
-    # Precision for auid                     286.200 23.004    239.367  287.143    329.336 291.721
-    # Phi for auid                             0.979  0.021      0.922    0.985      0.999   0.996
+    #                                             mean     sd 0.025quant 0.5quant 0.975quant     mode
+    # Precision for the lognormal observations 4786.388  21.24   4744.647 4786.372   4828.230 4786.400
+    # Precision for auid                       1412.186 227.70   1091.296 1368.558   1964.898 1254.958
+    # Phi for auid                                0.979   0.02      0.924    0.986      0.999    0.996
 
-    # Expected number of effective parameters(stdev): 698.31(1.78)
-    # Number of equivalent replicates : 161.11
+    # Expected number of effective parameters(stdev): 3270.84(12.81)
+    # Number of equivalent replicates : 33.03
 
-    # Deviance Information Criterion (DIC) ...............: 1348750.89
-    # Deviance Information Criterion (DIC, saturated) ....: 113171.52
-    # Effective number of parameters .....................: 698.85
+    # Deviance Information Criterion (DIC) ...............: 1094943.11
+    # Deviance Information Criterion (DIC, saturated) ....: 111315.40
+    # Effective number of parameters .....................: 3271.74
 
-    # Marginal log-Likelihood:  -674832.61
+    # Marginal log-Likelihood:  -547965.21
     # Posterior marginals for the linear predictor and
-    #  the fitted values are computed
+    # the fitted values are computed
+
+
 
   }
 
