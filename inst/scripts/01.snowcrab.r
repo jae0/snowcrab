@@ -1,3 +1,11 @@
+## At the end of each survey year, a data folder for the recent survey needs to be placed in:
+## bio.data/bio.snowcrab/data/seabird
+## bio.data/bio.snowcrab/data/minilog
+## bio.data/bio.snowcrab/data/esonar
+
+## ideally, "click/touch" (manual touchdown / llift off) has already been completed externally with annual results appended to:
+## C:/bio.data/bio.snowcrab/data/touchdown/results/clicktouchdown_all.csv
+## Any stations without touchdown / liftoff will prompt for manual input when running code below
 
 require(aegis)
 require(aegis.bathymetry)
