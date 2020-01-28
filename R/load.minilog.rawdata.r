@@ -7,18 +7,26 @@
     minilog=NULL
 
     filename = fn
-
+    ind_skip_header = 7
     header =  readLines(filename, n=21)
     headerall = paste( header[1:6], collapse="~")
 
     if (length(header) < 20)  return( NULL )
 
-    l.study = grep( "Study ID=", header, perl=T )
-    studyid = tolower( gsub("^.*Study ID=", "", header[ l.study ] ) )
+    if(any(grepl("Study ID=", header, perl=T))){
+      l.study = grep( "Study ID=", header, perl=T )
+      studyid = tolower( gsub("^.*Study ID=", "", header[ l.study ] ) )
+    }
+    if(any(grepl("Study Description:", header, perl=T))){
+      l.study = grep( "Study Description:", header, perl=T )
+      studyid = trimws(tolower( gsub("Study Description:", "", header[ l.study ] ) ))
+      ind_skip_header = 8 
+    }
+      
     if (grepl( "test", studyid, ignore.case=T) ) return( NULL )
     if (grepl( "testage", studyid, ignore.case=T) ) return( NULL )
 
-    minilog = as.data.frame(read.table( file=filename, sep=",", as.is=T, colClasses="character", header=F, skip=7))
+    minilog = as.data.frame(read.table( file=filename, sep=",", as.is=T, colClasses="character", header=F, skip=ind_skip_header))
 
     if ( nrow(minilog) < 10 ) return( NULL )
 
