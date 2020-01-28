@@ -5,7 +5,7 @@
 
 # -------------------------------------------------
 # Part 1 -- construct basic parameter list defining the main characteristics of the study
-require(aegis)
+# require(aegis)
 
  p = bio.snowcrab::snowcrab_carstm( DS="parameters", assessment.years=1999:2018 )
 
@@ -33,7 +33,7 @@ require(aegis)
 # -------------------------------------------------
 # Part 3 -- create covariate field for bathymetry
 # bathymetry -- ensure the data assimilation in bathymetry is first completed :: 01.bathymetry_data.R
-# about 4.4 hrs to redo; 15 configs @ 0.5 hrs each
+# about 2 hrs to redo; 15 configs @ 0.5 hrs each
 
   pB = bathymetry_carstm( p=p, DS="parameters_override" )
   M = bathymetry.db( p=pB, DS="aggregated_data", redo=TRUE )
