@@ -72,10 +72,15 @@
       # obtain time offset in hours
       time.offset = netmindDate( header=header, outvalue="timeoffset" )   #  rounded to hours of fractional days
       netmind$timestamp = netmind$timestamp + lubridate::hours(time.offset) # now in local time (America/Halifax)
-
+      netmind.timestamprange = netmind$timestamp
       netmind.timestamp = netmind$timestamp[ deepest.point ]
-      yr = as.numeric( as.character( years( netmind.timestamp ) ) )
-
+      yr = lubridate::ymd_hms(netmind.timestamp)
+      
+  
+      yr = lubridate::year(yr )
+      if(months(netmind.timestamp) %in% c("January")){
+        yr = lubridate::year( netmind.timestamp ) -1
+      }
 
       line.localtime = grep("Local Time:", header, ignore.case=T  )
       line.ship = grep("Ship:", header, ignore.case=T  )
@@ -104,20 +109,27 @@
       station = station[ length(station) ]
       station = gsub( "[[:alpha:]]", "", station)
       station = gsub( "[[:punct:]]", "", station)
+      
+      if(nchar(station)>4){
+        station = unlist(strsplit( header[[1]], "/", fixed=TRUE ))
+        station = station[ length(station) ]
+        station = gsub( "[[:alpha:]]", "", station)
+        station = gsub( "[[:punct:]]", "", station)
+      
+      }
       station = as.numeric( station )
-
       setxi = NULL
 
       if (is.null ( setxi ) ) {
         # check time first
-        netmind.date.range = range( netmind$timestamp )
+        netmind.date.range = range( netmind.timestamprange )
         sets.in.date.range = which( set$timestamp >= netmind.date.range[1] & set$timestamp <= netmind.date.range[2] )
         if ( length( sets.in.date.range ) == 1 ) setxi= sets.in.date.range
       }
 
       if (is.null ( setxi ) ) {
         # check time first
-        netmind.date.range = range( netmind$timestamp )
+        netmind.date.range = range( netmind.timestamprange )
         sets.in.date.range = which( set$timestamp >= netmind.date.range[1] & set$timestamp <= netmind.date.range[2]
           & set$set==setno )
         if ( length( sets.in.date.range ) == 1 ) setxi= sets.in.date.range
@@ -125,7 +137,7 @@
 
       if (is.null ( setxi ) ) {
         # check time and station
-        netmind.date.range = range( netmind$timestamp )
+        netmind.date.range = range( netmind.timestamprange )
         sets.in.date.range = which( set$timestamp >= netmind.date.range[1] & set$timestamp <= netmind.date.range[2]
           & set$trip==trip & set$station==station & set$set==setno )
         if ( length( sets.in.date.range ) == 1 ) setxi= sets.in.date.range
@@ -133,7 +145,7 @@
 
       if (is.null ( setxi ) ) {
         # check time and station
-        netmind.date.range = range( netmind$timestamp )
+        netmind.date.range = range( netmind.timestamprange )
         sets.in.date.range = which( set$timestamp >= netmind.date.range[1] & set$timestamp <= netmind.date.range[2]
           & set$station==station  )
         if ( length( sets.in.date.range ) == 1 ) setxi= sets.in.date.range

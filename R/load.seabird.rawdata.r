@@ -59,8 +59,11 @@
 
     setxi = which( set$timestamp >= seabird.date.range[1] & set$timestamp <= seabird.date.range[2] )
     if ( length( setxi ) == 0 ) return(NULL)
-
+    
     yr = lubridate::year( seabird$timestamp[1] )
+    if(months(seabird$timestamp[1]) %in% c("January")){
+      yr = lubridate::year( seabird$timestamp[1] ) -1
+    }
 
     # First pass:
     # break down multi-set records into separate records using a simple depth rule

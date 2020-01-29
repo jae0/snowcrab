@@ -41,8 +41,9 @@
       }
 
       if (outvalue=="year") {
-        out = netmindDate( header=header, outvalue="date", linenumber=linenumber )
-        out = lubridate::year( out  )
+        outdate = netmindDate( header=header, outvalue="date", linenumber=linenumber )
+        out = lubridate::year( outdate  )
+        if(months(outdate) %in% c("January")) out = out-1
         return (out )
       }
 
