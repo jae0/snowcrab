@@ -161,8 +161,18 @@
 
     # eOR checks
 
+    
       N = N[ itime, ]
-
+      
+      # Higher GPS data accuracy in 2019 resulted in high approximation of distance travelled. This was due to frequent occasions of backwards
+      # motion (assuming from boat roll and pitch) which was added to the total distance. When looking at previous years this also seem to have
+      # but not to the same extent however removing the backwards motion would result in better data accuracy from year using e-sonar 2014+.
+      # The solution is to trim the data by 3/4, or, with the current recording rate of every 4 seconds instead of every 1 second.
+      if(yr>=2014){
+        N = N[unique(c(seq(1, nrow(N), by = 4), nrow(N))),]
+      }
+      
+      
       if(nrow(N)>1) {
 
         # t1 gives the approximate time of net lift-off from bottom
@@ -176,6 +186,7 @@
         if( !is.finite(end) ) end=nrow(N)
         n = N[ 1:end , ]
 
+    
 	      out$vel = mean(n$speed, na.rm=T, trim=0.1)
 	      out$vel_sd = sd(n$speed, na.rm=T)
 	      out$slon=n$lon[1]
@@ -185,11 +196,13 @@
       delta.distance = NULL
 	    n$distance = NA
 
+	  
     if (nrow(n) > 10) {
       # integrate area:: piece-wise integration is used as there is curvature of the fishing track (just in case)
       delta.distance = geosphere::distGeo ( n[ 1:(end-1), pos ], n[ 2:end, pos ] ) / 1000 ## in meters convert to km
       n$distances = c( 0, cumsum( delta.distance  ) ) # cumsum used to do piecewise integration of distance
 
+      
       # model/smooth/interpolate the spreads
       n$doorspread.predicted = NA
       ii = which( is.finite( n$doorspread ) )
