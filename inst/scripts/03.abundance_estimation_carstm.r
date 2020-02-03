@@ -220,10 +220,10 @@
 
 
 # Time used:
-#     Pre = 3.31, Running = 2959, Post = 15.4, Total = 2978
+#     Pre = 2.99, Running = 612, Post = 7.01, Total = 622
 # Fixed effects:
-#              mean    sd 0.025quant 0.5quant 0.975quant  mode kld
-# (Intercept) 4.575 0.342      3.889    4.574      5.267 4.573   0
+#             mean    sd 0.025quant 0.5quant 0.975quant  mode kld
+# (Intercept) 4.52 0.285      3.937    4.522      5.089 4.524   0
 
 # Random effects:
 #   Name	  Model
@@ -233,22 +233,23 @@
 
 # Model hyperparameters:
 #                                                           mean    sd 0.025quant 0.5quant 0.975quant  mode
-# Precision for the Gaussian observations                  0.420 0.003      0.413    0.420      0.427 0.419
-# Precision for dyri                                       3.119 1.143      1.417    2.943      5.853 2.612
-# Rho for dyri                                             0.589 0.154      0.243    0.605      0.838 0.642
-# Precision for inla.group(z, method = "quantile", n = 13) 1.137 0.340      0.602    1.094      1.923 1.012
-# Precision for auid                                       0.407 0.021      0.365    0.407      0.449 0.409
-# Phi for auid                                             0.449 0.032      0.386    0.449      0.514 0.448
-# GroupRho for auid                                        0.828 0.011      0.806    0.828      0.851 0.826
+# Precision for the Gaussian observations                  0.504 0.005      0.495    0.504      0.514 0.504
+# Precision for dyri                                       6.302 2.551      2.482    5.935     12.346 5.158
+# Rho for dyri                                             0.725 0.121      0.447    0.740      0.913 0.780
+# Precision for inla.group(z, method = "quantile", n = 13) 0.413 0.111      0.243    0.396      0.676 0.365
+# Precision for auid                                       0.427 0.024      0.383    0.426      0.476 0.423
+# Phi for auid                                             0.427 0.034      0.355    0.429      0.488 0.439
+# GroupRho for auid                                        0.841 0.011      0.817    0.842      0.862 0.843
 
-# Expected number of effective parameters(stdev): 1976.69(32.72)
-# Number of equivalent replicates : 17.76
+# Expected number of effective parameters(stdev): 1860.76(37.35)
+# Number of equivalent replicates : 14.44
 
-# Deviance Information Criterion (DIC) ...............: 132097.21
-# Deviance Information Criterion (DIC, saturated) ....: 37062.41
-# Effective number of parameters .....................: 1977.19
+# Deviance Information Criterion (DIC) ...............: 96494.96
+# Deviance Information Criterion (DIC, saturated) ....: 28729.33
+# Effective number of parameters .....................: 1862.94
 
-# Marginal log-Likelihood:  -65482.69
+# Marginal log-Likelihood:  -47560.07
+# Posterior marginals for the linear predictor and
 
 
 
