@@ -39,12 +39,12 @@
 
   # ------------------------------------------
   # Timeseries of all survey variables
-  figure.timeseries.survey(p=p, outdir=file.path(p$annual.results, "timeseries", "survey"), variables="R0.mass", plotyears=2001:p$year.assessment) # just R0 to see
+  figure.timeseries.survey(p=p, outdir=file.path(p$annual.results, "timeseries", "survey"), variables="R0.mass", plotyears=2004:p$year.assessment) # just R0 to see
   figure.timeseries.survey(p=p, outdir=file.path(p$annual.results, "timeseries", "survey"),variables=c("sexratio.all","sexratio.mat","sexratio.imm"))
-  figure.timeseries.survey(p=p, outdir=file.path(p$annual.results, "timeseries", "survey"),plotyears=2001:p$year.assessment) # all variables
-  figure.timeseries.survey(p=p, outdir=file.path(p$annual.results, "timeseries", "observer"),plotyears=2001:p$year.assessment,type='observer')
+  figure.timeseries.survey(p=p, outdir=file.path(p$annual.results, "timeseries", "survey"),plotyears=2004:p$year.assessment) # all variables
+  figure.timeseries.survey(p=p, outdir=file.path(p$annual.results, "timeseries", "observer"),plotyears=2004:p$year.assessment,type='observer')
 
-   figure.timeseries.survey(p=p, outdir=file.path(p$annual.results, "timeseries", "survey"),plotyears=2001:p$year.assessment,type='groundfish.t') # groundfish survey temperature
+   figure.timeseries.survey(p=p, outdir=file.path(p$annual.results, "timeseries", "survey"),plotyears=2004:p$year.assessment,type='groundfish.t') # groundfish survey temperature
   #-----------------------------------------------
 
   #Timeseries: geometric mean biomass of by-catch from snow crab survey
@@ -62,7 +62,7 @@
 
   outdir = file.path( p$project.outputdir, "maps", "survey", "snowcrab","annual" )
 
-  #BZ TODO add a variable to p for mapyears- done Oct 2018
+
   # just for the roadshow
     map.set.information( p=p, outdir=outdir, variables=c('totmass.male.com', 'totmass.female.mat'),mapyears=p$mapyears)
     map.set.information( p=p, variables='t',mapyears=p$mapyears,outdir=outdir,log.variable=F,add.zeros=F,theta=100)
