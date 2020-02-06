@@ -52,8 +52,53 @@
         return(  set[ outside, ]  )
       }
     }
-
-
+    # positional information
+    if(type=="position.difference") {
+      set <- snowcrab.db( DS="setInitial" )
+      set.sub = split(set, set$station)
+      print("Stations that are ouside of historical positions:")
+      for(i in 1:length(set.sub)){
+        sta.match = set.sub[[i]]
+        ave.lon.start = mean(sta.match$lon)
+        ave.lon.end = mean(sta.match$lon1)
+        ave.lat.start = mean(sta.match$lat)
+        ave.lat.end = mean(sta.match$lat1)
+        out = NULL
+ 
+        for(j in 1:nrow(sta.match)){
+          if(is.na(ave.lon.start) || is.na(ave.lat.start) || is.na(ave.lon.end) || is.na(ave.lat.end)){
+            print("Contains NA positions: ")
+            print( sta.match[ j, ] )
+            out= rbind(out, sta.match[ j, ])
+          }
+          else{
+          if(abs(sta.match$lon[j] - ave.lon.start) > .25){
+            print(paste("Average start longitude: ", ave.lon.start, sep = ""))
+            print( sta.match[ j, ] )
+            out= rbind(out, sta.match[ j, ])
+          }
+          if(abs(sta.match$lon1[j] - ave.lon.end) > .25){
+            print(paste("Average end longitude: ", ave.lon.end, sep = ""))
+            print( sta.match[ j, ] )
+            out= rbind(out, sta.match[ j, ])
+          }
+          if(abs(sta.match$lat[j] - ave.lat.start) > .25){
+            print(paste("Average start latitude: ", ave.lat.start, sep = ""))
+            print( sta.match[ j, ] )
+            out= rbind(out, sta.match[ j, ])
+          }
+          if(abs(sta.match$lat1[j] - ave.lat.end) > .25){
+            print(paste("Average end latitude: ", ave.lat.end, sep = ""))
+            print( sta.match[ j, ] )
+            out= rbind(out, sta.match[ j, ])
+          }
+          }
+        }
+      }
+        return(out)
+      }
+      
+     
 
     if (type=="seabird.load") {
         SS = snowcrab.db( DS="set.clean")
