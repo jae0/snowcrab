@@ -112,7 +112,7 @@ snowcrab.db( DS="set.clean.redo", p=p ) #Updated stats data, need to redo to upd
 
   pC = bio.snowcrab::snowcrab_carstm( DS="parameters", assessment.years=1999:year.assessment )
 
-  M = aegis.bathymetry::bathymetry.db( p=carstm::bathymetry_carstm( p=pC, DS="parameters_override" ), DS="aggregated_data", redo=TRUE )
+  M = aegis.bathymetry::bathymetry.db( p=carstm::bathymetry_carstm( p=pC, DS="parameters_override" ), DS="aggregated_data", redo=TRUE ) #this step can take ~20 minutes
   M = aegis.substrate::substrate.db( p=carstm::substrate_carstm(p=pC, DS="parameters_override" ), DS="aggregated_data", redo=TRUE )
   M = aegis.temperature::temperature.db( p=carstm::temperature_carstm(p=pC, DS="parameters_override" ), DS="aggregated_data", redo=TRUE )
 
