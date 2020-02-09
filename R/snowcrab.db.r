@@ -298,7 +298,7 @@ snowcrab.db = function( DS, p=NULL, yrs=NULL) {
 
     #Sex.e: Unknown Sex
     sex.e <- det[which(det$sex==sex.unknown),]
-    sex.e$error <- 'sex.e'
+    if ( !is.na(sex.e$trip[1])) sex.e$error <- 'sex.e'
     #Cw.e: Carapace Width below 5 or greater than 185
     cw.e <- det[ which(det$cw<5 | det$cw>185 ),]
     if ( !is.na(cw.e$trip[1])) cw.e$error <- 'cw.e'
@@ -316,10 +316,10 @@ snowcrab.db = function( DS, p=NULL, yrs=NULL) {
 
     #Sex.a: Indeterminate sex based on measurements taken (abdomen values where sex=male)
     sex.a <- det[which(is.finite( det$abdomen ) & det$sex==male),]
-    sex.a$error <- 'sex.a'
+    if ( !is.na(sex.a$trip[1])) sex.a$error <- 'sex.a'
     #Sex.c: Indeterminate sex based on measurements taken (chela values where sex=female
     sex.c <- det[which(is.finite( det$chela ) & det$sex==female),]
-    sex.c$error <- 'sex.c'
+    if ( !is.na(sex.c$trip[1])) sex.c$error <- 'sex.c'
 
 
     det$cw [ which(det$cw<5 | det$cw>185 ) ] = NA  # a few zero-values
@@ -354,7 +354,7 @@ snowcrab.db = function( DS, p=NULL, yrs=NULL) {
 
     #Mat.e: Unknown Maturity
     mat.e <- det[which(det$mat ==2 & (is.finite(det$chela) | is.finite(det$abdomen))),]
-    mat.e$error <- 'mat.e'
+    if ( !is.na(mat.e$trip[1])) mat.e$error <- 'mat.e'
 
 
     primiparous = filter.class( det, "primiparous")
