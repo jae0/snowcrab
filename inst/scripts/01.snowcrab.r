@@ -123,7 +123,7 @@ snowcrab.db( DS="set.clean.redo", p=p ) #Updated stats data, need to redo to upd
 # checked with written logs, then sent to database and put in debugging here and re-run
 
 
-  snowcrab.db( DS="det.initial.redo", p=p )
+  snowcrab.db( DS="det.initial.redo", p=p ) #if no morphology errors exist, you will get an error message. Confirm legitimacy.
   snowcrab.db( DS="det.georeferenced.redo", p=p )
 
   snowcrab.db( DS="cat.initial.redo", p=p )
