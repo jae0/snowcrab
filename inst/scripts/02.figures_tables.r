@@ -1,5 +1,6 @@
 
   # Figures and tables obtained after completion of data assimilation and processing up to the end of "01.snowcrab.r"
+require(aegis)
 
   if (!exists("year.assessment")) {
     year.assessment=lubridate::year(Sys.Date())      # year.assessment

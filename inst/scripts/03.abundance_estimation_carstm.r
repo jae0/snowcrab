@@ -445,6 +445,9 @@
 # 9 hrs 281 configs
 
   M = snowcrab_carstm( p=p, DS="carstm_inputs", redo=TRUE )  # will redo if not found
+  #To compare values of M, run the following line:
+  #load(paste(p$modeldir, "M.summary.rdata", sep="/"))
+  
   M = NULL; gc()
   res = carstm_model( p=p, M='snowcrab_carstm( p=p, DS="carstm_inputs" )' ) # 151 configs and long optim .. 19 hrs
 
