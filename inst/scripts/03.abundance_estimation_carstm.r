@@ -7,7 +7,7 @@
 # Part 1 -- construct basic parameter list defining the main characteristics of the study
 # require(aegis)
 
- p = bio.snowcrab::snowcrab_carstm( DS="parameters", assessment.years=1999:2018 )
+ p = bio.snowcrab::snowcrab_carstm( DS="parameters", assessment.years=1999:2019 )
 
   # misc run params adjustments here:
   p$inla_num.threads = 4
@@ -60,6 +60,8 @@
 
     plot(fit, plot.prior=TRUE, plot.hyperparameters=TRUE, plot.fixed.effects=FALSE, single=TRUE )
 
+    #Framework Run (to 2018)
+    
     # Time used:
     #     Pre = 2.71, Running = 4366, Post = 3.26, Total = 4372
     # Fixed effects:
@@ -88,10 +90,7 @@
     # the fitted values are computed
 
 
-
   }
-
-
 
 
 # -------------------------------------------------
@@ -134,6 +133,9 @@
 
 # Marginal log-Likelihood:  -17603.13
 
+    
+    
+    
     vn = paste(pS$variabletomodel, "predicted", sep=".")
     carstm_plot( p=pS, res=res, vn=vn ) # maps of some of the results
 
@@ -218,7 +220,8 @@
     fit = carstm_model(  p=pT, DS="carstm_modelled_fit", carstm_model_label="production" )  # extract currently saved model fit
     summary(fit)
 
-
+#Framework Model Summary (to 2018)
+#-------------------------------
 # Time used:
 #     Pre = 2.99, Running = 612, Post = 7.01, Total = 622
 # Fixed effects:
@@ -251,26 +254,25 @@
 # Marginal log-Likelihood:  -47560.07
 # Posterior marginals for the linear predictor and
 
-
-
-    vn = paste(pT$variabletomodel, "predicted", sep=".")
-    carstm_plot( p=pT, res=res, vn=vn, time_match=list(year="2000", dyear="0.85" ) )       # maps of some of the results
-
-    vn = paste(pT$variabletomodel, "predicted_se", sep=".")
-    carstm_plot( p=pT, res=res, vn=vn, time_match=list(year="2000", dyear="0.85" ) )       # maps of some of the results
-
-    vn = paste(pT$variabletomodel, "random_auid_nonspatial", sep=".")
-    carstm_plot( p=pT, res=res, vn=vn, time_match=list(year="2000"  ) )       # maps of some of the results
-    vn = paste(pT$variabletomodel, "random_auid_spatial", sep=".")
-    carstm_plot( p=pT, res=res, vn=vn, time_match=list(year="2000"  ) )       # maps of some of the results
-
-
-
-    plot(fit, plot.prior=TRUE, plot.hyperparameters=TRUE, plot.fixed.effects=FALSE, single=TRUE )
-
-
-  }
-
+     
+     vn = paste(pT$variabletomodel, "predicted", sep=".")
+     carstm_plot( p=pT, res=res, vn=vn, time_match=list(year="2000", dyear="0.85" ) )       # maps of some of the results
+  
+     vn = paste(pT$variabletomodel, "predicted_se", sep=".")
+     carstm_plot( p=pT, res=res, vn=vn, time_match=list(year="2000", dyear="0.85" ) )       # maps of some of the results
+  
+     vn = paste(pT$variabletomodel, "random_auid_nonspatial", sep=".")
+     carstm_plot( p=pT, res=res, vn=vn, time_match=list(year="2000"  ) )       # maps of some of the results
+     vn = paste(pT$variabletomodel, "random_auid_spatial", sep=".")
+     carstm_plot( p=pT, res=res, vn=vn, time_match=list(year="2000"  ) )       # maps of some of the results
+  
+  
+  
+     plot(fit, plot.prior=TRUE, plot.hyperparameters=TRUE, plot.fixed.effects=FALSE, single=TRUE )
+  
+  
+   }
+  
 
 
 
@@ -289,10 +291,10 @@
   if (0) {
     res = carstm_model( p=pPC1, DS="carstm_modelled", carstm_model_label="production"  ) # run model and obtain predictions
     fit = carstm_model( p=pPC1, DS="carstm_modelled_fit", carstm_model_label="production" )  # extract currently saved model fit
-
+    summary(fit)
+    
     plot( fit, plot.prior=TRUE, plot.hyperparameters=TRUE, plot.fixed.effects=FALSE )
 
-    summary(fit)
     vn = paste(pPC1$variabletomodel, "predicted", sep=".")
     carstm_plot( p=pPC1, res=res, vn=vn, time_match=list(year="2017" ), dyear="0.85" ) # maps of some of the results
     vn = paste(pPC1$variabletomodel, "predicted_se", sep=".")
@@ -303,6 +305,8 @@
     vn = paste(pPC1$variabletomodel, "random_auid_spatial", sep=".")
     carstm_plot( p=pPC1, res=res, vn=vn, time_match=list(year="2017" ), dyear="0.85" )       # maps of some of the results , dyear="0.85"
 
+    
+#From Framework Run(up to 2018)
 # Time used:
 #     Pre = 2.67, Running = 667, Post = 4.98, Total = 675
 # Fixed effects:
@@ -359,12 +363,6 @@
 # Part 7 -- create covariate field for species composition 2
 # ensure that survey data is assimilated : bio.snowcrab::01snowcb_data.R, aegis.survey::01.surveys.data.R ,
 # etc.30 min, 30 min
- p = bio.snowcrab::snowcrab_carstm( DS="parameters", assessment.years=1999:2018 )
-
-  # misc run params adjustments here:
-  p$inla_num.threads = 4
-  p$inla_blas.num.threads = 4
-
 
   pPC2 = speciescomposition_carstm(p=p, DS="parameters_override", varnametomodel="pca2" )
   M = speciescomposition_carstm( p=pPC2, DS="carstm_inputs", redo=TRUE )  # will redo if not found

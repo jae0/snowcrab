@@ -191,7 +191,13 @@ snowcrab_carstm = function( p=NULL, DS="parameters", redo=FALSE, ...) {
 
     # do this immediately to reduce storage for sppoly (before adding other variables)
     M = snowcrab.db( p=p, DS="biological_data" )  # will redo if not found .. not used here but used for data matching/lookup in other aegis projects that use bathymetry
-
+    
+    #January 2020 samples create a problem- 2019 survey, 2020 year
+    #Shift these samples back to late december by removing 16 days 
+    i=which((lubridate::year (M$timestamp)==2020) & (lubridate::month(M$timestamp)==1))
+    #M$tiyr[i]=M$tiyr[i]-(16/365.25)
+    M$timestamp[i]=M$timestamp[i]-1382400
+    M$tiyr=lubridate::decimal_date(M$timestamp)
 
     # M$totno = M$totno_adjusted / M$cf_set_no   # convert density to counts
     # M$totwgt = M$totwgt_adjusted / M$cf_set_mass # convert density to total wgt
