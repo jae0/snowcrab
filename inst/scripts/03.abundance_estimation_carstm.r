@@ -2,19 +2,25 @@
 
 # Snow crab --- Areal unit modelling of habitat  -- no reliance upon stmv fields
 
+if (!exists("year.assessment")) {
+  year.assessment=lubridate::year(Sys.Date())      # year.assessment
+  year.assessment=lubridate::year(Sys.Date()) -1   # or year previous to current
+}
+
 
 # -------------------------------------------------
 # Part 1 -- construct basic parameter list defining the main characteristics of the study
 # require(aegis)
 
- p = bio.snowcrab::snowcrab_carstm( DS="parameters", assessment.years=1999:2019 )
+ p = bio.snowcrab::snowcrab_carstm( DS="parameters", assessment.years=1999:year.assessment )
 
   # misc run params adjustments here:
-  p$inla_num.threads = 4
-  p$inla_blas.num.threads = 4
+  p$inla_num.threads = 6
+  p$inla_blas.num.threads = 6
 
+plot.dir=paste(p$modeldir,"prediction.plots", year.assessment, sep="/" )
 
-# -------------------------------------------------
+# ------------------------------------------------
 # Part 2 -- polygon structure
   sppoly = areal_units( p=p )  # to reload
   plot(sppoly)
@@ -47,11 +53,17 @@
     fit = carstm_model( p=pB, DS="carstm_modelled_fit", carstm_model_label="production" )  # extract currently saved model fit
     # maps of some of the results
     vn = paste(pB$variabletomodel, "predicted", sep=".")
-    carstm_plot( p=pB, res=res, vn=vn )
+    zplot=carstm_plot( p=pB, res=res, vn=vn )
+   
+     #to save map of predicted
+    {
+    fn=paste("z.predicted", year.assesment,"pdf", sep="." )
+    pdf(zplot, file=paste(plot.dir, fn, sep="/"))
+  }
 
     vn = paste(pB$variabletomodel, "predicted_se", sep=".")
-    carstm_plot( p=pB, res=res, vn=vn )
-
+    zplot=carstm_plot( p=pB, res=res, vn=vn )
+    
     vn = paste(pB$variabletomodel, "random_auid_nonspatial", sep=".")
     carstm_plot( p=pB, res=res, vn=vn )
 
@@ -516,7 +528,18 @@
     vn = paste(p$variabletomodel, "predicted", sep=".")
     carstm_plot( p=p, res=res, vn=vn, time_match=list(year="2000" ) )     # maps of some of the results
 
-    plot(fit)
+#to save plots of the last six years:
+#Needs to be run in Windows or outside Linux Rstudio for now 
+recent=(year.assessment-6): year.assessment
+
+for (x in recent){
+  fn=paste("biomass.map", x, "pdf", sep=".")
+ pdf(file=paste(plot.dir, fn, sep="/"))
+ carstm_plot( p=p, res=res, vn=vn, time_match=list(year=as.character(x)))
+ dev.off()
+} 
+  
+  plot(fit)
     plot(fit, plot.prior=TRUE, plot.hyperparameters=TRUE, plot.fixed.effects=FALSE, single=TRUE )
     s = summary(fit)
     s$dic$dic
