@@ -458,7 +458,7 @@ plot.dir=paste(p$modeldir,"prediction.plots", year.assessment, sep="/" )
   #To compare values of M, run the following line:
   #load(paste(p$modeldir, "M.summary.rdata", sep="/"))
   
-  M = NULL; gc()
+   M = NULL; gc()
   res = carstm_model( p=p, M='snowcrab_carstm( p=p, DS="carstm_inputs" )' ) # 151 configs and long optim .. 19 hrs
 
   # m = get("inla.models", INLA:::inla.get.inlaEnv())
