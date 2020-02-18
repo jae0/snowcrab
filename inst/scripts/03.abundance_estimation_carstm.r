@@ -285,7 +285,20 @@ plot.dir=paste(p$modeldir,"prediction.plots", year.assessment, sep="/" )
   
    }
   
+ #to plot predicted temperature maps for last six years
+  
+   recent=as.character((year.assessment-6): year.assessment)
+   vn = paste(pT$variabletomodel, "predicted", sep=".")
 
+  for (x in recent){
+    fn=paste(x,"t",  "pdf", sep=".")
+    outfile=paste(plot.dir, fn, sep="/")
+    each.plot=   carstm_plot( p=pT, res=res, vn=vn, time_match=list(year=x, dyear="0.85" ) )
+    pdf(outfile)
+    print(each.plot)
+    dev.off()
+  } 
+  
 
 
 
@@ -528,17 +541,7 @@ plot.dir=paste(p$modeldir,"prediction.plots", year.assessment, sep="/" )
     vn = paste(p$variabletomodel, "predicted", sep=".")
     carstm_plot( p=p, res=res, vn=vn, time_match=list(year="2000" ) )     # maps of some of the results
 
-#to save plots of the last six years:
-#Needs to be run in Windows or outside Linux Rstudio for now 
-recent=(year.assessment-6): year.assessment
 
-for (x in recent){
-  fn=paste("biomass.map", x, "pdf", sep=".")
- pdf(file=paste(plot.dir, fn, sep="/"))
- carstm_plot( p=p, res=res, vn=vn, time_match=list(year=as.character(x)))
- dev.off()
-} 
-  
   plot(fit)
     plot(fit, plot.prior=TRUE, plot.hyperparameters=TRUE, plot.fixed.effects=FALSE, single=TRUE )
     s = summary(fit)
@@ -609,6 +612,21 @@ for (x in recent){
     brks = interval_break(X= sppoly[[vn]], n=length(p$mypalette), style="quantile")
     spplot( sppoly, vn, col.regions=p$mypalette, main=vn, at=brks, sp.layout=p$coastLayout, col="transparent" )
 
+    #to save plots of the last six years:
+    #Needs to be run in Windows or outside Linux Rstudio for now 
+    recent=as.character((year.assessment-6): year.assessment)
+    
+    for (x in recent){
+      sppoly@data[,vn] = bio[,x]
+      brks = interval_break(X= sppoly[[vn]], n=length(p$mypalette), style="quantile")
+      each.plot=spplot( sppoly, vn, col.regions=p$mypalette, main=x, at=brks, sp.layout=p$coastLayout, col="transparent" )
+      fn=paste(x,"biomass",  "pdf", sep=".")
+      outfile=paste(plot.dir, fn, sep="/")
+      pdf(outfile)
+      print(each.plot)
+      dev.off()
+    } 
+    
 
     plot( fit, plot.prior=TRUE, plot.hyperparameters=TRUE, plot.fixed.effects=FALSE )
     plot( fit$marginals.hyperpar$"Phi for auid", type="l")  # posterior distribution of phi nonspatial dominates

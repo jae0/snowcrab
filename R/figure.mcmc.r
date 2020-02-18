@@ -316,14 +316,17 @@
 
           # abline (v=Bhistorical, lty="dashed")
           # text( Bhistorical-0.01*K[i], yl, "Mean" , srt=90, pos=3,  lwd=2)
-
+        }
       #Enable below to see the annual F estimates for inclusion in the document
-        print(F[hdat,1] )
-        print(F[hdat,2] )
+          print("F for N-ENS" )
+          print(F[hdat,1] )
+          print("F for S-ENS" )
+          print(F[hdat,2] )
+        print("F for 4X" )
         print(F[hdat,3] )
 
 
-        }
+        
       }
 
       if (vname=="default.unmodelled") {
