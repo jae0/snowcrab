@@ -2,10 +2,18 @@
 
 # Snow crab --- Areal unit modelling of habitat  -- no reliance upon stmv fields
 
-if (!exists("year.assessment")) {
+#The use of the BYM2 model precludes using Windows, must be run in Linux 
+#Virtual box install of Ubuntu or Debian is likely easiest option
+
+#Choose one- likely latter
+{
   year.assessment=lubridate::year(Sys.Date())      # year.assessment
   year.assessment=lubridate::year(Sys.Date()) -1   # or year previous to current
 }
+
+
+#To add a title to any carstm_plot, please see below example
+#carstm_plot( p=p, res=res, vn=vn, main=list(label="my plot title", cex=2) )
 
 
 # -------------------------------------------------
@@ -594,11 +602,12 @@ plot.dir=paste(p$modeldir,"prediction.plots", year.assessment, sep="/" )
     num = carstm_summary(p=p, operation="load_spacetime_number", carstm_model_label=p$carstm_model_label  )
 
 
-    plot( cfaall ~ yrs, data=RES, lty=1, lwd=2.5, col="red", type="b")
-    plot( cfasouth ~ yrs, data=RES, lty=1, lwd=2.5, col="red", type="b")
-    plot( cfanorth ~ yrs, data=RES, lty=1, lwd=2.5, col="red", type="b")
-    plot( cfa4x ~ yrs, data=RES, lty=1, lwd=2.5, col="red", type="b")
+    plot( cfaall ~ yrs, data=RES, lty=1, lwd=2.5, col="red", type="b", ylab="Biomass (kt)", xlab="")
+    plot( cfasouth ~ yrs, data=RES, lty=1, lwd=2.5, col="red", type="b", ylab="Biomass (kt)", xlab="")
+    plot( cfanorth ~ yrs, data=RES, lty=1, lwd=2.5, col="red", type="b", ylab="Biomass (kt)", xlab="")
+    plot( cfa4x ~ yrs, data=RES, lty=1, lwd=2.5, col="red", type="b", ylab="Biomass (kt)", xlab="")
 
+   
     p$boundingbox = list( xlim=p$corners$lon, ylim=p$corners$lat) # bounding box for plots using spplot
 
     p$coastLayout = aegis.coastline::coastline_layout(p=p)
