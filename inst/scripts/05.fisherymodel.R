@@ -46,7 +46,7 @@ res = fishery_model( p=p, DS="stan",
   chains=6,
   iter=10000,
   warmup=5000,
-  refresh = 1000,
+  refresh = 500,
   control = list(adapt_delta = 0.975, max_treedepth=16)
 )
 

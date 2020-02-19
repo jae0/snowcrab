@@ -43,7 +43,7 @@ snowcrab_tsdata = function( p, assessment_years=2000:p$year.assessment, areas=c(
   sb$missing_ntot = sum(sb$missing_n)
 
   sb$IOA[ which(!is.finite(sb$IOA)) ] = 0 # reset NAs to 0 as stan does not take NAs
-  sb$CAT[ which(!is.finite(sb$CAT)) ] = 0 # remove NA's
+  sb$CAT[ which(!is.finite(sb$CAT)) ] = 0.000000001 # remove NA's
 
   return(sb)
 
