@@ -110,9 +110,9 @@ fishery_model = function(  p, DS="stan", plotresults=TRUE, ... ) {
         {
           int k;
           k=3;
-          Ymu[1,k]        = qs[k] * bm[1,k]   - rem[1,k] ; // starting year approximation
-          Ymu[2:(ty-1),k] = qs[k] * bm[2:(ty-1),k] - rem[1:(ty-2),k];
-          Ymu[ty:N,k]     = q[k]  * bm[ty:N,k] - rem[(ty-1):(N-1),k];
+          Ymu[1,k]        = q[k] * bm[1,k]   - rem[1,k] ; // starting year approximation
+          Ymu[2:(ty-1),k] = q[k] * bm[2:(ty-1),k] - rem[1:(ty-2),k];
+          Ymu[ty:N,k]     = q[k] * bm[ty:N,k] - rem[(ty-1):(N-1),k];
         }
 
         for (j in 1:U) {
