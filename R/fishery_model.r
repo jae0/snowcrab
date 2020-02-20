@@ -515,7 +515,7 @@ fishery_model = function(  p, DS="stan", plotresults=TRUE, ... ) {
 
 
   if (DS=="stan_data" ) {
-    sb = snowcrab_tsdata(p=p, assessment_yrs=2000:p$year.assessment)
+    sb = snowcrab_tsdata(p=p, assessment_years=2000:p$year.assessment)
     return(sb)
   }
 
