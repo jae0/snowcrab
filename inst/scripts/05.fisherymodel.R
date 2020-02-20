@@ -43,7 +43,7 @@ p$fishery_model$stancode_compiled = rstan::stan_model( model_code=p$fishery_mode
 # later:::ensureInitialized()  # solve mode error
 
 res = fishery_model( p=p, DS="stan",
-  chains=6,
+  chains=4,
   iter=10000,
   warmup=5000,
   refresh = 500,

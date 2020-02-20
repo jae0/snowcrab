@@ -98,8 +98,8 @@ fishery_model = function(  p, DS="stan", plotresults=TRUE, ... ) {
         //     |...(t-2)...|.Ss..(t-1)...|...(t=2004)..Sf.|...(t+1).Sf..|...(t+2)..Sf.|...
         // Cfa 4X -- fall/winter fishery
         // assume similar to a spring fishery but no need for separate q's
-        //    Btot(t) = Bsurveyed(t)+ removals(t-1)
         //    NOTE: year designation in 4X is for the terminal year: ie. 2001-2002 => 2002
+        //    Btot(t) = Bsurveyed(t)+ removals(t-1)
 
         for (j in 1:2) {
           Ymu[1,j]        = qs[j] * bm[1,j] - rem[1,j] ; // starting year approximation
@@ -111,8 +111,8 @@ fishery_model = function(  p, DS="stan", plotresults=TRUE, ... ) {
           int k;
           k=3;
           Ymu[1,k]        = q[k] * bm[1,k]   - rem[1,k] ; // starting year approximation
-          Ymu[2:(ty-1),k] = q[k] * bm[2:(ty-1),k] - rem[1:(ty-2),k];
-          Ymu[ty:N,k]     = q[k] * bm[ty:N,k] - rem[(ty-1):(N-1),k];
+          Ymu[2:(ty-1),k] = q[k] * bm[2:(ty-1),k] - rem[2:(ty-1),k];
+          Ymu[ty:N,k]     = q[k] * bm[ty:N,k] - rem[ty:N,k];
         }
 
         for (j in 1:U) {
@@ -199,19 +199,22 @@ fishery_model = function(  p, DS="stan", plotresults=TRUE, ... ) {
 
         // -------------------
         // fishing mortality
-         for (j in 1:2) {
+        // fall fisheries
+
+         for (j in 1:3) {
            for (i in 1:N) {
              F[i,j] =  1.0 - rem[i,j] / bm[i,j]  ;
            }
          }
-         {
-           int j;
-           j=3;
-           F[1,j] =  1.0 - rem[1,j] / bm[1,j] ;
-           for (i in 2:N) {
-             F[i,j] =  1.0 - rem[i-1,j] / bm[i,j]  ;
-           }
-         }
+         // spring fishery
+//         {
+//           int j;
+//           j=3;
+//           F[1,j] =  1.0 - rem[1,j] / bm[1,j] ; // approximation
+//           for (i in 2:N) {
+//             F[i,j] =  1.0 - rem[i-1,j] / bm[i,j]  ;
+ //          }
+ //        }
 
          for (j in 1:U) {
            for (i in N1:MN) {
