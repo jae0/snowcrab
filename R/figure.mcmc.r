@@ -146,9 +146,12 @@
         for (i in 1:3) {
           pdat = as.vector(y$bosd[,i])
           prr=NULL
-          prr$class="lognormal"
-          prr$meanlog=sb$bomup
-          prr$sdlog=sqrt(sb$bosdp)
+          prr$class='uniform'
+          prr$max=3
+          prr$min=0
+          #prr$class="lognormal"
+          #prr$meanlog=sb$bomup
+          #prr$sdlog=sqrt(sb$bosdp)
           plot.freq.distribution.prior.posterior( prior=prr, posterior=pdat, ...  )
           legend( "topright", bty="n",
             legend=paste( aulabels[i], " ", vname, " = ", qs[2,i], " {", qs[1,i], ", ",  qs[3,i], "}", sep="" )
