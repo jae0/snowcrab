@@ -47,7 +47,7 @@ res = fishery_model( p=p, DS="stan",
   iter=10000,
   warmup=5000,
   refresh = 500,
-  control = list(adapt_delta = 0.975, max_treedepth=16)
+  control = list(adapt_delta = 0.98, max_treedepth=16)
 )
 
 #below figure code best run in R terminal rather than RStudio
