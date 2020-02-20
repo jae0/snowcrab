@@ -200,10 +200,12 @@ fishery_model = function(  p, DS="stan", plotresults=TRUE, ... ) {
         // -------------------
         // fishing mortality
         // force first year estimate assuming catches in year 0 to be similar to year 1
-
          for (j in 1:U) {
            F[1,j] =  1.0 - rem[1,j] / bm[1,j] ;
-           for (i in 2:MN) {
+           for (i in 2:N) {
+             F[i,j] =  1.0 - rem[i-1,j] / bm[i,j]  ;
+           }
+           for (i in N1:MN) {
              F[i,j] =  1.0 - er * bm[i-1,j] / bm[i,j]  ;
            }
          }
