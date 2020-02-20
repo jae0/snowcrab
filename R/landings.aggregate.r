@@ -37,6 +37,8 @@
       landings = landings[ which (landings$cfa %in% regs) , ]
       yrs = sort(unique( landings$yr ) )
       L = tapply( landings$landings, INDEX=landings[,c("yr", "cfa")], FUN=sum, na.rm=T )
+      nL = nrow(L)
+      L[2:nL,"cfa4x"] = L[1:(nL-1),"cfa4x"]  ## bugs/stn expects terminal year as year for 4x
       cfaall = tapply( landings$landings, INDEX=landings[,c("yr")], FUN=sum, na.rm=T )
       L = cbind( L, cfaall )
       L = L / 1000/1000  # convert to kt
