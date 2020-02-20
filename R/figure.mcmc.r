@@ -229,9 +229,14 @@
           plot( yrs0, Fi[1,], type="n", ylim=yran, xlab="", ylab="" )
           cols = gray.colors( floor(length( prs)/2) )
           cols2 = c(cols[length(cols):1], cols )
+          if (i %in% c(1,2)){
           for ( j in 1:length(prs) ) {
-            lines ( yrs0, Fi[j,], lwd=4, col=cols2[j] )
-          }
+            lines ( yrs0-1, Fi[j,], lwd=4, col=cols2[j] )
+          }}
+          if (i==3){
+            for ( j in 1:length(prs) ) {
+            lines ( yrs0-1.2, Fi[j,], lwd=4, col=cols2[j] )
+          }}
           if (i==2) title( ylab="Fishing mortality" )
           if (i==3) title( xlab="Year" )
           legend( "topright", bty="n", legend=aulabels[i])
