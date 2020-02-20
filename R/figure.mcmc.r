@@ -229,9 +229,14 @@
           plot( yrs0, Fi[1,], type="n", ylim=yran, xlab="", ylab="" )
           cols = gray.colors( floor(length( prs)/2) )
           cols2 = c(cols[length(cols):1], cols )
+          if (i %in% c(1,2)){
           for ( j in 1:length(prs) ) {
-            lines ( yrs0, Fi[j,], lwd=4, col=cols2[j] )
-          }
+            lines ( yrs0-1, Fi[j,], lwd=4, col=cols2[j] )
+          }}
+          if (i==3){
+            for ( j in 1:length(prs) ) {
+            lines ( yrs0-1.2, Fi[j,], lwd=4, col=cols2[j] )
+          }}
           if (i==2) title( ylab="Fishing mortality" )
           if (i==3) title( xlab="Year" )
           legend( "topright", bty="n", legend=aulabels[i])
@@ -311,12 +316,20 @@
           text( BK25-0.01*K[i], yl, "K/4" , srt=90, pos=3)
           text( 0.05*K[i], Fref, "20% HR", pos=1 )
           text( 0.05*K[i], FMSY[i], "FMSY", pos=3, lwd=2, col="red" )
-          text( B[1:(ndata-1),i], F[1:(ndata-1),i],  labels=yrs0[-ndata], pos=3, cex= 0.8 )
+          if (i %in% c(1,2)){
+            text( B[1:(ndata-1),i], F[1:(ndata-1),i],  labels=yrs0[-ndata], pos=3, cex= 0.8 )
+            points( B[ndata,i], F[ndata,i],  pch=21, bg='darkorange', cex= 1.4 )
+            text( B[ndata,i], F[ndata,i],  labels=yrs0[ndata], pos=3, cex= 1.4, font=2 )
+            
+            text( 0, ylims[2]*0.9,  labels=aulabels[i], pos=3, cex= 0.85 )
+          }
+          if (i==3){
+          text( B[1:(ndata-1),i], F[1:(ndata-1),i],  labels=(yrs0[-ndata]-1), pos=3, cex= 0.8 )
           points( B[ndata,i], F[ndata,i],  pch=21, bg='darkorange', cex= 1.4 )
-          text( B[ndata,i], F[ndata,i],  labels=yrs0[ndata], pos=3, cex= 1.4, font=2 )
+          text( B[ndata,i], F[ndata,i],  labels=yrs0[ndata]-1, pos=3, cex= 1.4, font=2 )
 
           text( 0, ylims[2]*0.9,  labels=aulabels[i], pos=3, cex= 0.85 )
-
+          }
           # abline (v=Bhistorical, lty="dashed")
           # text( Bhistorical-0.01*K[i], yl, "Mean" , srt=90, pos=3,  lwd=2)
         }
