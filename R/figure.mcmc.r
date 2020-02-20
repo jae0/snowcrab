@@ -311,12 +311,20 @@
           text( BK25-0.01*K[i], yl, "K/4" , srt=90, pos=3)
           text( 0.05*K[i], Fref, "20% HR", pos=1 )
           text( 0.05*K[i], FMSY[i], "FMSY", pos=3, lwd=2, col="red" )
-          text( B[1:(ndata-1),i], F[1:(ndata-1),i],  labels=yrs0[-ndata], pos=3, cex= 0.8 )
+          if (i %in% c(1,2)){
+            text( B[1:(ndata-1),i], F[1:(ndata-1),i],  labels=yrs0[-ndata], pos=3, cex= 0.8 )
+            points( B[ndata,i], F[ndata,i],  pch=21, bg='darkorange', cex= 1.4 )
+            text( B[ndata,i], F[ndata,i],  labels=yrs0[ndata], pos=3, cex= 1.4, font=2 )
+            
+            text( 0, ylims[2]*0.9,  labels=aulabels[i], pos=3, cex= 0.85 )
+          }
+          if (i==3){
+          text( B[1:(ndata-1),i], F[1:(ndata-1),i],  labels=(yrs0[-ndata]-1), pos=3, cex= 0.8 )
           points( B[ndata,i], F[ndata,i],  pch=21, bg='darkorange', cex= 1.4 )
-          text( B[ndata,i], F[ndata,i],  labels=yrs0[ndata], pos=3, cex= 1.4, font=2 )
+          text( B[ndata,i], F[ndata,i],  labels=yrs0[ndata]-1, pos=3, cex= 1.4, font=2 )
 
           text( 0, ylims[2]*0.9,  labels=aulabels[i], pos=3, cex= 0.85 )
-
+          }
           # abline (v=Bhistorical, lty="dashed")
           # text( Bhistorical-0.01*K[i], yl, "Mean" , srt=90, pos=3,  lwd=2)
         }
