@@ -236,6 +236,10 @@ snowcrab.db = function( DS, p=NULL, yrs=NULL) {
 
     set$julian = lubridate::yday( set$timestamp )
     set$julian.compressed=set$julian-227 #allows for informative mapping of survey timing. Days after Aug 15
+    i=which(set$julian.compressed < 0)
+    if (length(i) > 0)  {
+      set$julian.compressed[i]= lubridate::yday( set$timestamp[i]) + 365 -227
+      } #dealing with January dates
     set$monthoffset=set$timestamp-2592000 #Subtract 30 days from time stamp, corrects for year when survey in January
     #set$yr = lubridate::year( set$timestamp ) #replaced by following line with 30 day time offset
     set$yr = lubridate::year( set$monthoffset )
