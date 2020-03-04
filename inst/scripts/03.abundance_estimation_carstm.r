@@ -61,7 +61,7 @@
     fit = carstm_model( p=pB, DS="carstm_modelled_fit", carstm_model_label="production" )  # extract currently saved model fit
     summary(fit)
 
-    res = carstm_summary( p=pB, operation="compute", carstm_model_label="production"  ) #
+    res = carstm_summary( p=pB, M='bathymetry_carstm( p=pB, DS="carstm_inputs" )', operation="compute", carstm_model_label="production"  ) #
     res = carstm_summary( p=pB, operation="load", carstm_model_label="production"  )
 
     # maps of some of the results
@@ -133,7 +133,7 @@
     fit = carstm_model( p=pS, DS="carstm_modelled_fit", carstm_model_label="production" )  # extract currently saved model fit
     summary(fit)
 
-    res = carstm_summary( p=pS, operation="compute", carstm_model_label="production"  ) #
+    res = carstm_summary( p=pS, operation="compute", carstm_model_label="production", M='substrate_carstm( p=pS, DS="carstm_inputs")'  ) #
     res = carstm_summary( p=pS, operation="load", carstm_model_label="production"  )
 
 # Fixed effects:
@@ -248,7 +248,7 @@
     fit = carstm_model( p=pT, DS="carstm_modelled_fit", carstm_model_label="production" )  # extract currently saved model fit
     summary(fit)
 
-    res = carstm_summary( p=pT, operation="compute", carstm_model_label="production"  ) #
+    res = carstm_summary( p=pT, operation="compute", carstm_model_label="production", M='temperature_carstm( p=pT, DS="carstm_inputs")'  ) #
     res = carstm_summary( p=pT, operation="load", carstm_model_label="production"  )
 
 #Framework Model Summary (to 2018)
@@ -339,7 +339,7 @@
     fit = carstm_model( p=pPC1, DS="carstm_modelled_fit", carstm_model_label="production" )  # extract currently saved model fit
     summary(fit)
 
-    res = carstm_summary( p=pPC1, operation="compute", carstm_model_label="production"  ) #
+    res = carstm_summary( p=pPC1, operation="compute", carstm_model_label="production", M='speciescomposition_carstm( p=p, DS="carstm_inputs", varnametomodel="pca1" )'  ) #
     res = carstm_summary( p=pPC1, operation="load", carstm_model_label="production"  )
 
     plot( fit, plot.prior=TRUE, plot.hyperparameters=TRUE, plot.fixed.effects=FALSE )
@@ -423,7 +423,7 @@
     fit = carstm_model( p=pPC2, DS="carstm_modelled_fit", carstm_model_label="production" )  # extract currently saved model fit
     summary(fit)
 
-    res = carstm_summary( p=pPC2, operation="compute", carstm_model_label="production"  ) #
+    res = carstm_summary( p=pPC2, operation="compute", carstm_model_label="production", M='speciescomposition_carstm( p=p, DS="carstm_inputs", varnametomodel="pca2" )'  ) #
     res = carstm_summary( p=pPC2, operation="load", carstm_model_label="production"  )
 
     plot( fit, plot.prior=TRUE, plot.hyperparameters=TRUE, plot.fixed.effects=FALSE )
@@ -514,8 +514,8 @@
 
   #  carstm_summary( p=p, operation="compute", carstm_model_label=p$carstm_model_label  )
 
-  res = carstm_summary( p=p, operation="compute"  ) #
-  # res = carstm_summary( p=p, operation="load"  )
+  res = carstm_summary( p=p, operation="compute",  M='snowcrab_carstm( p=p, DS="carstm_inputs" )'  ) #
+  res = carstm_summary( p=p, operation="load"  )
 
 
 
