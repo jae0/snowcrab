@@ -32,7 +32,7 @@
   M = snowcrab_carstm( p=p, DS="carstm_inputs", redo=FALSE )  # will redo if not found
   M$year = as.factor(M$year)
   M[,p$variabletomodel] = M[,p$variabletomodel] / M$data_offset  # cannot do offsets in gaussian linear model
-  res = carstm_model( p=p, M=M )
+  fit = carstm_model( p=p, M=M )
 
 
 
@@ -49,7 +49,7 @@
     ) ' )
   M = snowcrab_carstm( p=p, DS="carstm_inputs", redo=FALSE )  # will redo if not found
   M$year = as.factor(M$year)
-  res = carstm_model( p=p, M=M )
+  fit = carstm_model( p=p, M=M )
 
 
 
@@ -86,7 +86,7 @@
   M$auid = factor( M$auid)
   M[,p$variabletomodel] = M[,p$variabletomodel] / M$data_offset  # cannot do offsets in gaussian linear model
 
-  res = carstm_model( p=p, M=M )
+  fit = carstm_model( p=p, M=M )
 
 
 
@@ -124,7 +124,7 @@
   M$auid = factor( M$auid)
   M[,p$variabletomodel] = trunc( M[,p$variabletomodel] )  # poisson wants integers
 
-  res = carstm_model( p=p, M=M )
+  fit = carstm_model( p=p, M=M )
 
 
 
@@ -164,7 +164,7 @@
   M[,p$variabletomodel] = trunc( M[,p$variabletomodel] )  # poisson wants integers
 
 
-  res = carstm_model( p=p, M=M )
+  fit = carstm_model( p=p, M=M )
 
 
 # -------------------------------------------------
@@ -208,11 +208,56 @@
   M[,p$variabletomodel] = trunc( M[,p$variabletomodel] )  # poisson wants integers
 
 
-  res = carstm_model( p=p, M=M )
+  fit = carstm_model( p=p, M=M )
 
 
 
 # -------------------------------------------------
+
+# -------------------------------------------------
+  p$carstm_model_label = "covariates_only"
+  p$variabletomodel = "totno"
+  p$carstm_modelengine = "inla"
+  p$carstm_modelcall = paste(
+    'inla( formula =', p$variabletomodel,
+    ' ~ -1
+        + f( dyri, model="ar1", hyper=H$ar1 )
+        + f( inla.group( z, method="quantile", n=13 ), model="rw2", scale.model=TRUE, hyper=H$rw2)
+        + f( inla.group( substrate.grainsize, method="quantile", n=13 ), model="rw2", scale.model=TRUE, hyper=H$rw2)
+        + f( inla.group( t, method="quantile", n=13 ), model="rw2", scale.model=TRUE, hyper=H$rw2)
+        + f( inla.group( pca1, method="quantile", n=13 ), model="rw2", scale.model=TRUE, hyper=H$rw2)
+        + f( inla.group( pca2, method="quantile", n=13 ), model="rw2", scale.model=TRUE, hyper=H$rw2)
+       + offset( log(data_offset)) ,
+      family = "poisson",
+      data= M,
+      control.compute=list(dic=TRUE, config=TRUE),
+      control.results=list(return.marginals.random=TRUE, return.marginals.predictor=TRUE ),
+      control.predictor=list(compute=FALSE, link=1 ),
+      control.fixed = list(prec.intercept = 1),
+      # control.fixed = H$fixed,  # priors for fixed effects, generic is ok
+      control.inla = list(cmin = 0, h=1e-2, tolerance=1e-4), # increase in case values are too close to zero
+      verbose=TRUE
+    )'
+  )
+  M = snowcrab_carstm( p=p, DS="carstm_inputs", redo=FALSE )  # will redo if not found
+  # remove unsampled locations in factorial methods to get sensible stats
+  M$uid = paste( M$AUID, M$year, sep="." )
+  withdata = unique( M$uid[which(M$tag== "observations")])
+  preds = which(M$tag== "predictions")
+  todrop = which( ! M$uid[ preds] %in% withdata )
+  M = M[ - preds[todrop]]
+
+  M$year_factor = factor(M$year)
+  M$auid = factor( M$auid)
+  M[,p$variabletomodel] = trunc( M[,p$variabletomodel] )  # poisson wants integers
+
+
+  fit = carstm_model( p=p, M=M )
+
+
+
+# -------------------------------------------------
+
 
   p$carstm_model_label = "mixed_effects_simple"
   p$variabletomodel = "totno"
@@ -241,7 +286,7 @@
   M = snowcrab_carstm( p=p, DS="carstm_inputs", redo=FALSE )  # will redo if not found
   M$year_factor = factor(M$year)
   M[,p$variabletomodel] = trunc( M[,p$variabletomodel] )  # poisson wants integers
-  res = carstm_model( p=p, M=M )
+  fit = carstm_model( p=p, M=M )
 
 
 
@@ -276,7 +321,7 @@
   M$year_factor = factor(M$year)
   # M$auid = factor( M$auid)
   M[,p$variabletomodel] = trunc( M[,p$variabletomodel] )  # poisson wants integers
-  res = carstm_model( p=p, M=M )
+  fit = carstm_model( p=p, M=M )
 
 
 
@@ -313,7 +358,7 @@
   M = snowcrab_carstm( p=p, DS="carstm_inputs", redo=FALSE )  # will redo if not found
   M$year_factor = factor(M$year)
   M[,p$variabletomodel] = trunc( M[,p$variabletomodel] )  # poisson wants integers
-  res = carstm_model( p=p, M=M )
+  fit = carstm_model( p=p, M=M )
 
 
 # -------------------------------------------------
@@ -346,7 +391,7 @@
       verbose=TRUE
     )'
   )
-  res = carstm_model( p=p, M=p$modeldata )
+  fit = carstm_model( p=p, M=p$modeldata )
 
 
 
@@ -378,7 +423,7 @@
       verbose=TRUE
     )'
   )
-  res = carstm_model( p=p, M=p$modeldata )
+  fit = carstm_model( p=p, M=p$modeldata )
 
 
 
@@ -409,7 +454,7 @@
       verbose=TRUE
     )'
   )
-  res = carstm_model( p=p, M=p$modeldata )
+  fit = carstm_model( p=p, M=p$modeldata )
 
 
 
@@ -446,7 +491,42 @@
       verbose=TRUE
     )'
   )
-  res = carstm_model( p=p, M=p$modeldata )
+  fit = carstm_model( p=p, M=p$modeldata )
+
+
+
+# -------------------------------------------------
+# Model -- nonspatial, nontemporal -- inla -- poisson
+  p$carstm_model_label = "nonseparable_space-time_no_pca"
+  p$variabletomodel = "totno"
+  p$carstm_modelengine = "inla"
+  p$carstm_modelcall = paste(
+    'inla( formula =', p$variabletomodel,
+      ' ~ 1
+        + offset( log(data_offset))
+        + f( dyri, model="ar1", hyper=H$ar1 )
+        + f( inla.group( t, method="quantile", n=13 ), model="rw2", scale.model=TRUE, hyper=H$rw2)
+        + f( inla.group( z, method="quantile", n=13 ), model="rw2", scale.model=TRUE, hyper=H$rw2)
+        + f( inla.group( substrate.grainsize, method="quantile", n=13 ), model="rw2", scale.model=TRUE, hyper=H$rw2)
+        + f( auid, model="bym2", graph=sppoly@nb, group=year_factor, scale.model=TRUE, constr=TRUE, hyper=H$bym2, control.group=list(model="ar1", hyper=H$ar1_group)),
+        family = "poisson",
+        data= M,
+        control.compute=list(dic=TRUE, config=TRUE),
+        control.results=list(return.marginals.random=TRUE, return.marginals.predictor=TRUE ),
+        control.predictor=list(compute=FALSE, link=1 ),
+        # control.fixed = list(prec.intercept = 0.1),
+        control.fixed = H$fixed,  # priors for fixed effects, generic is ok
+        control.inla = list(cmin = 0 ),
+        # control.inla = list( h=1e-6, tolerance=1e-12), # increase in case values are too close to zero
+        # control.inla=list( strategy="laplace", cutoff=1e-6, correct=TRUE, correct.verbose=FALSE ),
+        # control.inla = list( h=1e-6, tolerance=1e-12), # increase in case values are too close to zero
+        # control.inla = list(h=1e-3, tolerance=1e-9, cmin=0), # restart=3), # restart a few times in case posteriors are poorly defined
+        # control.mode = list( restart=TRUE, result=RES ), # restart from previous estimates
+      verbose=TRUE
+    )'
+  )
+  fit = carstm_model( p=p, M=p$modeldata )
+
 
 
 
@@ -481,7 +561,7 @@
       verbose=TRUE
     )'
   )
-  res = carstm_model( p=p, M=p$modeldata )
+  fit = carstm_model( p=p, M=p$modeldata )
 
 
 # -------------------------------------------------
@@ -516,7 +596,7 @@
       verbose=TRUE
     )'
   )
-  res = carstm_model( p=p, M=p$modeldata )
+  fit = carstm_model( p=p, M=p$modeldata )
 
 
 
@@ -554,7 +634,7 @@
       verbose=TRUE
     )'
   )
-  res = carstm_model( p=p, M=p$modeldata )
+  fit = carstm_model( p=p, M=p$modeldata )
 
 
 
@@ -564,8 +644,13 @@
 # -------------------------------------------------
 # generic calls
 
-  res = carstm_model( p=p, DS="carstm_modelled" ) # to load currently saved res
-  fit = carstm_model( p=p, DS="carstm_modelled_fit" )  # extract currently saved model fit
+
+# extract results and examine
+  fit =  carstm_model( p=p, DS="carstm_modelled_fit" )  # extract currently saved model fit
+
+  res = carstm_summary( p=p, operation="compute"  ) #
+  res = carstm_summary( p=p, operation="load"  )
+
 
   if (0) {
     plot( fit, plot.prior=TRUE, plot.hyperparameters=TRUE, plot.fixed.effects=FALSE )
@@ -583,24 +668,24 @@
 
 
   sppoly = areal_units( p=p )  # to reload
-  M = snowcrab_carstm( p=p, DS="carstm_inputs" )
-  M$yr = M$year  # req for meanweights
+  # M = snowcrab_carstm( p=p, DS="carstm_inputs" )
+  # M$yr = M$year  # req for meanweights
 
-  # mean weight by auidxyear
-  wgts = meanweights_by_arealunit(
-    set=M[M$tag=="observations",],
-    AUID=as.character( sppoly$AUID ),
-    yrs=p$yrs,
-    fillall=TRUE,
-    annual_breakdown=TRUE,
-    robustify_quantiles=c(0, 0.99)  # high upper bounds are more dangerous
-  )
+  # # mean weight by auidxyear
+  # wgts = meanweights_by_arealunit(
+  #   set=M[M$tag=="observations",],
+  #   AUID=as.character( sppoly$AUID ),
+  #   yrs=p$yrs,
+  #   fillall=TRUE,
+  #   annual_breakdown=TRUE,
+  #   robustify_quantiles=c(0, 0.99)  # high upper bounds are more dangerous
+  # )
 
-  carstm_summary( p=p, operation="compute", carstm_model_label=p$carstm_model_label, wgts=wgts )
+  carstm_summary( p=p, operation="compute", carstm_model_label=p$carstm_model_label )
 
-  RES = carstm_summary(p=p, operation="load_timeseries", carstm_model_label=p$carstm_model_label  )
-  bio = carstm_summary(p=p, operation="load_spacetime_biomass", carstm_model_label=p$carstm_model_label  )
-  num = carstm_summary(p=p, operation="load_spacetime_number", carstm_model_label=p$carstm_model_label  )
+  RES = snowcrab_carstm(p=p, DS="carstm_output_timeseries", carstm_model_label=p$carstm_model_label  )
+  bio = snowcrab_carstm(p=p, DS="carstm_output_spacetime_biomass", carstm_model_label=p$carstm_model_label  )
+  num = snowcrab_carstm(p=p, DS="carstm_output_spacetime_number", carstm_model_label=p$carstm_model_label  )
 
   plot( cfaall ~ yrs, data=RES, lty=1, lwd=2.5, col="red", type="b")
   plot( cfasouth ~ yrs, data=RES, lty=1, lwd=2.5, col="red", type="b")
@@ -613,8 +698,12 @@
   sppoly = areal_units( p=p )  # to reload
 
   # map it ..mean density
+
+  yrc = as.character( 2000 )
+
   vn = "pred"
-  sppoly@data[,vn] = bio[,"2017"]
+  x11()
+  sppoly@data[,vn] = bio[,yrc]
   brks = interval_break(X= sppoly[[vn]], n=length(p$mypalette), style="quantile")
   spplot( sppoly, vn, col.regions=p$mypalette, main=vn, at=brks, sp.layout=p$coastLayout, col="transparent" )
 
@@ -622,22 +711,23 @@
   vn = paste(p$variabletomodel, "random_sample_iid", sep=".")
   if (exists(vn, res)) carstm_plot( p=p, res=res, vn=vn, time_match=list(year="1950", dyear="0.05") )
 
+
   vn = paste(p$variabletomodel, "random_auid_nonspatial", sep=".")
   if (exists(vn, res)) {
     res_dim = length( dim( res[[vn]] ) )
     if (res_dim == 1 ) time_match = NULL
-    if (res_dim == 2 ) time_match = list(year="2000")
-    if (res_dim == 3 ) time_match = list(year="2000", dyear="0.85" )
-    carstm_plot( p=p, res=res, vn=vn, time_match=time_match )
+    if (res_dim == 2 ) time_match = list(year=yrc)
+    if (res_dim == 3 ) time_match = list(year=yrc, dyear="0.85" )
+    carstm_plot( p=p, res=res, vn=vn, main=paste(vn, yrc), time_match=time_match )
   }
 
   vn = paste(p$variabletomodel, "random_auid_spatial", sep=".")
   if (exists(vn, res)) {
     res_dim = length( dim( res[[vn]] ) )
     if (res_dim == 1 ) time_match = NULL
-    if (res_dim == 2 ) time_match = list(year="2000")
-    if (res_dim == 3 ) time_match = list(year="2000", dyear="0.85" )
-    carstm_plot( p=p, res=res, vn=vn, time_match=time_match )
+    if (res_dim == 2 ) time_match = list(year=yrc)
+    if (res_dim == 3 ) time_match = list(year=yrc, dyear="0.85" )
+    carstm_plot( p=p, res=res, vn=vn, main=paste(vn, yrc), time_match=time_match )
   }
 
 
@@ -660,6 +750,18 @@
     c("nonseparable_space-time", "Nonseparable space|time",  "slateblue",  20, 1, 8, "l")
   ), stringsAsFactors=FALSE)
 
+
+  cc =  as.data.frame( rbind(
+    c("factorial_gaussian_biomass_glm", "Factorial crossed (Gaussian) biomass                               ", "darkgreen", 26, 1, 8, "l"  ),
+    c("mixed_effects_dynamic",   "Mixed effects dynamic",    "blue",       23, 5, 4, "l"),
+    c("covariates_only",     "Nonseparable covariates_only", "darkorange", 26, 1, 4, "l"),
+    c("nonseparable_simple",     "Nonseparable simple",      "cyan",       26, 1, 4, "l"),
+    c("nonseparable_space-time_no_pca",     "Nonseparable space|time no PCA",      "green",      24, 6, 4, "l"),
+    c("nonseparable_space-time", "Nonseparable space|time",  "slateblue",  20, 1, 8, "l")
+  ), stringsAsFactors=FALSE)
+
+
+
 #    c( "inla_zeroinflatedpoisson0_full", "Nonseparable overdispersed space|time" ,  "orange",  20, 1, 8, "l")
 
   colnames(cc) = c("tocompare", "legend", "col", "pch", "lty", "lwd", "type" )
@@ -675,7 +777,7 @@
       p$carstm_modelengine = "glm"
       p$variabletomodel = "totwgt"
     }
-    res_ts[[lab]] = carstm_summary(p=p, operation="load_timeseries", carstm_model_label=lab  )
+    res_ts[[lab]] = snowcrab_carstm(p=p, DS="carstm_output_timeseries", carstm_model_label=lab  )
   }
 
   dev.new(width=11, height=7)
@@ -761,7 +863,7 @@
 
   M = snowcrab_carstm( p=p, DS="carstm_inputs", redo=TRUE )  # will redo if not found
   M = NULL; gc()
-  res = carstm_model( p=p, M=p$modeldata )
+  fit = carstm_model( p=p, M=p$modeldata )
 
 
 
@@ -823,7 +925,7 @@
 
   M = snowcrab_carstm( p=p, DS="carstm_inputs", redo=TRUE )  # will redo if not found
   M = NULL; gc()
-  res = carstm_model( p=p, M=p$modeldata )
+  fit = carstm_model( p=p, M=p$modeldata )
 
 
 
@@ -883,7 +985,7 @@
 
   M = snowcrab_carstm( p=p, DS="carstm_inputs", redo=TRUE )  # will redo if not found
   M = NULL; gc()
-  res = carstm_model( p=p, M=p$modeldata )
+  fit = carstm_model( p=p, M=p$modeldata )
 
 
 
@@ -944,7 +1046,7 @@
 
   M = snowcrab_carstm( p=p, DS="carstm_inputs", redo=TRUE )  # will redo if not found
   M = NULL; gc()
-  res = carstm_model( p=p, M=p$modeldata )
+  fit = carstm_model( p=p, M=p$modeldata )
 
 
 
@@ -1004,7 +1106,7 @@
 
   M = snowcrab_carstm( p=p, DS="carstm_inputs", redo=TRUE )  # will redo if not found
   M = NULL; gc()
-  res = carstm_model( p=p, M=p$modeldata )
+  fit = carstm_model( p=p, M=p$modeldata )
 
 
 
@@ -1065,7 +1167,7 @@
 
   M = snowcrab_carstm( p=p, DS="carstm_inputs", redo=TRUE )  # will redo if not found
   M = NULL; gc()
-  res = carstm_model( p=p, M=p$modeldata )
+  fit = carstm_model( p=p, M=p$modeldata )
 
 
 
@@ -1126,7 +1228,7 @@
 
   M = snowcrab_carstm( p=p, DS="carstm_inputs", redo=TRUE )  # will redo if not found
   M = NULL; gc()
-  res = carstm_model( p=p, M=p$modeldata )
+  fit = carstm_model( p=p, M=p$modeldata )
 
 
 
@@ -1140,8 +1242,12 @@
 # generic calls
 
 
-  res = carstm_model( p=p, DS="carstm_modelled" ) # to load currently saved res
-  fit = carstm_model( p=p, DS="carstm_modelled_fit" )  # extract currently saved model fit
+# extract results and examine
+  fit =  carstm_model( p=p, DS="carstm_modelled_fit" )  # extract currently saved model fit
+
+  res = carstm_summary( p=p, operation="compute"  ) #
+  res = carstm_summary( p=p, operation="load"  )
+
 
   if (0) {
     plot( fit, plot.prior=TRUE, plot.hyperparameters=TRUE, plot.fixed.effects=FALSE )
@@ -1161,8 +1267,8 @@
   carstm_summary( p=p, operation="compute", carstm_model_label=p$carstm_model_label )
 
   # surface area weighted average
-  RES = carstm_summary(p=p, operation="load_timeseries", carstm_model_label=p$carstm_model_label  )
-  pa = carstm_summary(p=p, operation="load_spacetime", carstm_model_label=p$carstm_model_label  )
+  RES = snowcrab_carstm(p=p, DS="carstm_output_timeseries", carstm_model_label=p$carstm_model_label  )
+  pa = snowcrab_carstm(p=p, DS="carstm_output_spacetime_pa", carstm_model_label=p$carstm_model_label  )
 
   plot( cfaall ~ yrs, data=RES, lty=1, lwd=2.5, col="red", type="b")
   plot( cfasouth ~ yrs, data=RES, lty=1, lwd=2.5, col="red", type="b")
@@ -1241,7 +1347,7 @@
           p$carstm_modelengine = "glm"
           p$variabletomodel = "totwgt"
         }
-        res_ts[[lab]] = carstm_summary( p=p, operation="load_timeseries", carstm_model_label=lab  )
+        res_ts[[lab]] = snowcrab_carstm(p=p, DS="carstm_output_timeseries", carstm_model_label=lab  )
       }
 
       dev.new(width=11, height=7)

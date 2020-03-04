@@ -2,7 +2,7 @@
 
 # Snow crab --- Areal unit modelling of habitat  -- no reliance upon stmv fields
 
-#The use of the BYM2 model precludes using Windows, must be run in Linux 
+#The use of the BYM2 model precludes using Windows, must be run in Linux
 #Virtual box install of Ubuntu or Debian is likely easiest option
 
 #Choose one- likely latter
@@ -11,7 +11,7 @@
   year.assessment=lubridate::year(Sys.Date()) -1   # or year previous to current
 }
 
-
+# year.assessment = 2018
 #To add a title to any carstm_plot, please see below example
 #carstm_plot( p=p, res=res, vn=vn, main=list(label="my plot title", cex=2) )
 
@@ -53,16 +53,21 @@ plot.dir=paste(p$modeldir,"prediction.plots", year.assessment, sep="/" )
   M = bathymetry.db( p=pB, DS="aggregated_data", redo=TRUE )
   M = bathymetry_carstm( p=pB, DS="carstm_inputs", redo=TRUE  ) # will redo if not found
   M = NULL; gc()
-  res = carstm_model( p=pB, M='bathymetry_carstm( p=pB, DS="carstm_inputs" )', DS="redo", carstm_model_label="production"  ) # run model and obtain predictions
+
+  fit = carstm_model( p=pB, M='bathymetry_carstm( p=pB, DS="carstm_inputs" )', DS="redo", carstm_model_label="production"  ) # run model and obtain predictions
 
   if (0) {
     # to use a saved instance
-    res = carstm_model( p=pB, DS="carstm_modelled", carstm_model_label="production" ) # run model and obtain predictions
     fit = carstm_model( p=pB, DS="carstm_modelled_fit", carstm_model_label="production" )  # extract currently saved model fit
+    summary(fit)
+
+    res = carstm_summary( p=pB, operation="compute", carstm_model_label="production"  ) #
+    res = carstm_summary( p=pB, operation="load", carstm_model_label="production"  )
+
     # maps of some of the results
     vn = paste(pB$variabletomodel, "predicted", sep=".")
     zplot=carstm_plot( p=pB, res=res, vn=vn )
-   
+
      #to save map of predicted
     {
     fn=paste("z.predicted", year.assesment,"pdf", sep="." )
@@ -71,7 +76,7 @@ plot.dir=paste(p$modeldir,"prediction.plots", year.assessment, sep="/" )
 
     vn = paste(pB$variabletomodel, "predicted_se", sep=".")
     zplot=carstm_plot( p=pB, res=res, vn=vn )
-    
+
     vn = paste(pB$variabletomodel, "random_auid_nonspatial", sep=".")
     carstm_plot( p=pB, res=res, vn=vn )
 
@@ -81,7 +86,7 @@ plot.dir=paste(p$modeldir,"prediction.plots", year.assessment, sep="/" )
     plot(fit, plot.prior=TRUE, plot.hyperparameters=TRUE, plot.fixed.effects=FALSE, single=TRUE )
 
     #Framework Run (to 2018)
-    
+
     # Time used:
     #     Pre = 2.71, Running = 4366, Post = 3.26, Total = 4372
     # Fixed effects:
@@ -121,12 +126,15 @@ plot.dir=paste(p$modeldir,"prediction.plots", year.assessment, sep="/" )
   M = substrate.db( p=pS, DS="aggregated_data", redo=TRUE )  # used for data matching/lookup in other aegis projects that use substrate
   M = substrate_carstm( p=pS, DS="carstm_inputs", redo=TRUE )  # will redo if not found
   M = NULL; gc()
-  res = carstm_model( p=pS, M='substrate_carstm( p=pS, DS="carstm_inputs")', DS="redo", carstm_model_label="production"  )  # run model and obtain predictions
+  fit = carstm_model( p=pS, M='substrate_carstm( p=pS, DS="carstm_inputs")', DS="redo", carstm_model_label="production"  )  # run model and obtain predictions
 
   if(0) {
-    res = carstm_model( p=pS, DS="carstm_modelled", carstm_model_label="production"   ) # run model and obtain predictions
+    # to use a saved instance
     fit = carstm_model( p=pS, DS="carstm_modelled_fit", carstm_model_label="production" )  # extract currently saved model fit
     summary(fit)
+
+    res = carstm_summary( p=pS, operation="compute", carstm_model_label="production"  ) #
+    res = carstm_summary( p=pS, operation="load", carstm_model_label="production"  )
 
 # Fixed effects:
 #               mean    sd 0.025quant 0.5quant 0.975quant   mode kld
@@ -153,9 +161,9 @@ plot.dir=paste(p$modeldir,"prediction.plots", year.assessment, sep="/" )
 
 # Marginal log-Likelihood:  -17603.13
 
-    
-    
-    
+
+
+
     vn = paste(pS$variabletomodel, "predicted", sep=".")
     carstm_plot( p=pS, res=res, vn=vn ) # maps of some of the results
 
@@ -215,8 +223,8 @@ plot.dir=paste(p$modeldir,"prediction.plots", year.assessment, sep="/" )
         control.fixed=H$fixed,  # priors for fixed effects, generic is ok
         verbose=TRUE
       ) ' )
-    res = carstm_model( p=pS, M='substrate_carstm( p=pS, DS="carstm_inputs")', DS="redo", carstm_model_label=pS$carstm_model_label  )  # run model and obtain predictions
-    fit = carstm_model( p=pS, DS="carstm_modelled_fit", carstm_model_label=pS$carstm_model_label )  # extract currently saved model fit
+    fit = carstm_model( p=pS, M='substrate_carstm( p=pS, DS="carstm_inputs")', DS="redo", carstm_model_label=pS$carstm_model_label  )  # run model and obtain predictions
+    # fit = carstm_model( p=pS, DS="carstm_modelled_fit", carstm_model_label=pS$carstm_model_label )  # extract currently saved model fit
 
   }
 
@@ -234,11 +242,14 @@ plot.dir=paste(p$modeldir,"prediction.plots", year.assessment, sep="/" )
   M = temperature.db( p=pT, DS="aggregated_data", redo=TRUE )  #  used for data matching/lookup in other aegis projects that use temperature
   M = temperature_carstm( p=pT, DS="carstm_inputs", redo=TRUE )  # will redo if not found
   M = NULL; gc()
-  res = carstm_model( p=pT, M='temperature_carstm( p=pT, DS="carstm_inputs")', DS="redo", carstm_model_label="production"  ) # run model and obtain predictions
+  fit = carstm_model( p=pT, M='temperature_carstm( p=pT, DS="carstm_inputs")', DS="redo", carstm_model_label="production"  ) # run model and obtain predictions
   if (0) {
-    res = carstm_model( p=pT, DS="carstm_modelled", carstm_model_label="production" ) # run model and obtain predictions
-    fit = carstm_model(  p=pT, DS="carstm_modelled_fit", carstm_model_label="production" )  # extract currently saved model fit
+    # to use a saved instance
+    fit = carstm_model( p=pT, DS="carstm_modelled_fit", carstm_model_label="production" )  # extract currently saved model fit
     summary(fit)
+
+    res = carstm_summary( p=pT, operation="compute", carstm_model_label="production"  ) #
+    res = carstm_summary( p=pT, operation="load", carstm_model_label="production"  )
 
 #Framework Model Summary (to 2018)
 #-------------------------------
@@ -274,27 +285,27 @@ plot.dir=paste(p$modeldir,"prediction.plots", year.assessment, sep="/" )
 # Marginal log-Likelihood:  -47560.07
 # Posterior marginals for the linear predictor and
 
-     
+
      vn = paste(pT$variabletomodel, "predicted", sep=".")
      carstm_plot( p=pT, res=res, vn=vn, time_match=list(year="2000", dyear="0.85" ) )       # maps of some of the results
-  
+
      vn = paste(pT$variabletomodel, "predicted_se", sep=".")
      carstm_plot( p=pT, res=res, vn=vn, time_match=list(year="2000", dyear="0.85" ) )       # maps of some of the results
-  
+
      vn = paste(pT$variabletomodel, "random_auid_nonspatial", sep=".")
      carstm_plot( p=pT, res=res, vn=vn, time_match=list(year="2000"  ) )       # maps of some of the results
      vn = paste(pT$variabletomodel, "random_auid_spatial", sep=".")
      carstm_plot( p=pT, res=res, vn=vn, time_match=list(year="2000"  ) )       # maps of some of the results
-  
-  
-  
+
+
+
      plot(fit, plot.prior=TRUE, plot.hyperparameters=TRUE, plot.fixed.effects=FALSE, single=TRUE )
-  
-  
+
+
    }
-  
+
  #to plot predicted temperature maps for last six years
-  
+
    recent=as.character((year.assessment-6): year.assessment)
    vn = paste(pT$variabletomodel, "predicted", sep=".")
 
@@ -305,8 +316,8 @@ plot.dir=paste(p$modeldir,"prediction.plots", year.assessment, sep="/" )
     pdf(outfile)
     print(each.plot)
     dev.off()
-  } 
-  
+  }
+
 
 
 
@@ -320,12 +331,17 @@ plot.dir=paste(p$modeldir,"prediction.plots", year.assessment, sep="/" )
   pPC1 = speciescomposition_carstm(p=p, DS="parameters_override", varnametomodel="pca1" )
   M = speciescomposition_carstm( p=pPC1, DS="carstm_inputs", varnametomodel="pca1", redo=TRUE )  # will redo if not found
   M = NULL; gc()
-  res = carstm_model( p=pPC1, M='speciescomposition_carstm( p=p, DS="carstm_inputs", varnametomodel="pca1" )', DS="redo", carstm_model_label="production"   ) # run model and obtain predictions
+  fit = carstm_model( p=pPC1, M='speciescomposition_carstm( p=p, DS="carstm_inputs", varnametomodel="pca1" )', DS="redo", carstm_model_label="production"   ) # run model and obtain predictions
+
   if (0) {
-    res = carstm_model( p=pPC1, DS="carstm_modelled", carstm_model_label="production"  ) # run model and obtain predictions
+
+    # to use a saved instance
     fit = carstm_model( p=pPC1, DS="carstm_modelled_fit", carstm_model_label="production" )  # extract currently saved model fit
     summary(fit)
-    
+
+    res = carstm_summary( p=pPC1, operation="compute", carstm_model_label="production"  ) #
+    res = carstm_summary( p=pPC1, operation="load", carstm_model_label="production"  )
+
     plot( fit, plot.prior=TRUE, plot.hyperparameters=TRUE, plot.fixed.effects=FALSE )
 
     vn = paste(pPC1$variabletomodel, "predicted", sep=".")
@@ -338,7 +354,7 @@ plot.dir=paste(p$modeldir,"prediction.plots", year.assessment, sep="/" )
     vn = paste(pPC1$variabletomodel, "random_auid_spatial", sep=".")
     carstm_plot( p=pPC1, res=res, vn=vn, time_match=list(year="2017" ), dyear="0.85" )       # maps of some of the results , dyear="0.85"
 
-    
+
 #From Framework Run(up to 2018)
 # Time used:
 #     Pre = 2.67, Running = 667, Post = 4.98, Total = 675
@@ -400,11 +416,16 @@ plot.dir=paste(p$modeldir,"prediction.plots", year.assessment, sep="/" )
   pPC2 = speciescomposition_carstm(p=p, DS="parameters_override", varnametomodel="pca2" )
   M = speciescomposition_carstm( p=pPC2, DS="carstm_inputs", redo=TRUE )  # will redo if not found
   M = NULL; gc()
-  res = carstm_model( p=pPC2, M='speciescomposition_carstm( p=p, DS="carstm_inputs", varnametomodel="pca2" )', DS="redo" , carstm_model_label="production"  ) # run model and obtain predictions
+  fit = carstm_model( p=pPC2, M='speciescomposition_carstm( p=p, DS="carstm_inputs", varnametomodel="pca2" )', DS="redo" , carstm_model_label="production"  ) # run model and obtain predictions
   if (0) {
-    res = carstm_model( p=pPC2, DS="carstm_modelled", carstm_model_label="production"   ) # run model and obtain predictions
-    fit = carstm_model( p=pPC2, DS="carstm_modelled_fit", carstm_model_label="production"  )  # extract currently saved model fit
+
+    # to use a saved instance
+    fit = carstm_model( p=pPC2, DS="carstm_modelled_fit", carstm_model_label="production" )  # extract currently saved model fit
     summary(fit)
+
+    res = carstm_summary( p=pPC2, operation="compute", carstm_model_label="production"  ) #
+    res = carstm_summary( p=pPC2, operation="load", carstm_model_label="production"  )
+
     plot( fit, plot.prior=TRUE, plot.hyperparameters=TRUE, plot.fixed.effects=FALSE )
 
     vn = paste(pPC2$variabletomodel, "predicted", sep=".")
@@ -478,19 +499,23 @@ plot.dir=paste(p$modeldir,"prediction.plots", year.assessment, sep="/" )
   M = snowcrab_carstm( p=p, DS="carstm_inputs", redo=TRUE )  # will redo if not found
   #To compare values of M, run the following line:
   #load(paste(p$modeldir, "M.summary.rdata", sep="/"))
-  
+
    M = NULL; gc()
-  res = carstm_model( p=p, M='snowcrab_carstm( p=p, DS="carstm_inputs" )' ) # 151 configs and long optim .. 19 hrs
+   fit = carstm_model( p=p, M='snowcrab_carstm( p=p, DS="carstm_inputs" )' ) # 151 configs and long optim .. 19 hrs
 
   # m = get("inla.models", INLA:::inla.get.inlaEnv())
 	# m$latent$rw2$min.diff = NULL
 	# assign("inla.models", m, INLA:::inla.get.inlaEnv())
 
 
-    # extract results
-    res = carstm_model( p=p, DS="carstm_modelled" ) # to load currently saved res
-    fit = carstm_model( p=p, DS="carstm_modelled_fit" )  # extract currently saved model fit
-    summary(fit)
+  fit =  carstm_model( p=p, DS="carstm_modelled_fit" )  # extract currently saved model fit
+  summary(fit)
+
+
+  #  carstm_summary( p=p, operation="compute", carstm_model_label=p$carstm_model_label  )
+
+  res = carstm_summary( p=p, operation="compute"  ) #
+  res = carstm_summary( p=p, operation="load"  )
 
 
 
@@ -580,26 +605,25 @@ plot.dir=paste(p$modeldir,"prediction.plots", year.assessment, sep="/" )
 
 
     sppoly = areal_units( p=p )  # to reload
-    M = snowcrab_carstm( p=p, DS="carstm_inputs" )
-    M$yr = M$year  # req for meanweights
+    # M = snowcrab_carstm( p=p, DS="carstm_inputs" )
+    # M$yr = M$year  # req for meanweights
 
-    # mean weight by auidxyear
-    wgts = meanweights_by_arealunit(
-      set=M[M$tag=="observations",],
-      AUID=as.character( sppoly$AUID ),
-      yrs=p$yrs,
-      fillall=TRUE,
-      annual_breakdown=TRUE,
-      robustify_quantiles=c(0, 0.99)  # high upper bounds are more dangerous
-    )
+    # # mean weight by auidxyear
+    # wgts = meanweights_by_arealunit(
+    #   set=M[M$tag=="observations",],
+    #   AUID=as.character( sppoly$AUID ),
+    #   yrs=p$yrs,
+    #   fillall=TRUE,
+    #   annual_breakdown=TRUE,
+    #   robustify_quantiles=c(0, 0.99)  # high upper bounds are more dangerous
+    # )
 
 
-    carstm_summary( p=p, operation="compute", carstm_model_label=p$carstm_model_label, wgts=wgts )
 
-    RES = carstm_summary(p=p, operation="load_timeseries", carstm_model_label=p$carstm_model_label  )
+    RES = snowcrab_carstm(p=p, DS="carstm_output_timeseries", carstm_model_label=p$carstm_model_label  )
 
-    bio = carstm_summary(p=p, operation="load_spacetime_biomass", carstm_model_label=p$carstm_model_label  )
-    num = carstm_summary(p=p, operation="load_spacetime_number", carstm_model_label=p$carstm_model_label  )
+    bio = snowcrab_carstm(p=p, DS="carstm_output_spacetime_biomass", carstm_model_label=p$carstm_model_label  )
+    num = snowcrab_carstm(p=p, DS="carstm_output_spacetime_number", carstm_model_label=p$carstm_model_label  )
 
 
     plot( cfaall ~ yrs, data=RES, lty=1, lwd=2.5, col="red", type="b", ylab="Biomass (kt)", xlab="")
@@ -607,7 +631,7 @@ plot.dir=paste(p$modeldir,"prediction.plots", year.assessment, sep="/" )
     plot( cfanorth ~ yrs, data=RES, lty=1, lwd=2.5, col="red", type="b", ylab="Biomass (kt)", xlab="")
     plot( cfa4x ~ yrs, data=RES, lty=1, lwd=2.5, col="red", type="b", ylab="Biomass (kt)", xlab="")
 
-   
+
     p$boundingbox = list( xlim=p$corners$lon, ylim=p$corners$lat) # bounding box for plots using spplot
 
     p$coastLayout = aegis.coastline::coastline_layout(p=p)
@@ -622,9 +646,9 @@ plot.dir=paste(p$modeldir,"prediction.plots", year.assessment, sep="/" )
     spplot( sppoly, vn, col.regions=p$mypalette, main=vn, at=brks, sp.layout=p$coastLayout, col="transparent" )
 
     #to save plots of the last six years:
-    #Needs to be run in Windows or outside Linux Rstudio for now 
+    #Needs to be run in Windows or outside Linux Rstudio for now
     recent=as.character((year.assessment-6): year.assessment)
-    
+
     for (x in recent){
       sppoly@data[,vn] = bio[,x]
       brks = interval_break(X= sppoly[[vn]], n=length(p$mypalette), style="quantile")
@@ -634,13 +658,14 @@ plot.dir=paste(p$modeldir,"prediction.plots", year.assessment, sep="/" )
       pdf(outfile)
       print(each.plot)
       dev.off()
-    } 
-    
+    }
+
 
     plot( fit, plot.prior=TRUE, plot.hyperparameters=TRUE, plot.fixed.effects=FALSE )
     plot( fit$marginals.hyperpar$"Phi for auid", type="l")  # posterior distribution of phi nonspatial dominates
     plot( fit$marginals.hyperpar$"Precision for auid", type="l")
     plot( fit$marginals.hyperpar$"Precision for setno", type="l")
+
 
 
 
