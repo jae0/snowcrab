@@ -1,5 +1,5 @@
 
-snowcrab_carstm = function( p=NULL, DS="parameters", redo=FALSE, ...) {
+snowcrab_carstm = function( p=NULL, DS="parameters", redo=FALSE, extrapolation_limit=NA, ...) {
 
 	# handles all basic data tables, etc. ...
 
