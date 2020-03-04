@@ -538,7 +538,6 @@ snowcrab_carstm = function( p=NULL, DS="parameters", redo=FALSE, ...) {
     M$yr = M$year  # req for meanweights
     # mean weight by auidxyear
 
-
     # init results list
     year = NULL
     if ( p$aegis_dimensionality %in% c("space-year", "space-year-dyear") ) {
@@ -553,7 +552,11 @@ snowcrab_carstm = function( p=NULL, DS="parameters", redo=FALSE, ...) {
     }
 
 
-    # res = carstm_model( p=p, DS="carstm_modelled", carstm_model_label=p$carstm_model_label ) # to load currently saved res
+    fit = carstm_model( p=p, DS="carstm_modelled_fit", carstm_model_label=p$carstm_model_label ) # to load currently saved res
+
+    ps = inla.posterior.sample(n=p$nsims, fit, selection=list(Predictor=0))  # only predictions
+
+    res = carstm_summary( p=p, operation="load"  )
 
     if (p$selection$type %in% c("presence_absence") ) {
       pa = res[[ paste( p$variabletomodel, "predicted", sep=".")]]
@@ -561,11 +564,9 @@ snowcrab_carstm = function( p=NULL, DS="parameters", redo=FALSE, ...) {
       # if (is.na(extrapolation_limit)) extrapolation_limit = c(0,1)
       save( pa, file=fn_pa, compress=TRUE )
 
-      ps = inla.posterior.sample(n=p$nsims, fit, selection=list(Predictor=0))  # only predictions
-
       sims = sapply( ps,
         function(x) {
-          input = exp( x$latent[res$ii])
+          input = inverse.logit( x$latent[res$ii])
           pa = reformat_to_array( input=input , matchfrom=res$matchfrom, matchto=res$matchto )
           pa[!is.finite(pa)] = NA
           o = list()
@@ -578,24 +579,6 @@ snowcrab_carstm = function( p=NULL, DS="parameters", redo=FALSE, ...) {
           return(o)
         }, simplify=TRUE
       )
-
-      RES = data.frame( yrs = p$yrs )
-      RES$cfaall = apply( simplify2array(sims["cfaall",]), 1, mean )
-      RES$cfaall_sd = apply( simplify2array(sims["cfaall",]), 1, sd )
-      RES$cfanorth = apply( simplify2array(sims["cfanorth",]), 1, mean )
-      RES$cfanorth_sd = apply( simplify2array(sims["cfanorth",]), 1, sd )
-      RES$cfasouth = apply( simplify2array(sims["cfasouth",]), 1, mean )
-      RES$cfasouth_sd = apply( simplify2array(sims["cfasouth",]), 1, sd )
-      RES$cfa23 = apply( simplify2array(sims["cfa23",]), 1, mean )
-      RES$cfa23_sd = apply( simplify2array(sims["cfa23",]), 1, sd )
-      RES$cfa24 = apply( simplify2array(sims["cfa24",]), 1, mean )
-      RES$cfa24_sd = apply( simplify2array(sims["cfa24",]), 1, sd )
-      RES$cfa4x = apply( simplify2array(sims["cfa4x",]), 1, mean )
-      RES$cfa4x_sd = apply( simplify2array(sims["cfa4x",]), 1, sd )
-
-      save( RES, file=fn, compress=TRUE )
-
-
     }
 
 
@@ -626,6 +609,23 @@ snowcrab_carstm = function( p=NULL, DS="parameters", redo=FALSE, ...) {
         save( biom, file=fn_bio, compress=TRUE )
         save( nums, file=fn_no, compress=TRUE )
 
+        sims = sapply( ps,
+          function(x) {
+            input = exp( x$latent[res$ii])
+            biom = reformat_to_array( input=input , matchfrom=res$matchfrom, matchto=res$matchto )
+            biom[!is.finite(biom)] = NA
+            nums = biom / wgts
+            o = list()
+            o$cfaall    = colSums( biom * sppoly$au_sa_km2/ 10^6, na.rm=TRUE )
+            o$cfanorth  = colSums( biom * sppoly$cfanorth_surfacearea/ 10^6, na.rm=TRUE )
+            o$cfasouth  = colSums( biom * sppoly$cfasouth_surfacearea/ 10^6, na.rm=TRUE )
+            o$cfa23     = colSums( biom * sppoly$cfa23_surfacearea/ 10^6, na.rm=TRUE )
+            o$cfa24     = colSums( biom * sppoly$cfa24_surfacearea/ 10^6, na.rm=TRUE )
+            o$cfa4x     = colSums( biom * sppoly$cfa4x_surfacearea/ 10^6, na.rm=TRUE )
+            return(o)
+          }, simplify=TRUE
+        )
+
       }
 
 
@@ -645,27 +645,25 @@ snowcrab_carstm = function( p=NULL, DS="parameters", redo=FALSE, ...) {
         save( biom, file=fn_bio, compress=TRUE )
         save( nums, file=fn_no, compress=TRUE )
 
+        sims = sapply( ps,
+          function(x) {
+            input = exp( x$latent[res$ii])
+            nums = reformat_to_array( input=input , matchfrom=res$matchfrom, matchto=res$matchto )
+            nums[!is.finite(nums)] = NA
+            biom = nums * wgts
+            o = list()
+            o$cfaall    = colSums( biom * sppoly$au_sa_km2/ 10^6, na.rm=TRUE )
+            o$cfanorth  = colSums( biom * sppoly$cfanorth_surfacearea/ 10^6, na.rm=TRUE )
+            o$cfasouth  = colSums( biom * sppoly$cfasouth_surfacearea/ 10^6, na.rm=TRUE )
+            o$cfa23     = colSums( biom * sppoly$cfa23_surfacearea/ 10^6, na.rm=TRUE )
+            o$cfa24     = colSums( biom * sppoly$cfa24_surfacearea/ 10^6, na.rm=TRUE )
+            o$cfa4x     = colSums( biom * sppoly$cfa4x_surfacearea/ 10^6, na.rm=TRUE )
+            return(o)
+          }, simplify=TRUE
+        )
+
       }
-
-
-      ps = inla.posterior.sample(n=p$nsims, fit, selection=list(Predictor=0))  # only predictions
-
-      sims = sapply( ps,
-        function(x) {
-          input = exp( x$latent[res$ii])
-          nums = reformat_to_array( input=input , matchfrom=res$matchfrom, matchto=res$matchto )
-          nums[!is.finite(nums)] = NA
-          biom = nums * wgts
-          o = list()
-          o$cfaall    = colSums( biom * sppoly$au_sa_km2/ 10^6, na.rm=TRUE )
-          o$cfanorth  = colSums( biom * sppoly$cfanorth_surfacearea/ 10^6, na.rm=TRUE )
-          o$cfasouth  = colSums( biom * sppoly$cfasouth_surfacearea/ 10^6, na.rm=TRUE )
-          o$cfa23     = colSums( biom * sppoly$cfa23_surfacearea/ 10^6, na.rm=TRUE )
-          o$cfa24     = colSums( biom * sppoly$cfa24_surfacearea/ 10^6, na.rm=TRUE )
-          o$cfa4x     = colSums( biom * sppoly$cfa4x_surfacearea/ 10^6, na.rm=TRUE )
-          return(o)
-        }, simplify=TRUE
-      )
+    }
 
     RES = data.frame( yrs = p$yrs )
     RES$cfaall = apply( simplify2array(sims["cfaall",]), 1, mean )
@@ -685,5 +683,4 @@ snowcrab_carstm = function( p=NULL, DS="parameters", redo=FALSE, ...) {
 
     return(RES)
   }
-
 }  ## end snowcrab.db
