@@ -619,6 +619,7 @@
     # )
 
 
+    RES = snowcrab_carstm(p=p, DS="carstm_output_compute", carstm_model_label=p$carstm_model_label  )
 
     RES = snowcrab_carstm(p=p, DS="carstm_output_timeseries", carstm_model_label=p$carstm_model_label  )
 
