@@ -161,6 +161,7 @@ snowcrab_carstm = function( p=NULL, DS="parameters", redo=FALSE, ...) {
       }
     }
 
+    if (!exists("nsims", p) ) p$nsims = 10000
 
     p = carstm_parameters( p=p)  # fill in anything missing and some checks
 
@@ -523,7 +524,7 @@ snowcrab_carstm = function( p=NULL, DS="parameters", redo=FALSE, ...) {
       return( biom )
     }
 
-    if ( DS=="carstm_output_spacetime_pa") ) {
+    if ( DS=="carstm_output_spacetime_pa")  {
       pa = NA
       if (file.exists(fn_pa)) load( fn_pa )
       return( pa )
