@@ -541,7 +541,7 @@ fishery_model = function(  p, DS="stan", plotresults=TRUE, ... ) {
 
     dir.create( p$fishery_model$outdir, recursive=T, showWarnings=F )
 
-    f = sampling( p$fishery_model$stancode_compiled, data=p$fishery_model$standata, ... )
+    f = rstan::sampling( p$fishery_model$stancode_compiled, data=p$fishery_model$standata, ... )
           # warmup = 200,          # number of warmup iterations per chain
           # control = list(adapt_delta = 0.9),
           # # refresh = 500,          # show progress every 'refresh' iterations
@@ -549,7 +549,7 @@ fishery_model = function(  p, DS="stan", plotresults=TRUE, ... ) {
           # chains = 5,             # number of Markov chains
           # cores = 5              # number of cores (using 2 just for the vignette)
 
-    res = list( mcmc=extract(f), p=p)
+    res = list( mcmc=rstan::extract(f), p=p)
     save(res, file=p$fishery_model$fnres, compress=T)
     return(res)
 

@@ -1,12 +1,12 @@
 p = bio.snowcrab::snowcrab_carstm( DS="parameters",
                                    assessment.years=1999:2019 )
 
-bio = carstm_summary(p=p, operation="load_spacetime_biomass",carstm_model_label=p$carstm_model_label  )
-num = carstm_summary(p=p, operation="load_spacetime_number", carstm_model_label=p$carstm_model_label  )
+bio = snowcrab_carstm(p=p, DS="carstm_output_spacetime_biomass",carstm_model_label=p$carstm_model_label  )
+num = snowcrab_carstm(p=p, DS="carstm_output_spacetime_number", carstm_model_label=p$carstm_model_label  )
 
 u = which.max( bio[,"2019"] )
 dimnames(bio)
-# givem the AUID and years 
+# givem the AUID and years
 dimnames(bio)$AUID[ u]
 
 M = snowcrab_carstm( p=p, DS="carstm_inputs" )  # will redo if not found M[M$AUID==dimnames(bio)$AUID[ u] & M$year==2019 ,]
@@ -30,7 +30,7 @@ spplot( sppoly, vn, col.regions=p$mypalette, main=vn, at=brks, sp.layout=p$coast
 
 
 #determine which station ID's from survey are associated with which AU's for the model run?
-  
+
 #see line 215 of snowcrab_carstm.R
 
 crs_lonlat = sp::CRS(projection_proj4string("lonlat_wgs84"))
@@ -47,15 +47,15 @@ M$AUID = over( SpatialPoints( M[, c("lon", "lat")], crs_lonlat ), spTransform(sp
 #--------------------------------------------------------------------------------
 
 N = snowcrab.db( p=p, DS="biological_data" )
- 
+
  N$density = N$totno /  N$data_offset
 
 hist( N$density  )
 
 #compare to:
-  
+
 hist( N$density[ which(N$yr==2019)] )
-> > > > > > 
-  > > > 
-  > > > 
-  
+> > > > > >
+  > > >
+  > > >
+

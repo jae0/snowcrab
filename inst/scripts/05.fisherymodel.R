@@ -21,12 +21,12 @@ p$fishery_model$method = "stan"  # "jags", etc.
 p$fishery_model$outdir = file.path(project.datadirectory('bio.snowcrab'), "assessments", p$year.assessment )
 p$fishery_model$fnres  = file.path(p$fishery_model$outdir, paste( "surplus.prod.mcmc", p$year.assessment, p$fishery_model$method, "rdata", sep=".") )
 p$fishery_model$standata = snowcrab_tsdata( p=p, assessment_years=p$assessment_years )
-p$fishery_model$standata$Kmu =  c( 5, 50, 1)
+p$fishery_model$standata$Kmu =  c( 5, 60, 1)
 p$fishery_model$standata$rmu = c(1, 1, 1)
 p$fishery_model$standata$qmu = c(1, 1, 1)
-p$fishery_model$standata$Ksd =  c(0.2, 0.2, 0.2) * p$fishery_model$standata$Kmu  # c( 2, 20, 0.5)
-p$fishery_model$standata$rsd =  c(0.2, 0.2, 0.2) * p$fishery_model$standata$rmu  # rep( 0.3, 3)
-p$fishery_model$standata$qsd =  c(0.2, 0.2, 0.2) * p$fishery_model$standata$qmu  # rep( 0.3, 3)
+p$fishery_model$standata$Ksd =  c(0.25, 0.25, 0.25) * p$fishery_model$standata$Kmu  # c( 2, 20, 0.5)
+p$fishery_model$standata$rsd =  c(0.25, 0.25, 0.25) * p$fishery_model$standata$rmu  # rep( 0.3, 3)
+p$fishery_model$standata$qsd =  c(0.25, 0.25, 0.25) * p$fishery_model$standata$qmu  # rep( 0.3, 3)
 
 p$fishery_model$stancode = fishery_model( p=p, DS="stan_surplus_production" )
 p$fishery_model$stancode_compiled = rstan::stan_model( model_code=p$fishery_model$stancode )
@@ -44,10 +44,10 @@ p$fishery_model$stancode_compiled = rstan::stan_model( model_code=p$fishery_mode
 
 res = fishery_model( p=p, DS="stan",
   chains=4,
-  iter=12000,
-  warmup=6000,
-  refresh = 500,
-  control = list(adapt_delta = 0.98, max_treedepth=16)
+  iter=14000,
+  warmup=8000,
+  refresh = 1000,
+  control = list(adapt_delta = 0.99, max_treedepth=18)
 )
 
 #below figure code best run in R terminal rather than RStudio

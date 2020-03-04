@@ -108,7 +108,7 @@ map.set.information = function(p, outdir, variables, mapyears, interpolate.metho
           filename=file.path(outloc, paste(outfn, "png", sep="."))
           print(filename)
           png( filename=filename, width=3072, height=2304, pointsize=40, res=300 )
-          lp = aegis_map( xyz, xyz.coords="planar", depthcontours=TRUE, pts=set_xyz[,c("plon","plat")], 
+          lp = aegis_map( xyz, xyz.coords="planar", depthcontours=TRUE, pts=set_xyz[,c("plon","plat")],
             annot=annot, annot.cex=4, at=datarange , col.regions=cols(length(datarange)+1),
             colpts=F, corners=p$corners, display=F, colorkey=ckey, plotlines="cfa.regions" )
           print(lp)

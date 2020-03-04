@@ -103,7 +103,7 @@ snowcrab_carstm = function( p=NULL, DS="parameters", redo=FALSE, ...) {
         p$libs = unique( c( p$libs, project.library ( "INLA" ) ) )
         p$carstm_model_label = "production"
         # 281 configs .. 8hrs
-        
+
         #number of nodes can be adjusted below to smooth (n=11 instead of n=13)
         p$carstm_modelcall = paste(
           'inla( formula =', p$variabletomodel,
@@ -193,9 +193,9 @@ snowcrab_carstm = function( p=NULL, DS="parameters", redo=FALSE, ...) {
 
     # do this immediately to reduce storage for sppoly (before adding other variables)
     M = snowcrab.db( p=p, DS="biological_data" )  # will redo if not found .. not used here but used for data matching/lookup in other aegis projects that use bathymetry
-    
+
     #January 2020 samples create a problem- 2019 survey, 2020 year
-    #Shift these samples back to late december by removing 16 days 
+    #Shift these samples back to late december by removing 16 days
     i=which((lubridate::year (M$timestamp)==2020) & (lubridate::month(M$timestamp)==1))
     #M$tiyr[i]=M$tiyr[i]-(16/365.25)
     M$timestamp[i]=M$timestamp[i]-1382400
@@ -294,7 +294,7 @@ snowcrab_carstm = function( p=NULL, DS="parameters", redo=FALSE, ...) {
     # substrate coverage poor .. add from modelled results
     kk =  which( !is.finite(M[, pS$variabletomodel]))
     if (length(kk) > 0) {
-      SI = carstm_model ( p=pS, DS="carstm_modelled" )
+      SI = carstm_summary ( p=pS, operation="load" )
       jj = match( as.character( M$AUID[kk]), as.character( SI$AUID) )
       M[kk, pS$variabletomodel] = SI[[ paste(pS$variabletomodel,"predicted",sep="." )]] [jj]
     }
@@ -333,7 +333,7 @@ snowcrab_carstm = function( p=NULL, DS="parameters", redo=FALSE, ...) {
     }
     kk =  which( !is.finite(M[, pPC1$variabletomodel]))
     if (length(kk) > 0) {
-      PI = carstm_model ( p=pPC1, DS="carstm_modelled" )
+      PI = carstm_summary ( p=pPC1, operation="load" )
       au_map = match( M$AUID[kk], dimnames(PI)$AUID )
       year_map = match( as.character(M$year[kk]), dimnames(PI)$year )
       dindex = cbind(au_map, year_map )
@@ -353,7 +353,7 @@ snowcrab_carstm = function( p=NULL, DS="parameters", redo=FALSE, ...) {
     }
     kk =  which( !is.finite(M[, pPC2$variabletomodel]))
     if (length(kk) > 0) {
-      PI = carstm_model ( p=pPC2, DS="carstm_modelled" )
+      PI = carstm_summary ( p=pPC2, operation="load" )
       au_map = match( M$AUID[kk], dimnames(PI)$AUID )
       year_map = match( as.character(M$year[kk]), dimnames(PI)$year )
       dindex = cbind(au_map, year_map )
@@ -385,13 +385,13 @@ snowcrab_carstm = function( p=NULL, DS="parameters", redo=FALSE, ...) {
     APS[,p$variabletomodel] = NA
 
 
-    BI = carstm_model ( p=pB, DS="carstm_modelled" )
+    BI = carstm_summary ( p=pB, operation="load" )
     jj = match( as.character( APS$AUID), as.character( BI$AUID) )
     APS[, pB$variabletomodel] = BI[[ paste(pB$variabletomodel,"predicted",sep="." ) ]] [jj]
     jj =NULL
     BI = NULL
 
-    SI = carstm_model ( p=pS, DS="carstm_modelled" )
+    SI = carstm_summary ( p=pS, operation="load" )
     jj = match( as.character( APS$AUID), as.character( SI$AUID) )
     APS[, pS$variabletomodel] = SI[[ paste(pS$variabletomodel,"predicted",sep="." )]] [jj]
     jj =NULL
@@ -411,7 +411,7 @@ snowcrab_carstm = function( p=NULL, DS="parameters", redo=FALSE, ...) {
     APS$dyear = APS$tiyr - APS$year
 
 
-    TI = carstm_model ( p=pT, DS="carstm_modelled" )
+    TI = carstm_summary ( p=pT, operation="load" )
     TI = TI[[ paste(pT$variabletomodel,"predicted",sep="." )]]
     au_map = match( APS$AUID, dimnames(TI)$AUID )
     year_map = match( as.character(APS$year), dimnames(TI)$year )
@@ -422,7 +422,7 @@ snowcrab_carstm = function( p=NULL, DS="parameters", redo=FALSE, ...) {
     TI = NULL
 
 
-    PI = carstm_model ( p=pPC1, DS="carstm_modelled" )
+    PI = carstm_summary ( p=pPC1, operation="load" )
     PI = PI[[ paste(pPC1$variabletomodel,"predicted",sep="." )]]
     au_map = match( APS$AUID, dimnames(PI)$AUID )
     year_map = match( as.character(APS$year), dimnames(PI)$year )
@@ -430,7 +430,7 @@ snowcrab_carstm = function( p=NULL, DS="parameters", redo=FALSE, ...) {
     APS[, pPC1$variabletomodel] = PI [dindex]
     PI = NULL
 
-    PI = carstm_model ( p=pPC2, DS="carstm_modelled" )
+    PI = carstm_summary ( p=pPC2, operation="load" )
     PI = PI[[ paste(pPC2$variabletomodel,"predicted",sep="." )]]
     au_map = match( APS$AUID, dimnames(PI)$AUID )
     year_map = match( as.character(APS$year), dimnames(PI)$year )
@@ -438,7 +438,7 @@ snowcrab_carstm = function( p=NULL, DS="parameters", redo=FALSE, ...) {
     APS[, pPC2$variabletomodel] = PI [dindex]
     PI = NULL
 
-    # useful vars to have for analyses outside of carstm_model
+    # useful vars to have for analyses outside of carstm_summary
     varstoadd = c( "totwgt", "totno", "sa", "data_offset",  "zn", "qn" )
 
     for (vn in varstoadd) if (!exists( vn, APS)) APS[,vn] = NA
@@ -474,5 +474,215 @@ snowcrab_carstm = function( p=NULL, DS="parameters", redo=FALSE, ...) {
     return( M )
   }
 
+
+  if ( any( grepl("carstm_output", DS) ) ) {
+
+    required.vars = c("areal_units_fn", "inputdata_spatial_discretization_planar_km", "inputdata_temporal_discretization_yr", "variabletomodel",
+      "carstm_modelengine", "modeldir", "carstm_model_label", "yrs", "variabletomodel" )
+
+    for (i in required.vars) {
+      if (!exists(i, p)) {
+        message( "Missing parameter" )
+        message( i )
+        stop()
+      }
+    }
+
+    # same file naming as in carstm ..
+    outputdir = file.path(p$modeldir, p$carstm_model_label)
+    areal_units_fns = p$areal_units_fn
+
+    if (exists( "inputdata_spatial_discretization_planar_km", p )) areal_units_fns = paste( areal_units_fns, round(p$inputdata_spatial_discretization_planar_km, 6),   sep="_" )
+    if (exists( "inputdata_temporal_discretization_yr", p )) areal_units_fns = paste( areal_units_fns, round(p$inputdata_temporal_discretization_yr, 6),   sep="_" )
+
+    if ( !file.exists(outputdir)) dir.create( outputdir, recursive=TRUE, showWarnings=FALSE )
+
+    areal_units_fns_suffix = paste( areal_units_fns, p$variabletomodel, p$carstm_modelengine,  "rdata", sep="." )
+
+    fn     = file.path( outputdir, paste("carstm_modelled_results", areal_units_fns_suffix, "aggregated_timeseries",  "rdata", sep="." )  )
+    fn_no = file.path( outputdir, paste("carstm_modelled_results", areal_units_fns_suffix, "space_timeseries_number",  "rdata", sep="." ) )
+    fn_bio = file.path( outputdir, paste("carstm_modelled_results", areal_units_fns_suffix, "space_timeseries_biomass",  "rdata", sep="." ) )
+    fn_pa = file.path( outputdir, paste("carstm_modelled_results", areal_units_fns_suffix, "space_timeseries_pa",  "rdata", sep="." )  )
+
+
+    if ( DS=="carstm_output_timeseries" ) {
+      RES = NA
+      if (file.exists(fn)) load( fn)
+      return( RES )
+    }
+
+    if ( DS=="carstm_output_spacetime_number" ) {
+      nums = NA
+      if (file.exists(fn_no)) load( fn_no )
+      return( nums )
+    }
+
+    if ( DS=="carstm_output_spacetime_biomass" ) {
+      biom = NA
+      if (file.exists(fn_bio)) load( fn_bio )
+      return( biom )
+    }
+
+    if ( DS=="carstm_output_spacetime_pa") ) {
+      pa = NA
+      if (file.exists(fn_pa)) load( fn_pa )
+      return( pa )
+    }
+
+
+    # construct meanweights matrix used to convert number to weight
+    sppoly = areal_units( p=p )
+
+    M = snowcrab_carstm( p=p, DS="carstm_inputs" )
+    M$yr = M$year  # req for meanweights
+    # mean weight by auidxyear
+
+
+    # init results list
+    year = NULL
+    if ( p$aegis_dimensionality %in% c("space-year", "space-year-dyear") ) {
+      year = as.character( p$yrs )
+      M$year = as.character(M$year)
+    }
+
+    dyear = NULL
+    if ( p$aegis_dimensionality %in% c("space-year-dyear") ){
+      dyear = as.character( discretize_data( (p$dyears + diff(p$dyears)[1]/2), p$discretization[["dyear"]] ) )
+      M$dyear = as.character( discretize_data( M$dyear, p$discretization[["dyear"]] ) )
+    }
+
+
+    # res = carstm_model( p=p, DS="carstm_modelled", carstm_model_label=p$carstm_model_label ) # to load currently saved res
+
+    if (p$selection$type %in% c("presence_absence") ) {
+      pa = res[[ paste( p$variabletomodel, "predicted", sep=".")]]
+      pa[!is.finite(pa)] = NA
+      # if (is.na(extrapolation_limit)) extrapolation_limit = c(0,1)
+      save( pa, file=fn_pa, compress=TRUE )
+
+      ps = inla.posterior.sample(n=p$nsims, fit, selection=list(Predictor=0))  # only predictions
+
+      sims = sapply( ps,
+        function(x) {
+          input = exp( x$latent[res$ii])
+          pa = reformat_to_array( input=input , matchfrom=res$matchfrom, matchto=res$matchto )
+          pa[!is.finite(pa)] = NA
+          o = list()
+          o$cfaall    = colSums( pa * sppoly$au_sa_km2/ 10^6, na.rm=TRUE )
+          o$cfanorth  = colSums( pa * sppoly$cfanorth_surfacearea/ 10^6, na.rm=TRUE )
+          o$cfasouth  = colSums( pa * sppoly$cfasouth_surfacearea/ 10^6, na.rm=TRUE )
+          o$cfa23     = colSums( pa * sppoly$cfa23_surfacearea/ 10^6, na.rm=TRUE )
+          o$cfa24     = colSums( pa * sppoly$cfa24_surfacearea/ 10^6, na.rm=TRUE )
+          o$cfa4x     = colSums( pa * sppoly$cfa4x_surfacearea/ 10^6, na.rm=TRUE )
+          return(o)
+        }, simplify=TRUE
+      )
+
+      RES = data.frame( yrs = p$yrs )
+      RES$cfaall = apply( simplify2array(sims["cfaall",]), 1, mean )
+      RES$cfaall_sd = apply( simplify2array(sims["cfaall",]), 1, sd )
+      RES$cfanorth = apply( simplify2array(sims["cfanorth",]), 1, mean )
+      RES$cfanorth_sd = apply( simplify2array(sims["cfanorth",]), 1, sd )
+      RES$cfasouth = apply( simplify2array(sims["cfasouth",]), 1, mean )
+      RES$cfasouth_sd = apply( simplify2array(sims["cfasouth",]), 1, sd )
+      RES$cfa23 = apply( simplify2array(sims["cfa23",]), 1, mean )
+      RES$cfa23_sd = apply( simplify2array(sims["cfa23",]), 1, sd )
+      RES$cfa24 = apply( simplify2array(sims["cfa24",]), 1, mean )
+      RES$cfa24_sd = apply( simplify2array(sims["cfa24",]), 1, sd )
+      RES$cfa4x = apply( simplify2array(sims["cfa4x",]), 1, mean )
+      RES$cfa4x_sd = apply( simplify2array(sims["cfa4x",]), 1, sd )
+
+      save( RES, file=fn, compress=TRUE )
+
+
+    }
+
+
+    if (p$selection$type %in% c("biomass", "number") ) {
+
+      wgts = meanweights_by_arealunit(
+        set=M[M$tag=="observations",],
+        AUID=as.character( sppoly$AUID ),
+        yrs=p$yrs,
+        fillall=TRUE,
+        annual_breakdown=TRUE,
+        robustify_quantiles=c(0, 0.99)  # high upper bounds are more dangerous
+      )
+
+      if (p$selection$type == "biomass") {
+        biom = res[[ paste( p$variabletomodel, "predicted", sep=".")]]
+        biom[!is.finite(biom)] = NA
+
+        if (is.na(extrapolation_limit)) extrapolation_limit = max(M$totwgt/M$data_offset, na.rm=T) # 28921.8426
+        uu = which( biom > extrapolation_limit )
+        if (length(uu) > 0 ) {
+          if (is.character(extrapolation_replacement)) if (extrapolation_replacement=="extrapolation_limit" ) extrapolation_replacement = extrapolation_limit
+          biom[ uu] = extrapolation_replacement
+          warning("\n Extreme-valued predictions were found, capping them to max observed rates .. \n you might want to have more informed priors, or otherwise set extrapolation_replacement=NA to replacement value \n")
+        }
+        biom[biom > extrapolation_limit[2]] = extrapolation_limit[2]
+        nums = biom / wgts
+        save( biom, file=fn_bio, compress=TRUE )
+        save( nums, file=fn_no, compress=TRUE )
+
+      }
+
+
+      if (p$selection$type == "number") {
+        nums = res[[ paste( p$variabletomodel, "predicted", sep=".")]]
+        nums[!is.finite(nums)] = NA
+
+        if (is.na(extrapolation_limit)) extrapolation_limit = max(M$totno/M$data_offset, na.rm=T) # 28921.8426
+        uu = which( nums > extrapolation_limit )
+        if (length(uu) > 0 ) {
+          if (is.character(extrapolation_replacement)) if (extrapolation_replacement=="extrapolation_limit" ) extrapolation_replacement = extrapolation_limit
+          nums[ uu] = extrapolation_replacement
+          warning("\n Extreme-valued predictions were found, capping them to max observed rates .. \n you might want to have more informed priors, or otherwise set extrapolation=NA to replacement value \n")
+        }
+        nums[nums > extrapolation_limit[2]] = extrapolation_limit[2]
+        biom = nums * wgts
+        save( biom, file=fn_bio, compress=TRUE )
+        save( nums, file=fn_no, compress=TRUE )
+
+      }
+
+
+      ps = inla.posterior.sample(n=p$nsims, fit, selection=list(Predictor=0))  # only predictions
+
+      sims = sapply( ps,
+        function(x) {
+          input = exp( x$latent[res$ii])
+          nums = reformat_to_array( input=input , matchfrom=res$matchfrom, matchto=res$matchto )
+          nums[!is.finite(nums)] = NA
+          biom = nums * wgts
+          o = list()
+          o$cfaall    = colSums( biom * sppoly$au_sa_km2/ 10^6, na.rm=TRUE )
+          o$cfanorth  = colSums( biom * sppoly$cfanorth_surfacearea/ 10^6, na.rm=TRUE )
+          o$cfasouth  = colSums( biom * sppoly$cfasouth_surfacearea/ 10^6, na.rm=TRUE )
+          o$cfa23     = colSums( biom * sppoly$cfa23_surfacearea/ 10^6, na.rm=TRUE )
+          o$cfa24     = colSums( biom * sppoly$cfa24_surfacearea/ 10^6, na.rm=TRUE )
+          o$cfa4x     = colSums( biom * sppoly$cfa4x_surfacearea/ 10^6, na.rm=TRUE )
+          return(o)
+        }, simplify=TRUE
+      )
+
+    RES = data.frame( yrs = p$yrs )
+    RES$cfaall = apply( simplify2array(sims["cfaall",]), 1, mean )
+    RES$cfaall_sd = apply( simplify2array(sims["cfaall",]), 1, sd )
+    RES$cfanorth = apply( simplify2array(sims["cfanorth",]), 1, mean )
+    RES$cfanorth_sd = apply( simplify2array(sims["cfanorth",]), 1, sd )
+    RES$cfasouth = apply( simplify2array(sims["cfasouth",]), 1, mean )
+    RES$cfasouth_sd = apply( simplify2array(sims["cfasouth",]), 1, sd )
+    RES$cfa23 = apply( simplify2array(sims["cfa23",]), 1, mean )
+    RES$cfa23_sd = apply( simplify2array(sims["cfa23",]), 1, sd )
+    RES$cfa24 = apply( simplify2array(sims["cfa24",]), 1, mean )
+    RES$cfa24_sd = apply( simplify2array(sims["cfa24",]), 1, sd )
+    RES$cfa4x = apply( simplify2array(sims["cfa4x",]), 1, mean )
+    RES$cfa4x_sd = apply( simplify2array(sims["cfa4x",]), 1, sd )
+
+    save( RES, file=fn, compress=TRUE )
+
+    return(RES)
+  }
 
 }  ## end snowcrab.db
