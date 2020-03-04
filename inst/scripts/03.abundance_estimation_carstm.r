@@ -26,7 +26,7 @@
   p$inla_num.threads = 6
   p$inla_blas.num.threads = 6
 
-plot.dir=paste(p$modeldir,"prediction.plots", year.assessment, sep="/" )
+  plot.dir=paste(p$modeldir,"prediction.plots", year.assessment, sep="/" )
 
 # ------------------------------------------------
 # Part 2 -- polygon structure
@@ -515,7 +515,7 @@ plot.dir=paste(p$modeldir,"prediction.plots", year.assessment, sep="/" )
   #  carstm_summary( p=p, operation="compute", carstm_model_label=p$carstm_model_label  )
 
   res = carstm_summary( p=p, operation="compute"  ) #
-  res = carstm_summary( p=p, operation="load"  )
+  # res = carstm_summary( p=p, operation="load"  )
 
 
 
@@ -575,7 +575,7 @@ plot.dir=paste(p$modeldir,"prediction.plots", year.assessment, sep="/" )
     carstm_plot( p=p, res=res, vn=vn, time_match=list(year="2000" ) )     # maps of some of the results
 
 
-  plot(fit)
+    plot(fit)
     plot(fit, plot.prior=TRUE, plot.hyperparameters=TRUE, plot.fixed.effects=FALSE, single=TRUE )
     s = summary(fit)
     s$dic$dic

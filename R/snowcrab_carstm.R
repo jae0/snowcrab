@@ -12,7 +12,7 @@ snowcrab_carstm = function( p=NULL, DS="parameters", redo=FALSE, ...) {
     }
 
   # ---------------------
-  # create/update library list
+  # create/update library list2
   p$libs = c( p$libs, RLibrary ( "colorspace",  "fields", "geosphere", "lubridate",  "lattice",
     "maps", "mapdata", "maptools", "parallel",  "rgdal", "rgeos",  "sp", "splancs", "GADMTools" ) )
   p$libs = c( p$libs, project.library ( "aegis", "aegis.bathymetry", "aegis.polygons", "aegis.coastline", "aegis.survey", "netmensuration", "bio.snowcrab", "carstm" ) )
@@ -478,14 +478,14 @@ snowcrab_carstm = function( p=NULL, DS="parameters", redo=FALSE, ...) {
 
   if ( any( grepl("carstm_output", DS) ) ) {
 
-    required.vars = c("areal_units_fn", "inputdata_spatial_discretization_planar_km", "inputdata_temporal_discretization_yr", "variabletomodel",
-      "carstm_modelengine", "modeldir", "carstm_model_label", "yrs", "variabletomodel" )
+    required.vars = c("areal_units_fn", "inputdata_spatial_discretization_planar_km", "variabletomodel",
+      "carstm_modelengine", "modeldir", "carstm_model_label", "variabletomodel" )
 
+    if (any(grepl("year", p$aegis_dimensionality)))  required.vars = c(required.vars, "inputdata_temporal_discretization_yr", "yrs")
     for (i in required.vars) {
       if (!exists(i, p)) {
         message( "Missing parameter" )
         message( i )
-        stop()
       }
     }
 
