@@ -572,11 +572,11 @@ snowcrab_carstm = function( p=NULL, DS="parameters", redo=FALSE, extrapolation_l
           pa[!is.finite(pa)] = NA
           o = list()
           o$cfaall    = colSums( pa * sppoly$au_sa_km2/ sum(sppoly$au_sa_km2), na.rm=TRUE )
-          o$cfanorth  = colSums( pa * sppoly$cfanorth_surfacearea/ sum(sppoly$au_sa_km2), na.rm=TRUE )
-          o$cfasouth  = colSums( pa * sppoly$cfasouth_surfacearea/ sum(sppoly$au_sa_km2), na.rm=TRUE )
-          o$cfa23     = colSums( pa * sppoly$cfa23_surfacearea/ sum(sppoly$au_sa_km2), na.rm=TRUE )
-          o$cfa24     = colSums( pa * sppoly$cfa24_surfacearea/ sum(sppoly$au_sa_km2), na.rm=TRUE )
-          o$cfa4x     = colSums( pa * sppoly$cfa4x_surfacearea/ sum(sppoly$au_sa_km2), na.rm=TRUE )
+          o$cfanorth  = colSums( pa * sppoly$cfanorth_surfacearea/ sum(sppoly$cfanorth_surfacearea), na.rm=TRUE )
+          o$cfasouth  = colSums( pa * sppoly$cfasouth_surfacearea/ sum(sppoly$cfasouth_surfacearea), na.rm=TRUE )
+          o$cfa23     = colSums( pa * sppoly$cfa23_surfacearea/ sum(sppoly$cfa23_surfacearea), na.rm=TRUE )
+          o$cfa24     = colSums( pa * sppoly$cfa24_surfacearea/ sum(sppoly$cfa24_surfacearea), na.rm=TRUE )
+          o$cfa4x     = colSums( pa * sppoly$cfa4x_surfacearea/ sum(sppoly$cfa4x_surfacearea), na.rm=TRUE )
           return(o)
         }, simplify=TRUE
       )
