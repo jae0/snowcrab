@@ -118,7 +118,7 @@ snowcrab_carstm = function( p=NULL, DS="parameters", redo=FALSE, extrapolation_l
             + f( auid, model="bym2", graph=sppoly@nb, group=year_factor, scale.model=TRUE, constr=TRUE, hyper=H$bym2, control.group=list(model="ar1", hyper=H$ar1_group)),
             family = "poisson",
             data= M,
-            control.compute=list(dic=TRUE, config=TRUE),
+            control.compute=list(cpo=TRUE, waic=TRUE, dic=TRUE, config=TRUE),
             control.results=list(return.marginals.random=TRUE, return.marginals.predictor=TRUE ),
             control.predictor=list(compute=FALSE, link=1 ),
             #control.fixed = list(prec.intercept = 0.1),

@@ -217,7 +217,7 @@
           + f(auid, model="bym2", graph=sppoly@nb, scale.model=TRUE, constr=TRUE, hyper=H$bym2),
         family = "lognormal",
         data= M,
-        control.compute=list(dic=TRUE, waic=TRUE, config=TRUE),
+        control.compute=list(dic=TRUE, cpo=TRUE, waic=TRUE, config=TRUE),
         control.results=list(return.marginals.random=TRUE, return.marginals.predictor=TRUE ),
         control.predictor=list(compute=FALSE, link=1 ),
         control.fixed=H$fixed,  # priors for fixed effects, generic is ok
