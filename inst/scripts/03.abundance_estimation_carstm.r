@@ -217,7 +217,7 @@
           + f(auid, model="bym2", graph=sppoly@nb, scale.model=TRUE, constr=TRUE, hyper=H$bym2),
         family = "lognormal",
         data= M,
-        control.compute=list(dic=TRUE, config=TRUE),
+        control.compute=list(dic=TRUE, waic=TRUE, config=TRUE),
         control.results=list(return.marginals.random=TRUE, return.marginals.predictor=TRUE ),
         control.predictor=list(compute=FALSE, link=1 ),
         control.fixed=H$fixed,  # priors for fixed effects, generic is ok
@@ -627,10 +627,22 @@
     num = snowcrab_carstm(p=p, DS="carstm_output_spacetime_number", carstm_model_label=p$carstm_model_label  )
 
 
-    plot( cfaall ~ yrs, data=RES, lty=1, lwd=2.5, col="red", type="b", ylab="Biomass (kt)", xlab="")
-    plot( cfasouth ~ yrs, data=RES, lty=1, lwd=2.5, col="red", type="b", ylab="Biomass (kt)", xlab="")
-    plot( cfanorth ~ yrs, data=RES, lty=1, lwd=2.5, col="red", type="b", ylab="Biomass (kt)", xlab="")
-    plot( cfa4x ~ yrs, data=RES, lty=1, lwd=2.5, col="red", type="b", ylab="Biomass (kt)", xlab="")
+
+    plot( cfaall ~ yrs, data=RES, lty="solid", lwd=4, pch=20, col="slateblue", type="b", ylab="Biomass (kt)", xlab="")
+    lines( cfaall_lb ~ yrs, data=RES, lty="dotted", lwd=2, col="slategray" )
+    lines( cfaall_ub ~ yrs, data=RES, lty="dotted", lwd=2, col="slategray" )
+
+    plot( cfasouth ~ yrs, data=RES, lty="solid", lwd=4, pch=20, col="slateblue", type="b", ylab="Biomass (kt)", xlab="")
+    lines( cfasouth_lb ~ yrs, data=RES, lty="dotted", lwd=2, col="slategray" )
+    lines( cfasouth_ub ~ yrs, data=RES, lty="dotted", lwd=2, col="slategray" )
+
+    plot( cfanorth ~ yrs, data=RES, lty="solid", lwd=4, pch=20, col="slateblue", type="b", ylab="Biomass (kt)", xlab="")
+    lines( cfanorth_lb ~ yrs, data=RES, lty="dotted", lwd=2, col="slategray" )
+    lines( cfanorth_ub ~ yrs, data=RES, lty="dotted", lwd=2, col="slategray" )
+
+    plot( cfa4x ~ yrs, data=RES, lty="solid", lwd=4, pch=20, col="slateblue", type="b", ylab="Biomass (kt)", xlab="")
+    lines( cfa4x_lb ~ yrs, data=RES, lty="dotted", lwd=2, col="slategray" )
+    lines( cfa4x_ub ~ yrs, data=RES, lty="dotted", lwd=2, col="slategray" )
 
 
     p$boundingbox = list( xlim=p$corners$lon, ylim=p$corners$lat) # bounding box for plots using spplot

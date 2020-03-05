@@ -1,5 +1,5 @@
 
-snowcrab_carstm = function( p=NULL, DS="parameters", redo=FALSE, extrapolation_limit=NA, ...) {
+snowcrab_carstm = function( p=NULL, DS="parameters", redo=FALSE, extrapolation_limit=NA, extrapolation_replacement=NA, ...) {
 
 	# handles all basic data tables, etc. ...
 
@@ -559,7 +559,8 @@ snowcrab_carstm = function( p=NULL, DS="parameters", redo=FALSE, extrapolation_l
     res = carstm_summary( p=p, operation="load"  )
 
     if (p$selection$type %in% c("presence_absence") ) {
-      pa = res[[ paste( p$variabletomodel, "predicted", sep=".")]]
+      pa = inverse.logit( res[[ paste( p$variabletomodel, "predicted", sep=".")]] )
+
       pa[!is.finite(pa)] = NA
       # if (is.na(extrapolation_limit)) extrapolation_limit = c(0,1)
       save( pa, file=fn_pa, compress=TRUE )
@@ -570,12 +571,12 @@ snowcrab_carstm = function( p=NULL, DS="parameters", redo=FALSE, extrapolation_l
           pa = reformat_to_array( input=input , matchfrom=res$matchfrom, matchto=res$matchto )
           pa[!is.finite(pa)] = NA
           o = list()
-          o$cfaall    = colSums( pa * sppoly$au_sa_km2/ 10^6, na.rm=TRUE )
-          o$cfanorth  = colSums( pa * sppoly$cfanorth_surfacearea/ 10^6, na.rm=TRUE )
-          o$cfasouth  = colSums( pa * sppoly$cfasouth_surfacearea/ 10^6, na.rm=TRUE )
-          o$cfa23     = colSums( pa * sppoly$cfa23_surfacearea/ 10^6, na.rm=TRUE )
-          o$cfa24     = colSums( pa * sppoly$cfa24_surfacearea/ 10^6, na.rm=TRUE )
-          o$cfa4x     = colSums( pa * sppoly$cfa4x_surfacearea/ 10^6, na.rm=TRUE )
+          o$cfaall    = colSums( pa * sppoly$au_sa_km2/ sum(sppoly$au_sa_km2), na.rm=TRUE )
+          o$cfanorth  = colSums( pa * sppoly$cfanorth_surfacearea/ sum(sppoly$au_sa_km2), na.rm=TRUE )
+          o$cfasouth  = colSums( pa * sppoly$cfasouth_surfacearea/ sum(sppoly$au_sa_km2), na.rm=TRUE )
+          o$cfa23     = colSums( pa * sppoly$cfa23_surfacearea/ sum(sppoly$au_sa_km2), na.rm=TRUE )
+          o$cfa24     = colSums( pa * sppoly$cfa24_surfacearea/ sum(sppoly$au_sa_km2), na.rm=TRUE )
+          o$cfa4x     = colSums( pa * sppoly$cfa4x_surfacearea/ sum(sppoly$au_sa_km2), na.rm=TRUE )
           return(o)
         }, simplify=TRUE
       )
@@ -668,16 +669,39 @@ snowcrab_carstm = function( p=NULL, DS="parameters", redo=FALSE, extrapolation_l
     RES = data.frame( yrs = p$yrs )
     RES$cfaall = apply( simplify2array(sims["cfaall",]), 1, mean )
     RES$cfaall_sd = apply( simplify2array(sims["cfaall",]), 1, sd )
+    RES$cfaall_median = apply( simplify2array(sims["cfaall",]), 1, median )
+    RES$cfaall_lb = apply( simplify2array(sims["cfaall",]), 1, quantile, probs=0.025 )
+    RES$cfaall_ub = apply( simplify2array(sims["cfaall",]), 1, quantile, probs=0.975 )
+
     RES$cfanorth = apply( simplify2array(sims["cfanorth",]), 1, mean )
     RES$cfanorth_sd = apply( simplify2array(sims["cfanorth",]), 1, sd )
+    RES$cfanorth_median = apply( simplify2array(sims["cfanorth",]), 1, median )
+    RES$cfanorth_lb = apply( simplify2array(sims["cfanorth",]), 1, quantile, probs=0.025 )
+    RES$cfanorth_ub = apply( simplify2array(sims["cfanorth",]), 1, quantile, probs=0.975 )
+
     RES$cfasouth = apply( simplify2array(sims["cfasouth",]), 1, mean )
     RES$cfasouth_sd = apply( simplify2array(sims["cfasouth",]), 1, sd )
+    RES$cfasouth_median = apply( simplify2array(sims["cfasouth",]), 1, median )
+    RES$cfasouth_lb = apply( simplify2array(sims["cfasouth",]), 1, quantile, probs=0.025 )
+    RES$cfasouth_ub = apply( simplify2array(sims["cfasouth",]), 1, quantile, probs=0.975 )
+
     RES$cfa23 = apply( simplify2array(sims["cfa23",]), 1, mean )
     RES$cfa23_sd = apply( simplify2array(sims["cfa23",]), 1, sd )
+    RES$cfa23_median = apply( simplify2array(sims["cfa23",]), 1, median )
+    RES$cfa23_lb = apply( simplify2array(sims["cfa23",]), 1, quantile, probs=0.025 )
+    RES$cfa23_ub = apply( simplify2array(sims["cfa23",]), 1, quantile, probs=0.975 )
+
     RES$cfa24 = apply( simplify2array(sims["cfa24",]), 1, mean )
     RES$cfa24_sd = apply( simplify2array(sims["cfa24",]), 1, sd )
+    RES$cfa24_median = apply( simplify2array(sims["cfa24",]), 1, median )
+    RES$cfa24_lb = apply( simplify2array(sims["cfa24",]), 1, quantile, probs=0.025 )
+    RES$cfa24_ub = apply( simplify2array(sims["cfa24",]), 1, quantile, probs=0.975 )
+
     RES$cfa4x = apply( simplify2array(sims["cfa4x",]), 1, mean )
     RES$cfa4x_sd = apply( simplify2array(sims["cfa4x",]), 1, sd )
+    RES$cfa4x_median = apply( simplify2array(sims["cfa4x",]), 1, median )
+    RES$cfa4x_lb = apply( simplify2array(sims["cfa4x",]), 1, quantile, probs=0.025 )
+    RES$cfa4x_ub = apply( simplify2array(sims["cfa4x",]), 1, quantile, probs=0.975 )
 
     save( RES, file=fn, compress=TRUE )
 

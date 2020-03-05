@@ -65,7 +65,7 @@
     'inla( formula =', p$variabletomodel, ' ~ -1 + year_factor:auid ,
       family = "gaussian",
       data= M,
-      control.compute=list(dic=TRUE, config=TRUE),
+      control.compute=list(dic=TRUE, waic=TRUE, config=TRUE),
       control.results=list(return.marginals.random=TRUE, return.marginals.predictor=TRUE ),
       control.predictor=list(compute=FALSE, link=1 ),
       # control.fixed = list(prec.intercept = 0.1),
@@ -102,7 +102,7 @@
        + offset( log(data_offset)) ,
       family = "poisson",
       data= M,
-      control.compute=list(dic=TRUE, config=TRUE),
+      control.compute=list(dic=TRUE, waic=TRUE, config=TRUE),
       control.results=list(return.marginals.random=TRUE, return.marginals.predictor=TRUE ),
       control.predictor=list(compute=FALSE, link=1 ),
       control.fixed = list(prec.intercept = 1),
@@ -141,7 +141,7 @@
        + offset( log(data_offset)) ,
       family = "poisson",
       data= M,
-      control.compute=list(dic=TRUE, config=TRUE),
+      control.compute=list(dic=TRUE, waic=TRUE, config=TRUE),
       control.results=list(return.marginals.random=TRUE, return.marginals.predictor=TRUE ),
       control.predictor=list(compute=FALSE, link=1 ),
       control.fixed = list(prec.intercept = 1),
@@ -186,7 +186,7 @@
        + offset( log(data_offset)) ,
       family = "poisson",
       data= M,
-      control.compute=list(dic=TRUE, config=TRUE),
+      control.compute=list(dic=TRUE, waic=TRUE, config=TRUE),
       control.results=list(return.marginals.random=TRUE, return.marginals.predictor=TRUE ),
       control.predictor=list(compute=FALSE, link=1 ),
       control.fixed = list(prec.intercept = 1),
@@ -230,7 +230,7 @@
        + offset( log(data_offset)) ,
       family = "poisson",
       data= M,
-      control.compute=list(dic=TRUE, config=TRUE),
+      control.compute=list(dic=TRUE, waic=TRUE, config=TRUE),
       control.results=list(return.marginals.random=TRUE, return.marginals.predictor=TRUE ),
       control.predictor=list(compute=FALSE, link=1 ),
       control.fixed = list(prec.intercept = 1),
@@ -270,7 +270,7 @@
         + f( auid, model="bym2", graph=sppoly@nb, scale.model=TRUE, constr=TRUE, hyper=H$bym2),
         family = "poisson",
         data= M,
-        control.compute=list(dic=TRUE, config=TRUE),
+        control.compute=list(dic=TRUE, waic=TRUE, config=TRUE),
         control.results=list(return.marginals.random=TRUE, return.marginals.predictor=TRUE ),
         control.predictor=list(compute=FALSE, link=1 ),
         # control.fixed = list(prec.intercept = 0.1),
@@ -304,7 +304,7 @@
         + f( auid, model="bym2", graph=sppoly@nb, scale.model=TRUE, constr=TRUE, hyper=H$bym2),
         family = "poisson",
         data= M,
-        control.compute=list(dic=TRUE, config=TRUE),
+        control.compute=list(dic=TRUE, waic=TRUE, config=TRUE),
         control.results=list(return.marginals.random=TRUE, return.marginals.predictor=TRUE ),
         control.predictor=list(compute=FALSE, link=1 ),
         # control.fixed = list(prec.intercept = 0.1),
@@ -342,7 +342,7 @@
         + f( auid, model="bym2", graph=sppoly@nb, scale.model=TRUE, constr=TRUE, hyper=H$bym2),
         family = "poisson",
         data= M,
-        control.compute=list(dic=TRUE, config=TRUE),
+        control.compute=list(dic=TRUE, waic=TRUE, config=TRUE),
         control.results=list(return.marginals.random=TRUE, return.marginals.predictor=TRUE ),
         control.predictor=list(compute=FALSE, link=1 ),
         # control.fixed = list(prec.intercept = 0.1),
@@ -378,7 +378,7 @@
         + f( auid, model="bym2", graph=sppoly@nb, scale.model=TRUE, constr=TRUE, hyper=H$bym2),
         family = "poisson",
         data= M,
-        control.compute=list(dic=TRUE, config=TRUE),
+        control.compute=list(dic=TRUE, waic=TRUE, config=TRUE),
         control.results=list(return.marginals.random=TRUE, return.marginals.predictor=TRUE ),
         control.predictor=list(compute=FALSE, link=1 ),
         # control.fixed = list(prec.intercept = 0.1),
@@ -408,7 +408,7 @@
         + f( auid, model="bym2", graph=sppoly@nb, scale.model=TRUE, constr=TRUE, hyper=H$bym2),
         family = "poisson",
         data= M,
-        control.compute=list(dic=TRUE, config=TRUE),
+        control.compute=list(dic=TRUE, waic=TRUE, config=TRUE),
         control.results=list(return.marginals.random=TRUE, return.marginals.predictor=TRUE ),
         control.predictor=list(compute=FALSE, link=1 ),
         # control.fixed = list(prec.intercept = 0.1),
@@ -440,7 +440,7 @@
         + f( auid, model="bym2", graph=sppoly@nb, group=year_factor, scale.model=TRUE, constr=TRUE, hyper=H$bym2, control.group=list(model="ar1", hyper=H$ar1_group)),
         family = "poisson",
         data= M,
-        control.compute=list(dic=TRUE, config=TRUE),
+        control.compute=list(dic=TRUE, waic=TRUE, config=TRUE),
         control.results=list(return.marginals.random=TRUE, return.marginals.predictor=TRUE ),
         control.predictor=list(compute=FALSE, link=1 ),
         # control.fixed = list(prec.intercept = 0.1),
@@ -477,7 +477,7 @@
         + f( auid, model="bym2", graph=sppoly@nb, group=year_factor, scale.model=TRUE, constr=TRUE, hyper=H$bym2, control.group=list(model="ar1", hyper=H$ar1_group)),
         family = "poisson",
         data= M,
-        control.compute=list(dic=TRUE, config=TRUE),
+        control.compute=list(dic=TRUE, waic=TRUE, config=TRUE),
         control.results=list(return.marginals.random=TRUE, return.marginals.predictor=TRUE ),
         control.predictor=list(compute=FALSE, link=1 ),
         # control.fixed = list(prec.intercept = 0.1),
@@ -511,7 +511,7 @@
         + f( auid, model="bym2", graph=sppoly@nb, group=year_factor, scale.model=TRUE, constr=TRUE, hyper=H$bym2, control.group=list(model="ar1", hyper=H$ar1_group)),
         family = "poisson",
         data= M,
-        control.compute=list(dic=TRUE, config=TRUE),
+        control.compute=list(dic=TRUE, waic=TRUE, config=TRUE),
         control.results=list(return.marginals.random=TRUE, return.marginals.predictor=TRUE ),
         control.predictor=list(compute=FALSE, link=1 ),
         # control.fixed = list(prec.intercept = 0.1),
@@ -547,7 +547,7 @@
         + f( inla.group( pca2, method="quantile", n=13 ), model="rw2", scale.model=TRUE, hyper=H$rw2),
         family = "poisson",
         data= M,
-        control.compute=list(dic=TRUE, config=TRUE),
+        control.compute=list(dic=TRUE, waic=TRUE, config=TRUE),
         control.results=list(return.marginals.random=TRUE, return.marginals.predictor=TRUE ),
         control.predictor=list(compute=FALSE, link=1 ),
         # control.fixed = list(prec.intercept = 0.1),
@@ -582,7 +582,7 @@
         + f( auid, model="bym2", graph=sppoly@nb, group=year_factor, scale.model=TRUE, constr=TRUE, hyper=H$bym2, control.group=list(model="ar1", hyper=H$ar1_group)),
         family = "zeroinflatedpoisson0",
         data= M,
-        control.compute=list(dic=TRUE, config=TRUE),
+        control.compute=list(dic=TRUE, waic=TRUE, config=TRUE),
         control.results=list(return.marginals.random=TRUE, return.marginals.predictor=TRUE ),
         control.predictor=list(compute=FALSE, link=1 ),
         # control.fixed = list(prec.intercept = 0.1),
@@ -620,7 +620,7 @@
         + f( auid, model="bym2", graph=sppoly@nb, group=year_factor, scale.model=TRUE, constr=TRUE, hyper=H$bym2, control.group=list(model="ar1", hyper=H$ar1_group)),
         family = "zeroinflatedpoisson1",
         data= M,
-        control.compute=list(dic=TRUE, config=TRUE),
+        control.compute=list(dic=TRUE, waic=TRUE, config=TRUE),
         control.results=list(return.marginals.random=TRUE, return.marginals.predictor=TRUE ),
         control.predictor=list(compute=FALSE, link=1 ),
         # control.fixed = list(prec.intercept = 0.1),
@@ -678,18 +678,33 @@
   #   robustify_quantiles=c(0, 0.99)  # high upper bounds are more dangerous
   # )
 
+  # for mapping
   res = carstm_summary( p=p,  operation="compute", carstm_model_label=p$carstm_model_label, M=p$modeldata )
 
+  # aggregate time series
   RES = snowcrab_carstm(p=p, DS="carstm_output_compute", carstm_model_label=p$carstm_model_label  )
-
   RES = snowcrab_carstm(p=p, DS="carstm_output_timeseries", carstm_model_label=p$carstm_model_label  )
+
   bio = snowcrab_carstm(p=p, DS="carstm_output_spacetime_biomass", carstm_model_label=p$carstm_model_label  )
   num = snowcrab_carstm(p=p, DS="carstm_output_spacetime_number", carstm_model_label=p$carstm_model_label  )
 
-  plot( cfaall ~ yrs, data=RES, lty=1, lwd=2.5, col="red", type="b")
-  plot( cfasouth ~ yrs, data=RES, lty=1, lwd=2.5, col="red", type="b")
-  plot( cfanorth ~ yrs, data=RES, lty=1, lwd=2.5, col="red", type="b")
-  plot( cfa4x ~ yrs, data=RES, lty=1, lwd=2.5, col="red", type="b")
+  # plots with mean and 95% CI
+
+    plot( cfaall ~ yrs, data=RES, lty="solid", lwd=4, pch=20, col="slateblue", type="b", ylab="Biomass (kt)", xlab="")
+    lines( cfaall_lb ~ yrs, data=RES, lty="dotted", lwd=2, col="slategray" )
+    lines( cfaall_ub ~ yrs, data=RES, lty="dotted", lwd=2, col="slategray" )
+
+    plot( cfasouth ~ yrs, data=RES, lty="solid", lwd=4, pch=20, col="slateblue", type="b", ylab="Biomass (kt)", xlab="")
+    lines( cfasouth_lb ~ yrs, data=RES, lty="dotted", lwd=2, col="slategray" )
+    lines( cfasouth_ub ~ yrs, data=RES, lty="dotted", lwd=2, col="slategray" )
+
+    plot( cfanorth ~ yrs, data=RES, lty="solid", lwd=4, pch=20, col="slateblue", type="b", ylab="Biomass (kt)", xlab="")
+    lines( cfanorth_lb ~ yrs, data=RES, lty="dotted", lwd=2, col="slategray" )
+    lines( cfanorth_ub ~ yrs, data=RES, lty="dotted", lwd=2, col="slategray" )
+
+    plot( cfa4x ~ yrs, data=RES, lty="solid", lwd=4, pch=20, col="slateblue", type="b", ylab="Biomass (kt)", xlab="")
+    lines( cfa4x_lb ~ yrs, data=RES, lty="dotted", lwd=2, col="slategray" )
+    lines( cfa4x_ub ~ yrs, data=RES, lty="dotted", lwd=2, col="slategray" )
 
   p$boundingbox = list( xlim=p$corners$lon, ylim=p$corners$lat) # bounding box for plots using spplot
   p$coastLayout = aegis.coastline::coastline_layout(p=p)
@@ -843,7 +858,7 @@
         family = "binomial",  # "nbinomial", "betabinomial", "zeroinflatedbinomial0" , "zeroinflatednbinomial0"
 
         control.family=list(control.link=list(model="logit")),
-        control.compute=list(dic=TRUE, config=TRUE),
+        control.compute=list(dic=TRUE, waic=TRUE, config=TRUE),
         control.results=list(return.marginals.random=TRUE, return.marginals.predictor=TRUE ),
         control.predictor=list(compute=FALSE, link=1 ),
         # control.fixed = list(prec.intercept = 0.1),
@@ -905,7 +920,7 @@
         family = "binomial",  # "nbinomial", "betabinomial", "zeroinflatedbinomial0" , "zeroinflatednbinomial0"
 
         control.family=list(control.link=list(model="logit")),
-        control.compute=list(dic=TRUE, config=TRUE),
+        control.compute=list(dic=TRUE, waic=TRUE, config=TRUE),
         control.results=list(return.marginals.random=TRUE, return.marginals.predictor=TRUE ),
         control.predictor=list(compute=FALSE, link=1 ),
         # control.fixed = list(prec.intercept = 0.1),
@@ -965,7 +980,7 @@
         family = "binomial",  # "nbinomial", "betabinomial", "zeroinflatedbinomial0" , "zeroinflatednbinomial0"
 
         control.family=list(control.link=list(model="logit")),
-        control.compute=list(dic=TRUE, config=TRUE),
+        control.compute=list(dic=TRUE, waic=TRUE, config=TRUE),
         control.results=list(return.marginals.random=TRUE, return.marginals.predictor=TRUE ),
         control.predictor=list(compute=FALSE, link=1 ),
         # control.fixed = list(prec.intercept = 0.1),
@@ -1026,7 +1041,7 @@
         family = "binomial",  # "nbinomial", "betabinomial", "zeroinflatedbinomial0" , "zeroinflatednbinomial0"
 
         control.family=list(control.link=list(model="logit")),
-        control.compute=list(dic=TRUE, config=TRUE),
+        control.compute=list(dic=TRUE, waic=TRUE, config=TRUE),
         control.results=list(return.marginals.random=TRUE, return.marginals.predictor=TRUE ),
         control.predictor=list(compute=FALSE, link=1 ),
         # control.fixed = list(prec.intercept = 0.1),
@@ -1086,7 +1101,7 @@
         family ="nbinomial", #  "binomial",  # "nbinomial", "betabinomial", "zeroinflatedbinomial0" , "zeroinflatednbinomial0"
 
         # control.family=list(control.link=list(model="logit")),
-        control.compute=list(dic=TRUE, config=TRUE),
+        control.compute=list(dic=TRUE, waic=TRUE, config=TRUE),
         control.results=list(return.marginals.random=TRUE, return.marginals.predictor=TRUE ),
         control.predictor=list(compute=FALSE, link=1 ),
         # control.fixed = list(prec.intercept = 0.1),
@@ -1147,7 +1162,7 @@
         family ="zeroinflatedbinomial0", #  "binomial",  # "nbinomial", "betabinomial", "zeroinflatedbinomial0" , "zeroinflatednbinomial0"
 
         # control.family=list(control.link=list(model="logit")),
-        control.compute=list(dic=TRUE, config=TRUE),
+        control.compute=list(dic=TRUE, waic=TRUE, config=TRUE),
         control.results=list(return.marginals.random=TRUE, return.marginals.predictor=TRUE ),
         control.predictor=list(compute=FALSE, link=1 ),
         # control.fixed = list(prec.intercept = 0.1),
@@ -1208,7 +1223,7 @@
         family ="zeroinflatedbinomial1", #  "binomial",  # "nbinomial", "betabinomial", "zeroinflatedbinomial0" , "zeroinflatednbinomial0"
 
         # control.family=list(control.link=list(model="logit")),
-        control.compute=list(dic=TRUE, config=TRUE),
+        control.compute=list(dic=TRUE, waic=TRUE, config=TRUE),
         control.results=list(return.marginals.random=TRUE, return.marginals.predictor=TRUE ),
         control.predictor=list(compute=FALSE, link=1 ),
         # control.fixed = list(prec.intercept = 0.1),
@@ -1259,18 +1274,32 @@
   # s$dic$p.eff
 
 
-  carstm_summary( p=p, operation="compute", carstm_model_label=p$carstm_model_label, M=p$modeldata )
+  res = carstm_summary( p=p, operation="compute", carstm_model_label=p$carstm_model_label, M=p$modeldata )
 
   # surface area weighted average
   RES = snowcrab_carstm(p=p, DS="carstm_output_compute", carstm_model_label=p$carstm_model_label  )
-
   RES = snowcrab_carstm(p=p, DS="carstm_output_timeseries", carstm_model_label=p$carstm_model_label  )
+
   pa = snowcrab_carstm(p=p, DS="carstm_output_spacetime_pa", carstm_model_label=p$carstm_model_label  )
 
-  plot( cfaall ~ yrs, data=RES, lty=1, lwd=2.5, col="red", type="b")
-  plot( cfasouth ~ yrs, data=RES, lty=1, lwd=2.5, col="red", type="b")
-  plot( cfanorth ~ yrs, data=RES, lty=1, lwd=2.5, col="red", type="b")
-  plot( cfa4x ~ yrs, data=RES, lty=1, lwd=2.5, col="red", type="b")
+# plots with 95% PI
+
+    plot( cfaall ~ yrs, data=RES, lty="solid", lwd=4, pch=20, col="slateblue", type="b", ylab="Prob of observing snow crab", xlab="")
+    lines( cfaall_lb ~ yrs, data=RES, lty="dotted", lwd=2, col="slategray" )
+    lines( cfaall_ub ~ yrs, data=RES, lty="dotted", lwd=2, col="slategray" )
+
+    plot( cfasouth ~ yrs, data=RES, lty="solid", lwd=4, pch=20, col="slateblue", type="b", ylab="Prob of observing snow crab", xlab="")
+    lines( cfasouth_lb ~ yrs, data=RES, lty="dotted", lwd=2, col="slategray" )
+    lines( cfasouth_ub ~ yrs, data=RES, lty="dotted", lwd=2, col="slategray" )
+
+    plot( cfanorth ~ yrs, data=RES, lty="solid", lwd=4, pch=20, col="slateblue", type="b", ylab="Prob of observing snow crab", xlab="")
+    lines( cfanorth_lb ~ yrs, data=RES, lty="dotted", lwd=2, col="slategray" )
+    lines( cfanorth_ub ~ yrs, data=RES, lty="dotted", lwd=2, col="slategray" )
+
+    plot( cfa4x ~ yrs, data=RES, lty="solid", lwd=4, pch=20, col="slateblue", type="b", ylab="Prob of observing snow crab", xlab="")
+    lines( cfa4x_lb ~ yrs, data=RES, lty="dotted", lwd=2, col="slategray" )
+    lines( cfa4x_ub ~ yrs, data=RES, lty="dotted", lwd=2, col="slategray" )
+
 
   p$boundingbox = list( xlim=p$corners$lon, ylim=p$corners$lat) # bounding box for plots using spplot
   p$coastLayout = aegis.coastline::coastline_layout(p=p)
