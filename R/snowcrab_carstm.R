@@ -530,32 +530,10 @@ snowcrab_carstm = function( p=NULL, DS="parameters", redo=FALSE, extrapolation_l
       return( pa )
     }
 
-
     # construct meanweights matrix used to convert number to weight
     sppoly = areal_units( p=p )
-
-    M = snowcrab_carstm( p=p, DS="carstm_inputs" )
-    M$yr = M$year  # req for meanweights
-    # mean weight by auidxyear
-
-    # init results list
-    year = NULL
-    if ( p$aegis_dimensionality %in% c("space-year", "space-year-dyear") ) {
-      year = as.character( p$yrs )
-      M$year = as.character(M$year)
-    }
-
-    dyear = NULL
-    if ( p$aegis_dimensionality %in% c("space-year-dyear") ){
-      dyear = as.character( discretize_data( (p$dyears + diff(p$dyears)[1]/2), p$discretization[["dyear"]] ) )
-      M$dyear = as.character( discretize_data( M$dyear, p$discretization[["dyear"]] ) )
-    }
-
-
     fit = carstm_model( p=p, DS="carstm_modelled_fit", carstm_model_label=p$carstm_model_label ) # to load currently saved res
-
     ps = inla.posterior.sample(n=p$nsims, fit, selection=list(Predictor=0))  # only predictions
-
     res = carstm_summary( p=p  )
 
     if (p$selection$type %in% c("presence_absence") ) {
@@ -588,6 +566,9 @@ snowcrab_carstm = function( p=NULL, DS="parameters", redo=FALSE, extrapolation_l
 
 
     if (p$selection$type %in% c("biomass", "number") ) {
+
+      M = snowcrab_carstm( p=p, DS="carstm_inputs" )
+      M$yr = M$year  # req for meanweights
 
       wgts = meanweights_by_arealunit(
         set=M[M$tag=="observations",],
