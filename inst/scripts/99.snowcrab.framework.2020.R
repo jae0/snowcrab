@@ -648,6 +648,9 @@
 # extract results and examine
   fit =  carstm_model( p=p, DS="carstm_modelled_fit" )  # extract currently saved model fit
 
+  # for mapping
+  res = carstm_summary( p=p, carstm_model_label=p$carstm_model_label )
+
 
   if (0) {
     plot( fit, plot.prior=TRUE, plot.hyperparameters=TRUE, plot.fixed.effects=FALSE )
@@ -678,8 +681,6 @@
   #   robustify_quantiles=c(0, 0.99)  # high upper bounds are more dangerous
   # )
 
-  # for mapping
-  res = carstm_summary( p=p,  operation="compute", carstm_model_label=p$carstm_model_label, M=p$modeldata )
 
   # aggregate time series
   RES = snowcrab_carstm(p=p, DS="carstm_output_compute", carstm_model_label=p$carstm_model_label  )
@@ -1259,6 +1260,9 @@
 # extract results and examine
   fit =  carstm_model( p=p, DS="carstm_modelled_fit" )  # extract currently saved model fit
 
+  res = carstm_summary( p=p, carstm_model_label=p$carstm_model_label )
+
+
   if (0) {
     plot( fit, plot.prior=TRUE, plot.hyperparameters=TRUE, plot.fixed.effects=FALSE )
     plot( fit$marginals.hyperpar$"Phi for auid", type="l")  # posterior distribution of phi nonspatial dominates
@@ -1274,7 +1278,6 @@
   # s$dic$p.eff
 
 
-  res = carstm_summary( p=p, operation="compute", carstm_model_label=p$carstm_model_label, M=p$modeldata )
 
   # surface area weighted average
   RES = snowcrab_carstm(p=p, DS="carstm_output_compute", carstm_model_label=p$carstm_model_label  )

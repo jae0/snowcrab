@@ -295,7 +295,7 @@ snowcrab_carstm = function( p=NULL, DS="parameters", redo=FALSE, extrapolation_l
     # substrate coverage poor .. add from modelled results
     kk =  which( !is.finite(M[, pS$variabletomodel]))
     if (length(kk) > 0) {
-      SI = carstm_summary ( p=pS, operation="load" )
+      SI = carstm_summary ( p=pS )
       jj = match( as.character( M$AUID[kk]), as.character( SI$AUID) )
       M[kk, pS$variabletomodel] = SI[[ paste(pS$variabletomodel,"predicted",sep="." )]] [jj]
     }
@@ -334,7 +334,7 @@ snowcrab_carstm = function( p=NULL, DS="parameters", redo=FALSE, extrapolation_l
     }
     kk =  which( !is.finite(M[, pPC1$variabletomodel]))
     if (length(kk) > 0) {
-      PI = carstm_summary ( p=pPC1, operation="load" )
+      PI = carstm_summary ( p=pPC1 )
       au_map = match( M$AUID[kk], dimnames(PI)$AUID )
       year_map = match( as.character(M$year[kk]), dimnames(PI)$year )
       dindex = cbind(au_map, year_map )
@@ -354,7 +354,7 @@ snowcrab_carstm = function( p=NULL, DS="parameters", redo=FALSE, extrapolation_l
     }
     kk =  which( !is.finite(M[, pPC2$variabletomodel]))
     if (length(kk) > 0) {
-      PI = carstm_summary ( p=pPC2, operation="load" )
+      PI = carstm_summary ( p=pPC2 )
       au_map = match( M$AUID[kk], dimnames(PI)$AUID )
       year_map = match( as.character(M$year[kk]), dimnames(PI)$year )
       dindex = cbind(au_map, year_map )
@@ -386,13 +386,13 @@ snowcrab_carstm = function( p=NULL, DS="parameters", redo=FALSE, extrapolation_l
     APS[,p$variabletomodel] = NA
 
 
-    BI = carstm_summary ( p=pB, operation="load" )
+    BI = carstm_summary ( p=pB )
     jj = match( as.character( APS$AUID), as.character( BI$AUID) )
     APS[, pB$variabletomodel] = BI[[ paste(pB$variabletomodel,"predicted",sep="." ) ]] [jj]
     jj =NULL
     BI = NULL
 
-    SI = carstm_summary ( p=pS, operation="load" )
+    SI = carstm_summary ( p=pS )
     jj = match( as.character( APS$AUID), as.character( SI$AUID) )
     APS[, pS$variabletomodel] = SI[[ paste(pS$variabletomodel,"predicted",sep="." )]] [jj]
     jj =NULL
@@ -412,7 +412,7 @@ snowcrab_carstm = function( p=NULL, DS="parameters", redo=FALSE, extrapolation_l
     APS$dyear = APS$tiyr - APS$year
 
 
-    TI = carstm_summary ( p=pT, operation="load" )
+    TI = carstm_summary ( p=pT )
     TI = TI[[ paste(pT$variabletomodel,"predicted",sep="." )]]
     au_map = match( APS$AUID, dimnames(TI)$AUID )
     year_map = match( as.character(APS$year), dimnames(TI)$year )
@@ -423,7 +423,7 @@ snowcrab_carstm = function( p=NULL, DS="parameters", redo=FALSE, extrapolation_l
     TI = NULL
 
 
-    PI = carstm_summary ( p=pPC1, operation="load" )
+    PI = carstm_summary ( p=pPC1 )
     PI = PI[[ paste(pPC1$variabletomodel,"predicted",sep="." )]]
     au_map = match( APS$AUID, dimnames(PI)$AUID )
     year_map = match( as.character(APS$year), dimnames(PI)$year )
@@ -431,7 +431,7 @@ snowcrab_carstm = function( p=NULL, DS="parameters", redo=FALSE, extrapolation_l
     APS[, pPC1$variabletomodel] = PI [dindex]
     PI = NULL
 
-    PI = carstm_summary ( p=pPC2, operation="load" )
+    PI = carstm_summary ( p=pPC2 )
     PI = PI[[ paste(pPC2$variabletomodel,"predicted",sep="." )]]
     au_map = match( APS$AUID, dimnames(PI)$AUID )
     year_map = match( as.character(APS$year), dimnames(PI)$year )
@@ -556,20 +556,24 @@ snowcrab_carstm = function( p=NULL, DS="parameters", redo=FALSE, extrapolation_l
 
     ps = inla.posterior.sample(n=p$nsims, fit, selection=list(Predictor=0))  # only predictions
 
-    res = carstm_summary( p=p, operation="load"  )
+    res = carstm_summary( p=p  )
 
     if (p$selection$type %in% c("presence_absence") ) {
-      pa = inverse.logit( res[[ paste( p$variabletomodel, "predicted", sep=".")]] )
-
+      pa =  res[[ paste( p$variabletomodel, "predicted", sep=".")]]
+      pa[!is.finite(pa)] = NA
+      pa = inverse.logit(pa)
       pa[!is.finite(pa)] = NA
       # if (is.na(extrapolation_limit)) extrapolation_limit = c(0,1)
       save( pa, file=fn_pa, compress=TRUE )
 
       sims = sapply( ps,
         function(x) {
-          input = inverse.logit( x$latent[res$ii])
+          input = x$latent[res$ii]
+          input[!is.finite(input)] = NA
+          input = inverse.logit( input )
           pa = reformat_to_array( input=input , matchfrom=res$matchfrom, matchto=res$matchto )
           pa[!is.finite(pa)] = NA
+
           o = list()
           o$cfaall    = colSums( pa * sppoly$au_sa_km2/ sum(sppoly$au_sa_km2), na.rm=TRUE )
           o$cfanorth  = colSums( pa * sppoly$cfanorth_surfacearea/ sum(sppoly$cfanorth_surfacearea), na.rm=TRUE )
