@@ -536,6 +536,7 @@ snowcrab_carstm = function( p=NULL, DS="parameters", redo=FALSE, extrapolation_l
     ps = inla.posterior.sample(n=p$nsims, fit, selection=list(Predictor=0))  # only predictions
     res = carstm_summary( p=p  )
 
+
     if (p$selection$type %in% c("presence_absence") ) {
       pa =  res[[ paste( p$variabletomodel, "predicted", sep=".")]]
       pa[!is.finite(pa)] = NA
@@ -546,7 +547,7 @@ snowcrab_carstm = function( p=NULL, DS="parameters", redo=FALSE, extrapolation_l
 
       sims = sapply( ps,
         function(x) {
-          input = x$latent[res$ii]
+          input = x$latent[res$i_preds]
           input[!is.finite(input)] = NA
           input = inverse.logit( input )
           pa = reformat_to_array( input=input , matchfrom=res$matchfrom, matchto=res$matchto )
@@ -583,6 +584,10 @@ snowcrab_carstm = function( p=NULL, DS="parameters", redo=FALSE, extrapolation_l
         biom = res[[ paste( p$variabletomodel, "predicted", sep=".")]]
         biom[!is.finite(biom)] = NA
 
+        NA_mask = NULL
+        nnn = which( !is.finite(biom ))
+        if (length(nnn)>0 ) NA_mask = nnn
+
         if (is.na(extrapolation_limit)) extrapolation_limit = max(M$totwgt/M$data_offset, na.rm=T) # 28921.8426
         uu = which( biom > extrapolation_limit )
         if (length(uu) > 0 ) {
@@ -597,8 +602,9 @@ snowcrab_carstm = function( p=NULL, DS="parameters", redo=FALSE, extrapolation_l
 
         sims = sapply( ps,
           function(x) {
-            input = exp( x$latent[res$ii])
+            input = exp( x$latent[res$i_preds])
             biom = reformat_to_array( input=input , matchfrom=res$matchfrom, matchto=res$matchto )
+            if (!is.null(NA_mask)) biom[NA_mask] = NA
             biom[!is.finite(biom)] = NA
             nums = biom / wgts
             o = list()
@@ -618,6 +624,9 @@ snowcrab_carstm = function( p=NULL, DS="parameters", redo=FALSE, extrapolation_l
       if (p$selection$type == "number") {
         nums = res[[ paste( p$variabletomodel, "predicted", sep=".")]]
         nums[!is.finite(nums)] = NA
+        NA_mask = NULL
+        nnn = which( !is.finite(nums ))
+        if (length(nnn)>0 ) NA_mask = nnn
 
         if (is.na(extrapolation_limit)) extrapolation_limit = max(M$totno/M$data_offset, na.rm=T) # 28921.8426
         uu = which( nums > extrapolation_limit )
@@ -633,8 +642,9 @@ snowcrab_carstm = function( p=NULL, DS="parameters", redo=FALSE, extrapolation_l
 
         sims = sapply( ps,
           function(x) {
-            input = exp( x$latent[res$ii])
+            input = exp( x$latent[res$i_preds])
             nums = reformat_to_array( input=input , matchfrom=res$matchfrom, matchto=res$matchto )
+            if (!is.null(NA_mask)) nums[NA_mask] = NA
             nums[!is.finite(nums)] = NA
             biom = nums * wgts
             o = list()

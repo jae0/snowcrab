@@ -58,6 +58,7 @@
   ## not working .. looks like negative values are predicted ...  these need to be filtered out
 
   p$carstm_model_label = "factorial_gaussian"
+  p$carstm_predict_force_range = TRUE  # for factorial models this is necessary to prevent meainingless predictions
   p$variabletomodel = "totwgt"
   p$selection = list(type = "biomass") # d efault is "number"  ... specify to override
   p$carstm_modelengine = "inla"
@@ -93,6 +94,7 @@
 
 # -------------------------------------------------
   p$carstm_model_label = "factorial_simple"
+  p$carstm_predict_force_range = TRUE  # for factorial models this is necessary to prevent meainingless predictions
   p$variabletomodel = "totno"
   p$carstm_modelengine = "inla"
   p$carstm_modelcall = paste(
@@ -130,6 +132,7 @@
 
 # -------------------------------------------------
   p$carstm_model_label = "factorial_full"
+  p$carstm_predict_force_range = TRUE  # for factorial models this is necessary to prevent meainingless predictions
   p$variabletomodel = "totno"
   p$carstm_modelengine = "inla"
   p$carstm_modelcall = paste(
@@ -171,6 +174,7 @@
   p$carstm_model_label = "factorial_full_covariates"
   p$variabletomodel = "totno"
   p$carstm_modelengine = "inla"
+  p$carstm_predict_force_range = TRUE  # for factorial models this is necessary to prevent meainingless predictions
   p$carstm_modelcall = paste(
     'inla( formula =', p$variabletomodel,
     ' ~ -1
