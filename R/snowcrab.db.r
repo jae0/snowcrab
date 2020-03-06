@@ -1106,7 +1106,7 @@ snowcrab.db = function( DS, p=NULL, yrs=NULL) {
         ii = which( set$totwgt_adjusted < lowestpossible )
         set$totwgt_adjusted[ii] = 0 ## arbitrary but close to detection limit
       }
-      set$data_offset  = 1 / set[, "cf_set_wgt"]
+      set$data_offset  = 1 / set[, "cf_set_mass"]
     }
 
     if ( p$selection$type=="presence_absence") {
