@@ -288,6 +288,9 @@
   M[,p$variabletomodel] = trunc( M[,p$variabletomodel] )  # poisson wants integers
   fit = carstm_model( p=p, M=M )
 
+m = get("inla.models", INLA:::inla.get.inlaEnv())
+m$latent$rw2$min.diff = NULL
+assign("inla.models", m, INLA:::inla.get.inlaEnv())
 
 
 # -------------------------------------------------
@@ -299,8 +302,8 @@
       ' ~ 1
         + offset( log(data_offset))
         + year_factor
-        + f( inla.group( z, method="quantile", n=13 ), model="rw2", scale.model=TRUE, hyper=H$rw2)
-        + f( inla.group( substrate.grainsize, method="quantile", n=13 ), model="rw2", scale.model=TRUE, hyper=H$rw2)
+        + f( inla.group( z, method="quantile", n=11 ), model="rw2", scale.model=TRUE, hyper=H$rw2)
+        + f( inla.group( substrate.grainsize, method="quantile", n=9 ), model="rw2", scale.model=TRUE, hyper=H$rw2)
         + f( auid, model="bym2", graph=sppoly@nb, scale.model=TRUE, constr=TRUE, hyper=H$bym2),
         family = "poisson",
         data= M,
@@ -1276,6 +1279,7 @@
   s
   # s$dic$dic
   # s$dic$p.eff
+  # -sum(log(fit$cpo$cpo))
 
 
 
