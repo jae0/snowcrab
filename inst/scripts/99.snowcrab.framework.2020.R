@@ -55,7 +55,7 @@
 
 
 # -------------------------------------------------
-  ## not working .. looks like negative values are predicted ...  these need to be filtered out
+  ## not working .. looks like negative values are predicted ...
 
   p$carstm_model_label = "factorial_gaussian"
   p$carstm_predict_force_range = TRUE  # for factorial models this is necessary to prevent meainingless predictions
@@ -652,7 +652,9 @@ assign("inla.models", m, INLA:::inla.get.inlaEnv())
 
 # -------------------------------------------------
 # generic calls
-
+m = get("inla.models", INLA:::inla.get.inlaEnv())
+ m$latent$rw2$min.diff = NULL
+ assign("inla.models", m, INLA:::inla.get.inlaEnv())
 
 # extract results and examine
   fit =  carstm_model( p=p, DS="carstm_modelled_fit" )  # extract currently saved model fit
@@ -700,19 +702,19 @@ assign("inla.models", m, INLA:::inla.get.inlaEnv())
 
   # plots with mean and 95% CI
 
-    plot( cfaall ~ yrs, data=RES, lty="solid", lwd=4, pch=20, col="slateblue", type="b", ylab="Biomass (kt)", xlab="")
+    plot( cfaall_median ~ yrs, data=RES, lty="solid", lwd=4, pch=20, col="slateblue", type="b", ylab="Biomass (kt)", xlab="")
     lines( cfaall_lb ~ yrs, data=RES, lty="dotted", lwd=2, col="slategray" )
     lines( cfaall_ub ~ yrs, data=RES, lty="dotted", lwd=2, col="slategray" )
 
-    plot( cfasouth ~ yrs, data=RES, lty="solid", lwd=4, pch=20, col="slateblue", type="b", ylab="Biomass (kt)", xlab="")
+    plot( cfasouth_median ~ yrs, data=RES, lty="solid", lwd=4, pch=20, col="slateblue", type="b", ylab="Biomass (kt)", xlab="")
     lines( cfasouth_lb ~ yrs, data=RES, lty="dotted", lwd=2, col="slategray" )
     lines( cfasouth_ub ~ yrs, data=RES, lty="dotted", lwd=2, col="slategray" )
 
-    plot( cfanorth ~ yrs, data=RES, lty="solid", lwd=4, pch=20, col="slateblue", type="b", ylab="Biomass (kt)", xlab="")
+    plot( cfanorth_median ~ yrs, data=RES, lty="solid", lwd=4, pch=20, col="slateblue", type="b", ylab="Biomass (kt)", xlab="")
     lines( cfanorth_lb ~ yrs, data=RES, lty="dotted", lwd=2, col="slategray" )
     lines( cfanorth_ub ~ yrs, data=RES, lty="dotted", lwd=2, col="slategray" )
 
-    plot( cfa4x ~ yrs, data=RES, lty="solid", lwd=4, pch=20, col="slateblue", type="b", ylab="Biomass (kt)", xlab="")
+    plot( cfa4x_median ~ yrs, data=RES, lty="solid", lwd=4, pch=20, col="slateblue", type="b", ylab="Biomass (kt)", xlab="")
     lines( cfa4x_lb ~ yrs, data=RES, lty="dotted", lwd=2, col="slategray" )
     lines( cfa4x_ub ~ yrs, data=RES, lty="dotted", lwd=2, col="slategray" )
 
