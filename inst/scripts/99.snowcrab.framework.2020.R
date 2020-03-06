@@ -22,7 +22,7 @@
 # Model -- nonspatial, nontemporal -- glm
   p$carstm_model_label = "factorial_gaussian_biomass_glm"
   p$variabletomodel = "totwgt"
-  p$selection = list(type = "biomass") # d efault is "number"  ... specify to override
+  p$selection$type = "biomass" # d efault is "number"  ... specify to override
   p$carstm_modelengine = "glm"
   p$carstm_modelcall = paste( '
     glm( formula = ', p$variabletomodel, '  ~ AUID:year -1,
@@ -60,17 +60,19 @@
   p$carstm_model_label = "factorial_gaussian"
   p$carstm_predict_force_range = TRUE  # for factorial models this is necessary to prevent meainingless predictions
   p$variabletomodel = "totwgt"
-  p$selection = list(type = "biomass") # d efault is "number"  ... specify to override
+  p$selection$type = "biomass" # d efault is "number"  ... specify to override
   p$carstm_modelengine = "inla"
   p$carstm_modelcall = paste(
-    'inla( formula =', p$variabletomodel, ' ~ -1 + year_factor:auid ,
+    'inla( formula =', p$variabletomodel, ' ~ year_factor:auid ,
       family = "gaussian",
       data= M,
       control.compute=list(dic=TRUE, cpo=TRUE, waic=TRUE, config=TRUE),
       control.results=list(return.marginals.random=TRUE, return.marginals.predictor=TRUE ),
-      control.predictor=list(compute=FALSE, link=1 ),
-      # control.fixed = list(prec.intercept = 0.1),
-      control.inla = list(  tolerance=1e-12), # increase in case values are too close to zero
+      # control.predictor=list(compute=FALSE, link=1 ),
+      control.fixed = list(prec.intercept = 1),
+      # control.fixed = H$fixed,  # priors for fixed effects, generic is ok
+      control.inla = list(cmin = 0, tolerance=1e-2), # increase in case values are too close to zero
+      # control.inla = list(cmin = 0,  tolerance=1e-12), # increase in case values are too close to zero
     verbose=TRUE
     )'
   )
@@ -691,8 +693,8 @@ assign("inla.models", m, INLA:::inla.get.inlaEnv())
 
   # aggregate time series
   RES = snowcrab_carstm(p=p, DS="carstm_output_compute", carstm_model_label=p$carstm_model_label  )
-  RES = snowcrab_carstm(p=p, DS="carstm_output_timeseries", carstm_model_label=p$carstm_model_label  )
 
+  RES = snowcrab_carstm(p=p, DS="carstm_output_timeseries", carstm_model_label=p$carstm_model_label  )
   bio = snowcrab_carstm(p=p, DS="carstm_output_spacetime_biomass", carstm_model_label=p$carstm_model_label  )
   num = snowcrab_carstm(p=p, DS="carstm_output_spacetime_number", carstm_model_label=p$carstm_model_label  )
 

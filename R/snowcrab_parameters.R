@@ -57,7 +57,7 @@ snowcrab_parameters = function( p=NULL, year.assessment=NULL, project_class="def
   p$esonar.yToload  = intersect( p$yrs, 2014:p$year.assessment)
   p$netmensuration.problems = c()
 
-  p$aegis_dimensionality="space-year"
+  p$aegis_dimensionality="space-year"  # a single solution each year at a given dyear (vs temperature)
 
   p$ny = length(p$yrs)
   p$nt = p$ny # must specify, else assumed = 1 (1= no time)  ## nt=ny annual time steps, nt = ny*nw is seassonal
