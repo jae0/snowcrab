@@ -294,9 +294,6 @@
   M[,p$variabletomodel] = trunc( M[,p$variabletomodel] )  # poisson wants integers
   fit = carstm_model( p=p, M=M )
 
-m = get("inla.models", INLA:::inla.get.inlaEnv())
-m$latent$rw2$min.diff = NULL
-assign("inla.models", m, INLA:::inla.get.inlaEnv())
 
 
 # -------------------------------------------------
@@ -652,9 +649,13 @@ assign("inla.models", m, INLA:::inla.get.inlaEnv())
 
 # -------------------------------------------------
 # generic calls
-m = get("inla.models", INLA:::inla.get.inlaEnv())
- m$latent$rw2$min.diff = NULL
- assign("inla.models", m, INLA:::inla.get.inlaEnv())
+
+  if (0) {
+    m = get("inla.models", INLA:::inla.get.inlaEnv())
+    m$latent$rw2$min.diff = NULL
+    assign("inla.models", m, INLA:::inla.get.inlaEnv())
+  }
+
 
 # extract results and examine
   fit =  carstm_model( p=p, DS="carstm_modelled_fit" )  # extract currently saved model fit
@@ -701,6 +702,8 @@ m = get("inla.models", INLA:::inla.get.inlaEnv())
   num = snowcrab_carstm(p=p, DS="carstm_output_spacetime_number", carstm_model_label=p$carstm_model_label  )
 
   # plots with mean and 95% CI
+    # for GLM, posterior sim not possible ...
+    # plot( cfaall ~ yrs, data=RES, lty="solid", lwd=4, pch=20, col="slateblue", type="b", ylab="Biomass (kt)", xlab="")
 
     plot( cfaall_median ~ yrs, data=RES, lty="solid", lwd=4, pch=20, col="slateblue", type="b", ylab="Biomass (kt)", xlab="")
     lines( cfaall_lb ~ yrs, data=RES, lty="dotted", lwd=2, col="slategray" )
@@ -809,7 +812,11 @@ m = get("inla.models", INLA:::inla.get.inlaEnv())
   dev.new(width=11, height=7)
   i=1 ; plot( cfaall  ~ yrs, data=res_ts[[i]], lty=cc$lty[i], lwd=cc$lwd[i], col=cc$col[i], pch=cc$pch[i], type=cc$type[i], ylim=c(0,185), xlab="Year", ylab="kt")
   for (i in 2:length(res_ts)) {
-    lines( cfaall ~ yrs, data=res_ts[[i]], lty=cc$lty[i], lwd=cc$lwd[i], col=cc$col[i], pch=cc$pch[i], type=cc$type[i])
+    if (lab == "factorial_gaussian_biomass_glm")  {
+      lines( cfaall ~ yrs, data=res_ts[[i]], lty=cc$lty[i], lwd=cc$lwd[i], col=cc$col[i], pch=cc$pch[i], type=cc$type[i])
+    } else {
+      lines( cfaall_median ~ yrs, data=res_ts[[i]], lty=cc$lty[i], lwd=cc$lwd[i], col=cc$col[i], pch=cc$pch[i], type=cc$type[i])
+    }
   }
   legend("top", legend=cc$legend, lty=cc$lty, col=cc$col, lwd=cc$lwd, bty="n"  )
 
