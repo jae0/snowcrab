@@ -549,7 +549,7 @@ snowcrab_carstm = function( p=NULL, DS="parameters", redo=FALSE, extrapolation_l
       nrowres = nrow( mu )
       ps = tapply( 1:p$nsims, INDEX=1:p$nsims, FUN = function(x) { rnorm( n, mean=c(mu), sd=c(sigma) ) } )
    }
-
+browser()
 
     if (p$selection$type %in% c("presence_absence") ) {
       pa =  res[[ paste( p$variabletomodel, "predicted", sep=".")]]
