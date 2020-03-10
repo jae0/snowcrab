@@ -702,8 +702,6 @@
   num = snowcrab_carstm(p=p, DS="carstm_output_spacetime_number", carstm_model_label=p$carstm_model_label  )
 
   # plots with mean and 95% CI
-    # for GLM, posterior sim not possible ...
-    # plot( cfaall ~ yrs, data=RES, lty="solid", lwd=4, pch=20, col="slateblue", type="b", ylab="Biomass (kt)", xlab="")
 
     plot( cfaall_median ~ yrs, data=RES, lty="solid", lwd=4, pch=20, col="slateblue", type="b", ylab="Biomass (kt)", xlab="")
     lines( cfaall_lb ~ yrs, data=RES, lty="dotted", lwd=2, col="slategray" )

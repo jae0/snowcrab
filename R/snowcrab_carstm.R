@@ -543,7 +543,8 @@ snowcrab_carstm = function( p=NULL, DS="parameters", redo=FALSE, extrapolation_l
     if (p$carstm_modelengine %in% c( "glm", "gam") ) {
       # sample from marginal distributions as iid assumed
       n = length( res[[ paste( p$variabletomodel, "predicted", sep=".")]] )
-      resdim = dim( res[[ paste( p$variabletomodel, "predicted", sep=".")]] )
+      ncolres = ncol( res[[ paste( p$variabletomodel, "predicted", sep=".")]] )
+      nrowres = ncol( res[[ paste( p$variabletomodel, "predicted", sep=".")]] )
       mu = c(res[[ paste( p$variabletomodel, "predicted", sep=".")]])
       sigma = c(res[[ paste( p$variabletomodel, "predicted_se", sep=".")]] )
       ps = tapply( 1:p$nsims, INDEX=1:p$nsims, FUN = function(x) { rnorm( n, mean=mu, sd=sigma ) } )
@@ -561,12 +562,17 @@ snowcrab_carstm = function( p=NULL, DS="parameters", redo=FALSE, extrapolation_l
       sims = sapply( ps,
         function(x) {
 
-          if (p$carstm_modelengine %in% c("glm", "gam") ) input = matrix(x, nrow=resdim[1], ncol=resdim[2])
-          if (p$carstm_modelengine == "inla")             input = x$latent[res$i_preds]
+          if (p$carstm_modelengine %in% c("glm", "gam") ) {
+            pa = matrix(x, nrow=nrowres, ncol=ncolres)
+          }
 
-          input[!is.finite(input)] = NA
-          input = inverse.logit( input )
-          pa = reformat_to_array( input=input , matchfrom=res$matchfrom, matchto=res$matchto )
+          if (p$carstm_modelengine == "inla") {
+            input = x$latent[res$i_preds]
+            input[!is.finite(input)] = NA
+            input = inverse.logit( input )
+            pa = reformat_to_array( input=input , matchfrom=res$matchfrom, matchto=res$matchto )
+          }
+
           pa[!is.finite(pa)] = NA
 
           o = list()
@@ -620,11 +626,16 @@ snowcrab_carstm = function( p=NULL, DS="parameters", redo=FALSE, extrapolation_l
 
         sims = sapply( ps,
           function(x) {
-            if (p$carstm_modelengine %in% c("glm", "gam") ) input = matrix(x, nrow=resdim[1], ncol=resdim[2])
-            if (p$carstm_modelengine == "inla")             input = exp( x$latent[res$i_preds])
+            if (p$carstm_modelengine %in% c("glm", "gam") ) {
+              biom = matrix(x, nrow=nrowres, ncol=ncolres)
+            }
 
-            biom = reformat_to_array( input=input , matchfrom=res$matchfrom, matchto=res$matchto )
-            if (!is.null(NA_mask)) biom[NA_mask] = NA
+            if (p$carstm_modelengine == "inla") {
+              input = exp( x$latent[res$i_preds])
+              biom = reformat_to_array( input=input , matchfrom=res$matchfrom, matchto=res$matchto )
+              if (!is.null(NA_mask)) biom[NA_mask] = NA
+            }
+
             biom[!is.finite(biom)] = NA
             o = list()
             o$cfaall    = colSums( biom * sppoly$au_sa_km2/ 10^6, na.rm=TRUE )
@@ -661,13 +672,19 @@ snowcrab_carstm = function( p=NULL, DS="parameters", redo=FALSE, extrapolation_l
         sims = sapply( ps,
           function(x) {
 
-            if (p$carstm_modelengine %in% c("glm", "gam") ) input = matrix(x, nrow=resdim[1], ncol=resdim[2]  )
-            if (p$carstm_modelengine == "inla")             input = exp( x$latent[res$i_preds])
+            if (p$carstm_modelengine %in% c("glm", "gam") ) {
+              nums = matrix(x, nrow=nrowres, ncol=ncolres  )
+            }
 
-            nums = reformat_to_array( input=input , matchfrom=res$matchfrom, matchto=res$matchto )
-            if (!is.null(NA_mask)) nums[NA_mask] = NA
+            if (p$carstm_modelengine == "inla") {
+              input = exp( x$latent[res$i_preds])
+              nums = reformat_to_array( input=input , matchfrom=res$matchfrom, matchto=res$matchto )
+              if (!is.null(NA_mask)) nums[NA_mask] = NA
+            }
+
             nums[!is.finite(nums)] = NA
             biom = nums * wgts
+
             o = list()
             o$cfaall    = colSums( biom * sppoly$au_sa_km2/ 10^6, na.rm=TRUE )
             o$cfanorth  = colSums( biom * sppoly$cfanorth_surfacearea/ 10^6, na.rm=TRUE )
