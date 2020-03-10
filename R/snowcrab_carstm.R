@@ -544,9 +544,10 @@ snowcrab_carstm = function( p=NULL, DS="parameters", redo=FALSE, extrapolation_l
       # sample from marginal distributions as iid assumed
       n = length( res[[ paste( p$variabletomodel, "predicted", sep=".")]] )
       resdim = dim( res[[ paste( p$variabletomodel, "predicted", sep=".")]] )
-      ps = rnorm( n*p$nsims, res[[ paste( p$variabletomodel, "predicted", sep=".")]], res[[ paste( p$variabletomodel, "predicted_se", sep=".")]] )
-      ps = matrix(ps, nrow=n)
-    }
+      mu = c(res[[ paste( p$variabletomodel, "predicted", sep=".")]])
+      sigma = c(res[[ paste( p$variabletomodel, "predicted_se", sep=".")]] )
+      ps = tapply( 1:p$nsims, INDEX=1:p$nsims, FUN = function(x) { rnorm( n, mean=mu, sd=sigma ) } )
+   }
 
 
     if (p$selection$type %in% c("presence_absence") ) {
@@ -557,49 +558,27 @@ snowcrab_carstm = function( p=NULL, DS="parameters", redo=FALSE, extrapolation_l
       # if (is.na(extrapolation_limit)) extrapolation_limit = c(0,1)
       save( pa, file=fn_pa, compress=TRUE )
 
-      if (p$carstm_modelengine == "inla") {
-        sims = sapply( ps,
-          function(x) {
-            input = x$latent[res$i_preds]
-            input[!is.finite(input)] = NA
-            input = inverse.logit( input )
-            pa = reformat_to_array( input=input , matchfrom=res$matchfrom, matchto=res$matchto )
-            pa[!is.finite(pa)] = NA
+      sims = sapply( ps,
+        function(x) {
 
-            o = list()
-            o$cfaall    = colSums( pa * sppoly$au_sa_km2/ sum(sppoly$au_sa_km2), na.rm=TRUE )
-            o$cfanorth  = colSums( pa * sppoly$cfanorth_surfacearea/ sum(sppoly$cfanorth_surfacearea), na.rm=TRUE )
-            o$cfasouth  = colSums( pa * sppoly$cfasouth_surfacearea/ sum(sppoly$cfasouth_surfacearea), na.rm=TRUE )
-            o$cfa23     = colSums( pa * sppoly$cfa23_surfacearea/ sum(sppoly$cfa23_surfacearea), na.rm=TRUE )
-            o$cfa24     = colSums( pa * sppoly$cfa24_surfacearea/ sum(sppoly$cfa24_surfacearea), na.rm=TRUE )
-            o$cfa4x     = colSums( pa * sppoly$cfa4x_surfacearea/ sum(sppoly$cfa4x_surfacearea), na.rm=TRUE )
-            return(o)
-          }, simplify=TRUE
-        )
-      }
+          if (p$carstm_modelengine %in% c("glm", "gam") ) input = matrix(x, nrow=resdim[1], ncol=resdim[2])
+          if (p$carstm_modelengine == "inla")             input = x$latent[res$i_preds]
 
-      if (p$carstm_modelengine %in% c("glm", "gam") ) {
-        # simulate from marginals .. should be ok as assumption is iid
-        sims = apply( ps, 2,
-          function(x) {
-            input = matrix(x, nrow=resdim[1], ncol=resdim[2])
-            input[!is.finite(input)] = NA
-            input = inverse.logit( input )
-            pa = reformat_to_array( input=input , matchfrom=res$matchfrom, matchto=res$matchto )
-            pa[!is.finite(pa)] = NA
+          input[!is.finite(input)] = NA
+          input = inverse.logit( input )
+          pa = reformat_to_array( input=input , matchfrom=res$matchfrom, matchto=res$matchto )
+          pa[!is.finite(pa)] = NA
 
-            o = list()
-            o$cfaall    = colSums( pa * sppoly$au_sa_km2/ sum(sppoly$au_sa_km2), na.rm=TRUE )
-            o$cfanorth  = colSums( pa * sppoly$cfanorth_surfacearea/ sum(sppoly$cfanorth_surfacearea), na.rm=TRUE )
-            o$cfasouth  = colSums( pa * sppoly$cfasouth_surfacearea/ sum(sppoly$cfasouth_surfacearea), na.rm=TRUE )
-            o$cfa23     = colSums( pa * sppoly$cfa23_surfacearea/ sum(sppoly$cfa23_surfacearea), na.rm=TRUE )
-            o$cfa24     = colSums( pa * sppoly$cfa24_surfacearea/ sum(sppoly$cfa24_surfacearea), na.rm=TRUE )
-            o$cfa4x     = colSums( pa * sppoly$cfa4x_surfacearea/ sum(sppoly$cfa4x_surfacearea), na.rm=TRUE )
-            return(o)
-          }
-        )
-        sims = simplify2array(sims)
-      }
+          o = list()
+          o$cfaall    = colSums( pa * sppoly$au_sa_km2/ sum(sppoly$au_sa_km2), na.rm=TRUE )
+          o$cfanorth  = colSums( pa * sppoly$cfanorth_surfacearea/ sum(sppoly$cfanorth_surfacearea), na.rm=TRUE )
+          o$cfasouth  = colSums( pa * sppoly$cfasouth_surfacearea/ sum(sppoly$cfasouth_surfacearea), na.rm=TRUE )
+          o$cfa23     = colSums( pa * sppoly$cfa23_surfacearea/ sum(sppoly$cfa23_surfacearea), na.rm=TRUE )
+          o$cfa24     = colSums( pa * sppoly$cfa24_surfacearea/ sum(sppoly$cfa24_surfacearea), na.rm=TRUE )
+          o$cfa4x     = colSums( pa * sppoly$cfa4x_surfacearea/ sum(sppoly$cfa4x_surfacearea), na.rm=TRUE )
+          return(o)
+        }, simplify=TRUE
+      )
 
     }
 
@@ -638,49 +617,25 @@ snowcrab_carstm = function( p=NULL, DS="parameters", redo=FALSE, extrapolation_l
         save( biom, file=fn_bio, compress=TRUE )
         save( nums, file=fn_no, compress=TRUE )
 
-        if (p$carstm_modelengine == "inla") {
 
-          sims = sapply( ps,
-            function(x) {
-              input = exp( x$latent[res$i_preds])
-              biom = reformat_to_array( input=input , matchfrom=res$matchfrom, matchto=res$matchto )
-              if (!is.null(NA_mask)) biom[NA_mask] = NA
-              biom[!is.finite(biom)] = NA
-              o = list()
-              o$cfaall    = colSums( biom * sppoly$au_sa_km2/ 10^6, na.rm=TRUE )
-              o$cfanorth  = colSums( biom * sppoly$cfanorth_surfacearea/ 10^6, na.rm=TRUE )
-              o$cfasouth  = colSums( biom * sppoly$cfasouth_surfacearea/ 10^6, na.rm=TRUE )
-              o$cfa23     = colSums( biom * sppoly$cfa23_surfacearea/ 10^6, na.rm=TRUE )
-              o$cfa24     = colSums( biom * sppoly$cfa24_surfacearea/ 10^6, na.rm=TRUE )
-              o$cfa4x     = colSums( biom * sppoly$cfa4x_surfacearea/ 10^6, na.rm=TRUE )
-              return(o)
-            }, simplify=TRUE
-          )
-        }
+        sims = sapply( ps,
+          function(x) {
+            if (p$carstm_modelengine %in% c("glm", "gam") ) input = matrix(x, nrow=resdim[1], ncol=resdim[2])
+            if (p$carstm_modelengine == "inla")             input = exp( x$latent[res$i_preds])
 
-
-        if (p$carstm_modelengine %in% c("glm", "gam") ) {
-
-          sims = apply( ps, 2,
-            function(x) {
-              input = matrix(x, nrow=resdim[1], ncol=resdim[2])
-              biom = reformat_to_array( input=input , matchfrom=res$matchfrom, matchto=res$matchto )
-              if (!is.null(NA_mask)) biom[NA_mask] = NA
-              biom[!is.finite(biom)] = NA
-              o = list()
-              # {no, kg} /km^2 -> {kn, kt}/ km^2
-              o$cfaall    = colSums( biom * sppoly$au_sa_km2/ 10^6, na.rm=TRUE )
-              o$cfanorth  = colSums( biom * sppoly$cfanorth_surfacearea/ 10^6, na.rm=TRUE )
-              o$cfasouth  = colSums( biom * sppoly$cfasouth_surfacearea/ 10^6, na.rm=TRUE )
-              o$cfa23     = colSums( biom * sppoly$cfa23_surfacearea/ 10^6, na.rm=TRUE )
-              o$cfa24     = colSums( biom * sppoly$cfa24_surfacearea/ 10^6, na.rm=TRUE )
-              o$cfa4x     = colSums( biom * sppoly$cfa4x_surfacearea/ 10^6, na.rm=TRUE )
-              return(o)
-            }
-          )
-          sims = simplify2array(sims)
-        }
-
+            biom = reformat_to_array( input=input , matchfrom=res$matchfrom, matchto=res$matchto )
+            if (!is.null(NA_mask)) biom[NA_mask] = NA
+            biom[!is.finite(biom)] = NA
+            o = list()
+            o$cfaall    = colSums( biom * sppoly$au_sa_km2/ 10^6, na.rm=TRUE )
+            o$cfanorth  = colSums( biom * sppoly$cfanorth_surfacearea/ 10^6, na.rm=TRUE )
+            o$cfasouth  = colSums( biom * sppoly$cfasouth_surfacearea/ 10^6, na.rm=TRUE )
+            o$cfa23     = colSums( biom * sppoly$cfa23_surfacearea/ 10^6, na.rm=TRUE )
+            o$cfa24     = colSums( biom * sppoly$cfa24_surfacearea/ 10^6, na.rm=TRUE )
+            o$cfa4x     = colSums( biom * sppoly$cfa4x_surfacearea/ 10^6, na.rm=TRUE )
+            return(o)
+          }, simplify=TRUE
+        )
       }
 
 
@@ -703,49 +658,27 @@ snowcrab_carstm = function( p=NULL, DS="parameters", redo=FALSE, extrapolation_l
         save( biom, file=fn_bio, compress=TRUE )
         save( nums, file=fn_no, compress=TRUE )
 
-        if (p$carstm_modelengine == "inla") {
+        sims = sapply( ps,
+          function(x) {
 
-          sims = sapply( ps,
-            function(x) {
-              input = exp( x$latent[res$i_preds])
-              nums = reformat_to_array( input=input , matchfrom=res$matchfrom, matchto=res$matchto )
-              if (!is.null(NA_mask)) nums[NA_mask] = NA
-              nums[!is.finite(nums)] = NA
-              biom = nums * wgts
-              o = list()
-              o$cfaall    = colSums( biom * sppoly$au_sa_km2/ 10^6, na.rm=TRUE )
-              o$cfanorth  = colSums( biom * sppoly$cfanorth_surfacearea/ 10^6, na.rm=TRUE )
-              o$cfasouth  = colSums( biom * sppoly$cfasouth_surfacearea/ 10^6, na.rm=TRUE )
-              o$cfa23     = colSums( biom * sppoly$cfa23_surfacearea/ 10^6, na.rm=TRUE )
-              o$cfa24     = colSums( biom * sppoly$cfa24_surfacearea/ 10^6, na.rm=TRUE )
-              o$cfa4x     = colSums( biom * sppoly$cfa4x_surfacearea/ 10^6, na.rm=TRUE )
-              return(o)
-            }, simplify=TRUE
-          )
-        }
+            if (p$carstm_modelengine %in% c("glm", "gam") ) input = matrix(x, nrow=resdim[1], ncol=resdim[2]  )
+            if (p$carstm_modelengine == "inla")             input = exp( x$latent[res$i_preds])
 
-        if (p$carstm_modelengine %in% c("glm", "gam") ) {
-          # simulate from marginals .. should be ok as assumption is iid
-          sims = apply( ps, 2,
-            function(x) {
-              input = matrix(x, nrow=resdim[1], ncol=resdim[2])
-              nums = reformat_to_array( input=input , matchfrom=res$matchfrom, matchto=res$matchto )
-              if (!is.null(NA_mask)) nums[NA_mask] = NA
-              nums[!is.finite(nums)] = NA
-              biom = nums * wgts
-              o = list()
-              # {no, kg} /km^2 -> {kn, kt}/ km^2
-              o$cfaall    = colSums( biom * sppoly$au_sa_km2/ 10^6, na.rm=TRUE )
-              o$cfanorth  = colSums( biom * sppoly$cfanorth_surfacearea/ 10^6, na.rm=TRUE )
-              o$cfasouth  = colSums( biom * sppoly$cfasouth_surfacearea/ 10^6, na.rm=TRUE )
-              o$cfa23     = colSums( biom * sppoly$cfa23_surfacearea/ 10^6, na.rm=TRUE )
-              o$cfa24     = colSums( biom * sppoly$cfa24_surfacearea/ 10^6, na.rm=TRUE )
-              o$cfa4x     = colSums( biom * sppoly$cfa4x_surfacearea/ 10^6, na.rm=TRUE )
-              return(o)
-            }
-          )
-          sims = simplify2array(sims)
-        }
+            nums = reformat_to_array( input=input , matchfrom=res$matchfrom, matchto=res$matchto )
+            if (!is.null(NA_mask)) nums[NA_mask] = NA
+            nums[!is.finite(nums)] = NA
+            biom = nums * wgts
+            o = list()
+            o$cfaall    = colSums( biom * sppoly$au_sa_km2/ 10^6, na.rm=TRUE )
+            o$cfanorth  = colSums( biom * sppoly$cfanorth_surfacearea/ 10^6, na.rm=TRUE )
+            o$cfasouth  = colSums( biom * sppoly$cfasouth_surfacearea/ 10^6, na.rm=TRUE )
+            o$cfa23     = colSums( biom * sppoly$cfa23_surfacearea/ 10^6, na.rm=TRUE )
+            o$cfa24     = colSums( biom * sppoly$cfa24_surfacearea/ 10^6, na.rm=TRUE )
+            o$cfa4x     = colSums( biom * sppoly$cfa4x_surfacearea/ 10^6, na.rm=TRUE )
+            return(o)
+          }, simplify=TRUE
+        )
+
       }
     }
 
