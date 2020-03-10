@@ -542,11 +542,11 @@ snowcrab_carstm = function( p=NULL, DS="parameters", redo=FALSE, extrapolation_l
 
     if (p$carstm_modelengine %in% c( "glm", "gam") ) {
       # sample from marginal distributions as iid assumed
-      n = length( res[[ paste( p$variabletomodel, "predicted", sep=".")]] )
-      ncolres = ncol( res[[ paste( p$variabletomodel, "predicted", sep=".")]] )
-      nrowres = ncol( res[[ paste( p$variabletomodel, "predicted", sep=".")]] )
       mu = c(res[[ paste( p$variabletomodel, "predicted", sep=".")]])
       sigma = c(res[[ paste( p$variabletomodel, "predicted_se", sep=".")]] )
+      n = length( mu )
+      ncolres = ncol( mu )
+      nrowres = nrow( mu )
       ps = tapply( 1:p$nsims, INDEX=1:p$nsims, FUN = function(x) { rnorm( n, mean=mu, sd=sigma ) } )
    }
 
