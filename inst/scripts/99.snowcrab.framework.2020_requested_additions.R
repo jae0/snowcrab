@@ -22,6 +22,9 @@ year.assessment = 2018
 
 
 # extract results and examine
+
+
+
   fit =  carstm_model( p=p, DS="carstm_modelled_fit" )  # extract currently saved model fit
   summary(fit)
 
@@ -29,75 +32,85 @@ year.assessment = 2018
 
 
 
-    # prediction surface
-    sppoly = areal_units( p=p )  # will redo if not found
-    crs_lonlat = sp::CRS(projection_proj4string("lonlat_wgs84"))
+  # prediction surface
+  sppoly = areal_units( p=p )  # will redo if not found
+  crs_lonlat = sp::CRS(projection_proj4string("lonlat_wgs84"))
 
 
-    # do this immediately to reduce storage for sppoly (before adding other variables)
-    M = snowcrab.db( p=p, DS="biological_data" )  # will redo if not found .. not used here but used for data matching/lookup in other aegis projects that use bathymetry
+  # do this immediately to reduce storage for sppoly (before adding other variables)
+  M = snowcrab.db( p=p, DS="biological_data" )  # will redo if not found .. not used here but used for data matching/lookup in other aegis projects that use bathymetry
 
-    #January 2020 samples create a problem- 2019 survey, 2020 year
-    #Shift these samples back to late december by removing 16 days
-    i=which((lubridate::year (M$timestamp)==2020) & (lubridate::month(M$timestamp)==1))
-    #M$tiyr[i]=M$tiyr[i]-(16/365.25)
-    M$timestamp[i]=M$timestamp[i]-1382400
-    M$tiyr=lubridate::decimal_date(M$timestamp)
+  #January 2020 samples create a problem- 2019 survey, 2020 year
+  #Shift these samples back to late december by removing 16 days
+  i=which((lubridate::year (M$timestamp)==2020) & (lubridate::month(M$timestamp)==1))
+  #M$tiyr[i]=M$tiyr[i]-(16/365.25)
+  M$timestamp[i]=M$timestamp[i]-1382400
+  M$tiyr=lubridate::decimal_date(M$timestamp)
 
-    # M$totno = M$totno_adjusted / M$cf_set_no   # convert density to counts
-    # M$totwgt = M$totwgt_adjusted / M$cf_set_mass # convert density to total wgt
+  # M$totno = M$totno_adjusted / M$cf_set_no   # convert density to counts
+  # M$totwgt = M$totwgt_adjusted / M$cf_set_mass # convert density to total wgt
 
-    # M$data_offset = 1 / M$cf_set_no  ## offset only used in poisson model
-
-
-    # reduce size
-    M = M[ which( M$lon > p$corners$lon[1] & M$lon < p$corners$lon[2]  & M$lat > p$corners$lat[1] & M$lat < p$corners$lat[2] ), ]
-    # levelplot(z.mean~plon+plat, data=M, aspect="iso")
-
-    M$AUID = over( SpatialPoints( M[, c("lon", "lat")], crs_lonlat ), spTransform(sppoly, crs_lonlat ) )$AUID # match each datum to an area
-    M = M[!is.na(M$AUID),]
-
-    names(M)[which(names(M)=="yr") ] = "year"
-    # M = M[ which(M$year %in% p$yrs), ]
-    # M$tiyr = lubridate::decimal_date ( M$timestamp )
-    # M$dyear = M$tiyr - M$year
-
-    MM = snowcrab_carstm( p=p, DS="carstm_inputs", redo=TRUE )  # will redo if not found
+  # M$data_offset = 1 / M$cf_set_no  ## offset only used in poisson model
 
 
-    obsMM = MM[MM$tag=="observations",]
-    plocs = MM[MM$tag=="predictions",]
+  # reduce size
+  M = M[ which( M$lon > p$corners$lon[1] & M$lon < p$corners$lon[2]  & M$lat > p$corners$lat[1] & M$lat < p$corners$lat[2] ), ]
+  # levelplot(z.mean~plon+plat, data=M, aspect="iso")
 
-    obs = M
+  M$AUID = over( SpatialPoints( M[, c("lon", "lat")], crs_lonlat ), spTransform(sppoly, crs_lonlat ) )$AUID # match each datum to an area
+  M = M[!is.na(M$AUID),]
+
+  names(M)[which(names(M)=="yr") ] = "year"
+  # M = M[ which(M$year %in% p$yrs), ]
+  # M$tiyr = lubridate::decimal_date ( M$timestamp )
+  # M$dyear = M$tiyr - M$year
+
+  MM = res$M
+
+  obsMM = MM[MM$tag=="observations",]
+  plocs = MM[MM$tag=="predictions",]
+
+  obs = M
+  if (p$variabletomodel=="totno") {
     obs$density = obs$totno / obs$data_offset
-
     rr = as.data.frame.table(res$totno.predicted)
-    rr$AUID = as.character( rr$AUID)
-    rr$year = as.numeric( as.character( rr$year) )
+  }
+  if (p$variabletomodel=="totwgt") {
+    obs$density = obs$totwgt / obs$data_offset
+    rr = as.data.frame.table(res$totwgt.predicted)
+  }
 
-    obs = merge( obs, rr, by=c("year", "AUID"), all.x=TRUE, all.y=FALSE )
-    obs$no_resid = obs$density - obs$Freq
-    obs$no_resid_per_set = obs$no_resid * obs$data_offset
-    obs$yr = obs$year
+  rr$AUID = as.character( rr$AUID)
+  rr$year = as.numeric( as.character( rr$year) )
+
+  obs = merge( obs, rr, by=c("year", "AUID"), all.x=TRUE, all.y=FALSE )
+  obs$Freq[ !is.finite(obs$Freq) ] = 0
+  obs$resid =  obs$Freq - obs$density
+  obs$resid_per_set = obs$resid * obs$data_offset
+  obs$yr = obs$year
 
 
-    vn = "no_resid"
-    vn = "no_resid_per_set"
+  vn = "resid"
+  vn = "resid_per_set"
+  #er = range( obs[,vn], na.rm=T) * c(0.95, 1.05)
+  er = c(-100, 100)
 
-    resol = p$pres
+  resol = p$pres
 
-    B = bathymetry.db(p=p, DS="baseline")  # 1 km (p$pres )
+  B = bathymetry.db(p=p, DS="baseline")  # 1 km (p$pres )
 
-    for ( y in  2000:2018 ) {
-        ii = which( obs$yr==y)
-        if ( length(ii) > 3 ) {
-        fn = file.path( p$project.outputdir, "residuals", y, "rdata", sep=".")
-        png( filename=fn, width=3072, height=2304, pointsize=40, res=300 )
-        lp = map_simple( toplot=obs[ ii, c("plon","plat", vn) ], plotarea=B, resol=1, theta=7.5, filterdistances=7.5, vn=vn, annot=paste("Residuals", y) )
-        print(lp)
-        dev.off()
-      }
+  for ( y in  2000:2018 ) {
+      ii = which( obs$yr==y & is.finite(obs[,vn] ))
+      if ( length(ii) > 3 ) {
+      dir.create( file.path( p$project.outputdir, "residuals", p$carstm_model_label), recursive=TRUE, showWarnings =FALSE)
+      fn = file.path( p$project.outputdir, "residuals", p$carstm_model_label, paste( "residuals", y, "png", sep=".") )
+      png( filename=fn, width=3072, height=2304, pointsize=40, res=300 )
+       lp = map_simple( toplot=obs[ ii, c("plon","plat", vn) ], plotarea=B, resol=1, theta=15, filterdistances=7.5, vn=vn, annot=paste("Residuals", y), er=er )
+       print(lp)
+      dev.off()
+      print(fn)
     }
+  }
 
 
 
