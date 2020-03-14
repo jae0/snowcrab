@@ -211,7 +211,7 @@
     pS$carstm_modelcall = paste('
       inla(
         formula =', pS$variabletomodel, ' ~ 1
-          + f( inla.group(z, method="quantile", n=11) ,  model="rw2", scale.model=TRUE, hyper=H$rw2)
+          + f( inla.group(z, method="quantile", n=9) ,  model="rw2", scale.model=TRUE, hyper=H$rw2)
           + f(auid, model="bym2", graph=sppoly@nb, scale.model=TRUE, constr=TRUE, hyper=H$bym2),
         family = "lognormal",
         data= M,
