@@ -369,8 +369,8 @@
 # Part 6 -- create covariate field for species composition 1
 # ensure that survey data is assimilated : bio.snowcrab::01snowcb_data.R, aegis.survey::01.surveys.data.R , etc.
 # 30 min, 150 configs
-  require(aegis.speciescomposition)
-  require(carstm)
+  # require(aegis.speciescomposition)
+  # require(carstm)
 
   pPC1 = speciescomposition_carstm(
     DS="parameters",
