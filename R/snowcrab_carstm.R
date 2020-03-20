@@ -98,7 +98,7 @@ snowcrab_carstm = function( p=NULL, DS="parameters", redo=FALSE, extrapolation_l
             control.predictor=list(compute=FALSE, link=1 ),
             #control.fixed = list(prec.intercept = 0.1),
             control.fixed = H$fixed,  # priors for fixed effects, generic is ok
-            control.inla = list(cmin = 0 ),
+            control.inla = list(cmin = 0, h=1e-4, tolerance=1e-9 ),
             # control.inla = list( h=1e-6, tolerance=1e-12), # increase in case values are too close to zero
             #control.inla=list( strategy="laplace", cutoff=1e-6, correct=TRUE, correct.verbose=FALSE ),
             # control.inla = list( h=1e-6, tolerance=1e-12), # increase in case values are too close to zero

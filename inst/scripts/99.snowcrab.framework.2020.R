@@ -662,7 +662,10 @@
   s
   # s$dic$dic
   # s$dic$p.eff
+  # AIC(fit)
+  # DIC(fit)
   -sum(log(fit$cpo$cpo), na.rm=TRUE)
+
 
 
 
@@ -676,15 +679,6 @@
     plot( fit$marginals.hyperpar$"Precision for auid", type="l")
     plot( fit$marginals.hyperpar$"Precision for setno", type="l")
   }
-
-  # AIC(fit)
-  # DIC(fit)
-  s = summary(fit)
-  s
-  # s$dic$dic
-  # s$dic$p.eff
-  -sum(log(fit$cpo$cpo), na.rm=TRUE)
-
 
 
   sppoly = areal_units( p=p )  # to reload
@@ -1417,7 +1411,271 @@
 
 
 
+## Plot maps of residuals of numbers per set obs vs pred
+
+
+year.assessment = 2018
+#To add a title to any carstm_plot, please see below example
+#carstm_plot( p=p, res=res, vn=vn, main=list(label="my plot title", cex=2) )
+
+
+# -------------------------------------------------
+# Part 1 -- construct basic parameter list defining the main characteristics of the study
+# require(aegis)
+
+ p = bio.snowcrab::snowcrab_carstm( DS="parameters", assessment.years=1999:year.assessment )
+
+  # misc run params adjustments here:
+  p$inla_num.threads = 6
+  p$inla_blas.num.threads = 6
+
+  plot.dir=paste(p$modeldir,"prediction.plots", year.assessment, sep="/" )
+
+
+
+# extract results and examine
+
+
+
+  fit =  carstm_model( p=p, DS="carstm_modelled_fit" )  # extract currently saved model fit
+  summary(fit)
+
+  res = carstm_summary( p=p  )
+
+
+
+  # prediction surface
+  sppoly = areal_units( p=p )  # will redo if not found
+  crs_lonlat = sp::CRS(projection_proj4string("lonlat_wgs84"))
+
+
+  # do this immediately to reduce storage for sppoly (before adding other variables)
+  M = snowcrab.db( p=p, DS="biological_data" )  # will redo if not found .. not used here but used for data matching/lookup in other aegis projects that use bathymetry
+
+  #January 2020 samples create a problem- 2019 survey, 2020 year
+  #Shift these samples back to late december by removing 16 days
+  i=which((lubridate::year (M$timestamp)==2020) & (lubridate::month(M$timestamp)==1))
+  #M$tiyr[i]=M$tiyr[i]-(16/365.25)
+  M$timestamp[i]=M$timestamp[i]-1382400
+  M$tiyr=lubridate::decimal_date(M$timestamp)
+
+  # M$totno = M$totno_adjusted / M$cf_set_no   # convert density to counts
+  # M$totwgt = M$totwgt_adjusted / M$cf_set_mass # convert density to total wgt
+
+  # M$data_offset = 1 / M$cf_set_no  ## offset only used in poisson model
+
+
+  # reduce size
+  M = M[ which( M$lon > p$corners$lon[1] & M$lon < p$corners$lon[2]  & M$lat > p$corners$lat[1] & M$lat < p$corners$lat[2] ), ]
+  # levelplot(z.mean~plon+plat, data=M, aspect="iso")
+
+  M$AUID = over( SpatialPoints( M[, c("lon", "lat")], crs_lonlat ), spTransform(sppoly, crs_lonlat ) )$AUID # match each datum to an area
+  M = M[!is.na(M$AUID),]
+
+  names(M)[which(names(M)=="yr") ] = "year"
+  # M = M[ which(M$year %in% p$yrs), ]
+  # M$tiyr = lubridate::decimal_date ( M$timestamp )
+  # M$dyear = M$tiyr - M$year
+
+  MM = res$M
+
+  obsMM = MM[MM$tag=="observations",]
+  plocs = MM[MM$tag=="predictions",]
+
+  obs = M
+  if (p$variabletomodel=="totno") {
+    obs$density = obs$totno / obs$data_offset
+    rr = as.data.frame.table(res$totno.predicted)
+  }
+  if (p$variabletomodel=="totwgt") {
+    obs$density = obs$totwgt / obs$data_offset
+    rr = as.data.frame.table(res$totwgt.predicted)
+  }
+
+  rr$AUID = as.character( rr$AUID)
+  rr$year = as.numeric( as.character( rr$year) )
+
+  obs = merge( obs, rr, by=c("year", "AUID"), all.x=TRUE, all.y=FALSE )
+  obs$Freq[ !is.finite(obs$Freq) ] = 0
+  obs$resid =  obs$Freq - obs$density
+  obs$resid_per_set = obs$resid * obs$data_offset
+  obs$yr = obs$year
+
+
+  vn = "resid"
+  vn = "resid_per_set"
+  #er = range( obs[,vn], na.rm=T) * c(0.95, 1.05)
+  er = c(-100, 100)
+
+  resol = p$pres
+
+  B = bathymetry.db(p=p, DS="baseline")  # 1 km (p$pres )
+
+  for ( y in  2000:2018 ) {
+      ii = which( obs$yr==y & is.finite(obs[,vn] ))
+      if ( length(ii) > 3 ) {
+      dir.create( file.path( p$project.outputdir, "residuals", p$carstm_model_label), recursive=TRUE, showWarnings =FALSE)
+      fn = file.path( p$project.outputdir, "residuals", p$carstm_model_label, paste( "residuals", y, "png", sep=".") )
+      png( filename=fn, width=3072, height=2304, pointsize=40, res=300 )
+       lp = map_simple( toplot=obs[ ii, c("plon","plat", vn) ], plotarea=B, resol=1, theta=15, filterdistances=7.5, vn=vn, annot=paste("Residuals", y), er=er )
+       print(lp)
+      dev.off()
+      print(fn)
+    }
+  }
+
+
+
+
+## ---------
+#### final estimation of biomass via fishery models and associated figures and tables:
+
+#Pick whichever year reference below is correct (most often year.assessment...-1)
+if (!exists("year.assessment")) {
+   year.assessment=lubridate::year(Sys.Date())
+   year.assessment=lubridate::year(Sys.Date()) - 1
+}
+
+year.assessment = 2018
+p = bio.snowcrab::load.environment(
+  year.assessment=year.assessment,
+  assessment_years = 2000:year.assessment,
+  vars.tomodel="R0.mass"
+)
+
+
+
+#Choose one of the below  model runs
+##stmv biomass estimates only
+p$fishery_model = list()
+p$fishery_model$method = "stan"  # "jags", etc.
+# p$fishery_model$outdir = file.path(project.datadirectory('bio.snowcrab'), "assessments", p$year.assessment )
+# override output location
+p$fishery_model$outdir = file.path(project.datadirectory('bio.snowcrab'), "assessments", p$year.assessment, "nonseparable_simple" )
+
+p$fishery_model$standata = snowcrab_tsdata( p=p, assessment_years=p$assessment_years, carstm_model_label="nonseparable_simple" )
+
+p$fishery_model$standata$Kmu =  c( 5, 60, 1)
+p$fishery_model$standata$rmu = c(1, 1, 1)
+p$fishery_model$standata$qmu = c(1, 1, 1)
+p$fishery_model$standata$Ksd =  c(0.25, 0.25, 0.25) * p$fishery_model$standata$Kmu  # c( 2, 20, 0.5)
+p$fishery_model$standata$rsd =  c(0.25, 0.25, 0.25) * p$fishery_model$standata$rmu  # rep( 0.3, 3)
+p$fishery_model$standata$qsd =  c(0.25, 0.25, 0.25) * p$fishery_model$standata$qmu  # rep( 0.3, 3)
+
+p$fishery_model$stancode = fishery_model( p=p, DS="stan_surplus_production" )
+p$fishery_model$stancode_compiled = rstan::stan_model( model_code=p$fishery_model$stancode )
+
+# later:::ensureInitialized()  # solve mode error
+
+res = fishery_model( p=p, DS="stan",
+  chains=4,
+  iter=14000,
+  warmup=8000,
+  refresh = 1000,
+  control = list(adapt_delta = 0.975, max_treedepth=18)
+)
+
+
+
+#below figure code best run in R terminal rather than RStudio
+
+#uncomment to reload fishery model for plotting
+# load( p$fishery_model$fnres )
+
+# frequency density of key parameters
+figure.mcmc( "K", res=res, fn=file.path(p$fishery_model$outdir, "K.density.png" ) )
+figure.mcmc( "r", res=res, fn=file.path(p$fishery_model$outdir, "r.density.png" ) )
+figure.mcmc( "q", res=res, fn=file.path(p$fishery_model$outdir, "q.density.png" ) ,xrange=c(0,2))
+figure.mcmc( "FMSY", res=res, fn=file.path(p$fishery_model$outdir, "FMSY.density.png" ) )
+figure.mcmc( "bosd", res=res, fn=file.path(p$fishery_model$outdir, "bosd.density.png" ) )
+figure.mcmc( "bpsd", res=res, fn=file.path(p$fishery_model$outdir, "bpsd.density.png" ) )
+
+# timeseries
+figure.mcmc( type="timeseries", vname="biomass", res=res, fn=file.path(p$fishery_model$outdir, "biomass.timeseries.png" ), save.plot=T )
+figure.mcmc( type="timeseries", vname="fishingmortality", res=res, fn=file.path(p$fishery_model$outdir, "fishingmortality.timeseries.png" ) )
+
+#Summary table of mean values for inclusion in document
+biomass.summary.table(x)
+
+# Harvest control rules
+figure.mcmc( type="hcr", vname="default", res=res, fn=file.path(p$fishery_model$outdir, "hcr.default.png" ), save.plot=T  )
+figure.mcmc( type="hcr", vname="simple", res=res, fn=file.path(p$fishery_model$outdir, "hcr.simple.png" ) )
+
+# diagnostics
+figure.mcmc( type="diagnostic.production", res=res, fn=file.path(p$fishery_model$outdir, "diagnostic.production.png" ) )
+figure.mcmc( type="diagnostic.errors", res=res, fn=file.path(p$fishery_model$outdir, "diagnostic.errors.png" ) )
+figure.mcmc( type="diagnostic.phase", res=res, fn=file.path(p$fishery_model$outdir, "diagnostic.phase.png" ) )
+
+# K
+plot.new()
+layout( matrix(c(1,2,3), 3, 1 ))
+par(mar = c(4.4, 4.4, 0.65, 0.75))
+for (i in 1:3) plot(density(res$mcmc$K[,i] ), main="")
+( qs = apply(  res$mcmc$K[,], 2, quantile, probs=c(0.025, 0.5, 0.975) ) )
+
+# R
+plot.new()
+layout( matrix(c(1,2,3), 3, 1 ))
+par(mar = c(4.4, 4.4, 0.65, 0.75))
+for (i in 1:3) plot(density(res$mcmc$r[,i] ), main="")
+( qs = apply(  res$mcmc$r[,], 2, quantile, probs=c(0.025, 0.5, 0.975) ) )
+
+# q
+plot.new()
+layout( matrix(c(1,2,3), 3, 1 ))
+par(mar = c(4.4, 4.4, 0.65, 0.75))
+for (i in 1:3) plot(density(res$mcmc$q[,i] ), main="")
+( qs = apply(  res$mcmc$q[,], 2, quantile, probs=c(0.025, 0.5, 0.975) ) )
+
+# FMSY
+plot.new()
+layout( matrix(c(1,2,3), 3, 1 ))
+par(mar = c(4.4, 4.4, 0.65, 0.75))
+for (i in 1:3) plot(density(res$mcmc$FMSY[,i] ), main="")
+( qs = apply(  res$mcmc$FMSY[,], 2, quantile, probs=c(0.025, 0.5, 0.975) ) )
+
+
+# densities of biomass estimates for the year.assessment
+plot.new()
+layout( matrix(c(1,2,3), 3, 1 ))
+par(mar = c(4.4, 4.4, 0.65, 0.75))
+for (i in 1:3) plot(density(res$mcmc$B[,res$sb$N,i] ), main="")
+( qs = apply(  res$mcmc$B[,res$sb$N,], 2, quantile, probs=c(0.025, 0.5, 0.975) ) )
+
+# densities of biomass estimates for the previous year
+plot.new()
+layout( matrix(c(1,2,3), 3, 1 ))
+par(mar = c(4.4, 4.4, 0.65, 0.75))
+for (i in 1:3) plot(density( res$mcmc$B[,res$sb$N-1,i] ), main="")
+( qs = apply(  res$mcmc$B[,res$sb$N-1,], 2, quantile, probs=c(0.025, 0.5, 0.975) ) )
+
+# densities of F in assessment year
+plot.new()
+layout( matrix(c(1,2,3), 3, 1 ))
+par(mar = c(4.4, 4.4, 0.65, 0.75))
+for (i in 1:3) plot(density(  res$mcmc$F[,res$sb$N,i] ), xlim=c(0.01, 0.6), main="")
+( qs = apply(  res$mcmc$F[,res$sb$N,], 2, quantile, probs=c(0.025, 0.5, 0.975) ) )
+( qs = apply(  res$mcmc$F[,res$sb$N,], 2, mean ) )
+
+# densities of F in previous year
+plot.new()
+layout( matrix(c(1,2,3), 3, 1 ))
+par(mar = c(4.4, 4.4, 0.65, 0.75))
+for (i in 1:3) plot(density(  res$mcmc$F[,res$sb$N-1,i] ), xlim=c(0.01, 0.6), main="")
+( qs = apply(  res$mcmc$F[,res$sb$N-1,], 2, quantile, probs=c(0.025, 0.5, 0.975) ) )
+( qs = apply(  res$mcmc$F[,res$sb$N-1,], 2, mean ) )
+
+# F for table ---
+summary( res$mcmc$F, median)
+
+
+
+
+
 
 # -------------------------------------------------
 # end
 # -------------------------------------------------
+
+
+
