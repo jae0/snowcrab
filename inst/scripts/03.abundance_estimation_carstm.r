@@ -38,6 +38,9 @@
     MS = snowcrab.db( p=p, DS="biological_data"  )  # domain is  sse     # the underlying observations/data
     # ensure if polys exist and create if required
     for (au in c("cfanorth", "cfasouth", "cfa4x", "cfaall" )) plot(polygons_managementarea( species="snowcrab", au))
+
+    ( p$areal_units_fn )  # is is the default, hard coded file name ... needs to be set to NULL to use alternate files
+
     sppoly = areal_units( p=p, areal_units_constraint=MS[, c("lon", "lat")], redo=TRUE )  # create constrained polygons with neighbourhood as an attribute
     coastLayout = aegis.coastline::coastline_layout( p=p, redo=TRUE )
     MS = NULL
@@ -58,6 +61,7 @@
     areal_units_resolution_km = p$areal_units_resolution_km, # km dim of lattice ~ 1 hr
     areal_units_proj4string_planar_km = p$areal_units_proj4string_planar_km,  # coord system to use for areal estimation and gridding for carstm
     inputdata_spatial_discretization_planar_km = p$inputdata_spatial_discretization_planar_km,  # 1 km .. some thinning .. requires 32 GB RAM and limit of speed -- controls resolution of data prior to modelling to reduce data set and speed up modelling
+    carstm_model_label = p$carstm_model_label,
     modeldir = p$modeldir,  # outputs all go the the main project's model output directory
     areal_units_fn = p$areal_units_fn,
     inla_num.threads= p$inla_num.threads,
@@ -69,14 +73,14 @@
   M = bathymetry_carstm( p=pB, DS="carstm_inputs", redo=TRUE  ) # will redo if not found
   M = NULL; gc()
 
-  fit = carstm_model( p=pB, M='bathymetry_carstm( p=pB, DS="carstm_inputs" )', DS="redo", carstm_model_label="production"  ) # run model and obtain predictions
+  fit = carstm_model( p=pB, M='bathymetry_carstm( p=pB, DS="carstm_inputs" )', DS="redo"  ) # run model and obtain predictions
 
   if (0) {
     # to use a saved instance
-    fit = carstm_model( p=pB, DS="carstm_modelled_fit", carstm_model_label="production" )  # extract currently saved model fit
+    fit = carstm_model( p=pB, DS="carstm_modelled_fit" )  # extract currently saved model fit
     summary(fit)
 
-    res = carstm_summary( p=pB, carstm_model_label="production"  )  # load summary
+    res = carstm_summary( p=pB )  # load summary
 
     # maps of some of the results
     vn = paste(pB$variabletomodel, "predicted", sep=".")
@@ -140,6 +144,7 @@
     DS = "parameters",
     project_name = "substrate",
     variabletomodel = "substrate.grainsize",
+    carstm_model_label = p$carstm_model_label,
     modeldir = p$modeldir,  # outputs all go the the main project's model output directory
     spatial_domain = p$spatial_domain,  # defines spatial area, currenty: "snowcrab" or "SSE"
     inputdata_spatial_discretization_planar_km = p$inputdata_spatial_discretization_planar_km,  # 1 km .. some thinning .. requires 32 GB RAM and limit of speed -- controls resolution of data prior to modelling to reduce data set and speed up modelling
@@ -155,14 +160,14 @@
   M = substrate.db( p=pS, DS="aggregated_data", redo=TRUE )  # used for data matching/lookup in other aegis projects that use substrate
   M = substrate_carstm( p=pS, DS="carstm_inputs", redo=TRUE )  # will redo if not found
   M = NULL; gc()
-  fit = carstm_model( p=pS, M='substrate_carstm( p=pS, DS="carstm_inputs")', DS="redo", carstm_model_label="production"  )  # run model and obtain predictions
+  fit = carstm_model( p=pS, M='substrate_carstm( p=pS, DS="carstm_inputs")', DS="redo" )  # run model and obtain predictions
 
   if(0) {
     # to use a saved instance
-    fit = carstm_model( p=pS, DS="carstm_modelled_fit", carstm_model_label="production" )  # extract currently saved model fit
+    fit = carstm_model( p=pS, DS="carstm_modelled_fit" )  # extract currently saved model fit
     summary(fit)
 
-    res = carstm_summary( p=pS, carstm_model_label="production"  )
+    res = carstm_summary( p=pS )
 
 # Fixed effects:
 #               mean    sd 0.025quant 0.5quant 0.975quant   mode kld
@@ -251,8 +256,8 @@
         control.fixed=H$fixed,  # priors for fixed effects, generic is ok
         verbose=TRUE
       ) ' )
-    fit = carstm_model( p=pS, M='substrate_carstm( p=pS, DS="carstm_inputs")', DS="redo", carstm_model_label=pS$carstm_model_label  )  # run model and obtain predictions
-    # fit = carstm_model( p=pS, DS="carstm_modelled_fit", carstm_model_label=pS$carstm_model_label )  # extract currently saved model fit
+    fit = carstm_model( p=pS, M='substrate_carstm( p=pS, DS="carstm_inputs")', DS="redo"   )  # run model and obtain predictions
+    # fit = carstm_model( p=pS, DS="carstm_modelled_fit" )  # extract currently saved model fit
 
   }
 
@@ -270,6 +275,7 @@
     DS = "parameters",
     project_name = "temperature",
     variabletomodel = "t",
+    carstm_model_label = p$carstm_model_label,
     modeldir = p$modeldir,  # outputs all go the the main project's model output directory
     yrs = p$yrs,
     spatial_domain = p$spatial_domain,  # defines spatial area, currenty: "snowcrab" or "SSE"
@@ -287,13 +293,13 @@
   M = temperature.db( p=pT, DS="aggregated_data", redo=TRUE )  #  used for data matching/lookup in other aegis projects that use temperature
   M = temperature_carstm( p=pT, DS="carstm_inputs", redo=TRUE )  # will redo if not found
   M = NULL; gc()
-  fit = carstm_model( p=pT, M='temperature_carstm( p=pT, DS="carstm_inputs")', DS="redo", carstm_model_label="production"  ) # run model and obtain predictions
+  fit = carstm_model( p=pT, M='temperature_carstm( p=pT, DS="carstm_inputs")', DS="redo"  ) # run model and obtain predictions
   if (0) {
     # to use a saved instance
-    fit = carstm_model( p=pT, DS="carstm_modelled_fit", carstm_model_label="production" )  # extract currently saved model fit
+    fit = carstm_model( p=pT, DS="carstm_modelled_fit" )  # extract currently saved model fit
     summary(fit)
 
-    res = carstm_summary( p=pT, carstm_model_label="production"  )
+    res = carstm_summary( p=pT )
 
 #Framework Model Summary (to 2018)
 #-------------------------------
@@ -376,6 +382,7 @@
     DS="parameters",
     project_name = "speciescomposition",
     yrs = p$yrs,
+    carstm_model_label = p$carstm_model_label,
     modeldir = p$modeldir,  # outputs all go the the main project's model output directory
     variabletomodel = "pca1",
     spatial_domain = p$spatial_domain,  # defines spatial area, currenty: "snowcrab" or "SSE"
@@ -392,15 +399,15 @@
 
   M = speciescomposition_carstm( p=pPC1, DS="carstm_inputs",  redo=TRUE )  # will redo if not found
   M = NULL; gc()
-  fit = carstm_model( p=pPC1, M='speciescomposition_carstm( p=p, DS="carstm_inputs" )', DS="redo", carstm_model_label="production"   ) # run model and obtain predictions
+  fit = carstm_model( p=pPC1, M='speciescomposition_carstm( p=p, DS="carstm_inputs" )', DS="redo"   ) # run model and obtain predictions
 
   if (0) {
 
     # to use a saved instance
-    fit = carstm_model( p=pPC1, DS="carstm_modelled_fit", carstm_model_label="production" )  # extract currently saved model fit
+    fit = carstm_model( p=pPC1, DS="carstm_modelled_fit" )  # extract currently saved model fit
     summary(fit)
 
-    res = carstm_summary( p=pPC1, carstm_model_label="production"  )
+    res = carstm_summary( p=pPC1  )
 
     plot( fit, plot.prior=TRUE, plot.hyperparameters=TRUE, plot.fixed.effects=FALSE )
 
@@ -477,6 +484,7 @@
     DS="parameters",
     project_name = "speciescomposition",
     yrs = p$yrs,
+    carstm_model_label = p$carstm_model_label,
     modeldir = p$modeldir,  # outputs all go the the main project's model output directory
     variabletomodel = "pca2",
     spatial_domain = p$spatial_domain,  # defines spatial area, currenty: "snowcrab" or "SSE"
@@ -493,14 +501,14 @@
 
   M = speciescomposition_carstm( p=pPC2, DS="carstm_inputs", redo=TRUE )  # will redo if not found
   M = NULL; gc()
-  fit = carstm_model( p=pPC2, M='speciescomposition_carstm( p=p, DS="carstm_inputs" )', DS="redo" , carstm_model_label="production"  ) # run model and obtain predictions
+  fit = carstm_model( p=pPC2, M='speciescomposition_carstm( p=p, DS="carstm_inputs" )', DS="redo"  ) # run model and obtain predictions
   if (0) {
 
     # to use a saved instance
-    fit = carstm_model( p=pPC2, DS="carstm_modelled_fit", carstm_model_label="production" )  # extract currently saved model fit
+    fit = carstm_model( p=pPC2, DS="carstm_modelled_fit" )  # extract currently saved model fit
     summary(fit)
 
-    res = carstm_summary( p=pPC2, carstm_model_label="production"  )
+    res = carstm_summary( p=pPC2  )
 
     plot( fit, plot.prior=TRUE, plot.hyperparameters=TRUE, plot.fixed.effects=FALSE )
 
@@ -691,12 +699,12 @@
     # )
 
 
-    RES = snowcrab_carstm(p=p, DS="carstm_output_compute", carstm_model_label=p$carstm_model_label  )
+    RES = snowcrab_carstm(p=p, DS="carstm_output_compute" )
 
-    RES = snowcrab_carstm(p=p, DS="carstm_output_timeseries", carstm_model_label=p$carstm_model_label  )
+    RES = snowcrab_carstm(p=p, DS="carstm_output_timeseries" )
 
-    bio = snowcrab_carstm(p=p, DS="carstm_output_spacetime_biomass", carstm_model_label=p$carstm_model_label  )
-    num = snowcrab_carstm(p=p, DS="carstm_output_spacetime_number", carstm_model_label=p$carstm_model_label  )
+    bio = snowcrab_carstm(p=p, DS="carstm_output_spacetime_biomass" )
+    num = snowcrab_carstm(p=p, DS="carstm_output_spacetime_number" )
 
 
 

@@ -76,7 +76,7 @@ snowcrab_carstm = function( p=NULL, DS="parameters", redo=FALSE, extrapolation_l
     if ( !exists("carstm_modelcall", p)) {
       if ( grepl("inla", p$carstm_modelengine) ) {
         p$libs = unique( c( p$libs, project.library ( "INLA" ) ) )
-        p$carstm_model_label = "production"
+        if ( !exists("carstm_model_label", p))  p$carstm_model_label = "production"
         # 281 configs .. 8hrs
 
         #number of nodes can be adjusted below to smooth (n=9 instead of n=13)
@@ -112,7 +112,7 @@ snowcrab_carstm = function( p=NULL, DS="parameters", redo=FALSE, extrapolation_l
         # + f(year,  model="ar1", hyper=H$ar1 )
 
       if ( grepl("glm", p$carstm_modelengine) ) {
-        p$carstm_model_label = "default_glm"
+        if ( !exists("carstm_model_label", p))  p$carstm_model_label = "default_glm"
         p$carstm_modelcall = paste(
           'glm( formula =',  p$variabletomodel,
           ' ~ 1 + factor(AUID) + t + z + substrate.grainsize +tiyr,
@@ -125,7 +125,7 @@ snowcrab_carstm = function( p=NULL, DS="parameters", redo=FALSE, extrapolation_l
       if ( grepl("gam", p$carstm_modelengine) ) {
         p$libs = unique( c( p$libs, project.library ( "mgcv"  ) ) )
 
-        p$carstm_model_label = "default_gam"
+        if ( !exists("carstm_model_label", p))  p$carstm_model_label = "default_gam"
         p$carstm_modelcall = paste(
           'gam( formula =',  p$variabletomodel,
           ' ~ 1 + factor(AUID) + s(t) + s(z) + s(substrate.grainsize) + s(year) + s(dyear),
@@ -206,6 +206,7 @@ snowcrab_carstm = function( p=NULL, DS="parameters", redo=FALSE, extrapolation_l
 
 
 
+
   pB = bathymetry_carstm(
     DS = "parameters",
     project_name = "bathymetry",
@@ -215,7 +216,8 @@ snowcrab_carstm = function( p=NULL, DS="parameters", redo=FALSE, extrapolation_l
     areal_units_resolution_km = p$areal_units_resolution_km, # km dim of lattice ~ 1 hr
     areal_units_proj4string_planar_km = p$areal_units_proj4string_planar_km,  # coord system to use for areal estimation and gridding for carstm
     inputdata_spatial_discretization_planar_km = p$inputdata_spatial_discretization_planar_km,  # 1 km .. some thinning .. requires 32 GB RAM and limit of speed -- controls resolution of data prior to modelling to reduce data set and speed up modelling
-    modeldir = p$modeldir,  # outputs all go the the main project's model output directory
+    carstm_model_label = p$carstm_model_label,
+    modeldir = p$modeldir,  # this forces outputs all go the the main project's model output directory
     areal_units_fn = p$areal_units_fn,
     inla_num.threads= p$inla_num.threads,
     inla_blas.num.threads= p$inla_blas.num.threads
@@ -225,7 +227,8 @@ snowcrab_carstm = function( p=NULL, DS="parameters", redo=FALSE, extrapolation_l
     DS = "parameters",
     project_name = "substrate",
     variabletomodel = "substrate.grainsize",
-    modeldir = p$modeldir,  # outputs all go the the main project's model output directory
+    carstm_model_label = p$carstm_model_label,
+    modeldir = p$modeldir,  # this forces outputs all go the the main project's model output directory
     spatial_domain = p$spatial_domain,  # defines spatial area, currenty: "snowcrab" or "SSE"
     inputdata_spatial_discretization_planar_km = p$inputdata_spatial_discretization_planar_km,  # 1 km .. some thinning .. requires 32 GB RAM and limit of speed -- controls resolution of data prior to modelling to reduce data set and speed up modelling
     areal_units_overlay = p$areal_units_overlay, # currently: "snowcrab_managementareas",  "groundfish_strata" .. additional polygon layers for subsequent analysis for now ..
@@ -240,7 +243,8 @@ snowcrab_carstm = function( p=NULL, DS="parameters", redo=FALSE, extrapolation_l
     DS = "parameters",
     project_name = "temperature",
     variabletomodel = "t",
-    modeldir = p$modeldir,  # outputs all go the the main project's model output directory
+    carstm_model_label = p$carstm_model_label,
+    modeldir = p$modeldir,  # this forces outputs all go the the main project's model output directory
     yrs = p$yrs,
     spatial_domain = p$spatial_domain,  # defines spatial area, currenty: "snowcrab" or "SSE"
     inputdata_temporal_discretization_yr = p$inputdata_temporal_discretization_yr,  # ie., weekly .. controls resolution of data prior to modelling to reduce data set and speed up modelling
@@ -257,7 +261,8 @@ snowcrab_carstm = function( p=NULL, DS="parameters", redo=FALSE, extrapolation_l
     DS="parameters",
     project_name = "speciescomposition",
     yrs = p$yrs,
-    modeldir = p$modeldir,  # outputs all go the the main project's model output directory
+    carstm_model_label = p$carstm_model_label,
+    modeldir = p$modeldir,  # this forces outputs all go the the main project's model output directory
     variabletomodel = "pca1",
     spatial_domain = p$spatial_domain,  # defines spatial area, currenty: "snowcrab" or "SSE"
     inputdata_spatial_discretization_planar_km = p$inputdata_spatial_discretization_planar_km,  # 1 km .. some thinning .. requires 32 GB RAM and limit of speed -- controls resolution of data prior to modelling to reduce data set and speed up modelling
@@ -276,7 +281,8 @@ snowcrab_carstm = function( p=NULL, DS="parameters", redo=FALSE, extrapolation_l
     DS="parameters",
     project_name = "speciescomposition",
     yrs = p$yrs,
-    modeldir = p$modeldir,  # outputs all go the the main project's model output directory
+    carstm_model_label = p$carstm_model_label,
+    modeldir = p$modeldir,  # this forces outputs all go the the main project's model output directory
     variabletomodel = "pca2",
     spatial_domain = p$spatial_domain,  # defines spatial area, currenty: "snowcrab" or "SSE"
     inputdata_spatial_discretization_planar_km = p$inputdata_spatial_discretization_planar_km,  # 1 km .. some thinning .. requires 32 GB RAM and limit of speed -- controls resolution of data prior to modelling to reduce data set and speed up modelling
@@ -586,7 +592,7 @@ snowcrab_carstm = function( p=NULL, DS="parameters", redo=FALSE, extrapolation_l
 
     # construct meanweights matrix used to convert number to weight
     sppoly = areal_units( p=p )
-    fit = carstm_model( p=p, DS="carstm_modelled_fit", carstm_model_label=p$carstm_model_label ) # to load currently saved res
+    fit = carstm_model( p=p, DS="carstm_modelled_fit" ) # to load currently saved res
     res = carstm_summary( p=p  )
 
     if (p$carstm_modelengine == "inla") {
