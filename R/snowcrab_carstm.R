@@ -331,7 +331,7 @@ snowcrab_carstm = function( p=NULL, DS="parameters", redo=FALSE, extrapolation_l
     # if any still missing then use a mean depth by AUID
     kk =  which( !is.finite(M[, pB$variabletomodel]))
     if (length(kk) > 0) {
-      AD = bathymetry.db ( p=pB, DS="aggregated_data", data_root_override=TRUE  )  # 16 GB in RAM just to store!
+      AD = bathymetry.db ( p=pB, DS="aggregated_data"   )  # 16 GB in RAM just to store!
       AD = AD[ which( AD$lon > p$corners$lon[1] & AD$lon < p$corners$lon[2]  & AD$lat > p$corners$lat[1] & AD$lat < p$corners$lat[2] ), ]
       # levelplot( eval(paste(p$variabletomodel, "mean", sep="."))~plon+plat, data=M, aspect="iso")
       AD$AUID = over( SpatialPoints( AD[, c("lon", "lat")], crs_lonlat ), spTransform(sppoly, crs_lonlat ) )$AUID # match each datum to an area

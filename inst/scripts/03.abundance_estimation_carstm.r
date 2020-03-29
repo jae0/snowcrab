@@ -67,7 +67,7 @@
   )
 
 
-  M = bathymetry.db( p=pB, DS="aggregated_data", data_root_override=TRUE, redo=TRUE )
+  M = bathymetry.db( p=pB, DS="aggregated_data" , redo=TRUE )
   M = bathymetry_carstm( p=pB, DS="carstm_inputs", redo=TRUE  ) # will redo if not found
   M = NULL; gc()
 
