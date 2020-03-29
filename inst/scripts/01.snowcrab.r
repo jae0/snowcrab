@@ -161,9 +161,9 @@ snowcrab.db( DS="set.clean.redo", p=p ) #Updated stats data, need to redo to upd
   )
 
 
-  M = aegis.bathymetry::bathymetry.db( p=pB, DS="aggregated_data", redo=TRUE ) #this step can take ~20 minutes
-  M = aegis.substrate::substrate.db( p=pS, DS="aggregated_data", redo=TRUE )
-  M = aegis.temperature::temperature.db( p=pT, DS="aggregated_data", redo=TRUE )
+  M = aegis.bathymetry::bathymetry.db( p=pB, DS="aggregated_data", data_root_override=TRUE, redo=TRUE ) #this step can take ~20 minutes
+  M = aegis.substrate::substrate.db( p=pS, DS="aggregated_data", data_root_override=TRUE, redo=TRUE )
+  M = aegis.temperature::temperature.db( p=pT, DS="aggregated_data", data_root_override=TRUE, redo=TRUE )
 
 
 # -------------------------------------------------------------------------------------

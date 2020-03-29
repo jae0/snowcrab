@@ -30,21 +30,19 @@
 
 # ------------------------------------------------
 # Part 2 -- polygon structure
-  sppoly = areal_units( p=p )  # to reload
-  plot(sppoly)
-  spplot( sppoly, "au_sa_km2", main="AUID", sp.layout=p$coastLayout )
   if (0) {
     # create if not yet made
-    MS = snowcrab.db( p=p, DS="biological_data"  )  # domain is  sse     # the underlying observations/data
-    # ensure if polys exist and create if required
-    for (au in c("cfanorth", "cfasouth", "cfa4x", "cfaall" )) plot(polygons_managementarea( species="snowcrab", au))
+     for (au in c("cfanorth", "cfasouth", "cfa4x", "cfaall" )) plot(polygons_managementarea( species="snowcrab", au))
 
     ( p$areal_units_fn )  # is is the default, hard coded file name ... needs to be set to NULL to use alternate files
 
-    sppoly = areal_units( p=p, areal_units_constraint=MS[, c("lon", "lat")], redo=TRUE )  # create constrained polygons with neighbourhood as an attribute
+    sppoly = areal_units( p=p, redo=TRUE )  # create constrained polygons with neighbourhood as an attribute
     coastLayout = aegis.coastline::coastline_layout( p=p, redo=TRUE )
     MS = NULL
   }
+  sppoly = areal_units( p=p )  # to reload
+  plot(sppoly)
+  spplot( sppoly, "au_sa_km2", main="AUID", sp.layout=p$coastLayout )
 
 
 # -------------------------------------------------
@@ -69,7 +67,7 @@
   )
 
 
-  M = bathymetry.db( p=pB, DS="aggregated_data", redo=TRUE )
+  M = bathymetry.db( p=pB, DS="aggregated_data", data_root_override=TRUE, redo=TRUE )
   M = bathymetry_carstm( p=pB, DS="carstm_inputs", redo=TRUE  ) # will redo if not found
   M = NULL; gc()
 
