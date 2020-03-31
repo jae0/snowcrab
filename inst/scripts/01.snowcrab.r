@@ -123,7 +123,6 @@ snowcrab.db( DS="set.clean.redo", p=p ) #Updated stats data, need to redo to upd
     areal_units_proj4string_planar_km = pC$areal_units_proj4string_planar_km,  # coord system to use for areal estimation and gridding for carstm
     inputdata_spatial_discretization_planar_km = pC$inputdata_spatial_discretization_planar_km,  # 1 km .. some thinning .. requires 32 GB RAM and limit of speed -- controls resolution of data prior to modelling to reduce data set and speed up modelling
     modeldir = pC$modeldir,  # use outputs from the the main project's model output directory
-    areal_units_fn = pC$areal_units_fn,
     inla_num.threads= pC$inla_num.threads,
     inla_blas.num.threads= pC$inla_blas.num.threads
   )
@@ -138,7 +137,6 @@ snowcrab.db( DS="set.clean.redo", p=p ) #Updated stats data, need to redo to upd
     areal_units_overlay = pC$areal_units_overlay, # currently: "snowcrab_managementareas",  "groundfish_strata" .. additional polygon layers for subsequent analysis for now ..
     areal_units_resolution_km = pC$areal_units_resolution_km, # km dim of lattice ~ 1 hr
     areal_units_proj4string_planar_km = pC$areal_units_proj4string_planar_km,  # coord system to use for areal estimation and gridding for carstm
-    areal_units_fn = pC$areal_units_fn,
     inla_num.threads= pC$inla_num.threads,
     inla_blas.num.threads= pC$inla_blas.num.threads
   )
@@ -155,7 +153,6 @@ snowcrab.db( DS="set.clean.redo", p=p ) #Updated stats data, need to redo to upd
     areal_units_overlay = pC$areal_units_overlay, # currently: "snowcrab_managementareas",  "groundfish_strata" .. additional polygon layers for subsequent analysis for now ..
     areal_units_resolution_km = pC$areal_units_resolution_km, # km dim of lattice ~ 1 hr
     areal_units_proj4string_planar_km = pC$areal_units_proj4string_planar_km,  # coord system to use for areal estimation and gridding for carstm
-    areal_units_fn = pC$areal_units_fn,
     inla_num.threads= pC$inla_num.threads,
     inla_blas.num.threads= pC$inla_blas.num.threads
   )

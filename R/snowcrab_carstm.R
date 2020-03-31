@@ -44,7 +44,6 @@ snowcrab_carstm = function( p=NULL, DS="parameters", redo=FALSE, extrapolation_l
     if ( !exists("areal_units_overlay", p)) p$areal_units_overlay = "snowcrab_managementareas" # currently: "snowcrab_managementareas",  "groundfish_strata" .. additional polygon layers for subsequent analysis for now ..
     if ( !exists("areal_units_resolution_km", p)) p$areal_units_resolution_km = 25 # km dim of lattice ~ 1 hr
     if ( !exists("areal_units_constraint_nmin", p)) p$areal_units_constraint_nmin = 3
-    if ( !exists("areal_units_fn", p)) p$areal_units_fn = "snowcrab_assessment_25"  # identifyer for areal units polygon filename
     if ( !exists("areal_units_proj4string_planar_km", p)) p$areal_units_proj4string_planar_km = aegis::projection_proj4string("utm20")  # coord system to use for areal estimation and gridding for carstm
     if ( !exists("quantile_bounds", p)) p$quantile_bounds =c(0, 0.99) # trim upper bounds
     if ( !exists("selection", p)) p$selection=list()
@@ -148,7 +147,12 @@ snowcrab_carstm = function( p=NULL, DS="parameters", redo=FALSE, extrapolation_l
 
   if ( DS=="carstm_inputs") {
 
-    fn = file.path( p$modeldir, paste( "snowcrab", "carstm_inputs", p$areal_units_fn,
+    # prediction surface
+    crs_lonlat = sp::CRS(projection_proj4string("lonlat_wgs84"))
+    sppoly = areal_units( p=p )  # will redo if not found
+    areal_units_fn = attributes(sppoly)[["areal_units_fn"]]
+
+    fn = file.path( p$modeldir, paste( "snowcrab", "carstm_inputs", areal_units_fn,
       p$variabletomodel, paste0(p$selection$survey$data.source, collapse=""),
       p$inputdata_spatial_discretization_planar_km,
       round(p$inputdata_temporal_discretization_yr, 6),
@@ -161,10 +165,6 @@ snowcrab_carstm = function( p=NULL, DS="parameters", redo=FALSE, extrapolation_l
       }
     }
     message( "Generating carstm_inputs ... ")
-
-    # prediction surface
-    sppoly = areal_units( p=p )  # will redo if not found
-    crs_lonlat = sp::CRS(projection_proj4string("lonlat_wgs84"))
 
 
     # do this immediately to reduce storage for sppoly (before adding other variables)
@@ -218,7 +218,6 @@ snowcrab_carstm = function( p=NULL, DS="parameters", redo=FALSE, extrapolation_l
     inputdata_spatial_discretization_planar_km = p$inputdata_spatial_discretization_planar_km,  # 1 km .. some thinning .. requires 32 GB RAM and limit of speed -- controls resolution of data prior to modelling to reduce data set and speed up modelling
     carstm_model_label = p$carstm_model_label,
     modeldir = p$modeldir,  # this forces outputs all go the the main project's model output directory
-    areal_units_fn = p$areal_units_fn,
     inla_num.threads= p$inla_num.threads,
     inla_blas.num.threads= p$inla_blas.num.threads
   )
@@ -234,7 +233,6 @@ snowcrab_carstm = function( p=NULL, DS="parameters", redo=FALSE, extrapolation_l
     areal_units_overlay = p$areal_units_overlay, # currently: "snowcrab_managementareas",  "groundfish_strata" .. additional polygon layers for subsequent analysis for now ..
     areal_units_resolution_km = p$areal_units_resolution_km, # km dim of lattice ~ 1 hr
     areal_units_proj4string_planar_km = p$areal_units_proj4string_planar_km,  # coord system to use for areal estimation and gridding for carstm
-    areal_units_fn = p$areal_units_fn,
     inla_num.threads= p$inla_num.threads,
     inla_blas.num.threads= p$inla_blas.num.threads
   )
@@ -252,7 +250,6 @@ snowcrab_carstm = function( p=NULL, DS="parameters", redo=FALSE, extrapolation_l
     areal_units_overlay = p$areal_units_overlay, # currently: "snowcrab_managementareas",  "groundfish_strata" .. additional polygon layers for subsequent analysis for now ..
     areal_units_resolution_km = p$areal_units_resolution_km, # km dim of lattice ~ 1 hr
     areal_units_proj4string_planar_km = p$areal_units_proj4string_planar_km,  # coord system to use for areal estimation and gridding for carstm
-    areal_units_fn = p$areal_units_fn,
     inla_num.threads= p$inla_num.threads,
     inla_blas.num.threads= p$inla_blas.num.threads
   )
@@ -270,7 +267,6 @@ snowcrab_carstm = function( p=NULL, DS="parameters", redo=FALSE, extrapolation_l
     areal_units_overlay = p$areal_units_overlay, # currently: "snowcrab_managementareas",  "groundfish_strata" .. additional polygon layers for subsequent analysis for now ..
     areal_units_resolution_km = p$areal_units_resolution_km, # km dim of lattice ~ 1 hr
     areal_units_proj4string_planar_km = p$areal_units_proj4string_planar_km,  # coord system to use for areal estimation and gridding for carstm
-    areal_units_fn = p$areal_units_fn,
     inla_num.threads= p$inla_num.threads,
     inla_blas.num.threads= p$inla_blas.num.threads
   )
@@ -290,7 +286,6 @@ snowcrab_carstm = function( p=NULL, DS="parameters", redo=FALSE, extrapolation_l
     areal_units_overlay = p$areal_units_overlay, # currently: "snowcrab_managementareas",  "groundfish_strata" .. additional polygon layers for subsequent analysis for now ..
     areal_units_resolution_km = p$areal_units_resolution_km, # km dim of lattice ~ 1 hr
     areal_units_proj4string_planar_km = p$areal_units_proj4string_planar_km,  # coord system to use for areal estimation and gridding for carstm
-    areal_units_fn = p$areal_units_fn,
     inla_num.threads= p$inla_num.threads,
     inla_blas.num.threads= p$inla_blas.num.threads
   )
@@ -538,32 +533,19 @@ snowcrab_carstm = function( p=NULL, DS="parameters", redo=FALSE, extrapolation_l
 
   if ( any( grepl("carstm_output", DS) ) ) {
 
-    required.vars = c("areal_units_fn", "inputdata_spatial_discretization_planar_km", "variabletomodel",
-      "carstm_modelengine", "modeldir", "carstm_model_label", "variabletomodel" )
+    sppoly = areal_units( p=p )
+    areal_units_fn = attributes(sppoly)[["areal_units_fn"]]
 
-    if (any(grepl("year", p$aegis_dimensionality)))  required.vars = c(required.vars, "inputdata_temporal_discretization_yr", "yrs")
-    for (i in required.vars) {
-      if (!exists(i, p)) {
-        message( "Missing parameter" )
-        message( i )
-      }
-    }
+    aufns = carstm_filenames( p=p, projecttype="carstm_outputs", areal_units_fn=areal_units_fn )
 
     # same file naming as in carstm ..
     outputdir = file.path(p$modeldir, p$carstm_model_label)
-    areal_units_fns = p$areal_units_fn
-
-    if (exists( "inputdata_spatial_discretization_planar_km", p )) areal_units_fns = paste( areal_units_fns, round(p$inputdata_spatial_discretization_planar_km, 6),   sep="_" )
-    if (exists( "inputdata_temporal_discretization_yr", p )) areal_units_fns = paste( areal_units_fns, round(p$inputdata_temporal_discretization_yr, 6),   sep="_" )
-
     if ( !file.exists(outputdir)) dir.create( outputdir, recursive=TRUE, showWarnings=FALSE )
 
-    areal_units_fns_suffix = paste( areal_units_fns, p$variabletomodel, p$carstm_modelengine,  "rdata", sep="." )
-
-    fn     = file.path( outputdir, paste("carstm_modelled_results", areal_units_fns_suffix, "aggregated_timeseries",  "rdata", sep="." )  )
-    fn_no = file.path( outputdir, paste("carstm_modelled_results", areal_units_fns_suffix, "space_timeseries_number",  "rdata", sep="." ) )
-    fn_bio = file.path( outputdir, paste("carstm_modelled_results", areal_units_fns_suffix, "space_timeseries_biomass",  "rdata", sep="." ) )
-    fn_pa = file.path( outputdir, paste("carstm_modelled_results", areal_units_fns_suffix, "space_timeseries_pa",  "rdata", sep="." )  )
+    fn     = file.path( outputdir, paste("carstm_modelled_results", aufns, "aggregated_timeseries",  "rdata", sep="." )  )
+    fn_no = file.path( outputdir, paste("carstm_modelled_results", aufns, "space_timeseries_number",  "rdata", sep="." ) )
+    fn_bio = file.path( outputdir, paste("carstm_modelled_results", aufns, "space_timeseries_biomass",  "rdata", sep="." ) )
+    fn_pa = file.path( outputdir, paste("carstm_modelled_results", aufns, "space_timeseries_pa",  "rdata", sep="." )  )
 
 
     if ( DS=="carstm_output_timeseries" ) {
@@ -591,7 +573,7 @@ snowcrab_carstm = function( p=NULL, DS="parameters", redo=FALSE, extrapolation_l
     }
 
     # construct meanweights matrix used to convert number to weight
-    sppoly = areal_units( p=p )
+
     fit = carstm_model( p=p, DS="carstm_modelled_fit" ) # to load currently saved res
     res = carstm_summary( p=p  )
 
