@@ -18,7 +18,7 @@ snowcrab_parameters = function( p=NULL, year.assessment=NULL, project_class="def
   if (!exists("project_name", p)) p$project_name = "bio.snowcrab"
   if (!exists("data_root", p)) p$data_root = project.datadirectory( p$project_name )
 
-  p$datadir=p$data_root
+  p$datadir=p$data_root  # this is likely a problematic locations .. usually the datadir is a subdirectory: "data" of data_root as in snowcrab_carstm
   p$project.outputdir = project.datadirectory( p$project_name, "output" ) #required for interpolations and mapping
   p$transform_lookup = file.path( p$project.outputdir, "transform.lookup.rdata" ) # local storage of transforms for timeseries plots
 
