@@ -112,52 +112,9 @@ snowcrab.db( DS="set.clean.redo", p=p ) #Updated stats data, need to redo to upd
 # using grids as specfified below:
 
   pC = bio.snowcrab::snowcrab_carstm( DS="parameters", assessment.years=1999:year.assessment )
-
-  pB = bathymetry_carstm(
-    DS = "parameters",
-    project_name = "bathymetry",
-    variabletomodel = "z",
-    spatial_domain = pC$spatial_domain,  # defines spatial area, currenty: "snowcrab" or "SSE"
-    areal_units_overlay = pC$areal_units_overlay, # currently: "snowcrab_managementareas",  "groundfish_strata" .. additional polygon layers for subsequent analysis for now ..
-    areal_units_resolution_km = pC$areal_units_resolution_km, # km dim of lattice ~ 1 hr
-    areal_units_proj4string_planar_km = pC$areal_units_proj4string_planar_km,  # coord system to use for areal estimation and gridding for carstm
-    inputdata_spatial_discretization_planar_km = pC$inputdata_spatial_discretization_planar_km,  # 1 km .. some thinning .. requires 32 GB RAM and limit of speed -- controls resolution of data prior to modelling to reduce data set and speed up modelling
-    modeldir = pC$modeldir,  # use outputs from the the main project's model output directory
-    inla_num.threads= pC$inla_num.threads,
-    inla_blas.num.threads= pC$inla_blas.num.threads
-  )
-
-  pS = substrate_carstm(
-    DS = "parameters",
-    project_name = "substrate",
-    variabletomodel = "substrate.grainsize",
-    modeldir = pC$modeldir,  # outputs all go the the main project's model output directory
-    spatial_domain = pC$spatial_domain,  # defines spatial area, currenty: "snowcrab" or "SSE"
-    inputdata_spatial_discretization_planar_km = pC$inputdata_spatial_discretization_planar_km,  # 1 km .. some thinning .. requires 32 GB RAM and limit of speed -- controls resolution of data prior to modelling to reduce data set and speed up modelling
-    areal_units_overlay = pC$areal_units_overlay, # currently: "snowcrab_managementareas",  "groundfish_strata" .. additional polygon layers for subsequent analysis for now ..
-    areal_units_resolution_km = pC$areal_units_resolution_km, # km dim of lattice ~ 1 hr
-    areal_units_proj4string_planar_km = pC$areal_units_proj4string_planar_km,  # coord system to use for areal estimation and gridding for carstm
-    inla_num.threads= pC$inla_num.threads,
-    inla_blas.num.threads= pC$inla_blas.num.threads
-  )
-
-  pT = temperature_carstm(
-    DS = "parameters",
-    project_name = "temperature",
-    variabletomodel = "t",
-    modeldir = pC$modeldir,  # outputs all go the the main project's model output directory
-    yrs = pC$yrs,
-    spatial_domain = pC$spatial_domain,  # defines spatial area, currenty: "snowcrab" or "SSE"
-    inputdata_temporal_discretization_yr = pC$inputdata_temporal_discretization_yr,  # ie., weekly .. controls resolution of data prior to modelling to reduce data set and speed up modelling
-    inputdata_spatial_discretization_planar_km = pC$inputdata_spatial_discretization_planar_km,  # 1 km .. some thinning .. requires 32 GB RAM and limit of speed -- controls resolution of data prior to modelling to reduce data set and speed up modelling
-    areal_units_overlay = pC$areal_units_overlay, # currently: "snowcrab_managementareas",  "groundfish_strata" .. additional polygon layers for subsequent analysis for now ..
-    areal_units_resolution_km = pC$areal_units_resolution_km, # km dim of lattice ~ 1 hr
-    areal_units_proj4string_planar_km = pC$areal_units_proj4string_planar_km,  # coord system to use for areal estimation and gridding for carstm
-    inla_num.threads= pC$inla_num.threads,
-    inla_blas.num.threads= pC$inla_blas.num.threads
-  )
-
-
+  pB = bathymetry_carstm( p=pC, DS="parameters", variabletomodel="z" )
+  pS = substrate_carstm( p=pC, DS="parameters", variabletomodel="substrate.grainsize" )
+  pT = temperature_carstm( p=pC, DS="parameters", variabletomodel="t" )
   M = aegis.bathymetry::bathymetry.db( p=pB, DS="aggregated_data" , redo=TRUE ) #this step can take ~20 minutes
   M = aegis.substrate::substrate.db( p=pS, DS="aggregated_data" , redo=TRUE )
   M = aegis.temperature::temperature.db( p=pT, DS="aggregated_data" , redo=TRUE )

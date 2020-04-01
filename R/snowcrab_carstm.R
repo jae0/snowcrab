@@ -27,8 +27,7 @@ snowcrab_carstm = function( p=NULL, DS="parameters", redo=FALSE, extrapolation_l
 
   if (DS=="parameters") {
 
-
-    if ( !exists("project_name", p)) p$project_name = "snowcrab"
+    p$project_name = "snowcrab"
 
     if ( !exists("groundfish_species_code", p)) p$groundfish_species_code = 2526
     if ( !exists("speciesname", p)) p$speciesname = "Snow crab"
@@ -70,7 +69,15 @@ snowcrab_carstm = function( p=NULL, DS="parameters", redo=FALSE, extrapolation_l
 
     if ( !exists("variabletomodel", p)) p$variabletomodel = "totno"
 
-    if ( !exists("carstm_modelengine", p)) p$carstm_modelengine = "inla.default"  # {model engine}.{label to use to store}
+    if ( !exists("carstm_modelengine", p)) p$carstm_modelengine = "inla"  # {model engine}.{label to use to store}
+
+    if ( exists("carstm_modelcall", p )) {
+      # overwrite where this is called as a secondary function
+      if ( p$variabletomodel != gsub(" ", "", strsplit(strsplit(p$carstm_modelcall, "~")[[1]][1], "=")[[1]][2]) ) {
+        p$carstm_modelcall = NULL
+      }
+    }
+
 
     if ( !exists("carstm_modelcall", p)) {
       if ( grepl("inla", p$carstm_modelengine) ) {
@@ -204,92 +211,11 @@ snowcrab_carstm = function( p=NULL, DS="parameters", redo=FALSE, extrapolation_l
     # M$tiyr = lubridate::decimal_date ( M$timestamp )
     # M$dyear = M$tiyr - M$year
 
-
-
-
-  pB = bathymetry_carstm(
-    DS = "parameters",
-    project_name = "bathymetry",
-    variabletomodel = "z",
-    spatial_domain = p$spatial_domain,  # defines spatial area, currenty: "snowcrab" or "SSE"
-    areal_units_overlay = p$areal_units_overlay, # currently: "snowcrab_managementareas",  "groundfish_strata" .. additional polygon layers for subsequent analysis for now ..
-    areal_units_resolution_km = p$areal_units_resolution_km, # km dim of lattice ~ 1 hr
-    areal_units_proj4string_planar_km = p$areal_units_proj4string_planar_km,  # coord system to use for areal estimation and gridding for carstm
-    inputdata_spatial_discretization_planar_km = p$inputdata_spatial_discretization_planar_km,  # 1 km .. some thinning .. requires 32 GB RAM and limit of speed -- controls resolution of data prior to modelling to reduce data set and speed up modelling
-    carstm_model_label = p$carstm_model_label,
-    modeldir = p$modeldir,  # this forces outputs all go the the main project's model output directory
-    inla_num.threads= p$inla_num.threads,
-    inla_blas.num.threads= p$inla_blas.num.threads
-  )
-
-  pS = substrate_carstm(
-    DS = "parameters",
-    project_name = "substrate",
-    variabletomodel = "substrate.grainsize",
-    carstm_model_label = p$carstm_model_label,
-    modeldir = p$modeldir,  # this forces outputs all go the the main project's model output directory
-    spatial_domain = p$spatial_domain,  # defines spatial area, currenty: "snowcrab" or "SSE"
-    inputdata_spatial_discretization_planar_km = p$inputdata_spatial_discretization_planar_km,  # 1 km .. some thinning .. requires 32 GB RAM and limit of speed -- controls resolution of data prior to modelling to reduce data set and speed up modelling
-    areal_units_overlay = p$areal_units_overlay, # currently: "snowcrab_managementareas",  "groundfish_strata" .. additional polygon layers for subsequent analysis for now ..
-    areal_units_resolution_km = p$areal_units_resolution_km, # km dim of lattice ~ 1 hr
-    areal_units_proj4string_planar_km = p$areal_units_proj4string_planar_km,  # coord system to use for areal estimation and gridding for carstm
-    inla_num.threads= p$inla_num.threads,
-    inla_blas.num.threads= p$inla_blas.num.threads
-  )
-
-  pT = temperature_carstm(
-    DS = "parameters",
-    project_name = "temperature",
-    variabletomodel = "t",
-    carstm_model_label = p$carstm_model_label,
-    modeldir = p$modeldir,  # this forces outputs all go the the main project's model output directory
-    yrs = p$yrs,
-    spatial_domain = p$spatial_domain,  # defines spatial area, currenty: "snowcrab" or "SSE"
-    inputdata_temporal_discretization_yr = p$inputdata_temporal_discretization_yr,  # ie., weekly .. controls resolution of data prior to modelling to reduce data set and speed up modelling
-    inputdata_spatial_discretization_planar_km = p$inputdata_spatial_discretization_planar_km,  # 1 km .. some thinning .. requires 32 GB RAM and limit of speed -- controls resolution of data prior to modelling to reduce data set and speed up modelling
-    areal_units_overlay = p$areal_units_overlay, # currently: "snowcrab_managementareas",  "groundfish_strata" .. additional polygon layers for subsequent analysis for now ..
-    areal_units_resolution_km = p$areal_units_resolution_km, # km dim of lattice ~ 1 hr
-    areal_units_proj4string_planar_km = p$areal_units_proj4string_planar_km,  # coord system to use for areal estimation and gridding for carstm
-    inla_num.threads= p$inla_num.threads,
-    inla_blas.num.threads= p$inla_blas.num.threads
-  )
-
-  pPC1 = speciescomposition_carstm(
-    DS="parameters",
-    project_name = "speciescomposition",
-    yrs = p$yrs,
-    carstm_model_label = p$carstm_model_label,
-    modeldir = p$modeldir,  # this forces outputs all go the the main project's model output directory
-    variabletomodel = "pca1",
-    spatial_domain = p$spatial_domain,  # defines spatial area, currenty: "snowcrab" or "SSE"
-    inputdata_spatial_discretization_planar_km = p$inputdata_spatial_discretization_planar_km,  # 1 km .. some thinning .. requires 32 GB RAM and limit of speed -- controls resolution of data prior to modelling to reduce data set and speed up modelling
-    inputdata_temporal_discretization_yr = p$inputdata_temporal_discretization_yr,  # ie., weekly .. controls resolution of data prior to modelling to reduce data set and speed up modelling
-    areal_units_overlay = p$areal_units_overlay, # currently: "snowcrab_managementareas",  "groundfish_strata" .. additional polygon layers for subsequent analysis for now ..
-    areal_units_resolution_km = p$areal_units_resolution_km, # km dim of lattice ~ 1 hr
-    areal_units_proj4string_planar_km = p$areal_units_proj4string_planar_km,  # coord system to use for areal estimation and gridding for carstm
-    inla_num.threads= p$inla_num.threads,
-    inla_blas.num.threads= p$inla_blas.num.threads
-  )
-
-
-
-  pPC2 = speciescomposition_carstm(
-    DS="parameters",
-    project_name = "speciescomposition",
-    yrs = p$yrs,
-    carstm_model_label = p$carstm_model_label,
-    modeldir = p$modeldir,  # this forces outputs all go the the main project's model output directory
-    variabletomodel = "pca2",
-    spatial_domain = p$spatial_domain,  # defines spatial area, currenty: "snowcrab" or "SSE"
-    inputdata_spatial_discretization_planar_km = p$inputdata_spatial_discretization_planar_km,  # 1 km .. some thinning .. requires 32 GB RAM and limit of speed -- controls resolution of data prior to modelling to reduce data set and speed up modelling
-    inputdata_temporal_discretization_yr = p$inputdata_temporal_discretization_yr,  # ie., weekly .. controls resolution of data prior to modelling to reduce data set and speed up modelling
-    areal_units_overlay = p$areal_units_overlay, # currently: "snowcrab_managementareas",  "groundfish_strata" .. additional polygon layers for subsequent analysis for now ..
-    areal_units_resolution_km = p$areal_units_resolution_km, # km dim of lattice ~ 1 hr
-    areal_units_proj4string_planar_km = p$areal_units_proj4string_planar_km,  # coord system to use for areal estimation and gridding for carstm
-    inla_num.threads= p$inla_num.threads,
-    inla_blas.num.threads= p$inla_blas.num.threads
-  )
-
+    pB = bathymetry_carstm( p=p, DS="parameters", variabletomodel="z" )
+    pS = substrate_carstm( p=p, DS="parameters", variabletomodel="substrate.grainsize" )
+    pT = temperature_carstm( p=p, DS="parameters", variabletomodel="t" )
+    pPC1 = speciescomposition_carstm( p=p, DS="parameters", variabletomodel="pca1" )
+    pPC2 = speciescomposition_carstm( p=p, DS="parameters", variabletomodel="pca2")
 
 
     if (!(exists(pB$variabletomodel, M ))) M[,pB$variabletomodel] = NA
