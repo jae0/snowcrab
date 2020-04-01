@@ -27,7 +27,10 @@ snowcrab_carstm = function( p=NULL, DS="parameters", redo=FALSE, extrapolation_l
 
   if (DS=="parameters") {
 
-    p$project_name = "snowcrab"
+    p$project_name = "bio.snowcrab"
+    p$data_root = project.datadirectory(  p$project_name )
+    p$datadir  = file.path( p$data_root, "data" )
+    # p$modeldir = file.path( p$data_root, "modelled" )
 
     if ( !exists("groundfish_species_code", p)) p$groundfish_species_code = 2526
     if ( !exists("speciesname", p)) p$speciesname = "Snow crab"
