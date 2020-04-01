@@ -3,44 +3,39 @@ snowcrab_carstm = function( p=NULL, DS="parameters", redo=FALSE, extrapolation_l
 
 	# handles all basic data tables, etc. ...
 
-  # over-ride default dependent variable name if it exists
-
-    if ( is.null(p)) {
-      p = bio.snowcrab::snowcrab_parameters(...)
-    } else {
-      p = bio.snowcrab::snowcrab_parameters(p=p, ...)
-    }
-
-  # ---------------------
-  # create/update library list2
-  p$libs = c( p$libs, RLibrary ( "colorspace",  "fields", "geosphere", "lubridate",  "lattice",
-    "maps", "mapdata", "maptools", "parallel",  "rgdal", "rgeos",  "sp", "splancs", "GADMTools" ) )
-  p$libs = c( p$libs, project.library ( "aegis", "aegis.bathymetry", "aegis.polygons", "aegis.coastline", "aegis.survey", "netmensuration", "bio.snowcrab", "carstm" ) )
-
-  # p$taxa.of.interest = aegis.survey::groundfish.variablelist("catch.summary")
-  # p$season = "summer"
-  # p$taxa =  "maxresolved"
-
-
-  # ---------------------
 
 
   if (DS=="parameters") {
 
-    if ( p$project_name != "bio.snowcrab" ) {
-      # if true then this is a secondary call ... overwrite nonrelevent params to find data
-      p$project_name = "bio.snowcrab"
-      p$data_root = project.datadirectory(  p$project_name )
-      p$datadir  = file.path( p$data_root, "data" )
-      p$aegis_dimensionality = "space-year"
-      p$data_transformation=NULL
-      if ( exists("carstm_modelcall", p )) {
-        # overwrite where this is called as a secondary function and the model is for the primary
-        if ( p$variabletomodel != gsub(" ", "", strsplit(strsplit(p$carstm_modelcall, "~")[[1]][1], "=")[[1]][2]) ) {
-          p$carstm_modelcall = NULL  # defaults to generic
-        }
+    # over-ride default dependent variable name if it exists
+
+      if ( is.null(p)) {
+        p = bio.snowcrab::snowcrab_parameters(...)
+      } else {
+
+        # if p is passed, assume it is a secondary call ... overwrite nonrelevent params to force use of project defaults
+        p$data_root = NULL
+        p$datadir  = NULL
+        p$data_transformation= NULL
+        p$carstm_modelcall = NULL  # defaults to generic
+
+        p = bio.snowcrab::snowcrab_parameters(p=p, ...)
       }
-    }
+
+    # ---------------------
+    # create/update library list2
+    p$libs = unique( c( p$libs, RLibrary (
+      "colorspace",  "fields", "geosphere", "lubridate",  "lattice",
+      "maps", "mapdata", "maptools", "parallel",  "rgdal", "rgeos",
+      "sp", "splancs", "GADMTools",
+      "aegis", "aegis.bathymetry", "aegis.polygons", "aegis.coastline", "aegis.survey",
+      "netmensuration", "bio.snowcrab", "carstm"
+    ) ) )
+
+
+    # p$taxa.of.interest = aegis.survey::groundfish.variablelist("catch.summary")
+    # p$season = "summer"
+    # p$taxa =  "maxresolved"
 
     if ( !exists("groundfish_species_code", p)) p$groundfish_species_code = 2526
     if ( !exists("speciesname", p)) p$speciesname = "Snow crab"
@@ -150,7 +145,7 @@ snowcrab_carstm = function( p=NULL, DS="parameters", redo=FALSE, extrapolation_l
     if (!exists("nsims", p) ) p$nsims = 10000
 
     p = carstm_parameters( p=p)  # fill in anything missing and some checks
-
+    p$carstm_inputs_aggregated = FALSE
 
     return(p)
   }
