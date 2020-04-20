@@ -163,15 +163,22 @@ snowcrab_carstm = function( p=NULL, DS="parameters", redo=FALSE, extrapolation_l
     sppoly = areal_units( p=p )  # will redo if not found
     areal_units_fn = attributes(sppoly)[["areal_units_fn"]]
 
-    fn = file.path( p$modeldir, paste( "snowcrab", "carstm_inputs", areal_units_fn,
-      p$variabletomodel, paste0(p$selection$survey$data.source, collapse=""),
-      p$inputdata_spatial_discretization_planar_km,
-      round(p$inputdata_temporal_discretization_yr, 6),
-      "rdata", sep=".") )
+    outputdir = file.path(p$modeldir, p$carstm_model_label)
+    if ( !file.exists(outputdir)) dir.create( outputdir, recursive=TRUE, showWarnings=FALSE )
+
+    fn = file.path( outputdir,
+      paste( "snowcrab", "carstm_inputs", areal_units_fn,
+        p$variabletomodel, paste0(p$selection$survey$data.source, collapse=""),
+        p$inputdata_spatial_discretization_planar_km,
+        round(p$inputdata_temporal_discretization_yr, 6),
+        "rdata",
+        sep="."
+      )
+    )
 
     if (!redo)  {
       if (file.exists(fn)) {
-        load( fn)
+        load( fn )
         return( M )
       }
     }
@@ -472,11 +479,10 @@ snowcrab_carstm = function( p=NULL, DS="parameters", redo=FALSE, extrapolation_l
     outputdir = file.path(p$modeldir, p$carstm_model_label)
     if ( !file.exists(outputdir)) dir.create( outputdir, recursive=TRUE, showWarnings=FALSE )
 
-    fn     = file.path( outputdir, paste("carstm_modelled_results", aufns, "aggregated_timeseries",  "rdata", sep="." )  )
-    fn_no = file.path( outputdir, paste("carstm_modelled_results", aufns, "space_timeseries_number",  "rdata", sep="." ) )
-    fn_bio = file.path( outputdir, paste("carstm_modelled_results", aufns, "space_timeseries_biomass",  "rdata", sep="." ) )
-    fn_pa = file.path( outputdir, paste("carstm_modelled_results", aufns, "space_timeseries_pa",  "rdata", sep="." )  )
-
+    fn     = file.path( outputdir, paste("carstm_modelled_results", "aggregated_timeseries", aufns, sep="." )  )
+    fn_no  = file.path( outputdir, paste("carstm_modelled_results", "space_timeseries_number", aufns, sep="." ) )
+    fn_bio = file.path( outputdir, paste("carstm_modelled_results", "space_timeseries_biomass", aufns, sep="." ) )
+    fn_pa  = file.path( outputdir, paste("carstm_modelled_results", "space_timeseries_pa", aufns, sep="." )  )
 
     if ( DS=="carstm_output_timeseries" ) {
       RES = NA
