@@ -163,7 +163,10 @@ snowcrab_carstm = function( p=NULL, DS="parameters", redo=FALSE, extrapolation_l
     sppoly = areal_units( p=p )  # will redo if not found
     areal_units_fn = attributes(sppoly)[["areal_units_fn"]]
 
-    outputdir = file.path(p$modeldir, p$carstm_model_label)
+    # shared accross various secneario using the same polys
+    #.. store at the modeldir level as default
+    # outputdir = file.path(p$modeldir, p$carstm_model_label)
+    outputdir = file.path(p$modeldir )
     if ( !file.exists(outputdir)) dir.create( outputdir, recursive=TRUE, showWarnings=FALSE )
 
     fn = file.path( outputdir,
@@ -477,6 +480,7 @@ snowcrab_carstm = function( p=NULL, DS="parameters", redo=FALSE, extrapolation_l
 
     # same file naming as in carstm ..
     outputdir = file.path(p$modeldir, p$carstm_model_label)
+
     if ( !file.exists(outputdir)) dir.create( outputdir, recursive=TRUE, showWarnings=FALSE )
 
     fn     = file.path( outputdir, paste("carstm_modelled_results", "aggregated_timeseries", aufns, sep="." )  )
