@@ -476,17 +476,17 @@ snowcrab_carstm = function( p=NULL, DS="parameters", redo=FALSE, extrapolation_l
     sppoly = areal_units( p=p )
     areal_units_fn = attributes(sppoly)[["areal_units_fn"]]
 
-    aufns = carstm_filenames( p=p, projecttype="carstm_outputs", areal_units_fn=areal_units_fn )
+    aufns = carstm_filenames( p=p, projecttype="carstm_outputs", areal_units_fn=areal_units_fn, dropextension=TRUE )
 
     # same file naming as in carstm ..
     outputdir = file.path(p$modeldir, p$carstm_model_label)
 
     if ( !file.exists(outputdir)) dir.create( outputdir, recursive=TRUE, showWarnings=FALSE )
 
-    fn     = file.path( outputdir, paste("carstm_modelled_results", "aggregated_timeseries", aufns, sep="." )  )
-    fn_no  = file.path( outputdir, paste("carstm_modelled_results", "space_timeseries_number", aufns, sep="." ) )
-    fn_bio = file.path( outputdir, paste("carstm_modelled_results", "space_timeseries_biomass", aufns, sep="." ) )
-    fn_pa  = file.path( outputdir, paste("carstm_modelled_results", "space_timeseries_pa", aufns, sep="." )  )
+    fn     = file.path( outputdir, paste("carstm_modelled_results", aufns, "aggregated_timeseries", "rdata", sep="." )  )
+    fn_no  = file.path( outputdir, paste("carstm_modelled_results", aufns, "space_timeseries_number", "rdata", sep="." ) )
+    fn_bio = file.path( outputdir, paste("carstm_modelled_results", aufns, "space_timeseries_biomass", "rdata", sep="." ) )
+    fn_pa  = file.path( outputdir, paste("carstm_modelled_results", aufns, "space_timeseries_pa", "rdata", sep="." )  )
 
     if ( DS=="carstm_output_timeseries" ) {
       RES = NA
@@ -572,7 +572,9 @@ snowcrab_carstm = function( p=NULL, DS="parameters", redo=FALSE, extrapolation_l
 
     if (p$selection$type %in% c("biomass", "number") ) {
 
-      M = snowcrab_carstm( p=p, DS="carstm_inputs" )
+      # M = snowcrab_carstm( p=p, DS="carstm_inputs" )
+
+      M = res$M
       M$yr = M$year  # req for meanweights
 
       wgts = meanweights_by_arealunit(
