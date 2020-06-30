@@ -1343,7 +1343,7 @@ model {
     rjags::load.module("dic")
     rjags::load.module("glm")
 
-    project.library( "bio.models")
+    project.library( "ecomod")
 
     ###  all data follow this sequence: c("cfanorth", "cfasouth", "cfa4x")
 
