@@ -1,5 +1,5 @@
 Package: bio.snowcrab
-Title: Snow crab assessment suite for em* and associated projects.
+Title: Snow crab assessment suite for aegis* and associated projects.
 Version: 0.1
 Authors@R: c(
   person("Jae", "Choi", email = "choijaeseok@gmail.com", role = c("aut", "cre")),
