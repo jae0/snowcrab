@@ -3,12 +3,12 @@
     # size frequency distributions of snow crab, broken down by maturity
 
       loc = file.path(project.datadirectory("bio.snowcrab"), "output", "size.data")
-       
+
       dir.create(path=outdir, recursive=T, showWarnings=F)
       dir.create(path=loc, recursive=T, showWarnings=F)
       outfilename = paste( c("mi", "mm", "fi", "fm"), "rdata", sep=".")
       outfile = file.path(loc, paste(outfilename))
-       
+
       # areas = c("cfanorth.not.glace.bay", "cfa22outer", "cfasouth" )
       # areas = c("cfaall",  "cfanorth", "cfasouth", "cfa20", "cfa21", "cfa22", "cfa23", "cfa24", "cfa4x", "cfa23slope", "cfa24slope", "cfaslope"  )
       areas = c("cfanorth", "cfasouth", "cfa4x")
@@ -17,10 +17,10 @@
       if(length(year)>15) year = (p$year.assessment-14):p$year.assessment
 
       if (redo.data) {
-      
+
         set = snowcrab.db( DS="set.clean")
         set$sid = paste(set$trip, set$set, sep="~")
-     
+
         det = snowcrab.db( DS="det.initial")
         det$sid = paste(det$trip, det$set, sep="~")
 
@@ -41,9 +41,9 @@
         save(m.mat, file=outfile[2], compress=T)
         save(f.imm, file=outfile[3], compress=T)
         save(f.mat, file=outfile[4], compress=T)
-      
+
       }
-      
+
       set = snowcrab.db( DS="set.clean")
       set$sid = paste(set$trip, set$set, sep="~")
       for (f in  outfile) load(f)
@@ -51,7 +51,7 @@
 
       # males
       fn = file.path(  outdir, "male" )
-      
+
       Cairo( file=fn, type="pdf", bg="white", units="in", width=8, height=10 )
 
       ncols = length(areas)
@@ -87,16 +87,16 @@
           if (year[y]==year[nrows]) axisnames=T  # last row
 
           barplot(toplot, space=0, axisnames=axisnames, ylim=ylim, axes=axes, col=cols, xpd=F, lwd=3)
-          
+
           if (areas[a]==areas[ncols]) {
             text( dim(toplot)[2]-4, ylim[2]*2/3, year[y], cex=1.2  )
           }
-          
+
           if (areas[a]==areas[3] & year[y] %in% c(1998:2000) ) {
           } else {
             abline( v=41, lwd=3, lty="dashed" )
           }
-          
+
           if (areas[a]==areas[3] & year[y]==year[2] ) {
             xl = c(xlim[2]*0.1, xlim[2]*0.1)
             yl = c(ylim[2]*0.8, ylim[2]*0.4 )
@@ -116,11 +116,11 @@
 
   dev.off()
   cmd( "convert   -trim -quality 9  -geometry 200% -frame 2% -mattecolor white -antialias ", paste(fn, "pdf", sep="."),  paste(fn, "png", sep=".") )
-   
+
       # females
   fn = file.path(  outdir, "female" )
   Cairo( file=fn, type="pdf", bg="white", units="in", width=8, height=10 )
-    
+
       ncols = length(areas)
       nrows = length(year)
       pl = layout( matrix( c(1:(ncols*nrows)), nrow=nrows, ncol=ncols, byrow=F ) )
@@ -173,10 +173,10 @@
       mtext("S-ENS", side=3, outer=T, line=1, at=0.5, cex=1.2)
       mtext("4X",   side=3, outer=T, line=1, at=0.85, cex=1.2)
       mtext("FEMALE", side=3, outer=T, line=4, cex=1.2)
-      
+
     dev.off()
  cmd( "convert   -trim -quality 9  -geometry 200% -frame 2% -mattecolor white -antialias ", paste(fn, "pdf", sep="."),  paste(fn, "png", sep=".") )
- 
+
   return("Done")
   }
 
