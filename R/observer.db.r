@@ -1,5 +1,5 @@
 
-  observer.db = function( DS, p=NULL, yrs=NULL ) {
+  observer.db = function( DS, p=NULL, yrs=NULL, fn.root=NULL ) {
 
     # sex codes
     male = 0
@@ -19,7 +19,7 @@
 				.libPaths("D://R//library-local")
 			}
 
-			fn.root =  file.path( project.datadirectory("bio.snowcrab"), "data", "observer", "datadump" )
+      if (is.null(fn.root)) fn.root =  file.path( project.datadirectory("bio.snowcrab"), "data", "observer", "datadump" )
 			dir.create( fn.root, recursive = TRUE, showWarnings = FALSE )
 
 			if (DS=="rawdata") {
@@ -39,9 +39,9 @@
       # gs.tables = tbls[ which(tbls[,2] == "GROUNDFISH"),]
       # print(gs.tables)
       con = ROracle::dbConnect(DBI::dbDriver("Oracle"),dbname=oracle.snowcrab.server , username=oracle.snowcrab.user, password=oracle.snowcrab.password, believeNRows=F)
-      
+
       for ( YR in yrs ) {
-        fny = file.path( fn.root, paste( YR,"rdata", sep="."))
+        fny = file.path( fn.root, paste( YR, "rdata", sep="."))
         odbq = paste(
           "SELECT s.LATITUDE, s.LONGITUDE, s.LANDING_DATE, s.SET_NO, s.PRODCD_ID, s.EST_CATCH, s.EST_KEPT_WT," ,
           "s.NUM_HOOK_HAUL, d.BOARD_DATE, d.FISH_NO, d.SEXCD_ID, d.FISH_LENGTH, " ,

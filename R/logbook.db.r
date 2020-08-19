@@ -1,9 +1,9 @@
 
 
-  logbook.db = function( DS, prorate=T, p=NULL, yrs=NULL ) {
+  logbook.db = function( DS, prorate=T, p=NULL, yrs=NULL, fn.root=NULL ) {
 
 		if (DS %in% c("rawdata.logbook", "rawdata.logbook.redo")) {
-			fn.root =  file.path( project.datadirectory("bio.snowcrab"), "data", "logbook", "datadump" )
+      if (is.null(fn.root)) fn.root = file.path( project.datadirectory("bio.snowcrab"), "data", "logbook", "datadump" )
 			dir.create( fn.root, recursive = TRUE, showWarnings = FALSE )
 
 			if (DS=="rawdata.logbook") {
@@ -44,7 +44,10 @@
 
     if (DS %in% c("rawdata.licence.redo", "rawdata.licence" ) ) {
 
-      filename.licence = file.path( project.datadirectory("bio.snowcrab"), "data", "logbook", "lic.datadump.rdata" )
+      if (is.null(fn.root)) fn.root = file.path( project.datadirectory("bio.snowcrab"), "data", "logbook"  )
+			dir.create( fn.root, recursive = TRUE, showWarnings = FALSE )
+
+      filename.licence = file.path( fn.root, "lic.datadump.rdata" )
 
       if (DS=="rawdata.licence") {
         load(filename.licence)
@@ -60,7 +63,10 @@
 
     if (DS %in% c("rawdata.areas.redo", "rawdata.areas" ) ) {
 
-      filename.areas = file.path( project.datadirectory("bio.snowcrab"), "data", "logbook", "areas.datadump.rdata" )
+      if (is.null(fn.root)) fn.root = file.path( project.datadirectory("bio.snowcrab"), "data", "logbook"  )
+			dir.create( fn.root, recursive = TRUE, showWarnings = FALSE )
+
+      filename.areas = file.path( fn.root, "areas.datadump.rdata" )
 
       if (DS=="rawdata.areas") {
         load(filename.areas)

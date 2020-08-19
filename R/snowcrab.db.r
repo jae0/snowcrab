@@ -1,5 +1,5 @@
 
-snowcrab.db = function( DS, p=NULL, yrs=NULL) {
+snowcrab.db = function( DS, p=NULL, yrs=NULL, fn.root=NULL) {
 
 	# handles all basic data tables, etc. ...
 
@@ -15,8 +15,7 @@ snowcrab.db = function( DS, p=NULL, yrs=NULL) {
 
 
 	if (DS %in% c("set.rawdata.redo", "set.rawdata") ) {
-
-    fn.root =  file.path( project.datadirectory("bio.snowcrab"), "data", "trawl", "SNCRABSETS" )
+    if (is.null(fn.root)) fn.root =  file.path( project.datadirectory("bio.snowcrab"), "data", "trawl", "SNCRABSETS" )
 		dir.create( fn.root, recursive = TRUE, showWarnings = FALSE )
 
     if (DS=="set.rawdata") {
@@ -52,7 +51,7 @@ snowcrab.db = function( DS, p=NULL, yrs=NULL) {
 
 
 	if (DS %in% c("det.rawdata.redo", "det.rawdata") ) {
-    fn.root =  file.path( project.datadirectory("bio.snowcrab"), "data", "trawl", "SNCRABDETAILS" )
+    if (is.null(fn.root)) fn.root =  file.path( project.datadirectory("bio.snowcrab"), "data", "trawl", "SNCRABDETAILS" )
 		dir.create( fn.root, recursive = TRUE, showWarnings = FALSE  )
 
     if (DS=="det.rawdata") {
@@ -89,7 +88,7 @@ snowcrab.db = function( DS, p=NULL, yrs=NULL) {
 
 	if (DS %in% c("cat.rawdata.redo", "cat.rawdata") ) {
 
-    fn.root =  file.path( project.datadirectory("bio.snowcrab"), "data", "trawl", "SNTRAWLBYCATCH" )
+    if (is.null(fn.root)) fn.root =  file.path( project.datadirectory("bio.snowcrab"), "data", "trawl", "SNTRAWLBYCATCH" )
 		dir.create( fn.root, recursive = TRUE, showWarnings = FALSE  )
 
     if (DS=="cat.rawdata") {

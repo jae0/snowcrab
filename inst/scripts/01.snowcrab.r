@@ -24,7 +24,16 @@ p = bio.snowcrab::load.environment( year.assessment=year.assessment )
 
 if (obtain.database.snapshot) {
   # yrs = 1996:p$year.assessment  # to redo all years
-  yrs = p$year.assessment # to update only the current year
+  yrs = 2019:2020 # to update only the current year
+  if (0) {
+    # alt location
+    yrs=1996:2020
+    snowcrab.db( DS="set.rawdata.redo", yrs=yrs, fn.root=file.path(getwd(), "trawldata") ) #  datadirectory ("bio.snowcrab"), "data", "trawl", "SNCRABSETS"
+    snowcrab.db( DS="det.rawdata.redo", yrs=yrs, fn.root=file.path(getwd(), "trawldata") ) #  datadirectory ("bio.snowcrab"), "data", "trawl", "SNCRABDETAILS"
+    snowcrab.db( DS="cat.rawdata.redo", yrs=yrs, fn.root=file.path(getwd(), "trawldata") ) #  datadirectory ("bio.snowcrab"), "data", "trawl", "SNTRAWLBYCATCH"
+    logbook.db(  DS="rawdata.logbook.redo", yrs=yrs, fn.root=file.path(getwd(), "logbook") ) #  datadirectory ("bio.snowcrab"), "data", "logbook", "datadump"
+    observer.db( DS="rawdata.redo", yrs=yrs, fn.root=file.path(getwd(), "observer") )
+  }
   snowcrab.db( DS="set.rawdata.redo", yrs=yrs ) #  datadirectory ("bio.snowcrab"), "data", "trawl", "SNCRABSETS"
   snowcrab.db( DS="det.rawdata.redo", yrs=yrs ) #  datadirectory ("bio.snowcrab"), "data", "trawl", "SNCRABDETAILS"
   snowcrab.db( DS="cat.rawdata.redo", yrs=yrs ) #  datadirectory ("bio.snowcrab"), "data", "trawl", "SNTRAWLBYCATCH"
