@@ -774,7 +774,6 @@ snowcrab.db = function( DS, p=NULL, yrs=NULL, fn.root=NULL) {
   # -------------
 
   if ( DS %in% c("set.biologicals", "set.biologicals.redo") ) {
-    # browser()
 
     fn = file.path( project.datadirectory("bio.snowcrab"), "data", "set.biologicals.rdata")
 
@@ -784,10 +783,9 @@ snowcrab.db = function( DS, p=NULL, yrs=NULL, fn.root=NULL) {
     }
 
     factors = c("trip", "set")
-    nsInit = nrow( snowcrab.db( DS="setInitial" ))
 
     X = snowcrab.db( DS="set.clean" )
-    if ( nrow(X) != nsInit) stop("Merge issues")
+    nsInit = nrow(X)
 
     Y = snowcrab.db( DS="det.initial" )
 

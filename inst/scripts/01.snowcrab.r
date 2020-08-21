@@ -12,19 +12,13 @@ require(aegis)
 require(aegis.bathymetry)
 require(bio.snowcrab)
 
-if (!exists("year.assessment")) {
-  year.assessment=lubridate::year(Sys.Date())      # year.assessment
-  year.assessment=lubridate::year(Sys.Date()) -1   # or year previous to current
-}
+year.assessment = 2019
+
 p = bio.snowcrab::load.environment( year.assessment=year.assessment )
 #loadfunctions('bio.snowcrab')
 
 # get data tables from Oracle server and store local copies
-#BZ 2017- Can now be run on a Linux machine. rawdata connection changed to ROracle
-
 if (obtain.database.snapshot) {
-  # yrs = 1996:p$year.assessment  # to redo all years
-  yrs = 2019:2020 # to update only the current year
   if (0) {
     # alt location
     yrs=1996:2020
@@ -155,7 +149,7 @@ snowcrab.db( DS="set.clean.redo", p=p ) #Updated stats data, need to redo to upd
 # create some simple/crude timeseries by each CFA
   snowcrab.timeseries.db( DS="observer.redo", p=p )
   snowcrab.timeseries.db( DS="biologicals.redo", p=p )
-  snowcrab.timeseries.db(DS="groundfish.t.redo", p=p )
+  snowcrab.timeseries.db( DS="groundfish.t.redo", p=p )
   # snowcrab.timeseries.db( DS="biologicals.2014.redo" )  # reduced subset that matches 2014 station id's ..
 
   # example: or to get a quick one for a few vars of interest, region of interest ... no saving to file
