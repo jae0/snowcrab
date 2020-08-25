@@ -114,7 +114,7 @@
 
 
       coastlineSp =  aegis.coastline::coastline.db( p=p)
-      #, DS="mapdata.coastPolygon", crs="+proj=longlat +datum=WGS84" )
+      #, DS="mapdata.coastPolygon", project_to="+proj=longlat +datum=WGS84" )
       coastlineSp = spTransform( coastlineSp, sp::CRS(projection_proj4string("lonlat_wgs84"))  )
 
       # coastline = maps::map( database="worldHires", regions=c("Canada", "US"), fill=TRUE, plot=FALSE )

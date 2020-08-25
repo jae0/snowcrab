@@ -2,17 +2,11 @@
 
 # Snow crab --- Areal unit modelling of habitat  -- no reliance upon stmv fields
 
-#The use of the BYM2 model precludes using Windows, must be run in Linux
+# some issues running in MS Windows .. might need to run in Linux
 #Virtual box install of Ubuntu or Debian is likely easiest option
 
-#Choose one- likely latter
-if (0) {
-  year.assessment=lubridate::year(Sys.Date())      # year.assessment
-  year.assessment=lubridate::year(Sys.Date()) -1   # or year previous to current
-}
+year.assessment = 2019
 
-#To add a title to any carstm_plot, please see below example
-#carstm_plot( p=p, res=res, vn=vn, main=list(label="my plot title", cex=2) )
 
 # -------------------------------------------------
 # Part 1 -- construct basic parameter list defining the main characteristics of the study
@@ -101,7 +95,7 @@ if (0) {
 
 
 # -------------------------------------------------
-# Part 8 -- Snow crab anbundance -- main mode used for production
+# Part 8 -- Snow crab abundance -- main mode used for production
   M = snowcrab_carstm( p=p, DS="carstm_inputs", redo=TRUE )  # will redo if not found
   #To compare values of M, run the following line:
   #load(paste(p$modeldir, "M.summary.rdata", sep="/"))

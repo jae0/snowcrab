@@ -1149,10 +1149,10 @@ snowcrab.db = function( DS, p=NULL, yrs=NULL, fn.root=NULL) {
     set = set[ which(is.finite(set$plon + set$plat)),]
 
     # set = set[ which(is.finite(set[, p$variabletomodel])),]
-    crs = projection_proj4string("lonlat_wgs84")
+    project_to = projection_proj4string("lonlat_wgs84")
     coastline_source="eastcoast_gadm"
-    coast = coastline.db( p=p, DS=coastline_source, crs=crs )
-    setcoord = SpatialPoints( as.matrix( set[, c("lon", "lat")]), proj4string=CRS(crs) )
+    coast = coastline.db( p=p, DS=coastline_source, project_to=project_to )
+    setcoord = SpatialPoints( as.matrix( set[, c("lon", "lat")]), proj4string=CRS(project_to) )
     inside = sp::over( setcoord, coast )
     onland = which (is.finite(inside))
     if (length(onland)>0) set = set[-onland, ]
