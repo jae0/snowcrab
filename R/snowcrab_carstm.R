@@ -29,7 +29,7 @@ snowcrab_carstm = function( p=NULL, DS="parameters", redo=FALSE, extrapolation_l
       "maps", "mapdata", "maptools", "parallel",  "rgdal", "rgeos",
       "sp", "splancs", "GADMTools",
       "aegis", "aegis.bathymetry", "aegis.polygons", "aegis.coastline", "aegis.survey",
-      "netmensuration", "bio.snowcrab", "carstm", "aegis.carstm"
+      "netmensuration", "bio.snowcrab", "carstm"
     ) ) )
 
 
