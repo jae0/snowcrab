@@ -27,9 +27,18 @@ snowcrab_carstm = function( p=NULL, DS="parameters", redo=FALSE, extrapolation_l
     p$libs = unique( c( p$libs, RLibrary (
       "colorspace",  "fields", "geosphere", "lubridate",  "lattice",
       "maps", "mapdata", "maptools", "parallel",  "rgdal", "rgeos",
-      "sp", "splancs", "GADMTools",
-      "aegis", "aegis.bathymetry", "aegis.polygons", "aegis.coastline", "aegis.survey",
-      "netmensuration", "bio.snowcrab", "carstm"
+      "sp", "sf", "splancs", "GADMTools",
+      "aegis",
+      "aegis.bathymetry",
+      "aegis.polygons",
+      "aegis.coastline",
+      "aegis.survey",
+      "aegis.temperature",
+      "aegis.substrate",
+      "aegis.speciescomposition",
+      "netmensuration",
+      "bio.snowcrab",
+      "carstm"
     ) ) )
 
 
