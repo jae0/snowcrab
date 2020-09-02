@@ -6,46 +6,58 @@
 
 yrs = 1999:2019
 
-for ( au_type in c("lattice", "snowcrab_polygons_inla_mesh", "snowcrab_polygons_tesselation") ) {
+for ( areal_units_source in c("lattice", "snowcrab_polygons_inla_mesh", "snowcrab_polygons_tesselation") ) {
 
-   au_type = "snowcrab_polygons_tesselation"
+   areal_units_source = "snowcrab_polygons_tesselation"
 
-for ( areal_units_constraint_nmin in c( 5, 10, 15, 20, 25, 30 ) )  {
+for ( areal_units_constraint_nmin in c( 2, 3, 4, 5, 8, 10, 15, 20, 25, 30 ) )  {
+
+  # 5 - 10 works well .. mean and variances stabilize
   # 3 is too low for ts analysis,...  esp for temperature
   # areal_units_constraint_nmin  = trunc(length(yrs) / 3) # = 6
-  # areal_units_constraint_nmin = 10
+  # areal_units_constraint_nmin = 3
+ # areal_units_constraint_nmin = 10
   # areal_units_constraint_nmin = 15
 
-#for ( dist_km in  c( 1, 2, 5, 7.5, 10, 15, 20, 25, 50, 75, 100 ) ) {
-     dist_km = 1
+  # areal_units_constraint_nmin = 30
+
+# for ( areal_units_resolution_km in  c( 1, 2, 20, 25, 50, 75, 100 ) ) {
+#  areal_units_resolution_km =  25  # default snow crab
+  areal_units_resolution_km = 1
 
   p = bio.snowcrab::snowcrab_carstm(
     DS="parameters",
     assessment.years=1999:2019,
     modeldir = project.datadirectory("bio.snowcrab", "modelled", "testing" ),  ## <--- important: alter save location for this  .. default is "*/modelled"
-    carstm_model_label = paste( "testing", au_type, dist_km, areal_units_constraint_nmin, sep="_" ),
+    carstm_model_label = paste( "testing", areal_units_source, areal_units_resolution_km, areal_units_constraint_nmin, sep="_" ),
     aegis_internal_resolution_km = 1,
     boundingbox = list( xlim = c(-70.5, -56.5), ylim=c(39.5, 47.5)), # bounding box for plots using spplot
     areal_units_proj4string_planar_km = projection_proj4string("utm20"), # set up default map projection
     areal_units_constraint = "snowcrab",
     areal_units_constraint_nmin = areal_units_constraint_nmin,
-    areal_units_source= au_type,
-    areal_units_resolution_km = dist_km,
+    areal_units_source= areal_units_source,
+    areal_units_resolution_km = areal_units_resolution_km,
     sa_threshold_km2 = 5,
     inla_num.threads = 4,
     inla_blas.num.threads = 4
   )
 
+
+  (p$carstm_model_label ) # required to use for abundance estimation
+  # [1] carstm_model_label="testing_snowcrab_polygons_tesselation_1_3"
+
   if (0) coastLayout = aegis.coastline::coastline_layout( p=p, redo=TRUE )
 
   p = c(p, aegis.coastline::coastline_layout( p=p ) )
-  p$mypalette = RColorBrewer::brewer.pal(9, "YlOrRd")
+  # p$mypalette = RColorBrewer::brewer.pal(9, "YlOrRd")
+  p$mypalette = RColorBrewer::brewer.pal(9, "Spectral")[9:1]
+
 
   # p$areal_units_proj4string_planar_km = projection_proj4string("omerc_nova_scotia")   # oblique mercator, centred on Scotian Shelf rotated by 325 degrees
 
 
 
-  # -------------------------------------------------
+  # --p-----------------------------------------------
   # create polygons
   if (0) {
     # ensure if polys exist and create if required
@@ -64,7 +76,8 @@ for ( areal_units_constraint_nmin in c( 5, 10, 15, 20, 25, 30 ) )  {
     plot(sppoly[,"AUID"], col="orange")
     plot( sppoly@nb, coords=st_centroid(st_geometry( as(sppoly, "sf")) ),  col="green", add=T )
 
-    x11(); spplot( sppoly, "au_sa_km2", main="AUID", sp.layout=p$coastLayout )
+    x11(); spplot( sppoly, "au_sa_km2", main="SA_km2", sp.layout=p$coastLayout )
+    x11(); spplot( sppoly, "au_sa_km2", main="AUID", sp.layout=p$coastLayout,  col.regions=RColorBrewer::brewer.pal(8, "Accent") )
   }
 
 
@@ -78,7 +91,7 @@ for ( areal_units_constraint_nmin in c( 5, 10, 15, 20, 25, 30 ) )  {
   M = bathymetry_carstm( p=pB, DS="carstm_inputs", redo=TRUE  ) # will redo if not found
   M = NULL; gc()
 
-  fit = carstm_model( p=pB, M='bathymetry_carstm( p=pB, DS="carstm_inputs" )', DS="redo"  ) # run model and obtain predictions
+  fit = carstm_model( p=pB, M='bathymetry_carstm( p=p, DS="carstm_inputs" )', DS="redo"  ) # run model and obtain predictions
 
   if (0) {
     # to use a saved instance
@@ -122,9 +135,15 @@ for ( areal_units_constraint_nmin in c( 5, 10, 15, 20, 25, 30 ) )  {
   M = substrate.db( p=pS, DS="aggregated_data", redo=TRUE )  # used for data matching/lookup in other aegis projects that use substrate
   M = substrate_carstm( p=pS, DS="carstm_inputs", redo=TRUE )  # will redo if not found
   M = NULL; gc()
-  fit = carstm_model( p=pS, M='substrate_carstm( p=pS, DS="carstm_inputs")', DS="redo" )  # run model and obtain predictions
+  fit = carstm_model( p=pS, M='substrate_carstm( p=p, DS="carstm_inputs")', DS="redo" )  # run model and obtain predictions
 
   if (0) {
+    # to use a saved instance
+    fit = carstm_model( p=pS, DS="carstm_modelled_fit" )  # extract currently saved model fit
+    summary(fit)
+
+    res = carstm_summary( p=pS )  # load summary
+
     vn = paste(pS$variabletomodel, "predicted", sep=".")
     carstm_plot( p=pS, res=res, vn=vn ) # maps of some of the results
 
@@ -151,7 +170,7 @@ for ( areal_units_constraint_nmin in c( 5, 10, 15, 20, 25, 30 ) )  {
   M = temperature.db( p=pT, DS="aggregated_data", redo=TRUE )  #  used for data matching/lookup in other aegis projects that use temperature
   M = temperature_carstm( p=pT, DS="carstm_inputs", redo=TRUE )  # will redo if not found
   M = NULL; gc()
-  fit = carstm_model( p=pT, M='temperature_carstm( p=pT, DS="carstm_inputs")', DS="redo"  ) # run model and obtain predictions
+  fit = carstm_model( p=pT, M='temperature_carstm( p=p, DS="carstm_inputs")', DS="redo"  ) # run model and obtain predictions
 
   if (0) {
     # to use a saved instance
@@ -260,20 +279,17 @@ for ( areal_units_constraint_nmin in c( 5, 10, 15, 20, 25, 30 ) )  {
 
 
   M = snowcrab_carstm( p=p, DS="carstm_inputs", redo=TRUE )  # will redo if not found
-  M = NULL; gc()
-
-
   fit = carstm_model( p=p, M='snowcrab_carstm( p=p, DS="carstm_inputs" )' ) # 151 configs and long optim .. 19 hrs
-  fit =  carstm_model( p=p, DS="carstm_modelled_fit" )  # extract currently saved model fit
-  summary(fit)
-  res = carstm_summary( p=p )
   RES = snowcrab_carstm(p=p, DS="carstm_output_compute" )
-
 
   if (0) {
 
+      res = carstm_summary( p=p )
+      fit =  carstm_model( p=p, DS="carstm_modelled_fit" )  # extract currently saved model fit
+      summary(fit)
+
       vn = paste(p$variabletomodel, "predicted", sep=".")
-      carstm_plot( p=p, res=res, vn=vn, time_match=list(year="2000" ) )     # maps of some of the results
+      carstm_plot( p=p, res=res, vn=vn, time_match=list(year="2019" ) )     # maps of some of the results
 
       plot(fit)
       plot(fit, plot.prior=TRUE, plot.hyperparameters=TRUE, plot.fixed.effects=FALSE, single=TRUE )
@@ -304,7 +320,6 @@ for ( areal_units_constraint_nmin in c( 5, 10, 15, 20, 25, 30 ) )  {
       }
 
       RES = snowcrab_carstm(p=p, DS="carstm_output_timeseries" )
-
       bio = snowcrab_carstm(p=p, DS="carstm_output_spacetime_biomass" )
       num = snowcrab_carstm(p=p, DS="carstm_output_spacetime_number" )
 
@@ -329,13 +344,13 @@ for ( areal_units_constraint_nmin in c( 5, 10, 15, 20, 25, 30 ) )  {
       p$boundingbox = list( xlim=p$corners$lon, ylim=p$corners$lat) # bounding box for plots using spplot
 
       p$coastLayout = aegis.coastline::coastline_layout(p=p)
-      p$mypalette=RColorBrewer::brewer.pal(9, "YlOrRd")
-        sppoly = areal_units( p=p )  # to reload
+      # p$mypalette=RColorBrewer::brewer.pal(9, "YlOrRd")
 
+      sppoly = areal_units( p=p )  # to reload
 
       # map it ..mean density
       vn = "pred"
-      sppoly@data[,vn] = bio[,"2017"]
+      sppoly@data[,vn] = bio[,"2019"]
       brks = interval_break(X= sppoly[[vn]], n=length(p$mypalette), style="quantile")
       spplot( sppoly, vn, col.regions=p$mypalette, main=vn, at=brks, sp.layout=p$coastLayout, col="transparent" )
 
@@ -368,11 +383,14 @@ for ( areal_units_constraint_nmin in c( 5, 10, 15, 20, 25, 30 ) )  {
 
 
   M = snowcrab_carstm( p=p, DS="carstm_inputs", redo=TRUE )  # will redo if not found
-  M = NULL; gc()
-
   fit = carstm_model( p=p, M='snowcrab_carstm( p=p, DS="carstm_inputs" )' ) # 151 configs and long optim .. 19 hrs
   fit =  carstm_model( p=p, DS="carstm_modelled_fit" )  # extract currently saved model fit
   summary(fit)
   res = carstm_summary( p=p )
   RES = snowcrab_carstm(p=p, DS="carstm_output_compute" )
+
+
+
+# for the abundance run :
+
 

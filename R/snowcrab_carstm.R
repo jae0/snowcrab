@@ -59,7 +59,7 @@ snowcrab_carstm = function( p=NULL, DS="parameters", redo=FALSE, extrapolation_l
     if ( !exists("areal_units_source", p)) p$areal_units_source = "lattice" # "stmv_lattice" to use ageis fields instead of carstm fields ... note variables are not the same
     if ( !exists("areal_units_overlay", p)) p$areal_units_overlay = "snowcrab_managementareas" # currently: "snowcrab_managementareas",  "groundfish_strata" .. additional polygon layers for subsequent analysis for now ..
     if ( !exists("areal_units_resolution_km", p)) p$areal_units_resolution_km = 25 # km dim of lattice ~ 1 hr
-    if ( !exists("areal_units_constraint", p)) p$areal_units_constraint = "snowcrab"
+    if ( !exists("areal_units_constraint", p)) p$areal_units_constraint = "snowcrab"  # locations of data as constraint .. "snowcrab" loads these automatically, otherwise a xy matrix of positions
 
     if ( !exists("areal_units_constraint_nmin", p)) p$areal_units_constraint_nmin = 3
 
@@ -474,13 +474,17 @@ snowcrab_carstm = function( p=NULL, DS="parameters", redo=FALSE, extrapolation_l
 
     # M$seasonal = (as.numeric(M$year_factor) - 1) * length(p$dyears)  + as.numeric(M$dyear)
 
-
     save( M, file=fn, compress=TRUE )
+
+    if (redo) M=fn  # when redo'ing .. return file name aftert the save
+
     return( M )
   }
 
 
   if ( any( grepl("carstm_output", DS) ) ) {
+
+    # ie. usually run by "carstm_output_compute" which will bring you here
 
     sppoly = areal_units( p=p )
     areal_units_fn = attributes(sppoly)[["areal_units_fn"]]
@@ -730,7 +734,32 @@ snowcrab_carstm = function( p=NULL, DS="parameters", redo=FALSE, extrapolation_l
 
     save( RES, file=fn, compress=TRUE )
 
-    return(RES)
+    # repeat file extraction here  in case computation was required
+    if ( DS=="carstm_output_timeseries" ) {
+      RES = NA
+      if (file.exists(fn)) load( fn)
+      return( RES )
+    }
+
+    if ( DS=="carstm_output_spacetime_number" ) {
+      nums = NA
+      if (file.exists(fn_no)) load( fn_no )
+      return( nums )
+    }
+
+    if ( DS=="carstm_output_spacetime_biomass" ) {
+      biom = NA
+      if (file.exists(fn_bio)) load( fn_bio )
+      return( biom )
+    }
+
+    if ( DS=="carstm_output_spacetime_pa")  {
+      pa = NA
+      if (file.exists(fn_pa)) load( fn_pa )
+      return( pa )
+    }
+
+    return(fn)
   }
 
 

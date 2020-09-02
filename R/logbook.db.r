@@ -240,12 +240,13 @@
       x = logbook.determine.region(x)  # using licence info and geographics
 
       i.cfa4x = which( x$cfa == "cfa4x" )
-      i.offset = which( lubridate::month(x$date.landed) >= 1 & lubridate::month(x$date.landed) <= 7 )
+      i.offset = which( lubridate::month(x$date.landed) >= 1 & lubridate::month(x$date.landed) <= 6 )
       to.offset = intersect( i.cfa4x, i.offset)
 
       x$yr = x$year
       x$yr[to.offset] = x$yr[to.offset] - 1
       # x$yr[i.cfa4x] = x$yr[i.cfa4x] + 1  # ie:: fishery from 1999-2000 in 4X is now coded as 2000
+      message( "Fishing 'yr' for CFA 4X has been set to starting year:: 2001-2002 -> 2001, etc.")
 
       a= x[which(x$cfa0=='cfa4x'),]
       head(a)

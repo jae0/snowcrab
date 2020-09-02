@@ -29,8 +29,9 @@ year.assessment = 2019
     MS = NULL
   }
   sppoly = areal_units( p=p )  # to reload
-  plot(sppoly)
-  spplot( sppoly, "au_sa_km2", main="AUID", sp.layout=p$coastLayout )
+  # plot(sppoly)
+  # spplot( sppoly, "au_sa_km2", main="AUID", sp.layout=p$coastLayout )
+  x11(); spplot( sppoly, "au_sa_km2", main="AUID", sp.layout=p$coastLayout,  col.regions=RColorBrewer::brewer.pal(8, "Accent") )
 
 
 # -------------------------------------------------
@@ -64,6 +65,7 @@ year.assessment = 2019
 
   # to plot predicted temperature maps for last six years
 
+  res = carstm_summary( p=pT )
   recent=as.character((year.assessment-6): year.assessment)
   vn = paste(pT$variabletomodel, "predicted", sep=".")
   for (x in recent){
@@ -101,7 +103,10 @@ year.assessment = 2019
   #load(paste(p$modeldir, "M.summary.rdata", sep="/"))
 
   M = NULL; gc()
+
   fit = carstm_model( p=p, M='snowcrab_carstm( p=p, DS="carstm_inputs" )' ) # 151 configs and long optim .. 19 hrs
+  # fit = carstm_model( p=p, DS="carstm_modelled_fit")
+
   summary(fit)
   res = carstm_summary( p=p )
 
@@ -146,7 +151,7 @@ year.assessment = 2019
 
   # map it ..mean density
   vn = "pred"
-  sppoly@data[,vn] = bio[,"2017"]
+  sppoly@data[,vn] = bio[,"2019"]
   brks = interval_break(X= sppoly[[vn]], n=length(p$mypalette), style="quantile")
   spplot( sppoly, vn, col.regions=p$mypalette, main=vn, at=brks, sp.layout=p$coastLayout, col="transparent" )
 

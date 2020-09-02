@@ -133,7 +133,19 @@
         if (file.exists(fn)) load(fn)
         return(L)
       }
-      L = landings.aggregate( format="bugs" )
+
+      landings = bio.snowcrab::landings.db()
+      # year is year of capture
+      # yr is "fishing year" relative to the assessment cycle
+      regs =  c( "cfanorth", "cfasouth", "cfa4x" )
+      landings = landings[ which (landings$cfa %in% regs) , ]
+      L = tapply( landings$landings, INDEX=landings[,c("yr", "cfa")], FUN=sum, na.rm=T )
+      nL = nrow(L)
+      L[2:nL,"cfa4x"] = L[1:(nL-1),"cfa4x"]  ## bugs/stn expects terminal year as year for 4x
+      cfaall = tapply( landings$landings, INDEX=landings[,c("yr")], FUN=sum, na.rm=T )
+      L = cbind( L, cfaall )
+      L = L / 1000/1000  # convert to kt
+
       L = L[ , c("cfanorth", "cfasouth", "cfa4x") ]
       L = as.data.frame(L)
       save( L, file=fn, compress=T )

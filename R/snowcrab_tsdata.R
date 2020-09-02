@@ -4,7 +4,19 @@ snowcrab_tsdata = function( p, assessment_years=2000:p$year.assessment, areas=c(
   cfasouth =  2 # column index
   cfa4x =  3 # column index
 
-  L = landings.aggregate( format="bugs" )
+  landings = bio.snowcrab::landings.db()
+    #  message( "Fishing 'yr' for CFA 4X has been set to starting year:: 2001-2002 -> 2001, etc.")
+    # year is year of capture
+    # yr is "fishing year" relative to the assessment cycle
+  landings = landings[ which (landings$cfa %in% c( "cfanorth", "cfasouth", "cfa4x" ) ) , ]
+  L = tapply( landings$landings, INDEX=landings[,c("yr", "cfa")], FUN=sum, na.rm=T )
+  # nL = nrow(L)
+  # L[2:nL,"cfa4x"] = L[1:(nL-1),"cfa4x"]  ## bugs/stan expects terminal year as year for 4x
+  cfaall = tapply( landings$landings, INDEX=landings[,c("yr")], FUN=sum, na.rm=T )
+  L = cbind( L, cfaall )
+  L = L / 1000/1000  # convert to kt
+  L[ !is.finite(L)] = 0
+
   L = as.data.frame( L[ match( assessment_years, rownames(L) ), areas ] )
 
   # biomass data: post-fishery biomass are determined by survey B)
