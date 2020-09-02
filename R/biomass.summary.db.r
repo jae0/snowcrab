@@ -135,13 +135,15 @@
       }
 
       landings = bio.snowcrab::landings.db()
+      #  NOTE:: message( "Fishing 'yr' for CFA 4X has been set to starting year:: 2001-2002 -> 2001, etc.")
       # year is year of capture
       # yr is "fishing year" relative to the assessment cycle
       regs =  c( "cfanorth", "cfasouth", "cfa4x" )
       landings = landings[ which (landings$cfa %in% regs) , ]
       L = tapply( landings$landings, INDEX=landings[,c("yr", "cfa")], FUN=sum, na.rm=T )
       nL = nrow(L)
-      L[2:nL,"cfa4x"] = L[1:(nL-1),"cfa4x"]  ## bugs/stn expects terminal year as year for 4x
+      L[2:nL,"cfa4x"] = L[1:(nL-1),"cfa4x"]  ## shifting by one year forces fishery to act as if it was a spring fishery prior to survey (ie. 2011-2012 ->(in landanings.db) 2011 -> (here) 2012)
+
       cfaall = tapply( landings$landings, INDEX=landings[,c("yr")], FUN=sum, na.rm=T )
       L = cbind( L, cfaall )
       L = L / 1000/1000  # convert to kt
