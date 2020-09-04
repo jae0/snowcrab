@@ -7,7 +7,25 @@ year.assessment = 2019   # NOTE: for 4X, the season 2019-2020 -> 2019
 p = bio.snowcrab::load.environment(
   year.assessment=year.assessment,
   assessment_years = 2000:year.assessment,
-  vars.tomodel="R0.mass"
+  vars.tomodel="R0.mass",
+  modeldir = project.datadirectory("bio.snowcrab", "modelled", "testing" ),  ## <--- important: alter save location for this  .. default is "*/modelled"
+
+  areal_units_timeperiod="default",
+  areal_units_overlay="snowcrab_managementareas",
+
+  areal_units_resolution_km = 1,
+  #areal_units_resolution_km = 25,
+  # areal_units_source = "lattice",
+  areal_units_source = "snowcrab_polygons_tesselation",
+  areal_units_constraint_nmin= 3,
+  # using alt biomass index estmates
+  # carstm_model_label="production",
+  # carstm_model_label = paste( "testing", areal_units_source, areal_units_resolution_km, areal_units_constraint_nmin, sep="_" ),
+  # carstm_model_label="testing_lattice_20_3",
+  # carstm_model_label="testing_lattice_25_3",
+  carstm_model_label="testing_snowcrab_polygons_tesselation_1_3",
+  # carstm_model_label="testing_snowcrab_polygons_tesselation_1_4",
+  carstm_modelengine = "inla"
 )
 
 
@@ -15,15 +33,10 @@ p = bio.snowcrab::load.environment(
 ##stmv biomass estimates only
 p$fishery_model = list()
 p$fishery_model$method = "stan"  # "jags", etc.
-p$fishery_model$outdir = file.path(project.datadirectory('bio.snowcrab'), "assessments", p$year.assessment )
-p$fishery_model$fnres  = file.path(p$fishery_model$outdir, paste( "surplus.prod.mcmc", p$year.assessment, p$fishery_model$method, "rdata", sep=".") )
-
-# using alt biomass index estmates
-p$fishery_model$standata = snowcrab_tsdata( p=p, assessment_years=p$assessment_years, carstm_model_label="testing_snowcrab_polygons_tesselation_1_3" )
-
-# p$fishery_model$standata = snowcrab_tsdata( p=p, assessment_years=p$assessment_years )
-
-p$fishery_model$standata$Kmu =  c( 4, 40, 2)
+p$fishery_model$outdir = file.path( p$modeldir, "fishery_model_results"  )
+p$fishery_model$fnres  = file.path( p$fishery_model$outdir, paste( "surplus.prod.mcmc", p$year.assessment, p$fishery_model$method, "rdata", sep=".") )
+p$fishery_model$standata = snowcrab_tsdata( p=p, assessment_years=p$assessment_years )
+p$fishery_model$standata$Kmu =  c( 5, 50, 2)
 p$fishery_model$standata$rmu = c(1, 1, 1)
 p$fishery_model$standata$qmu = c(1, 1, 1)
 p$fishery_model$standata$Ksd =  c(0.25, 0.25, 0.25) * p$fishery_model$standata$Kmu  # c( 2, 20, 0.5)

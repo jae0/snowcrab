@@ -1,4 +1,4 @@
-snowcrab_tsdata = function( p, assessment_years=2000:p$year.assessment, areas=c("cfanorth", "cfasouth", "cfa4x"), carstm_model_label="production" ) {
+snowcrab_tsdata = function( p, assessment_years=2000:p$year.assessment, areas=c("cfanorth", "cfasouth", "cfa4x") ) {
 
   cfanorth =  1 # column index
   cfasouth =  2 # column index
@@ -20,10 +20,7 @@ snowcrab_tsdata = function( p, assessment_years=2000:p$year.assessment, areas=c(
   L = as.data.frame( L[ match( assessment_years, rownames(L) ), areas ] )
 
   # biomass data: post-fishery biomass are determined by survey B)
-  pSC = bio.snowcrab::snowcrab_carstm( DS="parameters", assessment.years=2000:p$year.assessment )
-
-  B = bio.snowcrab::snowcrab_carstm(p=pSC, DS="carstm_output_timeseries", carstm_model_label=carstm_model_label  )
-
+  B = snowcrab_carstm(p=p, DS="carstm_output_timeseries"  )
 
   rownames(B) = B$yrs
   B = as.data.frame( B[ match( assessment_years, B$yrs ), areas ] )

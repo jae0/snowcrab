@@ -16,14 +16,24 @@ for ( areal_units_constraint_nmin in c( 2, 3, 4, 5, 8, 10, 15, 20, 25, 30 ) )  {
   # 3 is too low for ts analysis,...  esp for temperature
   # areal_units_constraint_nmin  = trunc(length(yrs) / 3) # = 6
   # areal_units_constraint_nmin = 3
+  #
+  areal_units_constraint_nmin = 10
+  areal_units_constraint_nmin = length(yrs)
+  # areal_units_constraint_nmin = 4
  # areal_units_constraint_nmin = 10
   # areal_units_constraint_nmin = 15
 
   # areal_units_constraint_nmin = 30
 
 # for ( areal_units_resolution_km in  c( 1, 2, 20, 25, 50, 75, 100 ) ) {
+#  areal_units_resolution_km =  40  # default snow crab
+#  areal_units_resolution_km =  30  # default snow crab
 #  areal_units_resolution_km =  25  # default snow crab
+#  areal_units_resolution_km =  20  # default snow crab
   areal_units_resolution_km = 1
+  areal_units_resolution_km = 2
+  areal_units_resolution_km = 5
+
 
   p = bio.snowcrab::snowcrab_carstm(
     DS="parameters",
@@ -102,7 +112,7 @@ for ( areal_units_constraint_nmin in c( 2, 3, 4, 5, 8, 10, 15, 20, 25, 30 ) )  {
 
     # maps of some of the results
     vn = paste(pB$variabletomodel, "predicted", sep=".")
-    zplot=carstm_plot( p=pB, res=res, vn=vn )
+    zplot = carstm_plot( p=pB, res=res, vn=vn )
     print(zplot)
 
      #to save map of predicted
@@ -284,9 +294,10 @@ for ( areal_units_constraint_nmin in c( 2, 3, 4, 5, 8, 10, 15, 20, 25, 30 ) )  {
 
   if (0) {
 
-      res = carstm_summary( p=p )
       fit =  carstm_model( p=p, DS="carstm_modelled_fit" )  # extract currently saved model fit
       summary(fit)
+
+      res = carstm_summary( p=p )
 
       vn = paste(p$variabletomodel, "predicted", sep=".")
       carstm_plot( p=p, res=res, vn=vn, time_match=list(year="2019" ) )     # maps of some of the results

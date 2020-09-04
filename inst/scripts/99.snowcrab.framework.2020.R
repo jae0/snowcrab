@@ -697,11 +697,12 @@
 
 
   # aggregate time series
-  RES = snowcrab_carstm(p=p, DS="carstm_output_compute", carstm_model_label=p$carstm_model_label  )
 
-  RES = snowcrab_carstm(p=p, DS="carstm_output_timeseries", carstm_model_label=p$carstm_model_label  )
-  bio = snowcrab_carstm(p=p, DS="carstm_output_spacetime_biomass", carstm_model_label=p$carstm_model_label  )
-  num = snowcrab_carstm(p=p, DS="carstm_output_spacetime_number", carstm_model_label=p$carstm_model_label  )
+  RES = snowcrab_carstm(p=p, DS="carstm_output_compute"   )
+
+  RES = snowcrab_carstm(p=p, DS="carstm_output_timeseries"  )
+  bio = snowcrab_carstm(p=p, DS="carstm_output_spacetime_biomass"  )
+  num = snowcrab_carstm(p=p, DS="carstm_output_spacetime_number"  )
 
   # plots with mean and 95% CI
 
@@ -807,7 +808,8 @@
       p$carstm_modelengine = "glm"
       p$variabletomodel = "totwgt"
     }
-    res_ts[[lab]] = snowcrab_carstm(p=p, DS="carstm_output_timeseries", carstm_model_label=lab  )
+    p$carstm_model_label=lab
+    res_ts[[lab]] = snowcrab_carstm(p=p, DS="carstm_output_timeseries"  )
   }
 
   dev.new(width=11, height=7)
@@ -1297,10 +1299,10 @@
 
 
   # surface area weighted average
-  RES = snowcrab_carstm(p=p, DS="carstm_output_compute", carstm_model_label=p$carstm_model_label  )
-  RES = snowcrab_carstm(p=p, DS="carstm_output_timeseries", carstm_model_label=p$carstm_model_label  )
+  RES = snowcrab_carstm(p=p, DS="carstm_output_compute"  )
+  RES = snowcrab_carstm(p=p, DS="carstm_output_timeseries"  )
 
-  pa = snowcrab_carstm(p=p, DS="carstm_output_spacetime_pa", carstm_model_label=p$carstm_model_label  )
+  pa = snowcrab_carstm(p=p, DS="carstm_output_spacetime_pa"  )
 
 # plots with 95% PI
 
@@ -1393,7 +1395,8 @@
           p$carstm_modelengine = "glm"
           p$variabletomodel = "totwgt"
         }
-        res_ts[[lab]] = snowcrab_carstm(p=p, DS="carstm_output_timeseries", carstm_model_label=lab  )
+        p$carstm_model_label=lab
+        res_ts[[lab]] = snowcrab_carstm(p=p, DS="carstm_output_timeseries"  )
       }
 
       dev.new(width=11, height=7)
