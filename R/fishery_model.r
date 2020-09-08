@@ -45,8 +45,8 @@ fishery_model = function(  p, DS="stan", plotresults=TRUE, ... ) {
       parameters {
         vector <lower=eps>[U] K;
         vector <lower=eps,upper=3>[U] r;
-        vector <lower=eps,upper=2>[U] q;
-        vector <lower=eps,upper=2>[U] qs;
+        vector <lower=eps,upper=3>[U] q;
+        vector <lower=eps,upper=3>[U] qs;
         vector <lower=eps,upper=(1-eps)>[U] bosd;  // observation error
         vector <lower=eps,upper=(1-eps)>[U] bpsd;  // process error
         vector <lower=eps,upper=(1-eps)>[U] b0;

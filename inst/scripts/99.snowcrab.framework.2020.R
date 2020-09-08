@@ -1,7 +1,9 @@
 
 
 # Snow crab --- Areal unit modelling of habitat
-
+# -- only AU's of interest ... not connected to a global analysis
+# -- losing information outside of study area but faster
+# -- results cannot be reused outside of workflow
 
 # -------------------------------------------------
 # Initiate -- construct basic parameter list defining the main characteristics of the study

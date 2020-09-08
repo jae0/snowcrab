@@ -14,19 +14,25 @@ p = bio.snowcrab::load.environment(
   areal_units_overlay="snowcrab_managementareas",
 
   areal_units_resolution_km = 1,
+  #areal_units_resolution_km = 10,
   #areal_units_resolution_km = 25,
   # areal_units_source = "lattice",
   areal_units_source = "snowcrab_polygons_tesselation",
-  areal_units_constraint_nmin= 3,
+  areal_units_constraint_nmin= 10,
   # using alt biomass index estmates
   # carstm_model_label="production",
   # carstm_model_label = paste( "testing", areal_units_source, areal_units_resolution_km, areal_units_constraint_nmin, sep="_" ),
-  # carstm_model_label="testing_lattice_20_3",
+  # carstm_model_label="testing_lattice_10_10",
   # carstm_model_label="testing_lattice_25_3",
-  carstm_model_label="testing_snowcrab_polygons_tesselation_1_3",
+  carstm_model_label="testing_snowcrab_polygons_tesselation_1_10",
+  # carstm_model_label="testing_snowcrab_polygons_tesselation_1_10",
+  # carstm_model_label="testing_snowcrab_polygons_tesselation_1_10_zeroinflated",
   # carstm_model_label="testing_snowcrab_polygons_tesselation_1_4",
   carstm_modelengine = "inla"
 )
+
+
+# p$carstm_model_label = paste( "testing", areal_units_source, areal_units_resolution_km, areal_units_constraint_nmin,   "zeroinflated", sep="_" )
 
 
 #Choose one of the below  model runs
@@ -34,14 +40,17 @@ p = bio.snowcrab::load.environment(
 p$fishery_model = list()
 p$fishery_model$method = "stan"  # "jags", etc.
 p$fishery_model$outdir = file.path( p$modeldir, "fishery_model_results"  )
+
 p$fishery_model$fnres  = file.path( p$fishery_model$outdir, paste( "surplus.prod.mcmc", p$year.assessment, p$fishery_model$method, "rdata", sep=".") )
+# p$fishery_model$fnres  = file.path( p$fishery_model$outdir, paste( "surplus.prod.mcmc", p$year.assessment, p$fishery_model$method, "zeroinflated", "rdata", sep=".") )
+
 p$fishery_model$standata = snowcrab_tsdata( p=p, assessment_years=p$assessment_years )
-p$fishery_model$standata$Kmu =  c( 5, 50, 2)
+p$fishery_model$standata$Kmu =  c( 5, 50, 1.5)
 p$fishery_model$standata$rmu = c(1, 1, 1)
 p$fishery_model$standata$qmu = c(1, 1, 1)
 p$fishery_model$standata$Ksd =  c(0.25, 0.25, 0.25) * p$fishery_model$standata$Kmu  # c( 2, 20, 0.5)
 p$fishery_model$standata$rsd =  c(0.25, 0.25, 0.25) * p$fishery_model$standata$rmu  # rep( 0.3, 3)
-p$fishery_model$standata$qsd =  c(0.25, 0.25, 0.25) * p$fishery_model$standata$qmu  # rep( 0.3, 3)
+p$fishery_model$standata$qsd =  c(0.5, 0.5, 0.5) * p$fishery_model$standata$qmu  # rep( 0.3, 3)
 
 p$fishery_model$stancode = fishery_model( p=p, DS="stan_surplus_production" )
 p$fishery_model$stancode_compiled = rstan::stan_model( model_code=p$fishery_model$stancode )
@@ -62,7 +71,7 @@ res = fishery_model( p=p, DS="stan",
 # frequency density of key parameters
 figure.mcmc( "K", res=res, fn=file.path(p$fishery_model$outdir, "K.density.png" ) )
 figure.mcmc( "r", res=res, fn=file.path(p$fishery_model$outdir, "r.density.png" ) )
-figure.mcmc( "q", res=res, fn=file.path(p$fishery_model$outdir, "q.density.png" ) ,xrange=c(0,2))
+figure.mcmc( "q", res=res, fn=file.path(p$fishery_model$outdir, "q.density.png" ) ,xrange=c(0,3))
 figure.mcmc( "FMSY", res=res, fn=file.path(p$fishery_model$outdir, "FMSY.density.png" ) )
 figure.mcmc( "bosd", res=res, fn=file.path(p$fishery_model$outdir, "bosd.density.png" ) )
 figure.mcmc( "bpsd", res=res, fn=file.path(p$fishery_model$outdir, "bpsd.density.png" ) )
@@ -71,7 +80,7 @@ figure.mcmc( "bpsd", res=res, fn=file.path(p$fishery_model$outdir, "bpsd.density
 figure.mcmc( type="timeseries", vname="biomass", res=res, fn=file.path(p$fishery_model$outdir, "biomass.timeseries.png" ), save.plot=T )
 figure.mcmc( type="timeseries", vname="fishingmortality", res=res, fn=file.path(p$fishery_model$outdir, "fishingmortality.timeseries.png" ) )
 
-#Summary table of mean values for inclusion in document
+# Summary table of mean values for inclusion in document
 biomass.summary.table(x)
 
 # Harvest control rules
