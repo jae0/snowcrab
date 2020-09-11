@@ -97,7 +97,6 @@ fishery_model = function(  p, DS="stan", plotresults=TRUE, ... ) {
         //     Ss = Survey in spring
         //     |...(t-2)...|.Ss..(t-1)...|...(t=2004)..Sf.|...(t+1).Sf..|...(t+2)..Sf.|...
         // Cfa 4X -- fall/winter fishery
-        // assume similar to a spring fishery but no need for separate q's
         //    Btot(t) = Bsurveyed(t) + removals(t)  ## .. 2018-2019 -> 2018
 
         for (j in 1:2) {
@@ -171,7 +170,6 @@ fishery_model = function(  p, DS="stan", plotresults=TRUE, ... ) {
       }
 
       generated quantities {
-        matrix[MN,U] pd;
         vector[U] MSY;
         vector[U] BMSY;
         vector[U] FMSY;
@@ -182,19 +180,6 @@ fishery_model = function(  p, DS="stan", plotresults=TRUE, ... ) {
         matrix[MN,U] F;
         matrix[M,U] TAC;
 
-
-        // -------------------
-        // annual production
-         for(j in 1:U) {
-           pd[1,j] = bm[2,j]- bm[1,j] + rem[1,j] ; // approximation
-           for (i in 2:N ){
-             pd[i,j] = (bm[i+1,j]- bm[i-1,j])/2 + rem[i,j] ; // linear interpolation cancels out the bm[i,j] term
-           }
-           for(i in N1:(MN-1)) {
-             pd[i,j] = (bm[i+1,j]- bm[i-1,j])/2 + er * bm[i-1,j] ;  // linear interpolation cancels out the bm[i,j] term
-           }
-           pd[MN,j] = (bm[MN,j]- bm[(MN-1),j]) + er * bm[(MN-1),j]  ; // approximation
-         }
 
         // -------------------
         // fishing mortality
@@ -240,7 +225,6 @@ fishery_model = function(  p, DS="stan", plotresults=TRUE, ... ) {
          for(j in 1:U) {
            for(i in 1:MN) {
              B[i,j] = (bm[i,j] - rem[i,j]) * K[j] ;
-             P[i,j] = pd[i,j]*K[j] ;
              C[i,j] = rem[i,j]*K[j] ;
            }
            for(i in 1:M) {
@@ -304,4 +288,10 @@ fishery_model = function(  p, DS="stan", plotresults=TRUE, ... ) {
 
   }
 
+
+
+
 }
+
+
+

@@ -56,7 +56,7 @@
         for (i in 1:3) {
           pdat = as.vector(y$K[,i])
            prr=NULL
-           prr$class="lognormal"
+           prr$class="normal"
 
           # E(X) = exp(mu + 1/2 sigma^2)
           # med(X) = exp(mu)
@@ -65,8 +65,8 @@
           # SD(X) = sqrt( exp(2*mu + sigma^2)*(exp(sigma^2) - 1) )
           #  or   = CV * E(X)
 
-           prr$meanlog= sb$Kmu[i]
-           prr$sdlog = sqrt(sb$Ksd[i])
+           prr$mean= sb$Kmu[i]
+           prr$sd = sqrt(sb$Ksd[i])
           plot.freq.distribution.prior.posterior( prior=prr, posterior=pdat, ... )
 
           legend( "topright", bty="n", legend=paste( aulabels[i], "\n", vname, " = ", qs[2,i], " {", qs[1,i], ", ",  qs[3,i], "}  ", sep="" ))
@@ -320,14 +320,13 @@
             text( B[1:(ndata-1),i], F[1:(ndata-1),i],  labels=yrs0[-ndata], pos=3, cex= 0.8 )
             points( B[ndata,i], F[ndata,i],  pch=21, bg='darkorange', cex= 1.4 )
             text( B[ndata,i], F[ndata,i],  labels=yrs0[ndata], pos=3, cex= 1.4, font=2 )
-            
+
             text( 0, ylims[2]*0.9,  labels=aulabels[i], pos=3, cex= 0.85 )
           }
           if (i==3){
-          text( B[1:(ndata-1),i], F[1:(ndata-1),i],  labels=(yrs0[-ndata]-1), pos=3, cex= 0.8 )
+          text( B[1:(ndata-1),i], F[1:(ndata-1),i],  labels=(yrs0[-ndata]), pos=3, cex= 0.8 )
           points( B[ndata,i], F[ndata,i],  pch=21, bg='darkorange', cex= 1.4 )
-          text( B[ndata,i], F[ndata,i],  labels=yrs0[ndata]-1, pos=3, cex= 1.4, font=2 )
-
+          text( B[ndata,i], F[ndata,i],  labels=yrs0[ndata], pos=3, cex= 1.4, font=2 )
           text( 0, ylims[2]*0.9,  labels=aulabels[i], pos=3, cex= 0.85 )
           }
           # abline (v=Bhistorical, lty="dashed")
@@ -342,7 +341,7 @@
         print(F[hdat,3] )
 
 
-        
+
       }
 
       if (vname=="default.unmodelled") {

@@ -24,13 +24,14 @@ p = bio.snowcrab::load.environment(
   # carstm_model_label = paste( "testing", areal_units_source, areal_units_resolution_km, areal_units_constraint_nmin, sep="_" ),
   # carstm_model_label="testing_lattice_10_10",
   # carstm_model_label="testing_lattice_25_3",
-  carstm_model_label="testing_snowcrab_polygons_tesselation_1_10",
   # carstm_model_label="testing_snowcrab_polygons_tesselation_1_10",
-  # carstm_model_label="testing_snowcrab_polygons_tesselation_1_10_zeroinflated",
+  carstm_model_label="testing_snowcrab_polygons_tesselation_1_10_zeroinflated",
   # carstm_model_label="testing_snowcrab_polygons_tesselation_1_4",
-  carstm_modelengine = "inla"
+  carstm_modelengine = "inla",
+  libs="carstm"
 )
 
+# require(carstm)
 
 # p$carstm_model_label = paste( "testing", areal_units_source, areal_units_resolution_km, areal_units_constraint_nmin,   "zeroinflated", sep="_" )
 
@@ -45,7 +46,7 @@ p$fishery_model$fnres  = file.path( p$fishery_model$outdir, paste( "surplus.prod
 # p$fishery_model$fnres  = file.path( p$fishery_model$outdir, paste( "surplus.prod.mcmc", p$year.assessment, p$fishery_model$method, "zeroinflated", "rdata", sep=".") )
 
 p$fishery_model$standata = snowcrab_tsdata( p=p, assessment_years=p$assessment_years )
-p$fishery_model$standata$Kmu =  c( 5, 50, 1.5)
+p$fishery_model$standata$Kmu =  c( 5, 50, 1 )
 p$fishery_model$standata$rmu = c(1, 1, 1)
 p$fishery_model$standata$qmu = c(1, 1, 1)
 p$fishery_model$standata$Ksd =  c(0.25, 0.25, 0.25) * p$fishery_model$standata$Kmu  # c( 2, 20, 0.5)
@@ -59,7 +60,7 @@ p$fishery_model$stancode_compiled = rstan::stan_model( model_code=p$fishery_mode
 # later:::ensureInitialized()  # solve mode error
 
 res = fishery_model( p=p, DS="stan",
-  chains=4,
+  chains=3,
   iter=14000,
   warmup=8000,
   refresh = 1000,
