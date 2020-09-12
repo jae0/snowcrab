@@ -734,7 +734,7 @@
   yrc = as.character( 2000 )
 
   vn = "pred"
-  x11()
+  dev.new()
   sppoly@data[,vn] = bio[,yrc]
   brks = interval_break(X= sppoly[[vn]], n=length(p$mypalette), style="quantile")
   spplot( sppoly, vn, col.regions=p$mypalette, main=vn, at=brks, sp.layout=p$coastLayout, col="transparent" )

@@ -31,7 +31,7 @@ year.assessment = 2019
   sppoly = areal_units( p=p )  # to reload
   # plot(sppoly)
   # spplot( sppoly, "au_sa_km2", main="AUID", sp.layout=p$coastLayout )
-  x11(); spplot( sppoly, "au_sa_km2", main="AUID", sp.layout=p$coastLayout,  col.regions=RColorBrewer::brewer.pal(8, "Accent") )
+  dev.new(); spplot( sppoly, "au_sa_km2", main="AUID", sp.layout=p$coastLayout,  col.regions=RColorBrewer::brewer.pal(8, "Accent") )
 
 
 # -------------------------------------------------

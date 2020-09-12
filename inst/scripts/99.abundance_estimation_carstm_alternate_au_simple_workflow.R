@@ -89,8 +89,8 @@
     plot(sppoly[,"AUID"], col="orange")
     plot( sppoly@nb, coords=st_centroid(st_geometry( as(sppoly, "sf")) ),  col="green", add=T )
 
-    x11(); spplot( sppoly, "au_sa_km2", main="SA_km2", sp.layout=p$coastLayout )
-    x11(); spplot( sppoly, "au_sa_km2", main="AUID", sp.layout=p$coastLayout,  col.regions=RColorBrewer::brewer.pal(8, "Accent") )
+    dev.new(); spplot( sppoly, "au_sa_km2", main="SA_km2", sp.layout=p$coastLayout )
+    dev.new(); spplot( sppoly, "au_sa_km2", main="AUID", sp.layout=p$coastLayout,  col.regions=RColorBrewer::brewer.pal(8, "Accent") )
     length(sppoly)
     summary(sppoly$au_sa_km2)
 
