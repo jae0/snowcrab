@@ -12,8 +12,6 @@ snowcrab_tsdata = function( p, assessment_years=2000:p$year.assessment, areas=c(
   L = tapply( landings$landings, INDEX=landings[,c("yr", "cfa")], FUN=sum, na.rm=T )
   nL = nrow(L)
 
-  #L[2:nL,"cfa4x"] = L[1:(nL-1),"cfa4x"]  ## shifting by one year forces fishery to act as if it was a spring fishery prior to survey (ie. 2011-2012 ->(in landings.db) 2011 -> (here) 2012)
-
   cfaall = tapply( landings$landings, INDEX=landings[,c("yr")], FUN=sum, na.rm=T )
   L = cbind( L, cfaall )
   L = L / 1000/1000  # convert to kt

@@ -1,11 +1,6 @@
 #logbook 4X
 
-
-
-if (!exists("year.assessment")) {
-  year.assessment=lubridate::year(Sys.Date())      # likely this one for 4X due to timing of advisory
-  year.assessment=lubridate::year(Sys.Date()) -1   # or year previous to current
-}
+year.assessment=2019
 
 p = bio.snowcrab::load.environment( year.assessment=year.assessment )
 
@@ -18,26 +13,26 @@ warning( "This maping section does not like RStudio, run directly in R")
     require(PBSmapping)
     require(SpatialHub)
     project.library ( 'stmv', 'aegis' )
-    
+
 #do new db pull, as needed, landings data from past winter, often not there from assessment time
     logbook.db(DS='rawdata.logbook.redo',yrs=1996:p$year.assessment)
-    logbook.db(  DS="rawdata.licence.redo" ) 
+    logbook.db(  DS="rawdata.licence.redo" )
     logbook.db(  DS="rawdata.areas.redo" )
     logbook.db('logbook.redo', p=p)
-    
+
 #Import logbook record for use
 #*NB: yr variable refers to starting year of season so winter 2017 is yr=2016
     logs = logbook.db('logbook')
     logs = logs[which(logs$cfa=='cfa4x'),] #only 4X logs
-    
-    ys=c((max(logs$yr)-11):max(logs$yr)) #last 12 years, can as desired  
+
+    ys=c((max(logs$yr)-11):max(logs$yr)) #last 12 years, can as desired
     logs=logs[logs$yr %in% ys,]
-    
+
    # mts= c("October","November", "December", "January", "February", "March", "April","May")
     logs$month=as.character(lubridate::month(logs$date.landed))  #populate month field
     #logs=logs[logs$month %in% mts,]  #remove any data not within expected months
-    
-    
+
+
 #Prep for mapping
     logs = makePBS(logs,polygon=F)
     lp = logs[,c('X','Y','EID','effort','landings','cpue','yr')]
@@ -117,7 +112,7 @@ warning( "This maping section does not like RStudio, run directly in R")
 	  lines(landings$landings, col="red")
 	  legend(x=1, y=80, c("TAC", "Landings"), lty= c(2, 1), col=c("blue", "red"))
 	  }
-	
+
 
 	pdf(file=file.path(outdir,"annual.landings.pdf"))
 	landplot()
@@ -130,10 +125,10 @@ warning( "This maping section does not like RStudio, run directly in R")
 	mts= c("November", "December", "January", "February", "March")
 	monthly$fm=factor(monthly$fm, levels=mts)
 	monthly$landings[!is.finite(monthly$landings)]=0
-	
+
 	monthly$mt=monthly$landings/1000
 	monthly = monthly[order(monthly$yr,monthly$fm),]
-	
+
 	#plot monthly landings
 	#plot.new()
 monthplot=function(){
@@ -177,35 +172,35 @@ dev.off()
 	  }
 	legend('topright',legend=ny,col=cols,lty=rep(1,4),pch=rep(1,4),bty='n')
 	}
-	
+
 	pdf(file=file.path(outdir,"annual.vessels.pdf"))
 	boat.plot()
 	dev.off()
-	
-	
+
+
 
 #Plot annual EFFORT
 	traps = with(logs,tapply(effort,yr,sum,na.rm=T))
-	
+
 	trap.plot=function(){
 	  plot(traps, type="n", ylim=c(0,max(traps)), ylab="Trap Hauls", main="4X Trap Hauls by Year", xaxt="n", xlab="Year" )
 	  axis(1, at=1:length(traps), labels=names(traps))
 	  points(traps, col="red", pch=20)
 	  lines(traps, col="red")
 	}
-	
+
 	pdf(file=file.path(outdir,"annual.effort.pdf"))
 	trap.plot()
 	dev.off()
-	
+
 
 #Plot annual CPUE
 #maybe jackknife this?
 	cpue.catch = with(subset(logs,!is.na(effort)&!is.na(landings)),tapply(landings,yr,sum,na.rm=T))
 	cpue.traps = with(subset(logs,!is.na(effort)&!is.na(landings)),tapply(effort,yr,sum,na.rm=T))
 
-	cpue = cpue.catch/cpue.traps 
-	
+	cpue = cpue.catch/cpue.traps
+
 	cpue.plot=function(){
 	  plot(cpue, type="n", ylim=c(0,max(cpue)), ylab="Kg / Trap Haul", main="4X CPUE by Year", xaxt="n", xlab="Year" )
 	  axis(1, at=1:length(cpue), labels=names(cpue))
@@ -213,11 +208,11 @@ dev.off()
   	lines(cpue, col="red")
 	  abline(h=mean(cpue), col="blue", lty=3, lwd=1)
 	}
-	
+
 	pdf(file=file.path(outdir,"cpue.pdf"))
 	cpue.plot()
 	dev.off()
-	
+
 #add jackknife estimates of error
 	jack=logs[logs$cfa0=="cfa4x",] #create new dataframe (direct copy of logs)
 	names(jack)[names(jack) == 'landings'] <- 'catch'
@@ -225,24 +220,24 @@ dev.off()
 	jack$yr=as.character(jack$yr)
 	jack=jack[,c('yr','catch','effort','area')]
 	jack=na.omit(jack)
-	
+
 	cpue = jackknifeCPUE(jack,grouping=c('yr'))
-	
+
 	jack.cpue.plot=function(){
 	ylims = c(0,max(cpue$cpue+cpue$cpue.var)*1.2)
 	plot(cpue$yr, cpue$cpue,type="n", ylim=ylims, ylab="Kgs / Trap", main="4X Catch Rates by Year", xlab="Year" )
 	with(cpue,arrows(x0=as.numeric(yr),y0=cpue-cpue.var,y1=(cpue+cpue.var), col="red", length=0))
 	with(cpue,points(yr,cpue, col="blue", pch=23,type='b'))
 	}
-	
+
 	pdf(file=file.path(outdir,"annual.cpue.jack.pdf"))
 	jack.cpue.plot()
 	dev.off()
-	
+
 	rm(jack)
 
-	
-		
+
+
 # Import Observer Data
 #------------------------------------------------------------
 #Need to do new data pull if first time being run since assessment (~7 minutes)
@@ -274,12 +269,12 @@ a = a[polygon_inside(a,'cfa4x'),]
   yu = p$year.assessment
   yrs=(yu-8):(yu-1)
 
-  
-  
+
+
 cc.hist.plot=function(y=y){
     x=a[a$yr==y,]
     avg=mean(x$FISH_LENGTH)
-    
+
     # divide into 5 CC's and create histograms of CW and combine into one table
     xCC1=x[x$SHELLCOND_CD==1,]
     xCC2=x[x$SHELLCOND_CD==2,]
@@ -292,15 +287,15 @@ cc.hist.plot=function(y=y){
     xhistCC4= hist(xCC4$FISH_LENGTH, breaks=seq(50, 170, by=3),  plot=FALSE)
     xhistCC5= hist(xCC5$FISH_LENGTH, breaks=seq(50, 170, by=3),  plot=FALSE)
     xplot= rbind(xhistCC1$counts, xhistCC2$counts, xhistCC3$counts, xhistCC4$counts, xhistCC5$counts)
-    
+
     xcc1perc= round((sum(xhistCC1$counts)/(sum(xhistCC1$counts)+ sum(xhistCC2$counts)+ sum(xhistCC3$counts)+ sum(xhistCC4$counts)+ sum(xhistCC5$counts)))*100, 1)
     xcc2perc= round((sum(xhistCC2$counts)/(sum(xhistCC1$counts)+ sum(xhistCC2$counts)+ sum(xhistCC3$counts)+ sum(xhistCC4$counts)+ sum(xhistCC5$counts)))*100, 1)
     xcc3perc= round((sum(xhistCC3$counts)/(sum(xhistCC1$counts)+ sum(xhistCC2$counts)+ sum(xhistCC3$counts)+ sum(xhistCC4$counts)+ sum(xhistCC5$counts)))*100, 1)
     xcc4perc= round((sum(xhistCC4$counts)/(sum(xhistCC1$counts)+ sum(xhistCC2$counts)+ sum(xhistCC3$counts)+ sum(xhistCC4$counts)+ sum(xhistCC5$counts)))*100, 1)
     xcc5perc= round((sum(xhistCC5$counts)/(sum(xhistCC1$counts)+ sum(xhistCC2$counts)+ sum(xhistCC3$counts)+ sum(xhistCC4$counts)+ sum(xhistCC5$counts)))*100, 1)
-    
+
     # create stacked barplots with legends
-   
+
     barplot(xplot [c(5:1),], space=0,names.arg=seq(50, 170, by=3)[-1],
      main=paste(y, as.character (as.numeric(y)+1), sep="/"), legend.text=c(paste("CC5 (",xcc5perc,"%)"),
      paste("CC4 (",xcc4perc,"%)"), paste("CC3 (",xcc3perc,"%)"), paste("CC2 (",xcc2perc,"%)"),
@@ -320,50 +315,50 @@ cc.hist.plot(y=2016)
 dev.off()
 
 #Compile some observer stats for presentation
-  
+
 
   out=NULL
-  
+
   for (y in yrs){
       j=a[a$yr==y,]
       j=j[!duplicated(j$tripset),]
       # determine total mt observed by area
       observedmt= (sum(j$EST_KEPT_WT, na.rm=T)/1000)
       #observedmt
-      
+
       # determine # of traps sampled
       sampledtraps= length(j$SET_NO)
       #sampledtraps
-      
-      
+
+
       # --------------------------------------
       # determine # of traps observed (bycatch, landings, etc)
-      
+
       observedtraps= sum(j$NUM_HOOK_HAUL, na.rm=T)
       observedtraps
-      
+
       # --------------------------------------
       # determine # of traps observed (bycatch, landings, etc)
-      
+
       observedtraps= sum(j$NUM_HOOK_HAUL, na.rm=T)
       observedtraps
-      
+
       #determine number of observed trips
       trips= length(unique(j$TRIP))
       trips
-      
-      
+
+
      out=rbind(out,c(y, observedmt, sampledtraps, observedtraps, trips))
     }
-  
+
   out=as.data.frame(out)
   b=out
   out=b
-  
+
   names(out)=c("Year", "Observed", "Traps Sampled", "Traps Observed", "Trips")
-  
+
   ys=yrs
-  
+
   out$Landings=NA
   cfa=unique(out$Area)
   for (y in ys){
@@ -371,23 +366,23 @@ dev.off()
   }
 
   ### TODO BZ- Make sure trip get carried from last step to here
-  
-  
+
+
   out$Observed=round(as.numeric(as.character(out$Observed)))
   out$Percent=round(out$Observed/out$Landings*100,1)
   names(out)=c("Year", "Observed (mt)", "Traps Sampled", "Traps Observed","Trips", "Landings (mt)", "% Observed")
-  
+
  output=out[,c(-2, -6)]
- 
+
  require(gridExtra)
   obs.stats=function(){
    gridExtra::grid.table(output, theme=ttheme_default(), rows=NULL)
   }
-    
+
   pdf(file=file.path(outdir,"observersummary.pdf"))
   obs.stats()
   dev.off()
- 
+
 #---------------------------------------------------------------------------------------------
 # Mapping
 #---------------------------------------------------------------------------------------------
@@ -426,7 +421,7 @@ for (y in yrs){
     oo$EID = 1:nrow(oo)
     addPoints(lp[which(lp$yr==y),],col='red',pch=16)
     addPoints(oo,bg='green',pch=21, cex=0.6)
-    
+
     cover()
     savePlot(file.path(outdir,paste('observer.map',y,'png',sep=".")),type='png')
 }
@@ -449,7 +444,7 @@ for (i in yrs){
       with(subset(set,lon<(-63)&yr==i&totmass.male.mat>0),points(lon,lat,cex=bub.min+sqrt(totmass.male.mat)*bub.ex,pch=21,bg=rgb(0,1,0,0.2)))
       with(subset(set,lon<(-63)&yr==i&totmass.male.mat==0),points(lon,lat,pch=4,cex=bub.min))
       legend('bottomleft',legend=c(0,leg),title= expression(t/km^2), pt.cex=c(bub.min,bub.min+sqrt(leg)*bub.ex),pch=c(4,rep(21,4)),pt.bg=rgb(0,1,0,0.2),bty='o',bg='white',box.col='white',inset=0.03,cex=1.2)
-  
+
   pdf(file=file.path(outdir,paste("survey.mat.male.bub",i,"pdf", sep=".")))
   set.plot()
   dev.off()

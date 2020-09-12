@@ -8,7 +8,7 @@ p = bio.snowcrab::load.environment(
   year.assessment=year.assessment,
   assessment_years = 2000:year.assessment,
   vars.tomodel="R0.mass",
-  modeldir = project.datadirectory("bio.snowcrab", "modelled", "testing" ),  ## <--- important: alter save location for this  .. default is "*/modelled"
+  modeldir = project.datadirectory("bio.snowcrab", "modelled", "testing" ),  ## <--- important: alter save location for this  .. default is "{project.datadirectory(*)}/modelled"
 
   areal_units_timeperiod="default",
   areal_units_overlay="snowcrab_managementareas",
@@ -28,54 +28,27 @@ p = bio.snowcrab::load.environment(
   carstm_model_label="testing_snowcrab_polygons_tesselation_1_10_zeroinflated",
   # carstm_model_label="testing_snowcrab_polygons_tesselation_1_4",
   carstm_modelengine = "inla",
-  libs="carstm"
+  libs=c("carstm")
 )
-
-# require(carstm)
-
-# p$carstm_model_label = paste( "testing", areal_units_source, areal_units_resolution_km, areal_units_constraint_nmin,   "zeroinflated", sep="_" )
-
-
-#Choose one of the below  model runs
-##stmv biomass estimates only
-p$fishery_model = list()
-p$fishery_model$method = "stan"  # "jags", etc.
-p$fishery_model$outdir = file.path( p$modeldir, "fishery_model_results"  )
-
-p$fishery_model$fnres  = file.path( p$fishery_model$outdir, paste( "surplus.prod.mcmc", p$year.assessment, p$fishery_model$method, "rdata", sep=".") )
-# p$fishery_model$fnres  = file.path( p$fishery_model$outdir, paste( "surplus.prod.mcmc", p$year.assessment, p$fishery_model$method, "zeroinflated", "rdata", sep=".") )
-
-p$fishery_model$standata = snowcrab_tsdata( p=p, assessment_years=p$assessment_years )
-p$fishery_model$standata$Kmu =  c( 5, 50, 1 )
-p$fishery_model$standata$rmu = c(1, 1, 1)
-p$fishery_model$standata$qmu = c(1, 1, 1)
-p$fishery_model$standata$Ksd =  c(0.25, 0.25, 0.25) * p$fishery_model$standata$Kmu  # c( 2, 20, 0.5)
-p$fishery_model$standata$rsd =  c(0.25, 0.25, 0.25) * p$fishery_model$standata$rmu  # rep( 0.3, 3)
-p$fishery_model$standata$qsd =  c(0.5, 0.5, 0.5) * p$fishery_model$standata$qmu  # rep( 0.3, 3)
-
-p$fishery_model$stancode = fishery_model( p=p, DS="stan_surplus_production" )
-p$fishery_model$stancode_compiled = rstan::stan_model( model_code=p$fishery_model$stancode )
 
 
 # later:::ensureInitialized()  # solve mode error
 
-res = fishery_model( p=p, DS="stan",
-  chains=3,
-  iter=14000,
-  warmup=8000,
-  refresh = 1000,
-  control = list(adapt_delta = 0.99, max_treedepth=18)
-)
+tag = "default"
+tag = "zeroinflated"
 
-# load( p$fishery_model$fnres )
+# p = fishery_model( p=p, DS="logistic_parameters", tag=tag )  # gets run by default
+# str( p$fishery_model)
+res = fishery_model( p=p, DS="logistic", tag=tag, chains=3, iter=15000, warmup=10000, refresh=1000, control=list(adapt_delta=0.99 max_treedepth=18) )
+# res = fishery_model( p=p, DS="logistic_samples", tag=tag )
 
 # frequency density of key parameters
 figure.mcmc( "K", res=res, fn=file.path(p$fishery_model$outdir, "K.density.png" ) )
 figure.mcmc( "r", res=res, fn=file.path(p$fishery_model$outdir, "r.density.png" ) )
 figure.mcmc( "q", res=res, fn=file.path(p$fishery_model$outdir, "q.density.png" ) ,xrange=c(0,3))
 figure.mcmc( "FMSY", res=res, fn=file.path(p$fishery_model$outdir, "FMSY.density.png" ) )
-figure.mcmc( "bosd", res=res, fn=file.path(p$fishery_model$outdir, "bosd.density.png" ) )
-figure.mcmc( "bpsd", res=res, fn=file.path(p$fishery_model$outdir, "bpsd.density.png" ) )
+# figure.mcmc( "bosd", res=res, fn=file.path(p$fishery_model$outdir, "bosd.density.png" ) )
+# figure.mcmc( "bpsd", res=res, fn=file.path(p$fishery_model$outdir, "bpsd.density.png" ) )
 
 # timeseries
 figure.mcmc( type="timeseries", vname="biomass", res=res, fn=file.path(p$fishery_model$outdir, "biomass.timeseries.png" ), save.plot=T )
@@ -89,9 +62,8 @@ figure.mcmc( type="hcr", vname="default", res=res, fn=file.path(p$fishery_model$
 figure.mcmc( type="hcr", vname="simple", res=res, fn=file.path(p$fishery_model$outdir, "hcr.simple.png" ) )
 
 # diagnostics
-figure.mcmc( type="diagnostic.production", res=res, fn=file.path(p$fishery_model$outdir, "diagnostic.production.png" ) )
-figure.mcmc( type="diagnostic.errors", res=res, fn=file.path(p$fishery_model$outdir, "diagnostic.errors.png" ) )
-figure.mcmc( type="diagnostic.phase", res=res, fn=file.path(p$fishery_model$outdir, "diagnostic.phase.png" ) )
+# figure.mcmc( type="diagnostic.errors", res=res, fn=file.path(p$fishery_model$outdir, "diagnostic.errors.png" ) )
+# figure.mcmc( type="diagnostic.phase", res=res, fn=file.path(p$fishery_model$outdir, "diagnostic.phase.png" ) )
 
 # K
 plot.new()

@@ -1,15 +1,31 @@
 
-fishery_model = function(  p, DS="stan", plotresults=TRUE, ... ) {
+fishery_model = function(  p,  DS="stan", plotresults=TRUE, tag="default", ... ) {
 
   if (0) {
-
     year.assessment=2016
     p = bio.snowcrab::load.environment( year.assessment=year.assessment)
     p$fishery_model = list()
     p$fishery_model$outdir = file.path(project.datadirectory('bio.snowcrab'), "assessments", p$year.assessment )
-
   }
 
+
+  if (DS=="logistic_parameters") {
+    if (!exists("fishery_model", p)) p$fishery_model = list()
+    if (!exists("method", p$fishery_model)) p$fishery_model$method = "stan"  # "jags", etc.
+    if (!exists("outdir", p$fishery_model)) p$fishery_model$outdir = file.path( p$modeldir, "fishery_model_results"  )
+    if (!exists("fnres", p$fishery_model)) p$fishery_model$fnres  = file.path( p$fishery_model$outdir, paste( "surplus.prod.mcmc", p$year.assessment, p$fishery_model$method, tag, "rdata", sep=".") )
+    if (!exists("standata", p$fishery_model)) p$fishery_model$standata = snowcrab_tsdata( p=p, assessment_years=p$assessment_years )
+    if (!exists("Kmu", p$fishery_model$standata)) p$fishery_model$standata$Kmu =  c( 4, 40, 1 )
+    if (!exists("rmu", p$fishery_model$standata)) p$fishery_model$standata$rmu = c(1, 1, 1)
+    if (!exists("qmu", p$fishery_model$standata)) p$fishery_model$standata$qmu = c(1, 1, 1)
+    if (!exists("Ksd", p$fishery_model$standata)) p$fishery_model$standata$Ksd =  c(0.5, 0.5, 0.5) * p$fishery_model$standata$Kmu  # c( 2, 20, 0.5)
+    if (!exists("rsd", p$fishery_model$standata)) p$fishery_model$standata$rsd =  c(0.2, 0.2, 0.2) * p$fishery_model$standata$rmu  # rep( 0.3, 3)
+    if (!exists("qsd", p$fishery_model$standata)) p$fishery_model$standata$qsd =  c(0.5, 0.5, 0.5) * p$fishery_model$standata$qmu  # rep( 0.3, 3)
+    if (!exists("stancode", p$fishery_model)) p$fishery_model$stancode = fishery_model( p=p, DS="stan_surplus_production" )
+    if (!exists("stancode_compiled", p$fishery_model)) p$fishery_model$stancode_compiled = rstan::stan_model( model_code=p$fishery_model$stancode )
+    message( "Results will be saved to:", p$fishery_model$outdir)
+    return(p)
+  }
 
 
   if (DS=="stan_surplus_production") {
@@ -44,9 +60,9 @@ fishery_model = function(  p, DS="stan", plotresults=TRUE, ... ) {
 
       parameters {
         vector <lower=eps>[U] K;
-        vector <lower=eps,upper=3>[U] r;
-        vector <lower=eps,upper=3>[U] q;
-        vector <lower=eps,upper=3>[U] qs;
+        vector <lower=eps>[U] r;
+        vector <lower=eps>[U] q;
+        vector <lower=eps>[U] qs;
         vector <lower=eps,upper=(1-eps)>[U] bosd;  // observation error
         vector <lower=eps,upper=(1-eps)>[U] bpsd;  // process error
         vector <lower=eps,upper=(1-eps)>[U] b0;
@@ -146,8 +162,8 @@ fishery_model = function(  p, DS="stan", plotresults=TRUE, ... ) {
         q ~ normal( qmu, qsd )  ;
         qs ~ normal( qmu, qsd )  ;
         b0 ~ beta( 8, 2 ) ; // starting b prior to first catch event
-        bosd ~ cauchy( 0, 0.5 ) ;  // slightly informative .. center of mass between (0,1)
-        bpsd ~ cauchy( 0, 0.5 ) ;
+        bosd ~ cauchy( 0, 0.1 ) ;  // slightly informative .. center of mass between (0,1)
+        bpsd ~ cauchy( 0, 0.1 ) ;
 
 
         // -------------------
@@ -174,9 +190,7 @@ fishery_model = function(  p, DS="stan", plotresults=TRUE, ... ) {
         vector[U] BMSY;
         vector[U] FMSY;
         matrix[MN,U] B;
-        matrix[MN,U] P;
         matrix[MN,U] C;
-
         matrix[MN,U] F;
         matrix[M,U] TAC;
 
@@ -190,16 +204,6 @@ fishery_model = function(  p, DS="stan", plotresults=TRUE, ... ) {
              F[i,j] =  1.0 - rem[i,j] / bm[i,j]  ;
            }
          }
-         // spring fishery
-//         {
-//           int j;
-//           j=3;
-//           F[1,j] =  1.0 - rem[1,j] / bm[1,j] ; // approximation
-//           for (i in 2:N) {
-//             F[i,j] =  1.0 - rem[i-1,j] / bm[i,j]  ;
- //          }
- //        }
-
          for (j in 1:U) {
            for (i in N1:MN) {
              F[i,j] =  1.0 - er * bm[i-1,j] / bm[i,j]  ;
@@ -216,9 +220,6 @@ fishery_model = function(  p, DS="stan", plotresults=TRUE, ... ) {
            MSY[j]    = r[j]* exp(K[j]) / 4 ; // maximum height of of the latent productivity (yield)
            BMSY[j]   = exp(K[j])/2 ; // biomass at MSY
            FMSY[j]   = 2.0 * MSY[j] / exp(K[j]) ; // fishing mortality at MSY
-      //    BX2MSY[j] = 1.0 - step( bm[N1,j]-0.25 ) ; // test if bm >= 1/2 bmY
-      //    Bdrop[j]  = 1.0 - step( bm[N1,j]-bm[N,j] ) ; // test if bm(t) >= bm(t-1)
-      //    Fcrash[j] = 4.0 * MSY[j] / exp(K[j]) ; // fishing mortality at which the stock will crash
         }
 
         // recaled estimates
@@ -240,17 +241,20 @@ fishery_model = function(  p, DS="stan", plotresults=TRUE, ... ) {
 
 
   if (DS=="stan_data" ) {
+    # used?
     sb = snowcrab_tsdata(p=p, assessment_years=2000:p$year.assessment)
     return(sb)
   }
 
 
 
-  if (DS=="stan" ) {
+  if (DS=="logistic" ) {
 
     library(rstan)
     rstan_options(auto_write = TRUE)
     options(mc.cores = parallel::detectCores())
+
+    p = fishery_model( p=p, DS="logistic_parameters", tag=tag )
 
     message( "Output location is: ", p$fishery_model$outdir )
 
@@ -265,30 +269,35 @@ fishery_model = function(  p, DS="stan", plotresults=TRUE, ... ) {
           # cores = 5              # number of cores (using 2 just for the vignette)
 
     res = list( mcmc=rstan::extract(f), p=p)
-    save(res, file=p$fishery_model$fnres, compress=T)
+    save(res, file=p$fishery_model$fnres, compress=TRUE)
     return(res)
-
-      if (0) {
-
-          plot(f)
-          print(f)
-          traceplot(f)
-
-          # extract samples
-          e = rstan::extract(f, permuted = TRUE) # return a list of arrays
-          m2 = as.array(f)
-
-          traceplot(f, pars=c("K"))
-          pred=rstan::extract(f)
-
-          est=colMeans(pred)
-
-          prob=apply(pred,2,function(x) I(length(x[x>0.10])/length(x) > 0.8)*1)
-      }
-
   }
 
 
+  if (DS=="logistic_samples" ) {
+    res = NULL
+    if (file.exists(p$fishery_model$fnres)) load(p$fishery_model$fnres)
+    return(res)
+  }
+
+
+  if (0) {
+
+      plot(f)
+      print(f)
+      traceplot(f)
+
+      # extract samples
+      e = rstan::extract(f, permuted = TRUE) # return a list of arrays
+      m2 = as.array(f)
+
+      traceplot(f, pars=c("K"))
+      pred=rstan::extract(f)
+
+      est=colMeans(pred)
+
+      prob=apply(pred,2,function(x) I(length(x[x>0.10])/length(x) > 0.8)*1)
+  }
 
 
 }

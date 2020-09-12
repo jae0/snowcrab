@@ -2,10 +2,8 @@
   # Figures and tables obtained after completion of data assimilation and processing up to the end of "01.snowcrab.r"
 require(aegis)
 
-  if (!exists("year.assessment")) {
-    year.assessment=lubridate::year(Sys.Date())      # year.assessment
-    year.assessment=lubridate::year(Sys.Date()) -1   # or year previous to current
-  }
+
+year.assessment = 2019
 
   p = bio.snowcrab::load.environment( year.assessment=year.assessment )
 # loadfunctions('bio.snowcrab')
@@ -29,7 +27,7 @@ require(aegis)
 
   # ------------------------------------------
   # Size frequency distributions, broken down by moult category from at-sea observed data
- 
+
     figure.observed.size.freq( regions = c("cfanorth", "cfasouth", "cfa4x"), years="all", outdir=file.path( p$annual.results, "figures", "size.freq", "observer")  )
 
   # ------------------------------------------
@@ -54,7 +52,7 @@ require(aegis)
     #cod, haddock, halibut, plaice, wolfish, thornyskate, smoothskate, winterskate, northernshrimp, jonahcrab, lessertoadcrab
   species = c(10, 11, 30, 40, 201, 50, 2521, 2511, 202, 204, 2211)
   figure.timeseries.bycatch(p=p, species=species, plotyears=2004:p$year.assessment, outdir=file.path(p$annual.results,"timeseries", "survey"))
-  
+
 
   # ------------------------------------------
   # Map:  Interpolated mean/geometric mean of various variables in the set data table
@@ -124,9 +122,9 @@ require(aegis)
 
 
   # --- TABLES ----
-  # TODO-BZ add functionality for tables to be saved as pdf 
+  # TODO-BZ add functionality for tables to be saved as pdf
   # add tab.4.tex.r function
-  
+
   require(gridExtra)
   library("xtable")
   library("R2HTML")
@@ -351,7 +349,7 @@ require(aegis)
     (res)
 
     HTML(res, file="table.CC.large.survey.html")
-    
+
   # ------------------
   # counts of stations in each area
 
@@ -494,7 +492,7 @@ abline(h=50)
   # Map: Larval distributions from the Scotian Shelf Ichtyoplankton Program data
     map.larvae( p=p, outdir=file.path(p$project.outputdir, "maps", "larvae"), conversions=conversions )
 
-  
+
     # ------------------------------------------
     # Map: Spatial representation of maturity patterns of snow crab
     #MG Not sure we use these maps either, check with Adam and Jae

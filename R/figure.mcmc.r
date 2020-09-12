@@ -192,14 +192,15 @@
         SI =  apply( y$q, 2, median, na.rm=T  )
 
         for (i in 1:3) {
-          qIOA = sb$IOA[,i] / SI[i]
-          IOA = sb$IOA[,i]
+          #qIOA = sb$IOA[,i] / SI[i]
+          #IOA = sb$IOA[,i]
           meanval = apply( y$B[,,i], 2, mean, na.rm=T  )
 
           prs = seq( from=0.025, to=0.975, length.out=600)
           Bq =  apply( y$B[,,i], 2, quantile, probs=prs, na.rm=T  )
 
-          yran = range(c(0, Bq, sb$IOA[,i] ), na.rm=T )*1.01
+          #yran = range(c(0, Bq, sb$IOA[,i] ), na.rm=T )*1.01
+          yran = range(c(0, Bq ), na.rm=T )*1.01
           plot( yrs, Bq[1,], type="n", ylim=yran, xlim=range(yrs0), xlab="", ylab=""  ) #change xlim to yrs0 to remove 3 yr projection
           cols = gray.colors( floor(length( prs)/2) )
           cols2 = c(cols[length(cols):1], cols )
@@ -210,11 +211,11 @@
           #abline (v=yrs.last , lwd=2, lty="dashed" ) #can comment out this line if not providing forward projection
           if (i==2) title( ylab="Fishable biomass (kt)" )
           if (i==3) title( xlab="Year" )
-          points( yrs0, qIOA, pch=20, col="darkgreen" )
-          lines ( yrs0, qIOA, lwd=3, col="darkgreen", lty="dashed" )
+          #points( yrs0, qIOA, pch=20, col="darkgreen" )
+          #lines ( yrs0, qIOA, lwd=3, col="darkgreen", lty="dashed" )
           lines ( yrs, meanval, lwd=2, col="blue", lty="dotted" )
-          points( yrs0, IOA, pch=20, col="darkred" )
-          lines( yrs0, IOA, lwd=3, lty="dotdash", col="red" )
+          #points( yrs0, IOA, pch=20, col="darkred" )
+          #lines( yrs0, IOA, lwd=3, lty="dotdash", col="red" )
           legend( "topright", bty="n", legend=aulabels[i])
         }
       }

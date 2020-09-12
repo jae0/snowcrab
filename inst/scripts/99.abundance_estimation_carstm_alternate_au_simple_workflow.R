@@ -10,44 +10,39 @@
 # -------------------------------------------------
 # set up paramerters
 
-yrs = 1999:2019
+# -------------------------------------------------
+# 1. set up polygon parameters
 
-for ( areal_units_source in c("lattice", "snowcrab_polygons_inla_mesh", "snowcrab_polygons_tesselation") ) {
+  yrs = 1999:2019
 
-   areal_units_source = "lattice"
-   areal_units_source = "snowcrab_polygons_tesselation"
-
-for ( areal_units_constraint_nmin in c( 2, 3, 4, 5, 8, 10, 15, 20, 25, 30 ) )  {
+  #  areal_units_source = "lattice"
+  areal_units_source = "snowcrab_polygons_tesselation"
 
   # 5 - 10 works well .. mean and variances stabilize
   # 3 is too low for ts analysis,...  esp for temperature
   # areal_units_constraint_nmin  = trunc(length(yrs) / 3) # = 6
   # areal_units_constraint_nmin = 3
-  #`
-  areal_units_constraint_nmin = 10
   # areal_units_constraint_nmin = length(yrs)
   # areal_units_constraint_nmin = 4
- # areal_units_constraint_nmin = 10
+  # areal_units_constraint_nmin = 10
   # areal_units_constraint_nmin = 15
-
   # areal_units_constraint_nmin = 30
+  areal_units_constraint_nmin = 10
 
-# for ( areal_units_resolution_km in  c( 1, 2, 20, 25, 50, 75, 100 ) ) {
+  #   areal_units_resolution_km = 2
+  #   areal_units_resolution_km = 5
+  #   areal_units_resolution_km = 10 # too disconnected (at nmin=3)
+  #   areal_units_resolution_km = 15 # well connected at nmin=3,
+  #  areal_units_resolution_km =  20
+  #   areal_units_resolution_km =  25  # default snow crab
+  #   areal_units_resolution_km =  30
+  #   areal_units_resolution_km =  40
   areal_units_resolution_km = 1
-  areal_units_resolution_km = 2
-  areal_units_resolution_km = 5
-  areal_units_resolution_km = 10 # too disconnected (at nmin=3)
-  areal_units_resolution_km = 15 # well connected at nmin=3,
- areal_units_resolution_km =  20
-  areal_units_resolution_km =  25  # default snow crab
-  areal_units_resolution_km =  30
-  areal_units_resolution_km =  40
-
 
   p = bio.snowcrab::snowcrab_carstm(
     DS="parameters",
     assessment.years=1999:2019,
-    modeldir = project.datadirectory("bio.snowcrab", "modelled", "testing" ),  ## <--- important: alter save location for this  .. default is "*/modelled"
+    modeldir = project.datadirectory("bio.snowcrab", "modelled", "testing" ),  ## <--- important: specify save location
     carstm_model_label = paste( "testing", areal_units_source, areal_units_resolution_km, areal_units_constraint_nmin, sep="_" ),
     aegis_internal_resolution_km = 1,
     boundingbox = list( xlim = c(-70.5, -56.5), ylim=c(39.5, 47.5)), # bounding box for plots using spplot
@@ -76,7 +71,6 @@ for ( areal_units_constraint_nmin in c( 2, 3, 4, 5, 8, 10, 15, 20, 25, 30 ) )  {
 
 
 
-  # --p-----------------------------------------------
   # create polygons
   if (0) {
     # ensure if polys exist and create if required
@@ -101,6 +95,7 @@ for ( areal_units_constraint_nmin in c( 2, 3, 4, 5, 8, 10, 15, 20, 25, 30 ) )  {
     summary(sppoly$au_sa_km2)
 
   }
+
 
 
 
@@ -422,8 +417,6 @@ if (0) {
   }
 
 
-}
-}
 
 
 
