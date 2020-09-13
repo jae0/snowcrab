@@ -297,8 +297,7 @@
 if (0) {
   # use alternate model -- zero-inflated1
 
-          p$carstm_model_label = paste( "testing", areal_units_source, areal_units_resolution_km, areal_units_constraint_nmin,
-            "zeroinflated", sep="_" )
+          p$carstm_model_tag = "zeroinflated"
 
           p$carstm_modelcall = paste(
           'inla( formula =', p$variabletomodel,
