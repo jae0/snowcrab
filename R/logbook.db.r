@@ -448,7 +448,7 @@
 
       ii = which(!is.finite(logbook$z))
       if (length(ii)>0) {
-        logbook$z[ii] = lookup_bathymetry_from_surveys( p=p, locs=logbook[ii,c("lon", "lat")] )
+        logbook$z[ii] = bathymetry_lookup( p=p, locs=logbook[ii,c("lon", "lat")], vnames="z.mean", output_data_class="points", source_data_class="aggregated_rawdata" )
       }
       logbook$z = log( logbook$z )
 

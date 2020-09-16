@@ -297,7 +297,7 @@
 if (0) {
   # use alternate model -- zero-inflated1
 
-          p$carstm_model_tag = "zeroinflated"
+          p$carstm_model_tag = "zeroinflated"  #unique to this project ... to permit alt model forms/variations within the same overall carstm
 
           p$carstm_modelcall = paste(
           'inla( formula =', p$variabletomodel,

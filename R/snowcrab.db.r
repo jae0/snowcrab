@@ -234,14 +234,14 @@ snowcrab.db = function( DS, p=NULL, yrs=NULL, fn.root=NULL) {
     set$timestamp = with_tz( set$timestamp, "UTC")
 
     set$julian = lubridate::yday( set$timestamp )
-    set$julian.compressed=set$julian-227 #allows for informative mapping of survey timing. Days after Aug 15
-    i=which(set$julian.compressed < 0)
-    if (length(i) > 0)  {
-      set$julian.compressed[i]= lubridate::yday( set$timestamp[i]) + 365 -227
-      } #dealing with January dates
-    set$monthoffset=set$timestamp-2592000 #Subtract 30 days from time stamp, corrects for year when survey in January
-    #set$yr = lubridate::year( set$timestamp ) #replaced by following line with 30 day time offset
-    set$yr = lubridate::year( set$monthoffset )
+    set$yr = lubridate::year( set$timestamp )  # "survey year"
+
+    # some surveys extend into January (e.g., 2020) force them to be part of the correct "survey year", i.e., "yr"
+    i = which(lubridate::month(set$timestamp)==1)
+    if (length(i) > 0) set$yr[i] = set$yr[i] - 1
+
+    # set$timestamp[i] = set$timestamp[i] - 1382400  # should not touch timestmp as this is a key index
+
     save( set, file=fn, compress=TRUE )
 
     return ( fn )
@@ -988,8 +988,9 @@ snowcrab.db = function( DS, p=NULL, yrs=NULL, fn.root=NULL) {
     # bring in time invariant features:: depth
     ii = which(!is.finite(set$z))
     if (length(ii)>0){
-      set$z[ii] = lookup_bathymetry_from_surveys( p=p, locs=set[ii,c("lon", "lat")] )
+      set$z[ii] = bathymetry_lookup( p=p, locs=set[ii,c("lon", "lat")], vnames="z.mean", output_data_class="points", source_data_class="aggregated_rawdata" )
     }
+
     set$z = log( set$z )
     # as of 2016, there are 11 locations where there are missing depths, because they are outside the area defined for snow crab ... they are all bad sets too (set_type=4) in NENS ... ignoring for now
 
@@ -1069,6 +1070,7 @@ snowcrab.db = function( DS, p=NULL, yrs=NULL, fn.root=NULL) {
 
 
   # ----------------------
+
 
 
   if ( DS=="biological_data") {
