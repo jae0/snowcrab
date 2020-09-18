@@ -988,7 +988,7 @@ snowcrab.db = function( DS, p=NULL, yrs=NULL, fn.root=NULL) {
     # bring in time invariant features:: depth
     ii = which(!is.finite(set$z))
     if (length(ii)>0){
-      set$z[ii] = bathymetry_lookup( p=p, locs=set[ii,c("lon", "lat")], vnames="z.mean", output_data_class="points", source_data_class="aggregated_rawdata" )
+      set$z[ii] = bathymetry_lookup( p=p, locs=set[ii,c("lon", "lat")], source_data_class="aggregated_rawdata" )
     }
 
     set$z = log( set$z )

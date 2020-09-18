@@ -237,7 +237,7 @@ snowcrab_carstm = function( p=NULL, DS="parameters", redo=FALSE, extrapolation_l
     if (!(exists(pB$variabletomodel, M ))) M[,pB$variabletomodel] = NA
     kk = which(!is.finite(M[, pB$variabletomodel]))
     if (length(kk) > 0) {
-      M[kk, pB$variabletomodel] = bathymetry_lookup( p=p, locs=M[kk, c("lon", "lat")], vnames="z.mean", output_data_class="points", source_data_class="aggregated_rawdata" )
+      M[kk, pB$variabletomodel] = bathymetry_lookup( p=p, locs=M[kk, c("lon", "lat")], source_data_class="aggregated_rawdata" )
     }
     # if any still missing then use a mean depth by AUID
     kk =  which( !is.finite(M[, pB$variabletomodel]))
