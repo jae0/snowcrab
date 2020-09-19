@@ -151,7 +151,7 @@ year.assessment = 2019
 
   # map it ..mean density
   vn = "pred"
-  sppoly@data[,vn] = bio[,"2019"]
+  slot(sppoly, "data")[,vn] = bio[,"2019"]
   brks = interval_break(X= sppoly[[vn]], n=length(p$mypalette), style="quantile")
   spplot( sppoly, vn, col.regions=p$mypalette, main=vn, at=brks, sp.layout=p$coastLayout, col="transparent" )
 
@@ -160,7 +160,7 @@ year.assessment = 2019
   recent=as.character((year.assessment-6): year.assessment)
 
   for (x in recent){
-    sppoly@data[,vn] = bio[,x]
+    slot(sppoly, "data")[,vn] = bio[,x]
     brks = interval_break(X= sppoly[[vn]], n=length(p$mypalette), style="quantile")
     each.plot=spplot( sppoly, vn, col.regions=p$mypalette, main=x, at=brks, sp.layout=p$coastLayout, col="transparent" )
     fn=paste(x,"biomass",  "pdf", sep=".")

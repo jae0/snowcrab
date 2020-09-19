@@ -85,7 +85,7 @@
     sppoly = areal_units( p=p, redo=TRUE )  # to create
 
     plot(sppoly[,"AUID"], col="orange")
-    plot( sppoly@nb, coords=st_centroid(st_geometry( as(sppoly, "sf")) ),  col="green", add=T )
+    plot( slot(sppoly, "nb"), coords=st_centroid(st_geometry( as(sppoly, "sf")) ),  col="green", add=T )
 
     dev.new(); spplot( sppoly, "au_sa_km2", main="SA_km2", sp.layout=p$coastLayout )
     dev.new(); spplot( sppoly, "au_sa_km2", main="AUID", sp.layout=p$coastLayout,  col.regions=RColorBrewer::brewer.pal(8, "Accent") )
@@ -123,7 +123,7 @@ if (0) {
             + f( inla.group( substrate.grainsize, method="quantile", n=9 ), model="rw2", scale.model=TRUE, hyper=H$rw2)
             + f( inla.group( pca1, method="quantile", n=9 ), model="rw2", scale.model=TRUE, hyper=H$rw2)
             + f( inla.group( pca2, method="quantile", n=9 ), model="rw2", scale.model=TRUE, hyper=H$rw2)
-            + f( auid, model="bym2", graph=sppoly@nb, group=year_factor, scale.model=TRUE, constr=TRUE, hyper=H$bym2, control.group=list(model="ar1", hyper=H$ar1_group)),
+            + f( auid, model="bym2", graph=slot(sppoly, "nb"), group=year_factor, scale.model=TRUE, constr=TRUE, hyper=H$bym2, control.group=list(model="ar1", hyper=H$ar1_group)),
             family = "zeroinflatedpoisson1",
             data= M,
             control.compute=list(cpo=TRUE, waic=TRUE, dic=TRUE, config=TRUE),
@@ -222,7 +222,7 @@ if (0) {
 
       # map it ..mean density
       vn = "pred"
-      sppoly@data[,vn] = bio[,"2019"]
+      slot(sppoly, "data")[,vn] = bio[,"2019"]
       brks = interval_break(X= sppoly[[vn]], n=length(p$mypalette), style="quantile")
       spplot( sppoly, vn, col.regions=p$mypalette, main=vn, at=brks, sp.layout=p$coastLayout, col="transparent" )
 
