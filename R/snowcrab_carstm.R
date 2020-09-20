@@ -237,7 +237,7 @@ snowcrab_carstm = function( p=NULL, DS="parameters", redo=FALSE, extrapolation_l
     if (!(exists(pB$variabletomodel, M ))) M[,pB$variabletomodel] = NA
     kk = which(!is.finite(M[, pB$variabletomodel]))
     if (length(kk) > 0) {
-      M[kk, pB$variabletomodel] = bathymetry_lookup( p=p, locs=M[kk, c("lon", "lat")], source_data_class="aggregated_rawdata" )
+       M[kk, pB$variabletomodel] = bathymetry_lookup( p=p, locs=M[kk, c("lon", "lat")], source_data_class="aggregated_rawdata" )
     }
     # if any still missing then use a mean depth by AUID
     kk =  which( !is.finite(M[, pB$variabletomodel]))
@@ -256,7 +256,7 @@ snowcrab_carstm = function( p=NULL, DS="parameters", redo=FALSE, extrapolation_l
     pS = substrate_carstm( p=p, DS="parameters", variabletomodel="substrate.grainsize" )
     if (!(exists(pS$variabletomodel, M ))) M[,pS$variabletomodel] = NA
     kk = which(!is.finite(M[, pS$variabletomodel]))
-    if (length(kk) > 0 ) M[kk, pS$variabletomodel] = lookup_substrate_from_surveys(  p=p, locs=M[kk, c("lon", "lat")] )
+    if (length(kk) > 0 ) M[kk, pS$variabletomodel] = substrate_lookup(  p=p, locs=M[kk, c("lon", "lat")], source_data_class="aggregated_rawdata" )
     # if any still missing then use a mean substrate by AUID
     kk =  which( !is.finite(M[, pS$variabletomodel]))
     if (length(kk) > 0) {
@@ -566,7 +566,7 @@ snowcrab_carstm = function( p=NULL, DS="parameters", redo=FALSE, extrapolation_l
     if (!(exists(pPC2$variabletomodel, M ))) M[,pPC2$variabletomodel] = NA
 
     kk = which(!is.finite(M[, pS$variabletomodel]))
-    if (length(kk) > 0 ) M[kk, pS$variabletomodel] = lookup_substrate_from_surveys(  p=p, locs=M[kk, c("lon", "lat")] )
+    if (length(kk) > 0 ) M[kk, pS$variabletomodel] = substrate_lookup(  p=p, locs=M[kk, c("lon", "lat"), source_data_class="aggregated_rawdata"] )
 
     kk = which(!is.finite(M[, pT$variabletomodel]))
     if (length(kk) > 0 ) M[kk, pT$variabletomodel] = lookup_temperature_from_surveys(  p=p, locs=M[kk, c("lon", "lat")], timestamp=M$timestamp[kk] )
