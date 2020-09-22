@@ -566,10 +566,10 @@ snowcrab_carstm = function( p=NULL, DS="parameters", redo=FALSE, extrapolation_l
     if (!(exists(pPC2$variabletomodel, M ))) M[,pPC2$variabletomodel] = NA
 
     kk = which(!is.finite(M[, pS$variabletomodel]))
-    if (length(kk) > 0 ) M[kk, pS$variabletomodel] = substrate_lookup(  p=p, locs=M[kk, c("lon", "lat"), source_data_class="aggregated_rawdata"] )
+    if (length(kk) > 0 ) M[kk, pS$variabletomodel] = substrate_lookup(  p=p, locs=M[kk, c("lon", "lat")], source_data_class="aggregated_rawdata" )
 
     kk = which(!is.finite(M[, pT$variabletomodel]))
-    if (length(kk) > 0 ) M[kk, pT$variabletomodel] = temperature_lookup(  p=p, locs=M[kk, c("lon", "lat")], timestamp=M$timestamp[kk], source_data_class="aggregated_rawdata"] )
+    if (length(kk) > 0 ) M[kk, pT$variabletomodel] = temperature_lookup(  p=p, locs=M[kk, c("lon", "lat")], timestamp=M$timestamp[kk], source_data_class="aggregated_rawdata" )
 
     kk = which(!is.finite(M[, pPC1$variabletomodel]))
     if (length(kk) > 0 ) {
