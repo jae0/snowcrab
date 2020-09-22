@@ -128,7 +128,7 @@
 
   M$year_factor = factor(M$year)
   M$auid = factor( M$auid)
-  M[,p$variabletomodel] = trunc( M[,p$variabletomodel] )  # poisson wants integers
+  M[,p$variabletomodel] = floor( M[,p$variabletomodel] )  # poisson wants integers
 
   fit = carstm_model( p=p, M=M )
 
@@ -168,7 +168,7 @@
 
   M$year_factor = factor(M$year)
   M$auid = factor( M$auid)
-  M[,p$variabletomodel] = trunc( M[,p$variabletomodel] )  # poisson wants integers
+  M[,p$variabletomodel] = floor( M[,p$variabletomodel] )  # poisson wants integers
 
 
   fit = carstm_model( p=p, M=M )
@@ -213,7 +213,7 @@
 
   M$year_factor = factor(M$year)
   M$auid = factor( M$auid)
-  M[,p$variabletomodel] = trunc( M[,p$variabletomodel] )  # poisson wants integers
+  M[,p$variabletomodel] = floor( M[,p$variabletomodel] )  # poisson wants integers
 
 
   fit = carstm_model( p=p, M=M )
@@ -256,7 +256,7 @@
 
   M$year_factor = factor(M$year)
   M$auid = factor( M$auid)
-  M[,p$variabletomodel] = trunc( M[,p$variabletomodel] )  # poisson wants integers
+  M[,p$variabletomodel] = floor( M[,p$variabletomodel] )  # poisson wants integers
 
 
   fit = carstm_model( p=p, M=M )
@@ -292,7 +292,7 @@
   )
   M = snowcrab_carstm( p=p, DS="carstm_inputs", redo=FALSE )  # will redo if not found
   M$year_factor = factor(M$year)
-  M[,p$variabletomodel] = trunc( M[,p$variabletomodel] )  # poisson wants integers
+  M[,p$variabletomodel] = floor( M[,p$variabletomodel] )  # poisson wants integers
   fit = carstm_model( p=p, M=M )
 
 
@@ -327,7 +327,7 @@
   M = snowcrab_carstm( p=p, DS="carstm_inputs", redo=FALSE )  # will redo if not found
   M$year_factor = factor(M$year)
   # M$auid = factor( M$auid)
-  M[,p$variabletomodel] = trunc( M[,p$variabletomodel] )  # poisson wants integers
+  M[,p$variabletomodel] = floor( M[,p$variabletomodel] )  # poisson wants integers
   fit = carstm_model( p=p, M=M )
 
 
@@ -364,7 +364,7 @@
   )
   M = snowcrab_carstm( p=p, DS="carstm_inputs", redo=FALSE )  # will redo if not found
   M$year_factor = factor(M$year)
-  M[,p$variabletomodel] = trunc( M[,p$variabletomodel] )  # poisson wants integers
+  M[,p$variabletomodel] = floor( M[,p$variabletomodel] )  # poisson wants integers
   fit = carstm_model( p=p, M=M )
 
 

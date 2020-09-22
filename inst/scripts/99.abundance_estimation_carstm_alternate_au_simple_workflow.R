@@ -20,7 +20,7 @@
 
   # 5 - 10 works well .. mean and variances stabilize
   # 3 is too low for ts analysis,...  esp for temperature
-  # areal_units_constraint_nmin  = trunc(length(yrs) / 3) # = 6
+  # areal_units_constraint_nmin  = floor(length(yrs) / 3) # = 6
   # areal_units_constraint_nmin = 3
   # areal_units_constraint_nmin = length(yrs)
   # areal_units_constraint_nmin = 4

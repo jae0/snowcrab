@@ -280,7 +280,7 @@ snowcrab_carstm = function( p=NULL, DS="parameters", redo=FALSE, extrapolation_l
     pT = temperature_carstm( p=p, DS="parameters", variabletomodel="t" )
     if (!(exists(pT$variabletomodel, M ))) M[,pT$variabletomodel] = NA
     kk = which(!is.finite(M[, pT$variabletomodel]))
-    if (length(kk) > 0 ) M[kk, pT$variabletomodel] = lookup_temperature_from_surveys(  p=p, locs=M[kk, c("lon", "lat")], timestamp=M$timestamp[kk] )
+    if (length(kk) > 0 ) M[kk, pT$variabletomodel] = temperature_lookup(  p=p, locs=M[kk, c("lon", "lat")], timestamp=M$timestamp[kk], source_data_class="aggregated_rawdata" )
     # if any still missing then use a mean temp by AUID
     kk =  which( !is.finite(M[, pT$variabletomodel]))
     if (length(kk) > 0) {
@@ -455,9 +455,9 @@ snowcrab_carstm = function( p=NULL, DS="parameters", redo=FALSE, extrapolation_l
     M$pca1i = discretize_data( M[, pPC1$variabletomodel], p$discretization[[pPC1$variabletomodel]] )
     M$pca2i = discretize_data( M[, pPC2$variabletomodel], p$discretization[[pPC2$variabletomodel]] )
 
-    M$tiyr  = trunc( M$tiyr / p$tres )*p$tres    # discretize for inla .. midpoints
+    M$tiyr  = floor( M$tiyr / p$tres )*p$tres    # discretize for inla .. midpoints
 
-    M$year = trunc( M$tiyr)
+    M$year = floor( M$tiyr)
     M$year_factor = as.numeric( factor( M$year, levels=p$yrs))
 
     M$dyear =  M$tiyr - M$year   # revert dyear to non-discretized form
@@ -569,7 +569,7 @@ snowcrab_carstm = function( p=NULL, DS="parameters", redo=FALSE, extrapolation_l
     if (length(kk) > 0 ) M[kk, pS$variabletomodel] = substrate_lookup(  p=p, locs=M[kk, c("lon", "lat"), source_data_class="aggregated_rawdata"] )
 
     kk = which(!is.finite(M[, pT$variabletomodel]))
-    if (length(kk) > 0 ) M[kk, pT$variabletomodel] = lookup_temperature_from_surveys(  p=p, locs=M[kk, c("lon", "lat")], timestamp=M$timestamp[kk] )
+    if (length(kk) > 0 ) M[kk, pT$variabletomodel] = temperature_lookup(  p=p, locs=M[kk, c("lon", "lat")], timestamp=M$timestamp[kk], source_data_class="aggregated_rawdata"] )
 
     kk = which(!is.finite(M[, pPC1$variabletomodel]))
     if (length(kk) > 0 ) {
@@ -766,9 +766,9 @@ snowcrab_carstm = function( p=NULL, DS="parameters", redo=FALSE, extrapolation_l
     M$pca1i = discretize_data( M[, pPC1$variabletomodel], p$discretization[[pPC1$variabletomodel]] )
     M$pca2i = discretize_data( M[, pPC2$variabletomodel], p$discretization[[pPC2$variabletomodel]] )
 
-    M$tiyr  = trunc( M$tiyr / p$tres )*p$tres    # discretize for inla .. midpoints
+    M$tiyr  = floor( M$tiyr / p$tres )*p$tres    # discretize for inla .. midpoints
 
-    M$year = trunc( M$tiyr)
+    M$year = floor( M$tiyr)
     M$year_factor = as.numeric( factor( M$year, levels=p$yrs))
 
     M$dyear =  M$tiyr - M$year   # revert dyear to non-discretized form

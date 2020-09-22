@@ -997,7 +997,7 @@ snowcrab.db = function( DS, p=NULL, yrs=NULL, fn.root=NULL) {
     # bring in time varing features:: temperature
     ii = which(!is.finite(set$t))
     if (length(ii)>0){
-      set$t[ii] = lookup_temperature_from_surveys( p=p, locs=set[ii, c("lon", "lat")], timestamp=set$timestamp[ii] )
+      set$t[ii] = temperature_( p=p, locs=set[ii, c("lon", "lat")], timestamp=set$timestamp[ii], source_data_class="aggregated_rawdata" )
     }
 
     # return planar coords to correct resolution

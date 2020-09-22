@@ -75,8 +75,8 @@
       netmind.timestamprange = netmind$timestamp
       netmind.timestamp = netmind$timestamp[ deepest.point ]
       yr = lubridate::ymd_hms(netmind.timestamp)
-      
-  
+
+
       yr = lubridate::year(yr )
       if(months(netmind.timestamp) %in% c("January")){
         yr = lubridate::year( netmind.timestamp ) -1
@@ -109,13 +109,13 @@
       station = station[ length(station) ]
       station = gsub( "[[:alpha:]]", "", station)
       station = gsub( "[[:punct:]]", "", station)
-      
+
       if(nchar(station)>4){
         station = unlist(strsplit( header[[1]], "/", fixed=TRUE ))
         station = station[ length(station) ]
         station = gsub( "[[:alpha:]]", "", station)
         station = gsub( "[[:punct:]]", "", station)
-      
+
       }
       station = as.numeric( station )
       setxi = NULL
@@ -153,7 +153,7 @@
 
       if (is.null ( setxi ) ) {
         # check distances
-        ni = trunc( nrow(netmind) / 2 )
+        ni = floor( nrow(netmind) / 2 )
         dx = abs( set$lon - netmind$lon[ni] )
         dy = abs( set$lat - netmind$lat[ni] )
         sets.in.spatial.range = which( dx < 5/60 & dy < 5/60
@@ -163,7 +163,7 @@
 
       if (is.null ( setxi ) ) {
         # check distances
-        ni = trunc( nrow(netmind) / 2 )
+        ni = floor( nrow(netmind) / 2 )
         dx = abs( set$lon1 - netmind$lon[ni] )
         dy = abs( set$lat1 - netmind$lat[ni] )
         sets.in.spatial.range = which( dx < 5/60 & dy < 5/60
@@ -174,7 +174,7 @@
 
       if (is.null ( setxi ) ) {
         # check distances
-        ni = trunc( nrow(netmind) / 2 )
+        ni = floor( nrow(netmind) / 2 )
         dx = abs( set$lon - netmind$lon[ni] )
         dy = abs( set$lat - netmind$lat[ni] )
         sets.in.spatial.range = which( dx < 5/60 & dy < 5/60
@@ -184,7 +184,7 @@
 
       if (is.null ( setxi ) ) {
         # check staion, distance, and time
-        ni = trunc( nrow(netmind) / 2 )
+        ni = floor( nrow(netmind) / 2 )
         dx = abs( set$lon - netmind$lon[ni] )
         dy = abs( set$lat - netmind$lat[ni] )
         sets.in.spatial.range = which( dx < 5/60 & dy < 5/60
@@ -194,7 +194,7 @@
 
       if (is.null ( setxi ) ) {
         # check staion, distance, and time
-        ni = trunc( nrow(netmind) / 2 )
+        ni = floor( nrow(netmind) / 2 )
         dx = abs( set$lon - netmind$lon[ni] )
         dy = abs( set$lat - netmind$lat[ni] )
         sets.in.spatial.range = which( dx < 5/60 & dy < 5/60

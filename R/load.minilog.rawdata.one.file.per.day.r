@@ -2,7 +2,7 @@
 
     tz.minilog = "America/Halifax"
     tz.snowcrab = "UTC"
-  
+
     out = NULL
     minilog=NULL
 
@@ -13,7 +13,7 @@
 
     if (length(header) < 20)  return( NULL )
 
-    
+
     if(any(grepl("Study ID=", header, perl=T))){
       l.study = grep( "Study ID=", header, perl=T )
       studyid = tolower( gsub("^.*Study ID=", "", header[ l.study ] ) )
@@ -21,9 +21,9 @@
     if(any(grepl("Study Description:", header, perl=T))){
       l.study = grep( "Study Description:", header, perl=T )
       studyid = trimws(tolower( gsub("Study Description:", "", header[ l.study ] ) ))
-      ind_skip_header = 8 
+      ind_skip_header = 8
     }
-    
+
     if (grepl( "test", studyid, ignore.case=T) ) return( NULL )
     if (grepl( "testage", studyid, ignore.case=T) ) return( NULL )
 
@@ -60,7 +60,6 @@
     print(filename2)
     #break up minilog by station
     setS = set[which(tolower(set$trip)==tripid),]
-    # minilog$timestamp1 = trunc(minilog$timestamp, 'mins')
 
     metadata = NULL
     basedata = NULL

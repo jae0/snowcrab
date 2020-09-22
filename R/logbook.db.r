@@ -377,7 +377,7 @@
        f4x$status = NA
        f4x$licence = NA
        f4x$file = "logbooks4x.csv"
-       f4x$yr = trunc(f4x$date.landed/10000)
+       f4x$yr = floor(f4x$date.landed/10000)
        f4x = f4x[, names(out) ]
 
        logs = rbind (out, f4x)
@@ -434,7 +434,7 @@
       logbook$plon = grid_internal( logbook$plon, grid$plon )
       logbook$plat = grid_internal( logbook$plat, grid$plat )
 
-			logbook$timestamp = as.POSIXct( logbook$date.landed, tz="America/Halifax", origin=lubridate::origin  )  # required for lookup_temperature_from_stmvs
+			logbook$timestamp = as.POSIXct( logbook$date.landed, tz="America/Halifax", origin=lubridate::origin  )
       logbook$timestamp = with_tz( logbook$timestamp, "UTC")
 
       logbook$dyear = lubridate::decimal_date( logbook$timestamp ) - lubridate::year(logbook$timestamp )
@@ -456,7 +456,7 @@
       if (length(ii)>0) logbook = logbook[ -ii, ]
 
       # bring in time varing features:: temperature
-      logbook$t = lookup_temperature_from_surveys( p=p, locs=logbook[, c("lon", "lat")], timestamp=logbook$timestamp )
+      logbook$t = temperature_lookup( p=p, locs=logbook[, c("lon", "lat")], timestamp=logbook$timestamp, source_data_class="aggregated_rawdata" )
 
 			save( logbook, file=fn, compress=T )
 
