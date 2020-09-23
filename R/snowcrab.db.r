@@ -715,7 +715,7 @@ snowcrab.db = function( DS, p=NULL, yrs=NULL, fn.root=NULL) {
     zres = residuals( zmod)
     # hist(abs(zres), "fd")
     not.reliable = which( abs(zres) > 25 )
-    set$z[not.reliable] = NA  # force these to a default lookup from from bathymetry.db
+    set$z[not.reliable] = NA  # force these to a default lookup from from bathymetry_db
 
     set$slon = NULL
     set$slat = NULL

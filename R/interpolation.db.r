@@ -42,7 +42,7 @@ interpolation.db = function( ip=NULL, DS=NULL, p=NULL,
     bm[ hl < p$habitat.threshold.quantile ] = NA
 
     if(0) {
-      bs = bathymetry.db(p=p, DS="baseline")
+      bs = bathymetry_db(p=p, DS="baseline")
       levelplot( m[,16] ~ plon+plat, bs, aspect="iso")
       for (i in 1:16) print(levelplot( m[,i] ~ plon+plat, bs, aspect="iso"))
     }
@@ -50,7 +50,7 @@ interpolation.db = function( ip=NULL, DS=NULL, p=NULL,
 
     # limit range of extrapolation to within a given distance from survey stations .. annual basis
     set = snowcrab.db( DS="set.clean")
-    bs = bathymetry.db(p=p, DS="baseline")
+    bs = bathymetry_db(p=p, DS="baseline")
     bb = array_map( "xy->1", bs, gridparams=p$gridparams )
 
     if (0) {
@@ -121,7 +121,7 @@ interpolation.db = function( ip=NULL, DS=NULL, p=NULL,
     projectdir = file.path(p$data_root, "maps", "fishable.biomass", p$spatial_domain )
     dir.create (projectdir, showWarnings=FALSE, recursive =TRUE)
 
-    bs = bathymetry.db(p=p, DS="baseline")
+    bs = bathymetry_db(p=p, DS="baseline")
     bm = interpolation.db( p=p, DS="fishable.biomass" )
 
     fb = bm$m  / 10^3  # kg/km^2 to t/km^2  .. required for biomass.summary.db
@@ -205,7 +205,7 @@ interpolation.db = function( ip=NULL, DS=NULL, p=NULL,
     fu = bm$ub / 10^3  # kg/km^2 to t/km^2  .. required for biomass.summary.db
     h  = bm$h
 
-    bs = bathymetry.db( p=p, DS="baseline")
+    bs = bathymetry_db( p=p, DS="baseline")
 
     K = NULL
     nreg = length(p$regions.to.model)
@@ -281,7 +281,7 @@ interpolation.db = function( ip=NULL, DS=NULL, p=NULL,
 
     bm = interpolation.db( p=p, DS="fishable.biomass" )
     ps = snowcrab_stmv(p=p, DS="output_data" )
-    bs = bathymetry.db( p=p, DS="baseline")
+    bs = bathymetry_db( p=p, DS="baseline")
 
     temp = ps$t
 

@@ -75,7 +75,7 @@
   if (0) {
     # ensure if polys exist and create if required
     for (au in c("cfanorth", "cfasouth", "cfa4x", "cfaall" )) {
-      plot(polygons_managementarea( species="snowcrab", au))
+      plot(polygon_managementareas( species="snowcrab", au))
     }
   }
 
@@ -104,7 +104,7 @@
 # bathymetry -- ensure the data assimilation in bathymetry is first completed :: 01.bathymetry_data.R
 
   pB = bathymetry_carstm( p=p, DS="parameters", variabletomodel="z" )
-  M = bathymetry.db( p=pB, DS="aggregated_data" , redo=TRUE )
+  M = bathymetry_db( p=pB, DS="aggregated_data" , redo=TRUE )
   M = bathymetry_carstm( p=pB, DS="carstm_inputs", redo=TRUE  ) # will redo if not found
   M = NULL; gc()
 

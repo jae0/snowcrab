@@ -1508,7 +1508,7 @@ year.assessment = 2018
 
   resol = p$pres
 
-  B = bathymetry.db(p=p, DS="baseline")  # 1 km (p$pres )
+  B = bathymetry_db(p=p, DS="baseline")  # 1 km (p$pres )
 
   for ( y in  2000:2018 ) {
       ii = which( obs$yr==y & is.finite(obs[,vn] ))

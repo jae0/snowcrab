@@ -132,7 +132,7 @@
       # filter by depth ..
       # use the match/map syntax in bathymetry and filter out shallow sets .. < 10 m? TODO
       # keep those in the domain and deeper than depth=10 m
-      z = bathymetry.db(p=p, DS="baseline", varnames=c("plon", "plat", "z"))
+      z = bathymetry_db(p=p, DS="baseline", varnames=c("plon", "plat", "z"))
       aoi = which( z$z > 10 ) # negative = above land
       pidz = stmv::array_map( "xy->1", z[aoi,c("plon", "plat")], gridparams=p$gridparams )
       pidl = stmv::array_map( "xy->1", lgbk[,c("plon", "plat")], gridparams=p$gridparams )

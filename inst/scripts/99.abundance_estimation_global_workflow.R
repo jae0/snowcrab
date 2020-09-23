@@ -73,7 +73,7 @@
   if (0) {
     # ensure if polys exist and create if required
     for (au in c("cfanorth", "cfasouth", "cfa4x", "cfaall" )) {
-      plot(polygons_managementarea( species="snowcrab", au))
+      plot(polygon_managementareas( species="snowcrab", au))
     }
   }
 

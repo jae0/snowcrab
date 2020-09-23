@@ -23,7 +23,7 @@ year.assessment = 2019
 # Part 2 -- polygon structure
   if (0) {
     # create if not yet made
-    for (au in c("cfanorth", "cfasouth", "cfa4x", "cfaall" )) plot(polygons_managementarea( species="snowcrab", au))
+    for (au in c("cfanorth", "cfasouth", "cfa4x", "cfaall" )) plot(polygon_managementareas( species="snowcrab", au))
     sppoly = areal_units( p=p, redo=TRUE )  # create constrained polygons with neighbourhood as an attribute
     coastLayout = aegis.coastline::coastline_layout( p=p, redo=TRUE )
     MS = NULL
@@ -38,7 +38,7 @@ year.assessment = 2019
 # Part 3 -- create covariate field for bathymetry
 # bathymetry -- ensure the data assimilation in bathymetry is first completed :: 01.bathymetry_data.R
   pB = bathymetry_carstm( p=p, DS="parameters", variabletomodel="z" )
-  M = bathymetry.db( p=pB, DS="aggregated_data" , redo=TRUE )
+  M = bathymetry_db( p=pB, DS="aggregated_data" , redo=TRUE )
   M = bathymetry_carstm( p=pB, DS="carstm_inputs", redo=TRUE  ) # will redo if not found
   M = NULL; gc()
   fit = carstm_model( p=pB, M='bathymetry_carstm( p=pB, DS="carstm_inputs" )', DS="redo"  ) # run model and obtain

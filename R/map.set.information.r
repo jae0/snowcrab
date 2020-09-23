@@ -18,7 +18,7 @@ map.set.information = function(p, outdir, variables, mapyears, interpolate.metho
 
     for ( v in variables ) {
       for ( y in mapyears ) {
-         predlocs = bathymetry.db(p=p, DS="baseline")
+         predlocs = bathymetry_db(p=p, DS="baseline")
           ratio=FALSE
           outfn = paste( v,y, sep=".")
           outloc = file.path( outdir,v)

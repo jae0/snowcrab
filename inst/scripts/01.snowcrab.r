@@ -118,7 +118,7 @@ snowcrab.db( DS="set.clean.redo", p=p ) #Updated stats data, need to redo to upd
   pB = bathymetry_carstm( p=pC, DS="parameters", variabletomodel="z" )
   pS = substrate_carstm( p=pC, DS="parameters", variabletomodel="substrate.grainsize" )
   pT = temperature_carstm( p=pC, DS="parameters", variabletomodel="t" )
-  M = aegis.bathymetry::bathymetry.db( p=pB, DS="aggregated_data" , redo=TRUE ) #this step can take ~20 minutes
+  M = aegis.bathymetry::bathymetry_db( p=pB, DS="aggregated_data" , redo=TRUE ) #this step can take ~20 minutes
   M = aegis.substrate::substrate_db( p=pS, DS="aggregated_data" , redo=TRUE )
   M = aegis.temperature::temperature_db( p=pT, DS="aggregated_data" , redo=TRUE )
 
