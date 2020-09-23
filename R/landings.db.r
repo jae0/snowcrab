@@ -1,4 +1,4 @@
-  landings.db = function ( ) {
+  snowcrab_landings_db = function ( ) {
 
 
     # glue historical data with marfis data

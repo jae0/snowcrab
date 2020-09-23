@@ -1,7 +1,7 @@
  
   get.fishery.stats.by.region = function( Reg="cfaall", y=NULL ) {
     
-    landings = landings.db()
+    landings = snowcrab_landings_db()
     
     if (is.null(y)) y = sort(unique(landings$yr) )
     out = data.frame( yr=y )
@@ -19,7 +19,7 @@
     out = merge(out, l, by="yr", all.x=T, all.y=F, sort=T)
 
     lnd$cpue_direct = lnd$landings / lnd$effort
-    lnd$cpue_direct[ which( lnd$cpue_direct > (650*0.454)) ] = NA  # same rule as in landings.db -- 650lbs/trap is a reasonable upper limit
+    lnd$cpue_direct[ which( lnd$cpue_direct > (650*0.454)) ] = NA  # same rule as in snowcrab_landings_db -- 650lbs/trap is a reasonable upper limit
 
     cpue = aggregate( lnd$cpue, list(yr=lnd$yr), function(x) mean(x, na.rm=T))
     names(cpue) = c("yr", "cpue")

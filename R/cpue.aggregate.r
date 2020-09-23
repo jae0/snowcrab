@@ -1,7 +1,7 @@
 
   cpue.aggregate = function( format="default"  ) {
 
-    cpue = landings.db() 
+    cpue = snowcrab_landings_db() 
     # year is year of capture
     # yr is "fishing year" relative to the assessment cycle 
 

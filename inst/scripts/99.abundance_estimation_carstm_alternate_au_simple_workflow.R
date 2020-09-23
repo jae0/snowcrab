@@ -149,7 +149,7 @@
 # ensure the data assimilation in substrate is first completed :: 01.substrate_data.R
 
   pS = substrate_carstm( p=p, DS="parameters", variabletomodel="substrate.grainsize" )
-  M = substrate.db( p=pS, DS="aggregated_data", redo=TRUE )  # used for data matching/lookup in other aegis projects that use substrate
+  M = substrate_db( p=pS, DS="aggregated_data", redo=TRUE )  # used for data matching/lookup in other aegis projects that use substrate
   M = substrate_carstm( p=pS, DS="carstm_inputs", redo=TRUE )  # will redo if not found
   M = NULL; gc()
   fit = carstm_model( p=pS, M='substrate_carstm( p=p, DS="carstm_inputs")', DS="redo" )  # run model and obtain predictions
@@ -184,7 +184,7 @@
 # ensure the data assimilation in temperature is first completed :: 01.temperature_data.R
 
   pT = temperature_carstm( p=p, DS="parameters", variabletomodel="t" )
-  M = temperature.db( p=pT, DS="aggregated_data", redo=TRUE )  #  used for data matching/lookup in other aegis projects that use temperature
+  M = temperature_db( p=pT, DS="aggregated_data", redo=TRUE )  #  used for data matching/lookup in other aegis projects that use temperature
   M = temperature_carstm( p=pT, DS="carstm_inputs", redo=TRUE )  # will redo if not found
   M = NULL; gc()
   fit = carstm_model( p=pT, M='temperature_carstm( p=p, DS="carstm_inputs")', DS="redo"  ) # run model and obtain predictions

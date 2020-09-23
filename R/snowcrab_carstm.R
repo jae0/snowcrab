@@ -42,7 +42,7 @@ snowcrab_carstm = function( p=NULL, DS="parameters", redo=FALSE, extrapolation_l
     ) ) )
 
 
-    # p$taxa.of.interest = aegis.survey::groundfish.variablelist("catch.summary")
+    # p$taxa.of.interest = aegis.survey::groundfish_variablelist("catch.summary")
     # p$season = "summer"
     # p$taxa =  "maxresolved"
 
@@ -81,7 +81,7 @@ snowcrab_carstm = function( p=NULL, DS="parameters", redo=FALSE, extrapolation_l
     if ( !exists("survey", p$selection) ) p$selection$survey = list(
       data.source = ifelse (p$selection$type=="number", c("snowcrab"), c("snowcrab", "groundfish")),
       yr = p$assessment.years,      # time frame for comparison specified above
-      settype = 1, # same as geartype in groundfish db
+      settype = 1, # same as geartype in groundfish_survey_db
       polygon_enforce=TRUE,  # make sure mis-classified stations or incorrectly entered positions get filtered out
       strata_toremove = NULL #,  # emphasize that all data enters analysis initially ..
       # ranged_data = c("dyear")  # not used .. just to show how to use range_data
@@ -260,7 +260,7 @@ snowcrab_carstm = function( p=NULL, DS="parameters", redo=FALSE, extrapolation_l
     # if any still missing then use a mean substrate by AUID
     kk =  which( !is.finite(M[, pS$variabletomodel]))
     if (length(kk) > 0) {
-      AD = substrate.db ( p=pS, DS="aggregated_data"  )  # 16 GB in RAM just to store!
+      AD = substrate_db ( p=pS, DS="aggregated_data"  )  # 16 GB in RAM just to store!
       AD = AD[ which( AD$lon > p$corners$lon[1] & AD$lon < p$corners$lon[2]  & AD$lat > p$corners$lat[1] & AD$lat < p$corners$lat[2] ), ]
       # levelplot( eval(paste(p$variabletomodel, "mean", sep="."))~plon+plat, data=M, aspect="iso")
       AD$AUID = over( SpatialPoints( AD[, c("lon", "lat")], crs_lonlat ), spTransform(sppoly, crs_lonlat ) )$AUID # match each datum to an area
@@ -284,7 +284,7 @@ snowcrab_carstm = function( p=NULL, DS="parameters", redo=FALSE, extrapolation_l
     # if any still missing then use a mean temp by AUID
     kk =  which( !is.finite(M[, pT$variabletomodel]))
     if (length(kk) > 0) {
-      AD = temperature.db ( p=pT, DS="aggregated_data"  )  # 16 GB in RAM just to store!
+      AD = temperature_db ( p=pT, DS="aggregated_data"  )  # 16 GB in RAM just to store!
       AD = AD[ which( AD$lon > p$corners$lon[1] & AD$lon < p$corners$lon[2]  & AD$lat > p$corners$lat[1] & AD$lat < p$corners$lat[2] ), ]
       # levelplot( eval(paste(p$variabletomodel, "mean", sep="."))~plon+plat, data=M, aspect="iso")
 
@@ -306,13 +306,13 @@ snowcrab_carstm = function( p=NULL, DS="parameters", redo=FALSE, extrapolation_l
     if (!(exists(pPC1$variabletomodel, M ))) M[,pPC1$variabletomodel] = NA
     kk = which(!is.finite(M[, pPC1$variabletomodel]))
     if (length(kk) > 0 ) {
-      pc1 = speciescomposition.db( p=pPC1, DS="speciescomposition"  )
+      pc1 = speciescomposition_db( p=pPC1, DS="speciescomposition"  )
       ii = match( M$id, pc1$id)
       M[kk, pPC1$variabletomodel] = pc1[ii, pPC1$variabletomodel]
     }
     kk =  which( !is.finite(M[, pPC1$variabletomodel]))
     if (length(kk) > 0) {
-      pc1 = speciescomposition.db( p=pPC1, DS="speciescomposition"  )
+      pc1 = speciescomposition_db( p=pPC1, DS="speciescomposition"  )
       pc1 = planar2lonlat( pc1, proj.type=p$aegis_proj4string_planar_km )
       pc1$AUID = over( SpatialPoints( pc1[, c("lon", "lat")], crs_lonlat ), spTransform(sppoly, crs_lonlat ) )$AUID # match each datum to an area
       oo = tapply( pc1[, pPC1$variabletomodel ], pc1$AUID, FUN=median, na.rm=TRUE )
@@ -334,13 +334,13 @@ snowcrab_carstm = function( p=NULL, DS="parameters", redo=FALSE, extrapolation_l
     if (!(exists(pPC2$variabletomodel, M ))) M[,pPC2$variabletomodel] = NA
     kk = which(!is.finite(M[, pPC2$variabletomodel]))
     if (length(kk) > 0 ) {
-      pc2 = speciescomposition.db( p=pPC2, DS="speciescomposition"  )
+      pc2 = speciescomposition_db( p=pPC2, DS="speciescomposition"  )
       ii = match( M$id, pc2$id)
       M[kk, pPC2$variabletomodel] = pc2[ii, pPC2$variabletomodel]
     }
     kk =  which( !is.finite(M[, pPC2$variabletomodel]))
     if (length(kk) > 0) {
-      pc2 = speciescomposition.db( p=pPC2, DS="speciescomposition"  )
+      pc2 = speciescomposition_db( p=pPC2, DS="speciescomposition"  )
       pc2 = planar2lonlat( pc2, proj.type=p$aegis_proj4string_planar_km )
       pc2$AUID = over( SpatialPoints( pc2[, c("lon", "lat")], crs_lonlat ), spTransform(sppoly, crs_lonlat ) )$AUID # match each datum to an area
       oo = tapply( pc2[, pPC2$variabletomodel ], pc2$AUID, FUN=median, na.rm=TRUE )
@@ -573,14 +573,14 @@ snowcrab_carstm = function( p=NULL, DS="parameters", redo=FALSE, extrapolation_l
 
     kk = which(!is.finite(M[, pPC1$variabletomodel]))
     if (length(kk) > 0 ) {
-      pc1 = speciescomposition.db( p=pPC1, DS="speciescomposition"  )
+      pc1 = speciescomposition_db( p=pPC1, DS="speciescomposition"  )
       ii = match( M$id, pc1$id)
       M[kk, pPC1$variabletomodel] = pc1[ii, pPC1$variabletomodel]
     }
 
     kk = which(!is.finite(M[, pPC2$variabletomodel]))
     if (length(kk) > 0 ) {
-      pc2 = speciescomposition.db( p=pPC2, DS="speciescomposition"  )
+      pc2 = speciescomposition_db( p=pPC2, DS="speciescomposition"  )
       ii = match( M$id, pc2$id)
       M[kk, pPC2$variabletomodel] = pc2[ii, pPC2$variabletomodel]
     }
@@ -590,7 +590,7 @@ snowcrab_carstm = function( p=NULL, DS="parameters", redo=FALSE, extrapolation_l
     # if any still missing then use a mean substrate by AUID
     kk =  which( !is.finite(M[, pS$variabletomodel]))
     if (length(kk) > 0) {
-      AD = substrate.db ( p=pS, DS="aggregated_data"  )  # 16 GB in RAM just to store!
+      AD = substrate_db ( p=pS, DS="aggregated_data"  )  # 16 GB in RAM just to store!
       AD = AD[ which( AD$lon > p$corners$lon[1] & AD$lon < p$corners$lon[2]  & AD$lat > p$corners$lat[1] & AD$lat < p$corners$lat[2] ), ]
       # levelplot( eval(paste(p$variabletomodel, "mean", sep="."))~plon+plat, data=M, aspect="iso")
       AD$AUID = over( SpatialPoints( AD[, c("lon", "lat")], crs_lonlat ), spTransform(sppoly, crs_lonlat ) )$AUID # match each datum to an area
@@ -611,7 +611,7 @@ snowcrab_carstm = function( p=NULL, DS="parameters", redo=FALSE, extrapolation_l
     # if any still missing then use a mean temp by AUID
     kk =  which( !is.finite(M[, pT$variabletomodel]))
     if (length(kk) > 0) {
-      AD = temperature.db ( p=pT, DS="aggregated_data"  )  # 16 GB in RAM just to store!
+      AD = temperature_db ( p=pT, DS="aggregated_data"  )  # 16 GB in RAM just to store!
       AD = AD[ which( AD$lon > p$corners$lon[1] & AD$lon < p$corners$lon[2]  & AD$lat > p$corners$lat[1] & AD$lat < p$corners$lat[2] ), ]
       # levelplot( eval(paste(p$variabletomodel, "mean", sep="."))~plon+plat, data=M, aspect="iso")
 
@@ -632,7 +632,7 @@ snowcrab_carstm = function( p=NULL, DS="parameters", redo=FALSE, extrapolation_l
 
     kk =  which( !is.finite(M[, pPC1$variabletomodel]))
     if (length(kk) > 0) {
-      pc1 = speciescomposition.db( p=pPC1, DS="speciescomposition"  )
+      pc1 = speciescomposition_db( p=pPC1, DS="speciescomposition"  )
       pc1 = planar2lonlat( pc1, proj.type=p$aegis_proj4string_planar_km )
       pc1$AUID = over( SpatialPoints( pc1[, c("lon", "lat")], crs_lonlat ), spTransform(sppoly, crs_lonlat ) )$AUID # match each datum to an area
       oo = tapply( pc1[, pPC1$variabletomodel ], pc1$AUID, FUN=median, na.rm=TRUE )
@@ -652,7 +652,7 @@ snowcrab_carstm = function( p=NULL, DS="parameters", redo=FALSE, extrapolation_l
 
     kk =  which( !is.finite(M[, pPC2$variabletomodel]))
     if (length(kk) > 0) {
-      pc2 = speciescomposition.db( p=pPC2, DS="speciescomposition"  )
+      pc2 = speciescomposition_db( p=pPC2, DS="speciescomposition"  )
       pc2 = planar2lonlat( pc2, proj.type=p$aegis_proj4string_planar_km )
       pc2$AUID = over( SpatialPoints( pc2[, c("lon", "lat")], crs_lonlat ), spTransform(sppoly, crs_lonlat ) )$AUID # match each datum to an area
       oo = tapply( pc2[, pPC2$variabletomodel ], pc2$AUID, FUN=median, na.rm=TRUE )

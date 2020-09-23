@@ -14,7 +14,7 @@
     n.regions = length(regions)
     n.areas = length(areas)
 
-    spcd = groundfish.db( DS="spcodes")
+    spcd = groundfish_survey_db( DS="spcodes")
     tdb = snowcrab.timeseries.db( DS="biologicals", p=p )
     if(missing(species)){
       cat = snowcrab.db( DS="cat.initial" )

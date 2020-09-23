@@ -113,7 +113,7 @@
 
 
 
-      coastlineSp =  aegis.coastline::coastline.db( p=p)
+      coastlineSp =  aegis.coastline::coastline_db( p=p)
       #, DS="mapdata.coastPolygon", project_to="+proj=longlat +datum=WGS84" )
       coastlineSp = spTransform( coastlineSp, sp::CRS(projection_proj4string("lonlat_wgs84"))  )
 

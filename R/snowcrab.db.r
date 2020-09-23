@@ -447,7 +447,7 @@ snowcrab.db = function( DS, p=NULL, yrs=NULL, fn.root=NULL) {
 
 		# clean species codes ... this causes multiple entries for some species that need to be summed up
     # cat$spec = taxonomy.parsimonious( spec=cat$spec )
-    # --- no longer here ... only when integrated into survey.db
+    # --- no longer here ... only when integrated into survey_db
 
     # remove data where species codes are ambiguous, or missing or non-living items
     xx = which( !is.finite( cat$spec) )
@@ -498,7 +498,7 @@ snowcrab.db = function( DS, p=NULL, yrs=NULL, fn.root=NULL) {
     snowcrab = snowcrab[ which( as.character(snowcrab$trip) != "-1") , ]
 
     snowcrab$spec = taxonomy.recode(to='parsimonious',from='spec', tolookup = 2526 )  # 2526 is the code used in the groundfish/snow crab surveys .. convert to internally consistent state
-    # longer here -- in survey.db only
+    # longer here -- in survey_db only
 
 		final = snowcrab[,names(x)]  # get the right sequence of variables
 
@@ -532,7 +532,7 @@ snowcrab.db = function( DS, p=NULL, yrs=NULL, fn.root=NULL) {
 
 		# add groundfish data if it does not exist already
     gp = aegis.survey::groundfish_parameters( year.assessment=p$year.assessment )
-    gs = aegis.survey::groundfish.db( p=gp, DS="gscat" )  # raw data .. does not need vessel corrections
+    gs = aegis.survey::groundfish_survey_db( p=gp, DS="gscat" )  # raw data .. does not need vessel corrections
 		meanwgt = gs$totwgt / gs$totno
 		good = which( is.finite( meanwgt) & is.finite( 1/meanwgt ) )
 		mw2 = as.data.frame( unlist( (tapply( log( meanwgt[good]), gs$spec[good], mean )) ))
@@ -1075,7 +1075,7 @@ snowcrab.db = function( DS, p=NULL, yrs=NULL, fn.root=NULL) {
 
   if ( DS=="biological_data") {
 
-    set = aegis.survey::survey.db( p=p, DS="filter" ) # mature male > 95 mm
+    set = aegis.survey::survey_db( p=p, DS="filter" ) # mature male > 95 mm
 
     if ( p$selection$type=="number") {
       # should be snowcrab survey data only taken care of p$selection$survey = "snowcrab"
@@ -1153,7 +1153,7 @@ snowcrab.db = function( DS, p=NULL, yrs=NULL, fn.root=NULL) {
     # set = set[ which(is.finite(set[, p$variabletomodel])),]
     project_to = projection_proj4string("lonlat_wgs84")
     coastline_source="eastcoast_gadm"
-    coast = coastline.db( p=p, DS=coastline_source, project_to=project_to )
+    coast = coastline_db( p=p, DS=coastline_source, project_to=project_to )
     setcoord = SpatialPoints( as.matrix( set[, c("lon", "lat")]), proj4string=CRS(project_to) )
     inside = sp::over( setcoord, coast )
     onland = which (is.finite(inside))

@@ -305,7 +305,7 @@ p = aegis.survey::survey_parameters(
     survey=list(
       data.source = ifelse (runtype=="number", c("snowcrab"), c("snowcrab", "groundfish")),
       yr = p$yrs,      # time frame for comparison specified above
-      settype = 1, # same as geartype in groundfish db
+      settype = 1, # same as geartype in groundfish_survey_db
       polygon_enforce=TRUE,  # make sure mis-classified stations or incorrectly entered positions get filtered out
       strata_toremove = NULL,  # emphasize that all data enters analysis initially ..
       ranged_data = c("dyear")  # not used .. just to show how to use range_data

@@ -33,7 +33,7 @@ interpolation.db = function( ip=NULL, DS=NULL, p=NULL,
     bm=bu=bl = NULL
 
     # respect the bounds of input data (no extrapolation)
-    # set = aegis.survey::survey.db( p=p, DS="filter" ) # mature male > 95 mm
+    # set = aegis.survey::survey_db( p=p, DS="filter" ) # mature male > 95 mm
     # qn = quantile( set$totwgt_adjusted, probs=c(0.025, 0.975), na.rm=TRUE )
     # bm[ bm > qn[2] ] = qn[2]  # truncate .. do not extrapolate
     # bm[ bm < qn[1] ] = 0  # these are assumed to be below detection limit

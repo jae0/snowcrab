@@ -4,7 +4,7 @@ snowcrab_tsdata = function( p, assessment_years=2000:p$year.assessment, areas=c(
   cfasouth =  2 # column index
   cfa4x =  3 # column index
 
-  landings = bio.snowcrab::landings.db()
+  landings = bio.snowcrab::snowcrab_landings_db()
     # NOTE:: message( "Fishing 'yr' for CFA 4X has been set to starting year:: 2001-2002 -> 2001, etc.")
     # year is year of capture
     # yr is "fishing year" relative to the assessment cycle
