@@ -404,7 +404,7 @@ snowcrab_carstm = function( p=NULL, DS="parameters", redo=FALSE, extrapolation_l
     n_aps = nrow(APS)
     APS = cbind( APS[ rep.int(1:n_aps, p$nt), ], rep.int( p$prediction_ts, rep(n_aps, p$nt )) )
     names(APS) = c(vn, "tiyr")
-    APS$year = floor( APS$tiyr)
+    APS$year = aegis_floor( APS$tiyr)
     APS$dyear = APS$tiyr - APS$year
 
 
@@ -455,9 +455,9 @@ snowcrab_carstm = function( p=NULL, DS="parameters", redo=FALSE, extrapolation_l
     M$pca1i = discretize_data( M[, pPC1$variabletomodel], p$discretization[[pPC1$variabletomodel]] )
     M$pca2i = discretize_data( M[, pPC2$variabletomodel], p$discretization[[pPC2$variabletomodel]] )
 
-    M$tiyr  = floor( M$tiyr / p$tres )*p$tres    # discretize for inla .. midpoints
+    M$tiyr  = aegis_floor( M$tiyr / p$tres )*p$tres    # discretize for inla .. midpoints
 
-    M$year = floor( M$tiyr)
+    M$year = aegis_floor( M$tiyr)
     M$year_factor = as.numeric( factor( M$year, levels=p$yrs))
 
     M$dyear =  M$tiyr - M$year   # revert dyear to non-discretized form
@@ -715,7 +715,7 @@ snowcrab_carstm = function( p=NULL, DS="parameters", redo=FALSE, extrapolation_l
     n_aps = nrow(APS)
     APS = cbind( APS[ rep.int(1:n_aps, p$nt), ], rep.int( p$prediction_ts, rep(n_aps, p$nt )) )
     names(APS) = c(vn, "tiyr")
-    APS$year = floor( APS$tiyr)
+    APS$year = aegis_floor( APS$tiyr)
     APS$dyear = APS$tiyr - APS$year
 
 
@@ -766,9 +766,9 @@ snowcrab_carstm = function( p=NULL, DS="parameters", redo=FALSE, extrapolation_l
     M$pca1i = discretize_data( M[, pPC1$variabletomodel], p$discretization[[pPC1$variabletomodel]] )
     M$pca2i = discretize_data( M[, pPC2$variabletomodel], p$discretization[[pPC2$variabletomodel]] )
 
-    M$tiyr  = floor( M$tiyr / p$tres )*p$tres    # discretize for inla .. midpoints
+    M$tiyr  = aegis_floor( M$tiyr / p$tres )*p$tres    # discretize for inla .. midpoints
 
-    M$year = floor( M$tiyr)
+    M$year = aegis_floor( M$tiyr)
     M$year_factor = as.numeric( factor( M$year, levels=p$yrs))
 
     M$dyear =  M$tiyr - M$year   # revert dyear to non-discretized form
