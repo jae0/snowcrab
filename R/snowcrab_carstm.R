@@ -17,7 +17,7 @@ snowcrab_carstm = function( p=NULL, DS="parameters", redo=FALSE, extrapolation_l
         p$data_root = NULL
         p$datadir  = NULL
         p$data_transformation= NULL
-        p$carstm_modelcall = NULL  # defaults to generic
+        p$carstm_model_call = NULL  # defaults to generic
 
         p = bio.snowcrab::snowcrab_parameters(p=p, ...)
       }
@@ -92,14 +92,14 @@ snowcrab_carstm = function( p=NULL, DS="parameters", redo=FALSE, extrapolation_l
 
     if ( !exists("carstm_modelengine", p)) p$carstm_modelengine = "inla"  # {model engine}.{label to use to store}
 
-    if ( !exists("carstm_modelcall", p)) {
+    if ( !exists("carstm_model_call", p)) {
       if ( grepl("inla", p$carstm_modelengine) ) {
         p$libs = unique( c( p$libs, project.library ( "INLA" ) ) )
         if ( !exists("carstm_model_label", p))  p$carstm_model_label = "production"
         # 281 configs .. 8hrs
 
         #number of nodes can be adjusted below to smooth (n=9 instead of n=13)
-        p$carstm_modelcall = paste(
+        p$carstm_model_call = paste(
           'inla( formula =', p$variabletomodel,
           ' ~ 1
             + offset( log(data_offset))
@@ -132,7 +132,7 @@ snowcrab_carstm = function( p=NULL, DS="parameters", redo=FALSE, extrapolation_l
 
       if ( grepl("glm", p$carstm_modelengine) ) {
         if ( !exists("carstm_model_label", p))  p$carstm_model_label = "default_glm"
-        p$carstm_modelcall = paste(
+        p$carstm_model_call = paste(
           'glm( formula =',  p$variabletomodel,
           ' ~ 1 + factor(AUID) + t + z + substrate.grainsize +tiyr,
             data= M[ which(M$tag=="observations"), ],
@@ -145,7 +145,7 @@ snowcrab_carstm = function( p=NULL, DS="parameters", redo=FALSE, extrapolation_l
         p$libs = unique( c( p$libs, project.library ( "mgcv"  ) ) )
 
         if ( !exists("carstm_model_label", p))  p$carstm_model_label = "default_gam"
-        p$carstm_modelcall = paste(
+        p$carstm_model_call = paste(
           'gam( formula =',  p$variabletomodel,
           ' ~ 1 + factor(AUID) + s(t) + s(z) + s(substrate.grainsize) + s(year) + s(dyear),
             data= M[ which(M$tag=="observations"), ],
@@ -233,7 +233,8 @@ snowcrab_carstm = function( p=NULL, DS="parameters", redo=FALSE, extrapolation_l
     # M$tiyr = lubridate::decimal_date ( M$timestamp )
     # M$dyear = M$tiyr - M$year
 
-    pB = bathymetry_carstm( p=p, DS="parameters", variabletomodel="z" )
+    pB = aegis.bathymetry::bathymetry_parameters( p=parameters_reset(p), project_class="carstm"  )
+
     if (!(exists(pB$variabletomodel, M ))) M[,pB$variabletomodel] = NA
     kk = which(!is.finite(M[, pB$variabletomodel]))
     if (length(kk) > 0) {
@@ -253,7 +254,7 @@ snowcrab_carstm = function( p=NULL, DS="parameters", redo=FALSE, extrapolation_l
 
 
 
-    pS = substrate_carstm( p=p, DS="parameters", variabletomodel="substrate.grainsize" )
+    pS = substrate_parameters( p=parameters_reset(p), project_class="carstm"  )
     if (!(exists(pS$variabletomodel, M ))) M[,pS$variabletomodel] = NA
     kk = which(!is.finite(M[, pS$variabletomodel]))
     if (length(kk) > 0 ) M[kk, pS$variabletomodel] = substrate_lookup(  p=p, locs=M[kk, c("lon", "lat")], source_data_class="aggregated_rawdata" )
@@ -277,7 +278,7 @@ snowcrab_carstm = function( p=NULL, DS="parameters", redo=FALSE, extrapolation_l
     }
 
 
-    pT = temperature_carstm( p=p, DS="parameters", variabletomodel="t" )
+    pT = temperature_parameters( p=parameters_reset(p), project_class="carstm"  )
     if (!(exists(pT$variabletomodel, M ))) M[,pT$variabletomodel] = NA
     kk = which(!is.finite(M[, pT$variabletomodel]))
     if (length(kk) > 0 ) M[kk, pT$variabletomodel] = temperature_lookup(  p=p, locs=M[kk, c("lon", "lat")], timestamp=M$timestamp[kk], source_data_class="aggregated_rawdata" )
@@ -302,7 +303,7 @@ snowcrab_carstm = function( p=NULL, DS="parameters", redo=FALSE, extrapolation_l
 
 
 
-    pPC1 = speciescomposition_carstm( p=p, DS="parameters", variabletomodel="pca1" )
+    pPC1 = speciescomposition_parameters( p=parameters_reset(p), project_class="carstm", variabletomodel="pca1" )
     if (!(exists(pPC1$variabletomodel, M ))) M[,pPC1$variabletomodel] = NA
     kk = which(!is.finite(M[, pPC1$variabletomodel]))
     if (length(kk) > 0 ) {
@@ -330,7 +331,7 @@ snowcrab_carstm = function( p=NULL, DS="parameters", redo=FALSE, extrapolation_l
 
 
 
-    pPC2 = speciescomposition_carstm( p=p, DS="parameters", variabletomodel="pca2")
+    pPC2 = speciescomposition_parameters( p=parameters_reset(p), project_class="carstm", variabletomodel="pca2")
     if (!(exists(pPC2$variabletomodel, M ))) M[,pPC2$variabletomodel] = NA
     kk = which(!is.finite(M[, pPC2$variabletomodel]))
     if (length(kk) > 0 ) {
@@ -554,10 +555,10 @@ snowcrab_carstm = function( p=NULL, DS="parameters", redo=FALSE, extrapolation_l
 
 
 
-    # pS = substrate_carstm( p=p, DS="parameters", variabletomodel="substrate.grainsize" )
-    # pT = temperature_carstm( p=p, DS="parameters", variabletomodel="t" )
-    # pPC1 = speciescomposition_carstm( p=p, DS="parameters", variabletomodel="pca1" )
-    # pPC2 = speciescomposition_carstm( p=p, DS="parameters", variabletomodel="pca2")
+    # pS = substrate_parameters( p=parameters_reset(p), project_class="carstm"  )
+    # pT = temperature_parameters( p=parameters_reset(p), project_class="carstm"  )
+    # pPC1 = speciescomposition_parameters( p=parameters_reset(p), project_class="carstm", variabletomodel="pca1" )
+    # pPC2 = speciescomposition_parameters( p=parameters_reset(p), project_class="carstm", variabletomodel="pca2")
 
 
     if (!(exists(pS$variabletomodel, M ))) M[,pS$variabletomodel] = NA

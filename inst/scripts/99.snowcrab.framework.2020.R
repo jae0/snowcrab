@@ -26,7 +26,7 @@
   p$variabletomodel = "totwgt"
   p$selection$type = "biomass" # d efault is "number"  ... specify to override
   p$carstm_modelengine = "glm"
-  p$carstm_modelcall = paste( '
+  p$carstm_model_call = paste( '
     glm( formula = ', p$variabletomodel, '  ~ AUID:year -1,
          family = gaussian(link="identity"),
          data = M[ which(M$tag=="observations"), ],
@@ -44,7 +44,7 @@
   p$carstm_model_label = "factorial_poisson_glm"
   p$variabletomodel = "totno"
   p$carstm_modelengine = "glm"
-  p$carstm_modelcall = paste( '
+  p$carstm_model_call = paste( '
     glm( formula = ', p$variabletomodel, '  ~ AUID:year -1 + offset( log(data_offset)),
          family = poisson(link="log"),
          data = M[ which(M$tag=="observations"), ],
@@ -64,7 +64,7 @@
   p$variabletomodel = "totwgt"
   p$selection$type = "biomass" # d efault is "number"  ... specify to override
   p$carstm_modelengine = "inla"
-  p$carstm_modelcall = paste(
+  p$carstm_model_call = paste(
     'inla( formula =', p$variabletomodel, ' ~ year_factor:auid ,
       family = "gaussian",
       data= M,
@@ -101,7 +101,7 @@
   p$carstm_predict_force_range = TRUE  # for factorial models this is necessary to prevent meainingless predictions
   p$variabletomodel = "totno"
   p$carstm_modelengine = "inla"
-  p$carstm_modelcall = paste(
+  p$carstm_model_call = paste(
     'inla( formula =', p$variabletomodel,
     ' ~ -1
        + year_factor:auid
@@ -139,7 +139,7 @@
   p$carstm_predict_force_range = TRUE  # for factorial models this is necessary to prevent meainingless predictions
   p$variabletomodel = "totno"
   p$carstm_modelengine = "inla"
-  p$carstm_modelcall = paste(
+  p$carstm_model_call = paste(
     'inla( formula =', p$variabletomodel,
     ' ~ -1
        + year_factor
@@ -179,7 +179,7 @@
   p$variabletomodel = "totno"
   p$carstm_modelengine = "inla"
   p$carstm_predict_force_range = TRUE  # for factorial models this is necessary to prevent meainingless predictions
-  p$carstm_modelcall = paste(
+  p$carstm_model_call = paste(
     'inla( formula =', p$variabletomodel,
     ' ~ -1
        + year_factor
@@ -226,7 +226,7 @@
   p$carstm_model_label = "covariates_only"
   p$variabletomodel = "totno"
   p$carstm_modelengine = "inla"
-  p$carstm_modelcall = paste(
+  p$carstm_model_call = paste(
     'inla( formula =', p$variabletomodel,
     ' ~ -1
         + f( inla.group( z, method="quantile", n=9 ), model="rw2", scale.model=TRUE, hyper=H$rw2)
@@ -269,7 +269,7 @@
   p$carstm_model_label = "mixed_effects_simple"
   p$variabletomodel = "totno"
   p$carstm_modelengine = "inla"
-  p$carstm_modelcall = paste(
+  p$carstm_model_call = paste(
     'inla( formula =', p$variabletomodel,
       ' ~ 1
         + offset( log(data_offset))
@@ -301,7 +301,7 @@
   p$carstm_model_label = "mixed_effects_static"
   p$variabletomodel = "totno"
   p$carstm_modelengine = "inla"
-  p$carstm_modelcall = paste(
+  p$carstm_model_call = paste(
     'inla( formula =', p$variabletomodel,
       ' ~ 1
         + offset( log(data_offset))
@@ -336,7 +336,7 @@
   p$carstm_model_label = "mixed_effects_dynamic"
   p$variabletomodel = "totno"
   p$carstm_modelengine = "inla"
-  p$carstm_modelcall = paste(
+  p$carstm_model_call = paste(
     'inla( formula =', p$variabletomodel,
       ' ~ 1
         + offset( log(data_offset))
@@ -372,7 +372,7 @@
   p$carstm_model_label = "separable"
   p$variabletomodel = "totno"
   p$carstm_modelengine = "inla"
-  p$carstm_modelcall = paste(
+  p$carstm_model_call = paste(
     'inla( formula =', p$variabletomodel,
       ' ~ 1
         + offset( log(data_offset))
@@ -407,7 +407,7 @@
   p$carstm_model_label = "separable_simple"
   p$variabletomodel = "totno"
   p$carstm_modelengine = "inla"
-  p$carstm_modelcall = paste(
+  p$carstm_model_call = paste(
     'inla( formula =', p$variabletomodel,
       ' ~ 1
         + offset( log(data_offset))
@@ -440,7 +440,7 @@
   p$carstm_model_label = "nonseparable_simple" # nonseparable, basic
   p$variabletomodel = "totno"
   p$carstm_modelengine = "inla"
-  p$carstm_modelcall = paste(
+  p$carstm_model_call = paste(
     'inla( formula =', p$variabletomodel,
       ' ~ 1
         + offset( log(data_offset))
@@ -471,7 +471,7 @@
   p$carstm_model_label = "nonseparable_space-time"
   p$variabletomodel = "totno"
   p$carstm_modelengine = "inla"
-  p$carstm_modelcall = paste(
+  p$carstm_model_call = paste(
     'inla( formula =', p$variabletomodel,
       ' ~ 1
         + offset( log(data_offset))
@@ -507,7 +507,7 @@
   p$carstm_model_label = "nonseparable_space-time_no_pca"
   p$variabletomodel = "totno"
   p$carstm_modelengine = "inla"
-  p$carstm_modelcall = paste(
+  p$carstm_model_call = paste(
     'inla( formula =', p$variabletomodel,
       ' ~ 1
         + offset( log(data_offset))
@@ -541,7 +541,7 @@
   p$carstm_model_label = "nonseparable_time-space"
   p$variabletomodel = "totno"
   p$carstm_modelengine = "inla"
-  p$carstm_modelcall = paste(
+  p$carstm_model_call = paste(
     'inla( formula =', p$variabletomodel,
       ' ~ 1
         + offset( log(data_offset))
@@ -576,7 +576,7 @@
   p$carstm_model_label = "inla_zeroinflatedpoisson0_full"
   p$variabletomodel = "totno"
   p$carstm_modelengine = "inla"
-  p$carstm_modelcall = paste(
+  p$carstm_model_call = paste(
     'inla( formula =', p$variabletomodel,
       ' ~ 1
         + offset( log(data_offset))
@@ -614,7 +614,7 @@
   p$carstm_model_label = "inla_zeroinflatedpoisson1_full"  # strange
   p$variabletomodel = "totno"
   p$carstm_modelengine = "inla"
-  p$carstm_modelcall = paste(
+  p$carstm_model_call = paste(
     'inla( formula =', p$variabletomodel,
       ' ~ 1
         + offset( log(data_offset))
@@ -863,7 +863,7 @@
   p$variabletomodel = "pa"
   p$carstm_model_label = "nonseparable_space-time_pa_immature_small"
   p$carstm_modelengine = "inla"
-  p$carstm_modelcall = paste(
+  p$carstm_model_call = paste(
     'inla( formula =', p$variabletomodel,
       ' ~ 1
         + f( dyri, model="ar1", hyper=H$ar1 )
@@ -925,7 +925,7 @@
   p$variabletomodel = "pa"
   p$carstm_model_label = "nonseparable_space-time_pa_fishable"
   p$carstm_modelengine = "inla"
-  p$carstm_modelcall = paste(
+  p$carstm_model_call = paste(
     'inla( formula =', p$variabletomodel,
       ' ~ 1
         + f( dyri, model="ar1", hyper=H$ar1 )
@@ -985,7 +985,7 @@
   p$variabletomodel = "pa"
   p$carstm_model_label = "nonseparable_space-time_pa_mature_females"
   p$carstm_modelengine = "inla"
-  p$carstm_modelcall = paste(
+  p$carstm_model_call = paste(
     'inla( formula =', p$variabletomodel,
       ' ~ 1
         + f( dyri, model="ar1", hyper=H$ar1 )
@@ -1046,7 +1046,7 @@
   p$variabletomodel = "pa"
   p$carstm_model_label = "nonseparable_space-time_pa_immature"
   p$carstm_modelengine = "inla"
-  p$carstm_modelcall = paste(
+  p$carstm_model_call = paste(
     'inla( formula =', p$variabletomodel,
       ' ~ 1
         + f( dyri, model="ar1", hyper=H$ar1 )
@@ -1106,7 +1106,7 @@
   p$variabletomodel = "pa"
   p$carstm_model_label = "nonseparable_space-time_pa_fishable_nbinomial"
   p$carstm_modelengine = "inla"
-  p$carstm_modelcall = paste(
+  p$carstm_model_call = paste(
     'inla( formula =', p$variabletomodel,
       ' ~ 1
         + f( dyri, model="ar1", hyper=H$ar1 )
@@ -1167,7 +1167,7 @@
   p$variabletomodel = "pa"
   p$carstm_model_label = "nonseparable_space-time_pa_fishable_zeroinflatedbinomial0"
   p$carstm_modelengine = "inla"
-  p$carstm_modelcall = paste(
+  p$carstm_model_call = paste(
     'inla( formula =', p$variabletomodel,
       ' ~ 1
         + f( dyri, model="ar1", hyper=H$ar1 )
@@ -1228,7 +1228,7 @@
   p$variabletomodel = "pa"
   p$carstm_model_label = "nonseparable_space-time_pa_fishable_zeroinflatedbinomial1"
   p$carstm_modelengine = "inla"
-  p$carstm_modelcall = paste(
+  p$carstm_model_call = paste(
     'inla( formula =', p$variabletomodel,
       ' ~ 1
         + f( dyri, model="ar1", hyper=H$ar1 )

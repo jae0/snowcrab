@@ -115,9 +115,9 @@ snowcrab.db( DS="set.clean.redo", p=p ) #Updated stats data, need to redo to upd
 # using grids as specfified below:
 
   pC = bio.snowcrab::snowcrab_carstm( DS="parameters", assessment.years=1999:year.assessment )
-  pB = bathymetry_carstm( p=pC, DS="parameters", variabletomodel="z" )
-  pS = substrate_carstm( p=pC, DS="parameters", variabletomodel="substrate.grainsize" )
-  pT = temperature_carstm( p=pC, DS="parameters", variabletomodel="t" )
+  pB = aegis.bathymetry::bathymetry_parameters( p=parameters_reset(pC), project_class="carstm"  )
+  pS = substrate_parameters( p=parameters_reset(pC), project_class="carstm"  )
+  pT = temperature_parameters( p=parameters_reset(pC), project_class="carstm"  )
   M = aegis.bathymetry::bathymetry_db( p=pB, DS="aggregated_data" , redo=TRUE ) #this step can take ~20 minutes
   M = aegis.substrate::substrate_db( p=pS, DS="aggregated_data" , redo=TRUE )
   M = aegis.temperature::temperature_db( p=pT, DS="aggregated_data" , redo=TRUE )

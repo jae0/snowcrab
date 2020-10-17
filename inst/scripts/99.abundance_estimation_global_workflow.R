@@ -110,10 +110,10 @@
 if (0) {
   # use alternate model -- zero-inflated1
 
-    p$carstm_model_tag = "zeroinflated"  #unique to this project ... to permit alt model forms/variations within the same overall carstm
+    p$carstm_model_label = "zeroinflated"  #unique to this project ... to permit alt model forms/variations within the same overall carstm
 
 
-          p$carstm_modelcall = paste(
+          p$carstm_model_call = paste(
           'inla( formula =', p$variabletomodel,
           ' ~ 1
             + offset( log(data_offset))

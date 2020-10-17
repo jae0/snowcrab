@@ -3,7 +3,7 @@ snowcrab_parameters = function( p=NULL, year.assessment=NULL, project_class="def
 
   # ---------------------
   # deal with additional passed parameters
-  p = parameters_control(p, list(...), control="add") # add passed args to parameter list, priority to args
+  p = parameters_add(p, list(...)) # add passed args to parameter list, priority to args
 
 
   # ---------------------

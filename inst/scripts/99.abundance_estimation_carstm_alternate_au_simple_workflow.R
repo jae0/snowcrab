@@ -103,12 +103,12 @@
 # Part 3 -- create covariate field for bathymetry
 # bathymetry -- ensure the data assimilation in bathymetry is first completed :: 01.bathymetry_data.R
 
-  pB = bathymetry_carstm( p=p, DS="parameters", variabletomodel="z" )
+  pB = aegis.bathymetry::bathymetry_parameters( p=parameters_reset(p), project_class="carstm"  )
   M = bathymetry_db( p=pB, DS="aggregated_data" , redo=TRUE )
-  M = bathymetry_carstm( p=pB, DS="carstm_inputs", redo=TRUE  ) # will redo if not found
+  M = bathymetry_db( p=pB, DS="carstm_inputs", redo=TRUE  ) # will redo if not found
   M = NULL; gc()
 
-  fit = carstm_model( p=pB, M='bathymetry_carstm( p=p, DS="carstm_inputs" )', DS="redo"  ) # run model and obtain predictions
+  fit = carstm_model( p=pB, M='bathymetry_db( p=p, DS="carstm_inputs" )', DS="redo"  ) # run model and obtain predictions
 
   if (0) {
     # to use a saved instance
@@ -148,11 +148,11 @@
 # Part 4 -- create covariate field for  substrate
 # ensure the data assimilation in substrate is first completed :: 01.substrate_data.R
 
-  pS = substrate_carstm( p=p, DS="parameters", variabletomodel="substrate.grainsize" )
+  pS = substrate_parameters( p=parameters_reset(p), project_class="carstm"  )
   M = substrate_db( p=pS, DS="aggregated_data", redo=TRUE )  # used for data matching/lookup in other aegis projects that use substrate
-  M = substrate_carstm( p=pS, DS="carstm_inputs", redo=TRUE )  # will redo if not found
+  M = substrate_db( p=pS, DS="carstm_inputs", redo=TRUE )  # will redo if not found
   M = NULL; gc()
-  fit = carstm_model( p=pS, M='substrate_carstm( p=p, DS="carstm_inputs")', DS="redo" )  # run model and obtain predictions
+  fit = carstm_model( p=pS, M='substrate_db( p=p, DS="carstm_inputs")', DS="redo" )  # run model and obtain predictions
 
   if (0) {
     # to use a saved instance
@@ -183,11 +183,11 @@
 # Part 5 -- create covariate field for temperature
 # ensure the data assimilation in temperature is first completed :: 01.temperature_data.R
 
-  pT = temperature_carstm( p=p, DS="parameters", variabletomodel="t" )
+  pT = temperature_parameters( p=parameters_reset(p), project_class="carstm"  )
   M = temperature_db( p=pT, DS="aggregated_data", redo=TRUE )  #  used for data matching/lookup in other aegis projects that use temperature
-  M = temperature_carstm( p=pT, DS="carstm_inputs", redo=TRUE )  # will redo if not found
+  M = temperature_db( p=pT, DS="carstm_inputs", redo=TRUE )  # will redo if not found
   M = NULL; gc()
-  fit = carstm_model( p=pT, M='temperature_carstm( p=p, DS="carstm_inputs")', DS="redo"  ) # run model and obtain predictions
+  fit = carstm_model( p=pT, M='temperature_db( p=p, DS="carstm_inputs")', DS="redo"  ) # run model and obtain predictions
 
   if (0) {
     # to use a saved instance
@@ -230,10 +230,10 @@
 # Part 6 -- create covariate field for species composition 1
 # ensure that survey data is assimilated : bio.snowcrab::01snowcb_data.R, aegis.survey::01.surveys.data.R , etc.
 
-  pPC1 = speciescomposition_carstm( p=p, DS="parameters", variabletomodel="pca1" )
-  M = speciescomposition_carstm( p=pPC1, DS="carstm_inputs",  redo=TRUE )  # will redo if not found
+  pPC1 = speciescomposition_parameters( p=parameters_reset(p), project_class="carstm", variabletomodel="pca1" )
+  M = speciescomposition_db( p=pPC1, DS="carstm_inputs",  redo=TRUE )  # will redo if not found
   M = NULL; gc()
-  fit = carstm_model( p=pPC1, M='speciescomposition_carstm( p=p, DS="carstm_inputs" )', DS="redo"   ) # run model and obtain predictions
+  fit = carstm_model( p=pPC1, M='speciescomposition_db( p=p, DS="carstm_inputs" )', DS="redo"   ) # run model and obtain predictions
 
   if (0) {
       # to use a saved instance
@@ -261,10 +261,10 @@
 # Part 7 -- create covariate field for species composition 2
 # ensure that survey data is assimilated : bio.snowcrab::01snowcb_data.R, aegis.survey::01.surveys.data.R ,
 
-  pPC2 = speciescomposition_carstm( p=p, DS="parameters", variabletomodel="pca2")
-  M = speciescomposition_carstm( p=pPC2, DS="carstm_inputs", redo=TRUE )  # will redo if not found
+  pPC2 = speciescomposition_parameters( p=parameters_reset(p), project_class="carstm", variabletomodel="pca2")
+  M = speciescomposition_db( p=pPC2, DS="carstm_inputs", redo=TRUE )  # will redo if not found
   M = NULL; gc()
-  fit = carstm_model( p=pPC2, M='speciescomposition_carstm( p=p, DS="carstm_inputs" )', DS="redo"  ) # run model and obtain predictions
+  fit = carstm_model( p=pPC2, M='speciescomposition_db( p=p, DS="carstm_inputs" )', DS="redo"  ) # run model and obtain predictions
   if (0) {
 
     # to use a saved instance
@@ -297,9 +297,9 @@
 if (0) {
   # use alternate model -- zero-inflated1
 
-          p$carstm_model_tag = "zeroinflated"  #unique to this project ... to permit alt model forms/variations within the same overall carstm
+          p$carstm_model_label = "zeroinflated"  #unique to this project ... to permit alt model forms/variations within the same overall carstm
 
-          p$carstm_modelcall = paste(
+          p$carstm_model_call = paste(
           'inla( formula =', p$variabletomodel,
           ' ~ 1
             + offset( log(data_offset))
