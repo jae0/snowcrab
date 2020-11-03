@@ -18,7 +18,7 @@
 
   areal_units_source = "snowcrab_polygons_tesselation"
   areal_units_resolution_km = 1
-  for ( areal_units_constraint_nmin in c( 0, 3, 5, 10, 15  ) ) {
+  for ( areal_units_constraint_nmin in c( 0, 1, 3, 5, 10, 15, 20, 25, 30, 40, 50  ) ) {
       p = bio.snowcrab::snowcrab_carstm(
         DS="parameters",
         assessment.years=1999:2019,
@@ -42,26 +42,33 @@
 
   areal_units_source = "lattice"
   for ( areal_units_resolution_km in c( 5, 10, 15, 20, 25, 30, 40, 50, 60, 80, 100 ) ) {
-  for ( areal_units_constraint_nmin in c( 0, 3, 5, 10, 15  ) ) {
-      p = bio.snowcrab::snowcrab_carstm(
-        DS="parameters",
-        assessment.years=1999:2019,
-        modeldir = project.datadirectory("bio.snowcrab", "modelled", "testing" ),  ## <--- important: specify save location
-        carstm_model_label = paste( "testing", areal_units_source, areal_units_resolution_km, areal_units_constraint_nmin, sep="_" ),
-        aegis_internal_resolution_km = 1,
-        boundingbox = list( xlim = c(-70.5, -56.5), ylim=c(39.5, 47.5)), # bounding box for plots using spplot
-        areal_units_proj4string_planar_km = projection_proj4string("utm20"), # set up default map projection
-        areal_units_constraint = "snowcrab",
-        areal_units_constraint_nmin = areal_units_constraint_nmin,
-        areal_units_source= areal_units_source,
-        areal_units_resolution_km = areal_units_resolution_km,
-        sa_threshold_km2 = areal_units_resolution_km/2,
-        inla_num.threads = 4,
-        inla_blas.num.threads = 4
-      )
-    sppoly = areal_units( p=p, redo=TRUE )  # to create
+    for ( areal_units_constraint_nmin in c( 0, 3, 5, 10, 15  ) ) {
+        p = bio.snowcrab::snowcrab_carstm(
+          DS="parameters",
+          assessment.years=1999:2019,
+          modeldir = project.datadirectory("bio.snowcrab", "modelled", "testing" ),  ## <--- important: specify save location
+          carstm_model_label = paste( "testing", areal_units_source, areal_units_resolution_km, areal_units_constraint_nmin, sep="_" ),
+          aegis_internal_resolution_km = 1,
+          boundingbox = list( xlim = c(-70.5, -56.5), ylim=c(39.5, 47.5)), # bounding box for plots using spplot
+          areal_units_proj4string_planar_km = projection_proj4string("utm20"), # set up default map projection
+          areal_units_constraint = "snowcrab",
+          areal_units_constraint_nmin = areal_units_constraint_nmin,
+          areal_units_source= areal_units_source,
+          areal_units_resolution_km = areal_units_resolution_km,
+          sa_threshold_km2 = areal_units_resolution_km/2,
+          inla_num.threads = 4,
+          inla_blas.num.threads = 4
+        )
+      sppoly = areal_units( p=p, redo=TRUE )  # to create
+    }
   }
-  }
+
+
+
+if (0) {
+  W.nb = poly2nb(sppoly, row.names=sppoly$internal_id, queen=TRUE)  # slow .. ~1hr?
+  plot(W.nb, st_geometry(sppoly))
+}
 
 
   #  areal_units_source = "lattice"
@@ -101,8 +108,8 @@
     areal_units_source= areal_units_source,
     areal_units_resolution_km = areal_units_resolution_km,
     sa_threshold_km2 = 5,
-    inla_num.threads = 4,
-    inla_blas.num.threads = 4
+    inla_num.threads = 1,
+    inla_blas.num.threads = 1
   )
 
 
@@ -153,7 +160,8 @@
 # bathymetry -- ensure the data assimilation in bathymetry is first completed :: 01.bathymetry_data.R
 
   pB = aegis.bathymetry::bathymetry_parameters( p=parameters_reset(p), project_class="carstm"  )
-  M = bathymetry_db( p=pB, DS="aggregated_data" , redo=TRUE )
+  # M = bathymetry_db( p=pB, DS="aggregated_data" , redo=TRUE )  # not used if raw data are being used
+  M = NULL; gc()
   M = bathymetry_db( p=pB, DS="carstm_inputs", redo=TRUE  ) # will redo if not found
   M = NULL; gc()
 

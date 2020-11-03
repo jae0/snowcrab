@@ -128,6 +128,10 @@
 
   M$year_factor = factor(M$year)
   M$auid = factor( M$auid)
+
+  region.id = slot( slot(sppoly, "nb"), "region.id" )
+  M$auid = match( M$AUID, region.id )
+
   M[,p$variabletomodel] = floor( M[,p$variabletomodel] )  # poisson wants integers
 
   fit = carstm_model( p=p, M=M )
@@ -1450,8 +1454,10 @@ year.assessment = 2018
 
 
   # prediction surface
+  crs_lonlat = st_crs(projection_proj4string("lonlat_wgs84"))
+
   sppoly = areal_units( p=p )  # will redo if not found
-  crs_lonlat = sp::CRS(projection_proj4string("lonlat_wgs84"))
+  sppoly = st_transform(sppoly, crs=crs_lonlat )
 
 
   # do this immediately to reduce storage for sppoly (before adding other variables)
@@ -1468,7 +1474,12 @@ year.assessment = 2018
   M = M[ which( M$lon > p$corners$lon[1] & M$lon < p$corners$lon[2]  & M$lat > p$corners$lat[1] & M$lat < p$corners$lat[2] ), ]
   # levelplot(z.mean~plon+plat, data=M, aspect="iso")
 
-  M$AUID = over( SpatialPoints( M[, c("lon", "lat")], crs_lonlat ), spTransform(sppoly, crs_lonlat ) )$AUID # match each datum to an area
+  M$AUID = st_points_in_polygons(
+    pts = st_as_sf( M, coords=c("lon","lat"), crs=crs_lonlat ),
+    polys = sppoly[, "AUID"],
+    varname="AUID"
+  )
+
   M = M[!is.na(M$AUID),]
 
   names(M)[which(names(M)=="yr") ] = "year"
@@ -1492,6 +1503,15 @@ year.assessment = 2018
   }
 
   rr$AUID = as.character( rr$AUID)
+
+
+region.id = slot( slot(sppoly, "nb"), "region.id" )
+rr$auid = match( rr$AUID, region.id )
+
+rr$AUID_character = rr$AUID
+rr$AUID = rr$auid  -- temp fix to get numbers to match bym geometry
+
+
   rr$year = as.numeric( as.character( rr$year) )
 
   obs = merge( obs, rr, by=c("year", "AUID"), all.x=TRUE, all.y=FALSE )

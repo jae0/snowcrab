@@ -3,6 +3,8 @@ map.cfas = function( p, conversions=c("ps2png") ) {
   #MG: Switch this to the smaller coastline with no islands
   library('rgdal')
 
+  message("TODO: convert to sf ...")
+
   geog.proj = CRS(   projection_proj4string("lonlat_wgs84") )
   #seis <- colorRampPalette(c("darkblue","blue3", "green", "yellow", "orange","red3", "darkred"), space = "Lab")
 

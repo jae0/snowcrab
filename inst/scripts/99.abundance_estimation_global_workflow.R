@@ -352,7 +352,7 @@ p$lookupvars = c("t", "tsd", "tmax", "tmin", "degreedays", "z",  "dZ", "ddZ", "s
     spatial_domain=p$spatial_domain,
     dyear=p$prediction_dyear,
     areal_units_resolution_km=p$areal_units_resolution_km,
-    aegis_proj4string_planar_km=sp::CRS(p$aegis_proj4string_planar_km),
+    aegis_proj4string_planar_km=p$aegis_proj4string_planar_km,
     returntype="data.frame",
     redo = reset_input_data
   )
@@ -364,15 +364,23 @@ p$lookupvars = c("t", "tsd", "tmax", "tmin", "degreedays", "z",  "dZ", "ddZ", "s
 
 
   # AUID reset to be consistent in both data and prediction areal units
-  o = over( SpatialPoints( set[,c("lon", "lat")], sp::CRS(projection_proj4string("lonlat_wgs84")) ), spTransform(sppoly, sp::CRS(projection_proj4string("lonlat_wgs84")) ) ) # match each datum to an area
-  set$AUID = o$AUID
+  crs_lonlat = st_crs(projection_proj4string("lonlat_wgs84"))
+  sppoly = st_transform(sppoly, crs=crs_lonlat )
+
+  set$AUID = st_points_in_polygons(
+    pts = st_as_sf( set, coords=c("lon","lat"), crs=crs_lonlat ),
+    polys = sppoly[, "AUID"],
+    varname="AUID"
+  )
+
 
   APS = planar2lonlat(APS, p$aegis_proj4string_planar_km)
 
-  o = over( SpatialPoints( APS[,c("lon", "lat")], sp::CRS(projection_proj4string("lonlat_wgs84")) ), spTransform(sppoly, sp::CRS(projection_proj4string("lonlat_wgs84")) ) ) # match each datum to an area
-  APS$AUID = o$AUID
-
-  o = NULL
+  APS$AUID = st_points_in_polygons(
+    pts = st_as_sf( APS, coords=c("lon","lat"), crs=crs_lonlat ),
+    polys = sppoly[, "AUID"],
+    varname="AUID"
+  )
 
   #  good data
   ok = which(
@@ -398,7 +406,14 @@ M = M[ which(
     ) , ]
 
 M$yr_factor = factor( as.character(M$yr) )
-M$AUID  = factor( as.character(M$AUID), levels=levels( sppoly$AUID ) )
+# M$AUID  = factor( as.character(M$AUID), levels=levels( sppoly$AUID ) )
+
+region.id = slot( slot(sppoly, "nb"), "region.id" )
+M$auid = match( M$AUID, region.id )
+
+M$AUID_character = M$AUID
+M$AUID = set$auid  -- temp fix to get numbers to match bym geometry
+
 M$strata  = as.numeric( M$AUID)
 M$year  = as.numeric( M$yr_factor)
 M$iid_error = 1:nrow(M) # for inla indexing for set level variation

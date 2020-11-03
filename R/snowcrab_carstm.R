@@ -169,8 +169,9 @@ snowcrab_carstm = function( p=NULL, DS="parameters", redo=FALSE, extrapolation_l
   if ( DS=="carstm_inputs") {
 
     # prediction surface
-    crs_lonlat = sp::CRS(projection_proj4string("lonlat_wgs84"))
+    crs_lonlat = st_crs(projection_proj4string("lonlat_wgs84"))
     sppoly = areal_units( p=p )  # will redo if not found
+    sppoly = st_transform(sppoly, crs=crs_lonlat )
     areal_units_fn = attributes(sppoly)[["areal_units_fn"]]
 
     # shared accross various secneario using the same polys
@@ -225,7 +226,11 @@ snowcrab_carstm = function( p=NULL, DS="parameters", redo=FALSE, extrapolation_l
     M = M[ which( M$lon > p$corners$lon[1] & M$lon < p$corners$lon[2]  & M$lat > p$corners$lat[1] & M$lat < p$corners$lat[2] ), ]
     # levelplot(z.mean~plon+plat, data=M, aspect="iso")
 
-    M$AUID = over( SpatialPoints( M[, c("lon", "lat")], crs_lonlat ), spTransform(sppoly, crs_lonlat ) )$AUID # match each datum to an area
+    M$AUID = st_points_in_polygons(
+      pts = st_as_sf( M, coords=c("lon","lat"), crs=crs_lonlat ),
+      polys = sppoly[, "AUID"],
+      varname = "AUID"
+    )
     M = M[!is.na(M$AUID),]
 
     names(M)[which(names(M)=="yr") ] = "year"
@@ -246,7 +251,12 @@ snowcrab_carstm = function( p=NULL, DS="parameters", redo=FALSE, extrapolation_l
       AD = bathymetry_db ( p=pB, DS="aggregated_data"   )  # 16 GB in RAM just to store!
       AD = AD[ which( AD$lon > p$corners$lon[1] & AD$lon < p$corners$lon[2]  & AD$lat > p$corners$lat[1] & AD$lat < p$corners$lat[2] ), ]
       # levelplot( eval(paste(p$variabletomodel, "mean", sep="."))~plon+plat, data=M, aspect="iso")
-      AD$AUID = over( SpatialPoints( AD[, c("lon", "lat")], crs_lonlat ), spTransform(sppoly, crs_lonlat ) )$AUID # match each datum to an area
+      AD$AUID = st_points_in_polygons(
+        pts = st_as_sf( AD, coords=c("lon","lat"), crs=crs_lonlat ),
+        polys = sppoly[, "AUID"],
+        varname="AUID"
+      )
+
       oo = tapply( AD[, paste(pB$variabletomodel, "mean", sep="." )], AD$AUID, FUN=median, na.rm=TRUE )
       jj = match( as.character( M$AUID[kk]), as.character( names(oo )) )
       M[kk, pB$variabletomodel] = oo[jj ]
@@ -264,7 +274,11 @@ snowcrab_carstm = function( p=NULL, DS="parameters", redo=FALSE, extrapolation_l
       AD = substrate_db ( p=pS, DS="aggregated_data"  )  # 16 GB in RAM just to store!
       AD = AD[ which( AD$lon > p$corners$lon[1] & AD$lon < p$corners$lon[2]  & AD$lat > p$corners$lat[1] & AD$lat < p$corners$lat[2] ), ]
       # levelplot( eval(paste(p$variabletomodel, "mean", sep="."))~plon+plat, data=M, aspect="iso")
-      AD$AUID = over( SpatialPoints( AD[, c("lon", "lat")], crs_lonlat ), spTransform(sppoly, crs_lonlat ) )$AUID # match each datum to an area
+      AD$AUID = st_points_in_polygons(
+        pts = st_as_sf( AD, coords=c("lon","lat"), crs=crs_lonlat ),
+        polys = sppoly[, "AUID"],
+        varname="AUID"
+      )
       oo = tapply( AD[, paste(pS$variabletomodel, "mean", sep="." )], AD$AUID, FUN=median, na.rm=TRUE )
       jj = match( as.character( M$AUID[kk]), as.character( names(oo )) )
       M[kk, pS$variabletomodel] = oo[jj ]
@@ -289,7 +303,11 @@ snowcrab_carstm = function( p=NULL, DS="parameters", redo=FALSE, extrapolation_l
       AD = AD[ which( AD$lon > p$corners$lon[1] & AD$lon < p$corners$lon[2]  & AD$lat > p$corners$lat[1] & AD$lat < p$corners$lat[2] ), ]
       # levelplot( eval(paste(p$variabletomodel, "mean", sep="."))~plon+plat, data=M, aspect="iso")
 
-      AD$AUID = over( SpatialPoints( AD[, c("lon", "lat")], crs_lonlat ), spTransform(sppoly, crs_lonlat ) )$AUID # match each datum to an area
+      AD$AUID = st_points_in_polygons(
+        pts = st_as_sf( AD, coords=c("lon","lat"), crs=crs_lonlat ),
+        polys = sppoly[, "AUID"],
+        varname="AUID"
+      )
       AD$uid = paste(AD$AUID, AD$year, AD$dyear, sep=".")
 
       M_dyear_discret = discretize_data( M$dyear, p$discretization$dyear )  # AD$dyear is discretized. . match discretization
@@ -315,7 +333,11 @@ snowcrab_carstm = function( p=NULL, DS="parameters", redo=FALSE, extrapolation_l
     if (length(kk) > 0) {
       pc1 = speciescomposition_db( p=pPC1, DS="speciescomposition"  )
       pc1 = planar2lonlat( pc1, proj.type=p$aegis_proj4string_planar_km )
-      pc1$AUID = over( SpatialPoints( pc1[, c("lon", "lat")], crs_lonlat ), spTransform(sppoly, crs_lonlat ) )$AUID # match each datum to an area
+      pc1$AUID = st_points_in_polygons(
+        pts = st_as_sf( pc1, coords=c("lon","lat"), crs=crs_lonlat ),
+        polys = sppoly[, "AUID"],
+        varname="AUID"
+      )
       oo = tapply( pc1[, pPC1$variabletomodel ], pc1$AUID, FUN=median, na.rm=TRUE )
       jj = match( as.character( M$AUID[kk]), as.character( names(oo )) )
       if (length(jj) > 0) M[kk, pPC1$variabletomodel] = oo[jj ]
@@ -343,7 +365,12 @@ snowcrab_carstm = function( p=NULL, DS="parameters", redo=FALSE, extrapolation_l
     if (length(kk) > 0) {
       pc2 = speciescomposition_db( p=pPC2, DS="speciescomposition"  )
       pc2 = planar2lonlat( pc2, proj.type=p$aegis_proj4string_planar_km )
-      pc2$AUID = over( SpatialPoints( pc2[, c("lon", "lat")], crs_lonlat ), spTransform(sppoly, crs_lonlat ) )$AUID # match each datum to an area
+
+      pc2$AUID = st_points_in_polygons(
+        pts = st_as_sf( pc2, coords=c("lon","lat"), crs=crs_lonlat ),
+        polys = sppoly[, "AUID"],
+        varname="AUID"
+      )
       oo = tapply( pc2[, pPC2$variabletomodel ], pc2$AUID, FUN=median, na.rm=TRUE )
       jj = match( as.character( M$AUID[kk]), as.character( names(oo )) )
       if (length(jj) > 0) M[kk, pPC2$variabletomodel] = oo[jj ]
@@ -377,7 +404,9 @@ snowcrab_carstm = function( p=NULL, DS="parameters", redo=FALSE, extrapolation_l
     M$tag = "observations"
 
 
-    APS = as.data.frame(sppoly)
+    region.id = slot( slot(sppoly, "nb"), "region.id" )
+    APS = st_drop_geometry(sppoly)
+    sppoly = NULL
     APS$AUID = as.character( APS$AUID )
     APS$tag ="predictions"
     APS[,p$variabletomodel] = NA
@@ -484,8 +513,9 @@ snowcrab_carstm = function( p=NULL, DS="parameters", redo=FALSE, extrapolation_l
     # various global data sources
 
     # prediction surface
-    crs_lonlat = sp::CRS(projection_proj4string("lonlat_wgs84"))
+    crs_lonlat = st_crs(projection_proj4string("lonlat_wgs84"))
     sppoly = areal_units( p=p )  # will redo if not found
+    sppoly = st_transform(sppoly, crs=crs_lonlat )
     areal_units_fn = attributes(sppoly)[["areal_units_fn"]]
 
     # shared accross various secneario using the same polys
@@ -542,7 +572,12 @@ snowcrab_carstm = function( p=NULL, DS="parameters", redo=FALSE, extrapolation_l
     M = M[ which( M$lon > p$corners$lon[1] & M$lon < p$corners$lon[2]  & M$lat > p$corners$lat[1] & M$lat < p$corners$lat[2] ), ]
     # levelplot(z.mean~plon+plat, data=M, aspect="iso")
 
-    M$AUID = over( SpatialPoints( M[, c("lon", "lat")], crs_lonlat ), spTransform(sppoly, crs_lonlat ) )$AUID # match each datum to an area
+    M$AUID = st_points_in_polygons(
+      pts = st_as_sf( M, coords=c("lon","lat"), crs=crs_lonlat ),
+      polys = sppoly[, "AUID"],
+      varname = "AUID"
+    )
+
     M = M[!is.na(M$AUID),]
 
     names(M)[which(names(M)=="yr") ] = "year"
@@ -594,7 +629,12 @@ snowcrab_carstm = function( p=NULL, DS="parameters", redo=FALSE, extrapolation_l
       AD = substrate_db ( p=pS, DS="aggregated_data"  )  # 16 GB in RAM just to store!
       AD = AD[ which( AD$lon > p$corners$lon[1] & AD$lon < p$corners$lon[2]  & AD$lat > p$corners$lat[1] & AD$lat < p$corners$lat[2] ), ]
       # levelplot( eval(paste(p$variabletomodel, "mean", sep="."))~plon+plat, data=M, aspect="iso")
-      AD$AUID = over( SpatialPoints( AD[, c("lon", "lat")], crs_lonlat ), spTransform(sppoly, crs_lonlat ) )$AUID # match each datum to an area
+      AD$AUID = st_points_in_polygons(
+        pts = st_as_sf( AD, coords=c("lon","lat"), crs=crs_lonlat ),
+        polys = sppoly[, "AUID"],
+        varname = "AUID"
+      )
+
       oo = tapply( AD[, paste(pS$variabletomodel, "mean", sep="." )], AD$AUID, FUN=median, na.rm=TRUE )
       jj = match( as.character( M$AUID[kk]), as.character( names(oo )) )
       M[kk, pS$variabletomodel] = oo[jj ]
@@ -615,8 +655,11 @@ snowcrab_carstm = function( p=NULL, DS="parameters", redo=FALSE, extrapolation_l
       AD = temperature_db ( p=pT, DS="aggregated_data"  )  # 16 GB in RAM just to store!
       AD = AD[ which( AD$lon > p$corners$lon[1] & AD$lon < p$corners$lon[2]  & AD$lat > p$corners$lat[1] & AD$lat < p$corners$lat[2] ), ]
       # levelplot( eval(paste(p$variabletomodel, "mean", sep="."))~plon+plat, data=M, aspect="iso")
-
-      AD$AUID = over( SpatialPoints( AD[, c("lon", "lat")], crs_lonlat ), spTransform(sppoly, crs_lonlat ) )$AUID # match each datum to an area
+      AD$AUID = st_points_in_polygons(
+        pts = st_as_sf( AD, coords=c("lon","lat"), crs=crs_lonlat ),
+        polys = sppoly[, "AUID"],
+        varname = "AUID"
+      )
       AD$uid = paste(AD$AUID, AD$year, AD$dyear, sep=".")
 
       M_dyear_discret = discretize_data( M$dyear, p$discretization$dyear )  # AD$dyear is discretized. . match discretization
@@ -635,7 +678,11 @@ snowcrab_carstm = function( p=NULL, DS="parameters", redo=FALSE, extrapolation_l
     if (length(kk) > 0) {
       pc1 = speciescomposition_db( p=pPC1, DS="speciescomposition"  )
       pc1 = planar2lonlat( pc1, proj.type=p$aegis_proj4string_planar_km )
-      pc1$AUID = over( SpatialPoints( pc1[, c("lon", "lat")], crs_lonlat ), spTransform(sppoly, crs_lonlat ) )$AUID # match each datum to an area
+      pc1$AUID = st_points_in_polygons(
+        pts = st_as_sf( pc1, coords=c("lon","lat"), crs=crs_lonlat ),
+        polys = sppoly[, "AUID"],
+        varname = "AUID"
+      )
       oo = tapply( pc1[, pPC1$variabletomodel ], pc1$AUID, FUN=median, na.rm=TRUE )
       jj = match( as.character( M$AUID[kk]), as.character( names(oo )) )
       if (length(jj) > 0) M[kk, pPC1$variabletomodel] = oo[jj ]
@@ -655,7 +702,12 @@ snowcrab_carstm = function( p=NULL, DS="parameters", redo=FALSE, extrapolation_l
     if (length(kk) > 0) {
       pc2 = speciescomposition_db( p=pPC2, DS="speciescomposition"  )
       pc2 = planar2lonlat( pc2, proj.type=p$aegis_proj4string_planar_km )
-      pc2$AUID = over( SpatialPoints( pc2[, c("lon", "lat")], crs_lonlat ), spTransform(sppoly, crs_lonlat ) )$AUID # match each datum to an area
+      pc2$AUID = st_points_in_polygons(
+        pts = st_as_sf( pc2, coords=c("lon","lat"), crs=crs_lonlat ),
+        polys = sppoly[, "AUID"],
+        varname = "AUID"
+      )
+
       oo = tapply( pc2[, pPC2$variabletomodel ], pc2$AUID, FUN=median, na.rm=TRUE )
       jj = match( as.character( M$AUID[kk]), as.character( names(oo )) )
       if (length(jj) > 0) M[kk, pPC2$variabletomodel] = oo[jj ]
@@ -688,11 +740,13 @@ snowcrab_carstm = function( p=NULL, DS="parameters", redo=FALSE, extrapolation_l
     M$tag = "observations"
 
 
-    APS = as.data.frame(sppoly)
+
+    region.id = slot( slot(sppoly, "nb"), "region.id" )
+    APS = st_drop_geometry(sppoly)
+    sppoly = NULL
     APS$AUID = as.character( APS$AUID )
     APS$tag ="predictions"
     APS[,p$variabletomodel] = NA
-
 
     BI = carstm_summary ( p=pB )
     jj = match( as.character( APS$AUID), as.character( BI$AUID) )
@@ -758,7 +812,7 @@ snowcrab_carstm = function( p=NULL, DS="parameters", redo=FALSE, extrapolation_l
 
 
     M$AUID  = as.character(M$AUID)  # revert to factors
-    M$auid  = as.numeric( factor(M$AUID) )
+    M$auid = match( M$AUID, region.id )
 
     M$zi  = discretize_data( M[, pB$variabletomodel], p$discretization[[pB$variabletomodel]] )
     M$ti  = discretize_data( M[, pT$variabletomodel], p$discretization[[pT$variabletomodel]] )
