@@ -108,26 +108,26 @@
 
       # additional constraint ..
       # remove data that are strange in location .. land
+      crs_lonlat = st_crs( projection_proj4string("lonlat_wgs84") )
 
-      V = SpatialPoints( lgbk[,c("lon", "lat")], sp::CRS(projection_proj4string("lonlat_wgs84") ))
+      bboxSP = st_transform( boundingbox(p$corners$lon, p$corners$lat), crs_lonlat  )
+      coast = st_transform( coastline_db( p=p ), crs=crs_lonlat )
+      coast = (
+        st_intersection( coast, bboxSP )
+        %>% st_buffer(0.01)
+        %>% st_union()
+        %>% st_cast("POLYGON" )
+        %>% st_union()
+        %>% st_make_valid()
+      )
 
+      pts = st_as_sf( lgbk[,c("lon", "lat")], coords=c("lon","lat"), crs=crs_lonlat )
+      inside = st_points_in_polygons( pts = pts,  polys = coast )
 
+      stop() #-- need to make sure above output /.
 
-      coastlineSp =  aegis.coastline::coastline_db( p=p)
-      #, DS="mapdata.coastPolygon", project_to="+proj=longlat +datum=WGS84" )
-      coastlineSp = spTransform( coastlineSp, sp::CRS(projection_proj4string("lonlat_wgs84"))  )
-
-      # coastline = maps::map( database="worldHires", regions=c("Canada", "US"), fill=TRUE, plot=FALSE )
-      # coastlineSp = maptools::map2SpatialPolygons( coastline, IDs=coastline$names, proj4string=projection_proj4string("lonlat_wgs84")  )
-      bboxSP = boundingbox(p$corners$lon, p$corners$lat)
-      bboxSP = spTransform( bboxSP, sp::CRS(projection_proj4string("lonlat_wgs84"))  )
-
-      keep <- rgeos::gContains( bboxSP, coastlineSp, byid=TRUE ) | rgeos::gOverlaps( bboxSP, coastlineSp, byid=TRUE )
-
-      stopifnot( ncol(keep)==1 )
-      coastlineSp = coastlineSp[drop(keep),]
-      land = which ( !is.na(over( V, coastlineSp ) ))
-      lgbk = lgbk[ -land, ]
+      onland = which (is.finite(inside))
+      if (length(onland)>0) lgbk = lgbk[-onland, ]
 
       # filter by depth ..
       # use the match/map syntax in bathymetry and filter out shallow sets .. < 10 m? TODO

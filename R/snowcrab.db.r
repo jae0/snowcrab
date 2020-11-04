@@ -1150,9 +1150,9 @@ snowcrab.db = function( DS, p=NULL, yrs=NULL, fn.root=NULL) {
 
     set = set[ which(is.finite(set$plon + set$plat)),]
 
-    coastline_source="eastcoast_gadm"
     crs_lonlat = st_crs(projection_proj4string("lonlat_wgs84"))
-    coast = st_transform( coastline_db( p=p, DS=coastline_source ), crs_lonlat )
+    coast = st_transform( coastline_db( p=p ), crs_lonlat )
+    coast = st_as_sf(coast)
     coast$inside = TRUE
     inside = st_points_in_polygons(
       pts = st_as_sf( set[, c("lon", "lat")], coords=c("lon","lat"), crs=crs_lonlat ),
