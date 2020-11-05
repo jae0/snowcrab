@@ -8,14 +8,7 @@ map.cfas = function( p, conversions=c("ps2png") ) {
   geog.proj = CRS(   projection_proj4string("lonlat_wgs84") )
   #seis <- colorRampPalette(c("darkblue","blue3", "green", "yellow", "orange","red3", "darkred"), space = "Lab")
 
-  polydir = file.path(project.datadirectory("aegis"), "data", "Basemaps", "Marine", "Coastline")
-
-  setwd(polydir)
-
-  coast<-readOGR(".", "NY_to_Nova_UTM20")
-  coast<-spTransform(coast, geog.proj)
-  coast <- gSimplify(coast, tol=0.01, topologyPreserve=TRUE)
-
+  coast = as( aegis.coastline:: coastline_db(), "Spatial")
 
   cfadir =  file.path(project.datadirectory("aegis"), "data", "Management_Areas", "Fisheries", "Snowcrab")
   setwd(cfadir)

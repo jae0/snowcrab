@@ -121,11 +121,10 @@
         %>% st_make_valid()
       )
 
-      pts = st_as_sf( lgbk[,c("lon", "lat")], coords=c("lon","lat"), crs=crs_lonlat )
-      inside = st_points_in_polygons( pts = pts,  polys = coast )
-
-      stop() #-- need to make sure above output /.
-
+      inside = st_points_in_polygons(
+        pts =st_as_sf( lgbk[,c("lon", "lat")], coords=c("lon","lat"), crs=crs_lonlat ),
+        polys = coast
+      )
       onland = which (is.finite(inside))
       if (length(onland)>0) lgbk = lgbk[-onland, ]
 
@@ -134,8 +133,8 @@
       # keep those in the domain and deeper than depth=10 m
       z = bathymetry_db(p=p, DS="baseline", varnames=c("plon", "plat", "z"))
       aoi = which( z$z > 10 ) # negative = above land
-      pidz = stmv::array_map( "xy->1", z[aoi,c("plon", "plat")], gridparams=p$gridparams )
-      pidl = stmv::array_map( "xy->1", lgbk[,c("plon", "plat")], gridparams=p$gridparams )
+      pidz = array_map( "xy->1", z[aoi,c("plon", "plat")], gridparams=p$gridparams )
+      pidl = array_map( "xy->1", lgbk[,c("plon", "plat")], gridparams=p$gridparams )
       inaoi = which( is.finite( match( pidl, pidz ) ))
       good = which(is.finite( inaoi))
       lgbk = lgbk[ good,]

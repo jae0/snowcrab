@@ -1151,16 +1151,12 @@ snowcrab.db = function( DS, p=NULL, yrs=NULL, fn.root=NULL) {
     set = set[ which(is.finite(set$plon + set$plat)),]
 
     crs_lonlat = st_crs(projection_proj4string("lonlat_wgs84"))
-    coast = st_transform( coastline_db( p=p ), crs_lonlat )
-    coast = st_as_sf(coast)
-    coast$inside = TRUE
     inside = st_points_in_polygons(
       pts = st_as_sf( set[, c("lon", "lat")], coords=c("lon","lat"), crs=crs_lonlat ),
-      polys = coast,
-      varname = "inside"
+      polys = st_transform( coastline_db( p=p ), crs_lonlat )
     )
 
-    onland = which (is.finite(inside))
+    onland =which (is.finite(inside))
     if (length(onland)>0) set = set[-onland, ]
 
     set$tiyr = lubridate::decimal_date( set$timestamp )
