@@ -1,5 +1,5 @@
 
-snowcrab_parameters = function( p=NULL, year.assessment=NULL, project_class="default", ... ) {
+snowcrab_parameters = function( p=NULL, year.assessment=NULL, project_class="core", ... ) {
 
   # ---------------------
   # deal with additional passed parameters
@@ -96,14 +96,16 @@ snowcrab_parameters = function( p=NULL, year.assessment=NULL, project_class="def
   p$threshold.distance = 5 # predict no farther than this distance km from survey stations
 
 
-  if (project_class=="default") {
+  if (project_class == "core") {
     return(p)
   }
 
 
-  if (project_class=="stmv") {
+  if (project_class %in% c("stmv") ) {
 
     p$libs = unique( c( p$libs, project.library ( "stmv" ) ) )
+    p$stmv_model_label="default"
+
     if (!exists("varstomodel", p) ) p$varstomodel = c( "pca1", "pca2", "ca1", "ca2" )
     if (!exists("stmv_variables", p)) p$stmv_variables = list()
     if (!exists("LOCS", p$stmv_variables)) p$stmv_variables$LOCS=c("plon", "plat")
@@ -238,10 +240,98 @@ snowcrab_parameters = function( p=NULL, year.assessment=NULL, project_class="def
       message( "The specified stmv_local_modelengine is not tested/supported ... you are on your own ;) ..." )
     }
 
-    # p = stmv_variablelist(p=p)  # decompose into covariates, etc
-
     p = aegis_parameters(p=p, DS="stmv" ) # generics:
 
+    return(p)
+  }
+
+
+
+  if (project_class %in% c("hybrid", "default") ) {
+
+    p$libs = unique( c( p$libs, project.library ( "stmv" ) ) )
+    p$stmv_model_label="default"
+
+    if (!exists("varstomodel", p) ) p$varstomodel = c( "pca1", "pca2", "ca1", "ca2" )
+    if (!exists("stmv_variables", p)) p$stmv_variables = list()
+    if (!exists("LOCS", p$stmv_variables)) p$stmv_variables$LOCS=c("plon", "plat")
+    if (!exists("TIME", p$stmv_variables)) p$stmv_variables$TIME="tiyr"
+
+    p$inputdata_spatial_discretization_planar_km = p$pres  # 1 km .. requires 32 GB RAM and limit of speed -- controls resolution of data prior to modelling to reduce data set and speed up modelling
+    p$inputdata_temporal_discretization_yr = 1/12  # ie., monthly .. controls resolution of data prior to modelling to reduce data set and speed up modelling }
+
+    if (!exists("storage_backend", p)) p$storage_backend="bigmemory.ram"
+
+    if (!exists("boundary", p)) p$boundary = FALSE
+    if (!exists("stmv_filter_depth_m", p)) p$stmv_filter_depth_m = 0 # depth (m) stats locations with elevation > 0 m as being on land (and so ignore)
+
+    if (!exists("stmv_rsquared_threshold", p)) p$stmv_rsquared_threshold = 0.25 # lower threshold
+    if (!exists("stmv_distance_statsgrid", p)) p$stmv_distance_statsgrid = 4 # resolution (km) of data aggregation (i.e. generation of the ** statistics ** )
+
+    if (!exists("stmv_distance_scale", p)) p$stmv_distance_scale = c(25, 35, 45) # km ... approx guess of 95% AC range
+
+    if (!exists("stmv_nmin", p)) p$stmv_nmin = 250 # stmv_nmin/stmv_nmax changes with resolution must be more than the number of knots/edf
+    # min number of data points req before attempting to model timeseries in a localized space
+    if (!exists("stmv_nmax", p)) p$stmv_nmax = 6000 # actually can have a lot of data from logbooks ... this keeps things reasonable in terms of run-time
+
+
+    # due to formulae being potentially created on the fly, these are required params
+
+    if (!exists("Y", p$stmv_variables)) {
+      if (exists("variabletomodel", p)) p$stmv_variables$Y = p$variabletomodel
+    }
+
+    if (!exists("Y", p$stmv_variables)) {
+      if (exists("stmv_local_modelformula", p))  {
+        if (!is.null(p$stmv_local_modelformula)) {
+          if (p$stmv_local_modelformula != "none") {
+            oo = all.vars( p$stmv_local_modelformula[[2]] )
+            if (length(oo) > 0) p$stmv_variables$Y = oo
+          }
+        }
+      }
+    }
+
+    if (!exists("Y", p$stmv_variables)) {
+      if (exists("stmv_global_modelformula", p))  {
+        if (!is.null(p$stmv_global_modelformula)) {
+          if (p$stmv_global_modelformula != "none") {
+            oo = all.vars( p$stmv_global_modelformula[[2]] )
+            if (length(oo) > 0) p$stmv_variables$Y = oo
+          }
+        }
+      }
+    }
+
+    if (!exists("Y", p$stmv_variables)) p$stmv_variables$Y = "not_defined" # this can be called to get covars.. do not stop
+
+
+    # additional variable to extract from aegis_db for inputs
+    p$aegis_variables = list()
+    # p$aegis_project_datasources = c("speciescomposition", "speciesarea", "sizespectrum", "condition", "metabolism", "biochem")
+    if (!exists("aegis_project_datasources", p)) p$aegis_project_datasources = "speciescomposition"
+    for (id in p$aegis_project_datasources ) {
+
+      pz = aegis_parameters( p=p, DS=id )
+      pz_vars = intersect( pz$varstomodel, p$stmv_variables$COV )  # these are aegis vars to model
+      if (length(pz_vars) > 0) p$aegis_variables[[id]] = pz_vars
+    }
+
+    if (!exists("stmv_local_modelengine", p)) p$stmv_local_modelengine ="carstm"
+    if (!exists("stmv_global_modelengine", p)) p$stmv_global_modelengine ="gam"
+    if (!exists("stmv_global_family", p)) p$stmv_global_family = gaussian(link="log")
+
+    # using covariates as a first pass essentially makes it ~ kriging with external drift .. no time or space here
+    if (!exists("stmv_global_modelformula", p)) {
+      p$stmv_global_modelformula = formula( paste(
+        p$stmv_variables$Y,
+        ' ~ s( t, k=3, bs="ts") + s( tsd, k=3, bs="ts") + s( tmax, k=3, bs="ts") + s( degreedays, k=3, bs="ts") ',
+        ' + s( log(z), k=3, bs="ts") + s( log(dZ), k=3, bs="ts") + s( log(ddZ), k=3, bs="ts") ',
+        ' + s( log(substrate.grainsize), k=3, bs="ts") + s(pca1, k=3, bs="ts") + s(pca2, k=3, bs="ts")  '
+      ))  # no space
+    }
+
+    p = aegis_parameters(p=p, DS="stmv" ) # generics:
 
     return(p)
   }

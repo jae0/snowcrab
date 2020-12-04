@@ -17,7 +17,7 @@ year.assessment = 2019
   p$inla_num.threads = 6
   p$inla_blas.num.threads = 6
 
-  plot.dir=paste(p$modeldir,"prediction.plots", year.assessment, sep="/" )
+  plot.dir=paste(p$modeldir, "prediction.plots", year.assessment, sep="/" )
 
 # ------------------------------------------------
 # Part 2 -- polygon structure
