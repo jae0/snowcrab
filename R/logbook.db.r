@@ -447,7 +447,8 @@
 
       ii = which(!is.finite(logbook$z))
       if (length(ii)>0) {
-        logbook$z[ii] = bathymetry_lookup( p=p, locs=logbook[ii,c("lon", "lat")], source_data_class="aggregated_rawdata" )
+        pB = temperature_parameters( parameters_reset(p) )
+        logbook$z[ii] = bathymetry_lookup( p=pB, locs=logbook[ii,c("lon", "lat")], source_data_class="aggregated_rawdata" )
       }
       logbook$z = log( logbook$z )
 
@@ -455,7 +456,8 @@
       if (length(ii)>0) logbook = logbook[ -ii, ]
 
       # bring in time varing features:: temperature
-      logbook$t = temperature_lookup( p=p, locs=logbook[, c("lon", "lat")], timestamp=logbook$timestamp, source_data_class="aggregated_rawdata" )
+      pT = temperature_parameters( parameters_reset(p) )
+      logbook$t = temperature_lookup( p=pT, locs=logbook[, c("lon", "lat")], timestamp=logbook$timestamp, source_data_class="aggregated_rawdata" )
 
 			save( logbook, file=fn, compress=T )
 

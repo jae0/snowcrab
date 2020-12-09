@@ -14,6 +14,8 @@ snowcrab_parameters = function( p=NULL, year.assessment=NULL, project_class="cor
     "aegis", "bio.taxonomy", "stmv", "aegis.polygons", "aegis.coastline", "netmensuration", "bio.snowcrab" ) ) )
 
 
+  p$project_class = project_class
+
   # ---------------------
   if (!exists("project_name", p)) p$project_name = "bio.snowcrab"
   if (!exists("data_root", p)) p$data_root = project.datadirectory( p$project_name )
