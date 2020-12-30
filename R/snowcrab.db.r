@@ -984,12 +984,20 @@ snowcrab.db = function( DS, p=NULL, yrs=NULL, fn.root=NULL) {
     set = snowcrab.db( DS="set.biologicals" )
     # set2015 = set[which(set$yr == 2015),]
     # print(head(set2015))
+    # return planar coords to correct resolution
+    set = lonlat2planar( set, proj.type=p$aegis_proj4string_planar_km )
 
     # bring in time invariant features:: depth
     ii = which(!is.finite(set$z))
     if (length(ii)>0){
-      pB = bathymetry_parameters( parameters_reset(p) )
-      set$z[ii] = bathymetry_lookup( p=pB, locs=set[ii,c("lon", "lat")], source_data_class="aggregated_rawdata" )
+      pB = bathymetry_parameters( spatial_domain=p$spatial_domain, project_class="core"  )
+      BS = bathymetry_db ( p=pB, DS="aggregated_data" )  # raw data
+      BS_map = array_map( "xy->1", BS[,c("plon","plat")], gridparams=p$gridparams )
+      set_map  = array_map( "xy->1", set[ii, c("plon","plat")], gridparams=p$gridparams )
+      set[ii, pB$variabletomodel] = BS[ match( set_map, BS_map ), "z.mean" ]
+      BS = NULL
+      BS_map = NULL
+      set_map = NULL
     }
 
     set$z = log( set$z )
@@ -998,12 +1006,22 @@ snowcrab.db = function( DS, p=NULL, yrs=NULL, fn.root=NULL) {
     # bring in time varing features:: temperature
     ii = which(!is.finite(set$t))
     if (length(ii)>0){
-      pT = temperature_parameters( parameters_reset(p) )
-      set$t[ii] = temperature_lookup( p=pT, locs=set[ii, c("lon", "lat")], timestamp=set$timestamp[ii], source_data_class="aggregated_rawdata" )
+        tz = "America/Halifax"
+        locs = set[ii, c("plon","plat")]
+        timestamp = set$timestamp[ii]
+        if (! "POSIXct" %in% class(timestamp)  ) timestamp = as.POSIXct( timestamp, tz=tz, origin=lubridate::origin  )
+        BS = temperature_db ( p=p, year.assessment=max(p$yrs) ), DS="aggregated_data" )  # raw data
+        BT_map = array_map( "ts->1", BS[,c("yr", "dyear")], dims=c(p$ny, p$nw), res=c( 1, 1/p$nw ), origin=c( min(p$yrs), 0) )
+        BS_map = array_map( "xy->1", BS[,c("plon","plat")], gridparams=gridparams )
+        tstamp = data.frame( yr = lubridate::year(timestamp) )
+        tstamp$dyear = lubridate::decimal_date( timestamp ) - tstamp$yr
+        timestamp_map = array_map( "ts->1", tstamp[, c("yr", "dyear")], dims=c(p$ny, p$nw), res=c( 1, 1/p$nw ), origin=c( min(p$yrs), 0) )
+        locs_map = array_map( "xy->1", locs[,c("plon","plat")], gridparams=gridparams )
+        locs_index = match( paste(locs_map, timestamp_map, sep="_"), paste(BS_map, BT_map, sep="_") )
+        set$t[ii] = BS[locs_index, vnames]
+        BS = BT_map = BS_map = tstamp = timestamp_map = locs_map = locs_index = NULL
     }
 
-    # return planar coords to correct resolution
-    set = lonlat2planar( set, proj.type=p$aegis_proj4string_planar_km )
 
     # set2015 = set[which(set$yr ==2015), ]
     # print(head(set2015))
