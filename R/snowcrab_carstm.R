@@ -147,7 +147,7 @@ snowcrab_carstm = function( p=NULL, DS="parameters", redo=FALSE, extrapolation_l
         if ( !exists("carstm_model_label", p))  p$carstm_model_label = "default_gam"
         p$carstm_model_call = paste(
           'gam( formula =',  p$variabletomodel,
-          ' ~ 1 + factor(AUID) + s(t) + s(z) + s(substrate.grainsize) + s(year) + s(dyear),
+          ' ~ 1 + factor(AUID) + s(t) + s(z) + s(substrate.grainsize) + s(yr) + s(dyear),
             data= M[ which(M$tag=="observations"), ],
             family=gaussian(link="identity")
           )'
@@ -245,8 +245,9 @@ snowcrab_carstm = function( p=NULL, DS="parameters", redo=FALSE, extrapolation_l
       iM = which(!is.finite( M[, vnmod] ))
       if (length(iM > 0)) {
         LU = bathymetry_db ( p=bathymetry_parameters( spatial_domain=p$spatial_domain, project_class="core"  ), DS="aggregated_data" )  # raw data
+        LU = lonlat2planar(LU, proj.type=p$aegis_proj4string_planar_km)
         LU_map = array_map( "xy->1", LU[,c("plon","plat")], gridparams=p$gridparams )
-        M_map = array_map( "xy->1", M[,c("plon","plat")], gridparams=p$gridparams )
+        M_map = array_map( "xy->1", M[iM,c("plon","plat")], gridparams=p$gridparams )
         M[iM, vnmod] = LU[match( M_map, LU_map ), paste(vnmod, "mean", sep=".") ]
 
         # if any still missing then use a mean depth by AUID
@@ -281,6 +282,7 @@ snowcrab_carstm = function( p=NULL, DS="parameters", redo=FALSE, extrapolation_l
       if (length(iM) > 0 ) {
         LU = substrate_db ( p=substrate_parameters( spatial_domain=p$spatial_domain, project_class="core"  ), DS="aggregated_data" )  # raw data
         LU = LU[ which( LU$lon > p$corners$lon[1] & LU$lon < p$corners$lon[2]  & LU$lat > p$corners$lat[1] & LU$lat < p$corners$lat[2] ), ]
+        LU = lonlat2planar(LU, proj.type=p$aegis_proj4string_planar_km)
         # levelplot( eval(paste(vnmod, "mean", sep="."))~plon+plat, data=M, aspect="iso")
         LU_map = array_map( "xy->1", LU[,c("plon","plat")], gridparams=p$gridparams )
         M_map  = array_map( "xy->1", M[iM, c("plon","plat")], gridparams=p$gridparams )
@@ -319,12 +321,14 @@ snowcrab_carstm = function( p=NULL, DS="parameters", redo=FALSE, extrapolation_l
         if (! "POSIXct" %in% class(T$timestamp)  ) T$timestamp = as.POSIXct( T$timestamp, tz=tz, origin=lubridate::origin  )
         T$yr = lubridate::year(T$timestamp)        
         T$dyear = lubridate::decimal_date( T$timestamp ) - T$yr
-        LU = temperature_db ( p=p, year.assessment=max(p$yrs), DS="aggregated_data" )  # raw data
+        LU = temperature_db ( p=temperature_parameters( spatial_domain=p$spatial_domain, project_class="core" ), year.assessment=max(p$yrs), DS="aggregated_data" )  # raw data
+        names(LU)[ which(names(LU) =="temperature.mean") ] = vnmod
         LU = LU[ which( LU$lon > p$corners$lon[1] & LU$lon < p$corners$lon[2]  & LU$lat > p$corners$lat[1] & LU$lat < p$corners$lat[2] ), ]
+        LU = lonlat2planar(LU, proj.type=p$aegis_proj4string_planar_km)
         LUT_map = array_map( "ts->1", LU[,c("yr", "dyear")], dims=c(p$ny, p$nw), res=c( 1, 1/p$nw ), origin=c( min(p$yrs), 0) )
-        LUS_map = array_map( "xy->1", LU[,c("plon","plat")], gridparams=gridparams )
+        LUS_map = array_map( "xy->1", LU[,c("plon","plat")], gridparams=p$gridparams )
         T_map = array_map( "ts->1", T[, c("yr", "dyear")], dims=c(p$ny, p$nw), res=c( 1, 1/p$nw ), origin=c( min(p$yrs), 0) )
-        M_map = array_map( "xy->1", M[iM, c("plon","plat")], gridparams=gridparams )
+        M_map = array_map( "xy->1", M[iM, c("plon","plat")], gridparams=p$gridparams )
         iLM = match( paste(M_map, T_map, sep="_"), paste(LUS_map, LUT_map, sep="_") )
         M[ iM, vnmod ] = LU[ iLM, paste(vnmod, "mean", sep="." ) ]
         LU = LUT_map = LUS_map = T = T_map = M_map = iLM = NULL
@@ -336,9 +340,10 @@ snowcrab_carstm = function( p=NULL, DS="parameters", redo=FALSE, extrapolation_l
             polys = sppoly[, "AUID"],
             varname="AUID"
           )
-          LU$uid = paste(LU$AUID, LU$year, LU$dyear, sep=".")
+          LU_dyear_discret = discretize_data( LU$dyear, p$discretization$dyear ) 
           M_dyear_discret = discretize_data( M$dyear, p$discretization$dyear )  # LU$dyear is discretized. . match discretization
-          M$uid =  paste(M$AUID, M$year, M_dyear_discret, sep=".")
+          LU$uid = paste(LU$AUID, LU$yr, LU_dyear_discret, sep=".")
+          M$uid =  paste(M$AUID, M$yr, M_dyear_discret, sep=".")
           LU = tapply( LU[, paste(vnmod, "mean", sep="." )], LU$uid, FUN=median, na.rm=TRUE )
           iLM = match( as.character( M$uid[iM]), as.character( names(LU )) )
           M[iM, vnmod] = LU[iLM ]
@@ -354,8 +359,9 @@ snowcrab_carstm = function( p=NULL, DS="parameters", redo=FALSE, extrapolation_l
     iM = which(!is.finite(M[, vnmod]))
     if (length(iM) > 0 ) {
       LU = speciescomposition_db( p=pPC1, DS="speciescomposition"  )
+      LU = planar2lonlat(LU, proj.type=p$aegis_proj4string_planar_km )
       iM = match( M$id, LU$id)
-      M[kk, vnmod] = LU[iM, vnmod]
+      M[iM, vnmod] = LU[iM, vnmod]
       iM =  which( !is.finite(M[, vnmod]))
       if (length(iM) > 0) {
         LU$AUID = st_points_in_polygons(
@@ -370,7 +376,7 @@ snowcrab_carstm = function( p=NULL, DS="parameters", redo=FALSE, extrapolation_l
         if (length(iM) > 0) {
           LU = carstm_summary ( p=pPC1 )
           au_map = match( M$AUID[iM], dimnames(LU)$AUID )
-          year_map = match( as.character(M$year[iM]), dimnames(LU)$year )
+          year_map = match( as.character(M$yr[iM]), dimnames(LU)$yr )
           dindex = cbind(au_map, year_map )
           M[iM, vnmod] = LU [dindex]
         }
@@ -386,8 +392,9 @@ snowcrab_carstm = function( p=NULL, DS="parameters", redo=FALSE, extrapolation_l
     iM = which(!is.finite(M[, vnmod]))
     if (length(iM) > 0 ) {
       LU = speciescomposition_db( p=pPC2, DS="speciescomposition"  )
+      LU = planar2lonlat(LU, proj.type=p$aegis_proj4string_planar_km )
       iM = match( M$id, LU$id)
-      M[kk, vnmod] = LU[iM, vnmod]
+      M[iM, vnmod] = LU[iM, vnmod]
       iM =  which( !is.finite(M[, vnmod]))
       if (length(iM) > 0) {
         LU$AUID = st_points_in_polygons(
@@ -402,7 +409,7 @@ snowcrab_carstm = function( p=NULL, DS="parameters", redo=FALSE, extrapolation_l
         if (length(iM) > 0) {
           LU = carstm_summary ( p=pPC2 )
           au_map = match( M$AUID[iM], dimnames(LU)$AUID )
-          year_map = match( as.character(M$year[iM]), dimnames(LU)$year )
+          year_map = match( as.character(M$yr[iM]), dimnames(LU)$yr )
           dindex = cbind(au_map, year_map )
           M[iM, vnmod] = LU [dindex]
         }
@@ -462,14 +469,14 @@ snowcrab_carstm = function( p=NULL, DS="parameters", redo=FALSE, extrapolation_l
     n_aps = nrow(APS)
     APS = cbind( APS[ rep.int(1:n_aps, p$nt), ], rep.int( p$prediction_ts, rep(n_aps, p$nt )) )
     names(APS) = c(vn, "tiyr")
-    APS$year = aegis_floor( APS$tiyr)
-    APS$dyear = APS$tiyr - APS$year
+    APS$yr = aegis_floor( APS$tiyr)
+    APS$dyear = APS$tiyr - APS$yr
 
 
     TI = carstm_summary ( p=pT )
     TI = TI[[ paste(pT$variabletomodel,"predicted",sep="." )]]
     au_map = match( APS$AUID, dimnames(TI)$AUID )
-    year_map = match( as.character(APS$year), dimnames(TI)$year )
+    year_map = match( as.character(APS$yr), dimnames(TI)$yr )
     dyear_breaks = c(p$dyears, p$dyears[length(p$dyears)]+ diff(p$dyears)[1] )
     dyear_map = as.numeric( cut( APS$dyear, breaks=dyear_breaks, include.lowest=TRUE, ordered_result=TRUE, right=FALSE ) )
     dindex = cbind(au_map, year_map, dyear_map )
@@ -480,7 +487,7 @@ snowcrab_carstm = function( p=NULL, DS="parameters", redo=FALSE, extrapolation_l
     PI = carstm_summary ( p=pPC1 )
     PI = PI[[ paste(pPC1$variabletomodel,"predicted",sep="." )]]
     au_map = match( APS$AUID, dimnames(PI)$AUID )
-    year_map = match( as.character(APS$year), dimnames(PI)$year )
+    year_map = match( as.character(APS$yr), dimnames(PI)$yr )
     dindex = cbind(au_map, year_map )
     APS[, pPC1$variabletomodel] = PI [dindex]
     PI = NULL
@@ -488,7 +495,7 @@ snowcrab_carstm = function( p=NULL, DS="parameters", redo=FALSE, extrapolation_l
     PI = carstm_summary ( p=pPC2 )
     PI = PI[[ paste(pPC2$variabletomodel,"predicted",sep="." )]]
     au_map = match( APS$AUID, dimnames(PI)$AUID )
-    year_map = match( as.character(APS$year), dimnames(PI)$year )
+    year_map = match( as.character(APS$yr), dimnames(PI)$yr )
     dindex = cbind(au_map, year_map  )
     APS[, pPC2$variabletomodel] = PI [dindex]
     PI = NULL
@@ -515,10 +522,10 @@ snowcrab_carstm = function( p=NULL, DS="parameters", redo=FALSE, extrapolation_l
 
     M$tiyr  = aegis_floor( M$tiyr / p$tres )*p$tres    # discretize for inla .. midpoints
 
-    M$year = aegis_floor( M$tiyr)
-    M$year_factor = as.numeric( factor( M$year, levels=p$yrs))
+    M$yr = aegis_floor( M$tiyr)
+    M$year_factor = as.numeric( factor( M$yr, levels=p$yrs))
 
-    M$dyear =  M$tiyr - M$year   # revert dyear to non-discretized form
+    M$dyear =  M$tiyr - M$yr   # revert dyear to non-discretized form
 
     M$dyri = discretize_data( M[, "dyear"], p$discretization[["dyear"]] )
 
@@ -607,7 +614,7 @@ snowcrab_carstm = function( p=NULL, DS="parameters", redo=FALSE, extrapolation_l
     )
     M = M[!is.na(M$AUID),]
 
-    names(M)[which(names(M)=="yr") ] = "year"
+    # names(M)[which(names(M)=="yr") ] = "year"
     # M = M[ which(M$year %in% p$yrs), ]
     # M$tiyr = lubridate::decimal_date ( M$timestamp )
     # M$dyear = M$tiyr - M$year
@@ -622,6 +629,7 @@ snowcrab_carstm = function( p=NULL, DS="parameters", redo=FALSE, extrapolation_l
     iM = which(!is.finite( M[, vnmod] ))
       if (length(iM > 0)) {
         LU = bathymetry_db ( p=bathymetry_parameters( spatial_domain=p$spatial_domain, project_class="core"  ), DS="aggregated_data" )  # raw data
+        LU = lonlat2planar(LU, proj.type=p$aegis_proj4string_planar_km)
         LU_map = array_map( "xy->1", LU[,c("plon","plat")], gridparams=p$gridparams )
         M_map = array_map( "xy->1", M[,c("plon","plat")], gridparams=p$gridparams )
         M[iM, vnmod] = LU[match( M_map, LU_map ), paste(vnmod, "mean", sep=".")  ]
@@ -659,6 +667,7 @@ snowcrab_carstm = function( p=NULL, DS="parameters", redo=FALSE, extrapolation_l
       if (length(iM) > 0 ) {
         LU = substrate_db ( p=substrate_parameters( spatial_domain=p$spatial_domain, project_class="core"  ), DS="aggregated_data" )  # raw data
         LU = LU[ which( LU$lon > p$corners$lon[1] & LU$lon < p$corners$lon[2]  & LU$lat > p$corners$lat[1] & LU$lat < p$corners$lat[2] ), ]
+        LU = lonlat2planar(LU, proj.type=p$aegis_proj4string_planar_km)
         # levelplot( eval(paste(vnmod, "mean", sep="."))~plon+plat, data=M, aspect="iso")
         LU_map = array_map( "xy->1", LU[,c("plon","plat")], gridparams=p$gridparams )
         M_map  = array_map( "xy->1", M[iM, c("plon","plat")], gridparams=p$gridparams )
@@ -697,30 +706,34 @@ snowcrab_carstm = function( p=NULL, DS="parameters", redo=FALSE, extrapolation_l
         if (! "POSIXct" %in% class(T$timestamp)  ) T$timestamp = as.POSIXct( T$timestamp, tz=tz, origin=lubridate::origin  )
         T$yr = lubridate::year(T$timestamp)        
         T$dyear = lubridate::decimal_date( T$timestamp ) - T$yr
-        LU = temperature_db ( p=p, year.assessment=max(p$yrs), DS="aggregated_data" )  # raw data
+        LU = temperature_db ( p=temperature_parameters( spatial_domain=p$spatial_domain, project_class="core" ), year.assessment=max(p$yrs), DS="aggregated_data" )  # raw data
+        names(LU)[ which(names(LU) =="temperature.mean") ] = vnmod
         LU = LU[ which( LU$lon > p$corners$lon[1] & LU$lon < p$corners$lon[2]  & LU$lat > p$corners$lat[1] & LU$lat < p$corners$lat[2] ), ]
+        LU = lonlat2planar(LU, proj.type=p$aegis_proj4string_planar_km)
         LUT_map = array_map( "ts->1", LU[,c("yr", "dyear")], dims=c(p$ny, p$nw), res=c( 1, 1/p$nw ), origin=c( min(p$yrs), 0) )
-        LUS_map = array_map( "xy->1", LU[,c("plon","plat")], gridparams=gridparams )
+        LUS_map = array_map( "xy->1", LU[,c("plon","plat")], gridparams=p$gridparams )
         T_map = array_map( "ts->1", T[, c("yr", "dyear")], dims=c(p$ny, p$nw), res=c( 1, 1/p$nw ), origin=c( min(p$yrs), 0) )
-        M_map = array_map( "xy->1", M[iM, c("plon","plat")], gridparams=gridparams )
+        M_map = array_map( "xy->1", M[iM, c("plon","plat")], gridparams=p$gridparams )
         iLM = match( paste(M_map, T_map, sep="_"), paste(LUS_map, LUT_map, sep="_") )
-        M[ iM, pT$variabletomodel ] = LU[ iLM, paste(pT$variabletomodel, "mean", sep="." ) ]
+        M[ iM, vnmod ] = LU[ iLM, paste(vnmod, "mean", sep="." ) ]
         LU = LUT_map = LUS_map = T = T_map = M_map = iLM = NULL
 
-        iM =  which( !is.finite(M[, pT$variabletomodel]))
+        iM =  which( !is.finite(M[, vnmod]))
         if (length(iM) > 0) {
           LU$AUID = st_points_in_polygons(
             pts = st_as_sf( LU, coords=c("lon","lat"), crs=crs_lonlat ),
             polys = sppoly[, "AUID"],
             varname="AUID"
           )
-          LU$uid = paste(LU$AUID, LU$year, LU$dyear, sep=".")
+          LU_dyear_discret = discretize_data( LU$dyear, p$discretization$dyear ) 
           M_dyear_discret = discretize_data( M$dyear, p$discretization$dyear )  # LU$dyear is discretized. . match discretization
-          M$uid =  paste(M$AUID, M$year, M_dyear_discret, sep=".")
-          LU = tapply( LU[, paste(pT$variabletomodel, "mean", sep="." )], LU$uid, FUN=median, na.rm=TRUE )
+          LU$uid = paste(LU$AUID, LU$yr, LU_dyear_discret, sep=".")
+          M$uid =  paste(M$AUID, M$yr, M_dyear_discret, sep=".")
+          LU = tapply( LU[, paste(vnmod, "mean", sep="." )], LU$uid, FUN=median, na.rm=TRUE )
           iLM = match( as.character( M$uid[iM]), as.character( names(LU )) )
-          M[iM, pT$variabletomodel] = LU[iLM ]
+          M[iM, vnmod] = LU[iLM ]
         }
+
 
       }
 
@@ -730,15 +743,15 @@ snowcrab_carstm = function( p=NULL, DS="parameters", redo=FALSE, extrapolation_l
     pPC1 = speciescomposition_parameters( p=parameters_reset(p), project_class="carstm", variabletomodel="pca1" )
     if (!(exists(pPC1$variabletomodel, M ))) M[,pPC1$variabletomodel] = NA
   
-    kk = which(!is.finite(M[, pPC1$variabletomodel]))
-    if (length(kk) > 0 ) {
+    iM = which(!is.finite(M[, pPC1$variabletomodel]))
+    if (length(iM) > 0 ) {
       pc1 = speciescomposition_db( p=pPC1, DS="speciescomposition"  )
       ii = match( M$id, pc1$id)
-      M[kk, pPC1$variabletomodel] = pc1[ii, pPC1$variabletomodel]
+      M[iM, pPC1$variabletomodel] = pc1[ii, pPC1$variabletomodel]
     }
   
-    kk =  which( !is.finite(M[, pPC1$variabletomodel]))
-    if (length(kk) > 0) {
+    iM =  which( !is.finite(M[, pPC1$variabletomodel]))
+    if (length(iM) > 0) {
       pc1 = speciescomposition_db( p=pPC1, DS="speciescomposition"  )
       pc1 = planar2lonlat( pc1, proj.type=p$aegis_proj4string_planar_km )
       pc1$AUID = st_points_in_polygons(
@@ -747,16 +760,16 @@ snowcrab_carstm = function( p=NULL, DS="parameters", redo=FALSE, extrapolation_l
         varname = "AUID"
       )
       oo = tapply( pc1[, pPC1$variabletomodel ], pc1$AUID, FUN=median, na.rm=TRUE )
-      jj = match( as.character( M$AUID[kk]), as.character( names(oo )) )
-      if (length(jj) > 0) M[kk, pPC1$variabletomodel] = oo[jj ]
+      jj = match( as.character( M$AUID[iM]), as.character( names(oo )) )
+      if (length(jj) > 0) M[iM, pPC1$variabletomodel] = oo[jj ]
     }
-    kk =  which( !is.finite(M[, pPC1$variabletomodel]))
-    if (length(kk) > 0) {
+    iM =  which( !is.finite(M[, pPC1$variabletomodel]))
+    if (length(iM) > 0) {
       PI = carstm_summary ( p=pPC1 )
-      au_map = match( M$AUID[kk], dimnames(PI)$AUID )
-      year_map = match( as.character(M$year[kk]), dimnames(PI)$year )
+      au_map = match( M$AUID[iM], dimnames(PI)$AUID )
+      year_map = match( as.character(M$yr[iM]), dimnames(PI)$yr )
       dindex = cbind(au_map, year_map )
-      M[kk, pPC1$variabletomodel] = PI [dindex]
+      M[iM, pPC1$variabletomodel] = PI [dindex]
     }
 
 
@@ -764,17 +777,17 @@ snowcrab_carstm = function( p=NULL, DS="parameters", redo=FALSE, extrapolation_l
     pPC2 = speciescomposition_parameters( p=parameters_reset(p), project_class="carstm", variabletomodel="pca2")
     if (!(exists(pPC2$variabletomodel, M ))) M[,pPC2$variabletomodel] = NA
 
-    kk = which(!is.finite(M[, pPC2$variabletomodel]))
-    if (length(kk) > 0 ) {
+    iM = which(!is.finite(M[, pPC2$variabletomodel]))
+    if (length(iM) > 0 ) {
       pc2 = speciescomposition_db( p=pPC2, DS="speciescomposition"  )
       ii = match( M$id, pc2$id)
-      M[kk, pPC2$variabletomodel] = pc2[ii, pPC2$variabletomodel]
+      M[iM, pPC2$variabletomodel] = pc2[ii, pPC2$variabletomodel]
     }
 
 
 
-    kk =  which( !is.finite(M[, pPC2$variabletomodel]))
-    if (length(kk) > 0) {
+    iM =  which( !is.finite(M[, pPC2$variabletomodel]))
+    if (length(iM) > 0) {
       pc2 = speciescomposition_db( p=pPC2, DS="speciescomposition"  )
       pc2 = planar2lonlat( pc2, proj.type=p$aegis_proj4string_planar_km )
       pc2$AUID = st_points_in_polygons(
@@ -784,16 +797,16 @@ snowcrab_carstm = function( p=NULL, DS="parameters", redo=FALSE, extrapolation_l
       )
 
       oo = tapply( pc2[, pPC2$variabletomodel ], pc2$AUID, FUN=median, na.rm=TRUE )
-      jj = match( as.character( M$AUID[kk]), as.character( names(oo )) )
-      if (length(jj) > 0) M[kk, pPC2$variabletomodel] = oo[jj ]
+      jj = match( as.character( M$AUID[iM]), as.character( names(oo )) )
+      if (length(jj) > 0) M[iM, pPC2$variabletomodel] = oo[jj ]
     }
-    kk =  which( !is.finite(M[, pPC2$variabletomodel]))
-    if (length(kk) > 0) {
+    iM =  which( !is.finite(M[, pPC2$variabletomodel]))
+    if (length(iM) > 0) {
       PI = carstm_summary ( p=pPC2 )
-      au_map = match( M$AUID[kk], dimnames(PI)$AUID )
-      year_map = match( as.character(M$year[kk]), dimnames(PI)$year )
+      au_map = match( M$AUID[iM], dimnames(PI)$AUID )
+      year_map = match( as.character(M$yr[iM]), dimnames(PI)$yr )
       dindex = cbind(au_map, year_map )
-      M[kk, pPC2$variabletomodel] = PI [dindex]
+      M[iM, pPC2$variabletomodel] = PI [dindex]
     }
 
 
@@ -851,14 +864,14 @@ snowcrab_carstm = function( p=NULL, DS="parameters", redo=FALSE, extrapolation_l
     n_aps = nrow(APS)
     APS = cbind( APS[ rep.int(1:n_aps, p$nt), ], rep.int( p$prediction_ts, rep(n_aps, p$nt )) )
     names(APS) = c(vn, "tiyr")
-    APS$year = aegis_floor( APS$tiyr)
-    APS$dyear = APS$tiyr - APS$year
+    APS$yr = aegis_floor( APS$tiyr)
+    APS$dyear = APS$tiyr - APS$yr
 
 
     TI = carstm_summary ( p=pT )
     TI = TI[[ paste(pT$variabletomodel,"predicted",sep="." )]]
     au_map = match( APS$AUID, dimnames(TI)$AUID )
-    year_map = match( as.character(APS$year), dimnames(TI)$year )
+    year_map = match( as.character(APS$yr), dimnames(TI)$yr )
     dyear_breaks = c(p$dyears, p$dyears[length(p$dyears)]+ diff(p$dyears)[1] )
     dyear_map = as.numeric( cut( APS$dyear, breaks=dyear_breaks, include.lowest=TRUE, ordered_result=TRUE, right=FALSE ) )
     dindex = cbind(au_map, year_map, dyear_map )
@@ -869,7 +882,7 @@ snowcrab_carstm = function( p=NULL, DS="parameters", redo=FALSE, extrapolation_l
     PI = carstm_summary ( p=pPC1 )
     PI = PI[[ paste(pPC1$variabletomodel,"predicted",sep="." )]]
     au_map = match( APS$AUID, dimnames(PI)$AUID )
-    year_map = match( as.character(APS$year), dimnames(PI)$year )
+    year_map = match( as.character(APS$yr), dimnames(PI)$yr )
     dindex = cbind(au_map, year_map )
     APS[, pPC1$variabletomodel] = PI [dindex]
     PI = NULL
@@ -877,7 +890,7 @@ snowcrab_carstm = function( p=NULL, DS="parameters", redo=FALSE, extrapolation_l
     PI = carstm_summary ( p=pPC2 )
     PI = PI[[ paste(pPC2$variabletomodel,"predicted",sep="." )]]
     au_map = match( APS$AUID, dimnames(PI)$AUID )
-    year_map = match( as.character(APS$year), dimnames(PI)$year )
+    year_map = match( as.character(APS$yr), dimnames(PI)$yr )
     dindex = cbind(au_map, year_map  )
     APS[, pPC2$variabletomodel] = PI [dindex]
     PI = NULL
@@ -904,10 +917,10 @@ snowcrab_carstm = function( p=NULL, DS="parameters", redo=FALSE, extrapolation_l
 
     M$tiyr  = aegis_floor( M$tiyr / p$tres )*p$tres    # discretize for inla .. midpoints
 
-    M$year = aegis_floor( M$tiyr)
-    M$year_factor = as.numeric( factor( M$year, levels=p$yrs))
+    M$yr = aegis_floor( M$tiyr)
+    M$year_factor = as.numeric( factor( M$yr, levels=p$yrs))
 
-    M$dyear =  M$tiyr - M$year   # revert dyear to non-discretized form
+    M$dyear =  M$tiyr - M$yr   # revert dyear to non-discretized form
 
     M$dyri = discretize_data( M[, "dyear"], p$discretization[["dyear"]] )
 
