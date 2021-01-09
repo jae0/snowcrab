@@ -1,5 +1,5 @@
 
-snowcrab.db = function( DS, p=NULL, yrs=NULL, fn.root=NULL) {
+snowcrab.db = function( DS, p=NULL, yrs=NULL, fn.root=NULL ) {
 
 	# handles all basic data tables, etc. ...
 

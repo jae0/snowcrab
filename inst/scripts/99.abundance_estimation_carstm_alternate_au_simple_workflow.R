@@ -13,23 +13,23 @@
 # -------------------------------------------------
 # 1. set up polygon parameters
 
-  yrs = 1999:2019
+  yrs = 1999:2020
 
 
-  areal_units_source = "snowcrab_polygons_tesselation"
+  areal_units_type = "tesselation"
   areal_units_resolution_km = 1
   for ( areal_units_constraint_nmin in c( 0, 1, 3, 5, 10, 15, 20, 25, 30, 40, 50  ) ) {
       p = bio.snowcrab::snowcrab_carstm(
         DS="parameters",
-        assessment.years=1999:2019,
+        assessment.years=yrs,
         modeldir = project.datadirectory("bio.snowcrab", "modelled", "testing" ),  ## <--- important: specify save location
-        carstm_model_label = paste( "testing", areal_units_source, areal_units_resolution_km, areal_units_constraint_nmin, sep="_" ),
+        carstm_model_label = paste( "testing", areal_units_type, areal_units_resolution_km, areal_units_constraint_nmin, sep="_" ),
         aegis_internal_resolution_km = 1,
         boundingbox = list( xlim = c(-70.5, -56.5), ylim=c(39.5, 47.5)), # bounding box for plots using spplot
         areal_units_proj4string_planar_km = projection_proj4string("utm20"), # set up default map projection
         areal_units_constraint = "snowcrab",
         areal_units_constraint_nmin = areal_units_constraint_nmin,
-        areal_units_source= areal_units_source,
+        areal_units_type= areal_units_type,
         areal_units_resolution_km = areal_units_resolution_km,
         sa_threshold_km2 = 5,
         inla_num.threads = 4,
@@ -40,20 +40,20 @@
 
 
 
-  areal_units_source = "lattice"
+  areal_units_type = "lattice"
   for ( areal_units_resolution_km in c( 5, 10, 15, 20, 25, 30, 40, 50, 60, 80, 100 ) ) {
     for ( areal_units_constraint_nmin in c( 0, 3, 5, 10, 15  ) ) {
         p = bio.snowcrab::snowcrab_carstm(
           DS="parameters",
-          assessment.years=1999:2019,
+          assessment.years=yrs,
           modeldir = project.datadirectory("bio.snowcrab", "modelled", "testing" ),  ## <--- important: specify save location
-          carstm_model_label = paste( "testing", areal_units_source, areal_units_resolution_km, areal_units_constraint_nmin, sep="_" ),
+          carstm_model_label = paste( "testing", areal_units_type, areal_units_resolution_km, areal_units_constraint_nmin, sep="_" ),
           aegis_internal_resolution_km = 1,
           boundingbox = list( xlim = c(-70.5, -56.5), ylim=c(39.5, 47.5)), # bounding box for plots using spplot
           areal_units_proj4string_planar_km = projection_proj4string("utm20"), # set up default map projection
           areal_units_constraint = "snowcrab",
           areal_units_constraint_nmin = areal_units_constraint_nmin,
-          areal_units_source= areal_units_source,
+          areal_units_type= areal_units_type,
           areal_units_resolution_km = areal_units_resolution_km,
           sa_threshold_km2 = areal_units_resolution_km/2,
           inla_num.threads = 4,
@@ -71,8 +71,8 @@ if (0) {
 }
 
 
-  #  areal_units_source = "lattice"
-  areal_units_source = "snowcrab_polygons_tesselation"
+  #  areal_units_type = "lattice"
+  areal_units_type = "tesselation"
 
   # 5 - 10 works well .. mean and variances stabilize
   # 3 is too low for ts analysis,...  esp for temperature
@@ -99,13 +99,13 @@ if (0) {
     DS="parameters",
     assessment.years=1999:2019,
     modeldir = project.datadirectory("bio.snowcrab", "modelled", "testing" ),  ## <--- important: specify save location
-    carstm_model_label = paste( "testing", areal_units_source, areal_units_resolution_km, areal_units_constraint_nmin, sep="_" ),
+    carstm_model_label = paste( "testing", areal_units_type, areal_units_resolution_km, areal_units_constraint_nmin, sep="_" ),
     aegis_internal_resolution_km = 1,
     boundingbox = list( xlim = c(-70.5, -56.5), ylim=c(39.5, 47.5)), # bounding box for plots using spplot
     areal_units_proj4string_planar_km = projection_proj4string("utm20"), # set up default map projection
     areal_units_constraint = "snowcrab",
     areal_units_constraint_nmin = areal_units_constraint_nmin,
-    areal_units_source= areal_units_source,
+    areal_units_type= areal_units_type,
     areal_units_resolution_km = areal_units_resolution_km,
     sa_threshold_km2 = 5,
     inla_num.threads = 1,
