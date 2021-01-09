@@ -46,30 +46,30 @@ snowcrab_carstm = function( p=NULL, DS="parameters", redo=FALSE, extrapolation_l
     # p$season = "summer"
     # p$taxa =  "maxresolved"
 
-    if ( !exists("groundfish_species_code", p)) p$groundfish_species_code = 2526
-    if ( !exists("speciesname", p)) p$speciesname = "Snow crab"
-    if ( !exists("spatial_domain", p)) p$spatial_domain = "snowcrab"  # defines spatial area, currenty: "snowcrab" or "SSE"
+    if ( !exists("assessment.years", p)) stop( "must define assessment.years")
 
-    if ( !exists("assessment.years", p)) stop( "must ddefine assessment.years")
+    p = parameters_add_without_overwriting( p,
+      groundfish_species_code=2526,
+      speciesname = "Snow crab", 
+      spatial_domain = "snowcrab"
+      yrs = p$assessment.years,
+      inputdata_spatial_discretization_planar_km = 1 ,  # 1 km .. some thinning .. requires 32 GB RAM and limit of speed -- controls resolution of data prior to modelling to reduce data set and speed up modelling
+      inputdata_temporal_discretization_yr = 1/12,
+      trawlable_units = "sweptarea",  # <<<<<<<<<<<<<<<<<< also:  "standardtow", "sweptarea" (for groundfish surveys)
+      areal_units_type = "lattice", # "stmv_lattice" to use ageis fields instead of carstm fields ... note variables are not the same
+      areal_units_overlay = "snowcrab_managementareas", # currently: "snowcrab_managementareas",  "groundfish_strata" .. additional polygon layers for subsequent analysis for now ..
+      areal_units_resolution_km = 25, # km dim of lattice ~ 1 hr
+      areal_units_constraint = "snowcrab",  # locations of data as constraint .. "snowcrab" loads these automatically, otherwise a xy matrix of positions
 
-    if ( !exists("yrs", p)) p$yrs = p$assessment.years
-    if ( !exists("inputdata_spatial_discretization_planar_km", p)) p$inputdata_spatial_discretization_planar_km = 1  # 1 km .. some thinning .. requires 32 GB RAM and limit of speed -- controls resolution of data prior to modelling to reduce data set and speed up modelling
-    if ( !exists("inputdata_temporal_discretization_yr", p)) p$inputdata_temporal_discretization_yr = 1/12
-    if ( !exists("trawlable_units", p)) p$trawlable_units = "sweptarea"  # <<<<<<<<<<<<<<<<<< also:  "standardtow", "sweptarea" (for groundfish surveys)
-    if ( !exists("areal_units_type", p)) p$areal_units_type = "lattice" # "stmv_lattice" to use ageis fields instead of carstm fields ... note variables are not the same
-    if ( !exists("areal_units_overlay", p)) p$areal_units_overlay = "snowcrab_managementareas" # currently: "snowcrab_managementareas",  "groundfish_strata" .. additional polygon layers for subsequent analysis for now ..
-    if ( !exists("areal_units_resolution_km", p)) p$areal_units_resolution_km = 25 # km dim of lattice ~ 1 hr
-    if ( !exists("areal_units_constraint", p)) p$areal_units_constraint = "snowcrab"  # locations of data as constraint .. "snowcrab" loads these automatically, otherwise a xy matrix of positions
+      areal_units_constraint_nmin = 3, 
 
-    if ( !exists("areal_units_constraint_nmin", p)) p$areal_units_constraint_nmin = 3
+      areal_units_proj4string_planar_km = aegis::projection_proj4string("utm20"),  # coord system to use for areal estimation and gridding for carstm
+      quantile_bounds =c(0, 0.99) # trim upper bounds
+    }
 
-
-    if ( !exists("areal_units_proj4string_planar_km", p)) p$areal_units_proj4string_planar_km = aegis::projection_proj4string("utm20")  # coord system to use for areal estimation and gridding for carstm
-    if ( !exists("quantile_bounds", p)) p$quantile_bounds =c(0, 0.99) # trim upper bounds
+    
     if ( !exists("selection", p)) p$selection=list()
-
     if ( !exists("type", p$selection) ) p$selection$type = "number"
-
     if ( !exists("biologicals", p$selection) ) p$selection$biologicals = list(
       spec_bio=bio.taxonomy::taxonomy.recode( from="spec", to="parsimonious", tolookup=p$groundfish_species_code ),
       sex=0, # male

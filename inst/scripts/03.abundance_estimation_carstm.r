@@ -5,7 +5,7 @@
 # some issues running in MS Windows .. might need to run in Linux
 #Virtual box install of Ubuntu or Debian is likely easiest option
 
-year.assessment = 2019
+year.assessment = 2020
 
 
 # -------------------------------------------------
