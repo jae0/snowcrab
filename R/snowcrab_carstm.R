@@ -65,7 +65,7 @@ snowcrab_carstm = function( p=NULL, DS="parameters", redo=FALSE, extrapolation_l
 
       areal_units_proj4string_planar_km = aegis::projection_proj4string("utm20"),  # coord system to use for areal estimation and gridding for carstm
       quantile_bounds =c(0, 0.99) # trim upper bounds
-    }
+    )
 
     
     if ( !exists("selection", p)) p$selection=list()
