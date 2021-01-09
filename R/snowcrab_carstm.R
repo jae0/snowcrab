@@ -51,7 +51,7 @@ snowcrab_carstm = function( p=NULL, DS="parameters", redo=FALSE, extrapolation_l
     p = parameters_add_without_overwriting( p,
       groundfish_species_code=2526,
       speciesname = "Snow crab", 
-      spatial_domain = "snowcrab"
+      spatial_domain = "snowcrab", 
       yrs = p$assessment.years,
       inputdata_spatial_discretization_planar_km = 1 ,  # 1 km .. some thinning .. requires 32 GB RAM and limit of speed -- controls resolution of data prior to modelling to reduce data set and speed up modelling
       inputdata_temporal_discretization_yr = 1/12,
