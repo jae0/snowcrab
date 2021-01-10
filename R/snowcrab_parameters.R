@@ -18,7 +18,7 @@ snowcrab_parameters = function( p=list(), year.assessment=NULL, project_name="bi
   #  usually the datadir is a subdirectory: "data" of data_root as in snowcrab_carstm, .. might cause problems
 
   p = parameters_add_without_overwriting( p, project_name = project_name )
-  p = parameters_add_without_overwriting( p, data_root = project.datadirectory( p$project_name  )
+  p = parameters_add_without_overwriting( p, data_root = project.datadirectory( p$project_name  ) )
   p = parameters_add_without_overwriting( p, datadir  = p$data_root )  # all unprocessed inputs (and simple manipulations)
   p = parameters_add_without_overwriting( p, modeldir = file.path( p$data_root, "modelled" ) )  # all model outputs
 
