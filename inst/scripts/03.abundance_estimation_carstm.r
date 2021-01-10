@@ -13,6 +13,8 @@ year.assessment = 2020
 # require(aegis)
  p = bio.snowcrab::snowcrab_carstm( DS="parameters", assessment.years=1999:year.assessment )
 
+  # p$modeldir = "..."  # use this to specifiy alt location to save model output files
+
   # misc run params adjustments here:
   p$inla_num.threads = 6
   p$inla_blas.num.threads = 6
@@ -31,9 +33,10 @@ year.assessment = 2020
   sppoly = areal_units( p=p )  # to reload
   # plot(sppoly)
   # spplot( sppoly, "au_sa_km2", main="AUID", sp.layout=p$coastLayout )
-  dev.new(); spplot( sppoly, "au_sa_km2", main="AUID", sp.layout=p$coastLayout,  col.regions=RColorBrewer::brewer.pal(8, "Accent") )
-
-
+  dev.new(); plot( sppoly[, "au_sa_km2"], main="AUID", breaks = "quantile", nbreaks = 8, pal=sf.colors(8) )
+  
+  
+  
 # -------------------------------------------------
 # Part 3 -- create covariate field for bathymetry
 # bathymetry -- ensure the data assimilation in bathymetry is first completed :: 01.bathymetry_data.R

@@ -1,5 +1,5 @@
 
-snowcrab_parameters = function( p=NULL, year.assessment=NULL, project_class="core", ... ) {
+snowcrab_parameters = function( p=list(), year.assessment=NULL, project_name="bio.snowcrab", project_class="core", ... ) {
 
   # ---------------------
   # deal with additional passed parameters
@@ -13,14 +13,20 @@ snowcrab_parameters = function( p=NULL, year.assessment=NULL, project_class="cor
   p$libs = unique( c( p$libs, project.library (
     "aegis", "bio.taxonomy", "stmv", "aegis.polygons", "aegis.coastline", "netmensuration", "bio.snowcrab" ) ) )
 
-
-  p$project_class = project_class
-
   # ---------------------
-  if (!exists("project_name", p)) p$project_name = "bio.snowcrab"
-  if (!exists("data_root", p)) p$data_root = project.datadirectory( p$project_name )
 
-  p$datadir=p$data_root  # this is likely a problematic locations .. usually the datadir is a subdirectory: "data" of data_root as in snowcrab_carstm
+  #  usually the datadir is a subdirectory: "data" of data_root as in snowcrab_carstm, .. might cause problems
+
+  p = parameters_add_without_overwriting( p, project_name = project_name )
+  p = parameters_add_without_overwriting( p, data_root = project.datadirectory( p$project_name  )
+  p = parameters_add_without_overwriting( p, datadir  = p$data_root )  # all unprocessed inputs (and simple manipulations)
+  p = parameters_add_without_overwriting( p, modeldir = file.path( p$data_root, "modelled" ) )  # all model outputs
+
+  if ( !file.exists(p$datadir) ) dir.create( p$datadir, showWarnings=FALSE, recursive=TRUE )
+  if ( !file.exists(p$modeldir) ) dir.create( p$modeldir, showWarnings=FALSE, recursive=TRUE )
+
+
+
   p$project.outputdir = project.datadirectory( p$project_name, "output" ) #required for interpolations and mapping
   p$transform_lookup = file.path( p$project.outputdir, "transform.lookup.rdata" ) # local storage of transforms for timeseries plots
 
@@ -98,10 +104,14 @@ snowcrab_parameters = function( p=NULL, year.assessment=NULL, project_class="cor
   p$threshold.distance = 5 # predict no farther than this distance km from survey stations
 
 
-  if (project_class == "core") {
-    return(p)
+  # ---------------------
+
+  if (project_class=="core") {
+    p$project_class = "core"
+    return(p)  # minimal specifications
   }
 
+  # ---------------------
 
   if (project_class %in% c("stmv") ) {
 
