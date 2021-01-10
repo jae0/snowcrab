@@ -3,8 +3,6 @@ snowcrab_carstm = function( p=NULL, DS="parameters", redo=FALSE, extrapolation_l
 
 	# handles all basic data tables, etc. ...
 
-
-
   if (DS=="parameters") {
 
     # over-ride default dependent variable name if it exists
@@ -88,10 +86,10 @@ snowcrab_carstm = function( p=NULL, DS="parameters", redo=FALSE, extrapolation_l
     )
 
     if ( !exists("carstm_inputadata_model_source", p))  p$carstm_inputadata_model_source = list()
-    if ( !exists("bathymetry", p$carstm_inputadata_model_source ))  p$carstm_inputadata_model_source$bathymetry = "stmv",  # "stmv", "hybrid", "carstm"
-    if ( !exists("substrate", p$carstm_inputadata_model_source ))  p$carstm_inputadata_model_source$substrate = "stmv",  # "stmv", "hybrid", "carstm"
-    if ( !exists("temperature", p$carstm_inputadata_model_source ))  p$carstm_inputadata_model_source$temperature = "carstm",  # "stmv", "hybrid", "carstm"
-    if ( !exists("speciescomposition", p$carstm_inputadata_model_source ))  p$carstm_inputadata_model_source$speciescomposition = "carstm",  # "stmv", "hybrid", "carstm"
+    if ( !exists("bathymetry", p$carstm_inputadata_model_source ))  p$carstm_inputadata_model_source$bathymetry = "stmv"  # "stmv", "hybrid", "carstm"
+    if ( !exists("substrate", p$carstm_inputadata_model_source ))  p$carstm_inputadata_model_source$substrate = "stmv"  # "stmv", "hybrid", "carstm"
+    if ( !exists("temperature", p$carstm_inputadata_model_source ))  p$carstm_inputadata_model_source$temperature = "carstm"  # "stmv", "hybrid", "carstm"
+    if ( !exists("speciescomposition", p$carstm_inputadata_model_source ))  p$carstm_inputadata_model_source$speciescomposition = "carstm"  # "stmv", "hybrid", "carstm"
 
     if ( !exists("variabletomodel", p)) p$variabletomodel = "totno"
 
