@@ -62,6 +62,12 @@ snowcrab_carstm = function( p=NULL, DS="parameters", redo=FALSE, extrapolation_l
       areal_units_constraint_nmin = 3, 
 
       areal_units_proj4string_planar_km = aegis::projection_proj4string("utm20"),  # coord system to use for areal estimation and gridding for carstm
+      areal_units_timeperiod = "none",
+      tus="yr", 
+      fraction_cv = 1.0, 
+      fraction_good_bad = 0.9, 
+      nAU_min = 30,  
+
       quantile_bounds =c(0, 0.99) # trim upper bounds
     )
 
@@ -85,11 +91,11 @@ snowcrab_carstm = function( p=NULL, DS="parameters", redo=FALSE, extrapolation_l
       # ranged_data = c("dyear")  # not used .. just to show how to use range_data
     )
 
-    if ( !exists("carstm_inputadata_model_source", p))  p$carstm_inputadata_model_source = list()
-    if ( !exists("bathymetry", p$carstm_inputadata_model_source ))  p$carstm_inputadata_model_source$bathymetry = "stmv"  # "stmv", "hybrid", "carstm"
-    if ( !exists("substrate", p$carstm_inputadata_model_source ))  p$carstm_inputadata_model_source$substrate = "stmv"  # "stmv", "hybrid", "carstm"
-    if ( !exists("temperature", p$carstm_inputadata_model_source ))  p$carstm_inputadata_model_source$temperature = "carstm"  # "stmv", "hybrid", "carstm"
-    if ( !exists("speciescomposition", p$carstm_inputadata_model_source ))  p$carstm_inputadata_model_source$speciescomposition = "carstm"  # "stmv", "hybrid", "carstm"
+    if ( !exists("carstm_inputdata_model_source", p))  p$carstm_inputdata_model_source = list()
+    if ( !exists("bathymetry", p$carstm_inputdata_model_source ))  p$carstm_inputdata_model_source$bathymetry = "stmv"  # "stmv", "hybrid", "carstm"
+    if ( !exists("substrate", p$carstm_inputdata_model_source ))  p$carstm_inputdata_model_source$substrate = "stmv"  # "stmv", "hybrid", "carstm"
+    if ( !exists("temperature", p$carstm_inputdata_model_source ))  p$carstm_inputdata_model_source$temperature = "carstm"  # "stmv", "hybrid", "carstm"
+    if ( !exists("speciescomposition", p$carstm_inputdata_model_source ))  p$carstm_inputdata_model_source$speciescomposition = "carstm"  # "stmv", "hybrid", "carstm"
 
     if ( !exists("variabletomodel", p)) p$variabletomodel = "totno"
 
