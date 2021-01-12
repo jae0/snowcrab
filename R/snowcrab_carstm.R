@@ -54,6 +54,7 @@ snowcrab_carstm = function( p=NULL, DS="parameters", redo=FALSE, extrapolation_l
       inputdata_spatial_discretization_planar_km = 1 ,  # 1 km .. some thinning .. requires 32 GB RAM and limit of speed -- controls resolution of data prior to modelling to reduce data set and speed up modelling
       inputdata_temporal_discretization_yr = 1/12,
       trawlable_units = "sweptarea",  # <<<<<<<<<<<<<<<<<< also:  "standardtow", "sweptarea" (for groundfish surveys)
+      areal_units_xydata = "snowcrab_db(p=p, DS='areal_units_input')",
       areal_units_type = "lattice", # "stmv_lattice" to use ageis fields instead of carstm fields ... note variables are not the same
       areal_units_overlay = "snowcrab_managementareas", # currently: "snowcrab_managementareas",  "groundfish_strata" .. additional polygon layers for subsequent analysis for now ..
       areal_units_resolution_km = 25, # km dim of lattice ~ 1 hr
