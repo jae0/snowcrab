@@ -102,69 +102,54 @@ snowcrab_carstm = function( p=NULL, DS="parameters", redo=FALSE, extrapolation_l
 
     if ( !exists("carstm_modelengine", p)) p$carstm_modelengine = "inla"  # {model engine}.{label to use to store}
 
-    if ( !exists("carstm_model_call", p)) {
-      if ( grepl("inla", p$carstm_modelengine) ) {
-        p$libs = unique( c( p$libs, project.library ( "INLA" ) ) )
-        if ( !exists("carstm_model_label", p))  p$carstm_model_label = "production"
-        # 281 configs .. 8hrs
 
-        #number of nodes can be adjusted below to smooth (n=9 instead of n=13)
-        p$carstm_model_call = paste(
-          'inla( formula =', p$variabletomodel,
-          ' ~ 1
-            + offset( log(data_offset))
-            + f( dyri, model="ar1", hyper=H$ar1 )
-            + f( inla.group( t, method="quantile", n=9 ), model="rw2", scale.model=TRUE, hyper=H$rw2)
-            + f( inla.group( z, method="quantile", n=9 ), model="rw2", scale.model=TRUE, hyper=H$rw2)
-            + f( inla.group( substrate.grainsize, method="quantile", n=9 ), model="rw2", scale.model=TRUE, hyper=H$rw2)
-            + f( inla.group( pca1, method="quantile", n=9 ), model="rw2", scale.model=TRUE, hyper=H$rw2)
-            + f( inla.group( pca2, method="quantile", n=9 ), model="rw2", scale.model=TRUE, hyper=H$rw2)
-            + f( auid, model="bym2", graph=slot(sppoly, "nb"), group=year_factor, scale.model=TRUE, constr=TRUE, hyper=H$bym2, control.group=list(model="ar1", hyper=H$ar1_group)),
-            family = "poisson",
-            data= M,
-            control.compute=list(cpo=TRUE, waic=TRUE, dic=TRUE, config=TRUE),
-            control.results=list(return.marginals.random=TRUE, return.marginals.predictor=TRUE ),
-            control.predictor=list(compute=FALSE, link=1 ),
-            #control.fixed = list(prec.intercept = 0.1),
-            control.fixed = H$fixed,  # priors for fixed effects, generic is ok
-            control.inla = list(cmin = 0, h=1e-4, tolerance=1e-9, strategy="adaptive", optimise.strategy="smart"),
-            # control.inla = list( h=1e-6, tolerance=1e-12), # increase in case values are too close to zero
-            #control.inla=list( strategy="laplace", cutoff=1e-6, correct=TRUE, correct.verbose=FALSE ),
-            # control.inla = list( h=1e-6, tolerance=1e-12), # increase in case values are too close to zero
-            # control.inla = list(h=1e-3, tolerance=1e-9, cmin=0), # restart=3), # restart a few times in case posteriors are poorly defined
-            # control.mode = list( restart=TRUE, result=RES ), # restart from previous estimates
-          verbose=TRUE
-          )'
-        )
+    
+    if ( grepl("inla", p$carstm_modelengine) ) {
+      if ( !exists("carstm_model_label", p))  p$carstm_model_label = "production"
+      if ( !exists("carstm_model_formula", p)  ) {
+        p$carstm_model_formula = as.formula( paste(
+         p$variabletomodel, ' ~ 1',
+            ' + offset( log(data_offset)) ',
+            ' + f( dyri, model="ar1", hyper=H$ar1 ) ',
+            ' + f( inla.group( t, method="quantile", n=9 ), model="rw2", scale.model=TRUE, hyper=H$rw2) ',
+            ' + f( inla.group( z, method="quantile", n=9 ), model="rw2", scale.model=TRUE, hyper=H$rw2) ',
+            ' + f( inla.group( substrate.grainsize, method="quantile", n=9 ), model="rw2", scale.model=TRUE, hyper=H$rw2) ',
+            ' + f( inla.group( pca1, method="quantile", n=9 ), model="rw2", scale.model=TRUE, hyper=H$rw2) ',
+            ' + f( inla.group( pca2, method="quantile", n=9 ), model="rw2", scale.model=TRUE, hyper=H$rw2) ',
+            ' + f( auid, model="bym2", graph=slot(sppoly, "nb"), group=year_factor, scale.model=TRUE, constr=TRUE, hyper=H$bym2, control.group=list(model="ar1", hyper=H$ar1_group)) '
+         ) )
       }
-        #    + f(tiyr, model="ar1", hyper=H$ar1 )
-        # + f(year,  model="ar1", hyper=H$ar1 )
+      if ( !exists("carstm_model_family", p)  )  p$carstm_model_family = "poisson"
+    }
+ 
+      #    + f(tiyr, model="ar1", hyper=H$ar1 )
+      # + f(year,  model="ar1", hyper=H$ar1 )
 
-      if ( grepl("glm", p$carstm_modelengine) ) {
-        if ( !exists("carstm_model_label", p))  p$carstm_model_label = "default_glm"
-        p$carstm_model_call = paste(
-          'glm( formula =',  p$variabletomodel,
-          ' ~ 1 + factor(AUID) + t + z + substrate.grainsize +tiyr,
-            data= M[ which(M$tag=="observations"), ],
-            family=gaussian(link="identity")
-          )'
-        )
-      }
-
-      if ( grepl("gam", p$carstm_modelengine) ) {
-        p$libs = unique( c( p$libs, project.library ( "mgcv"  ) ) )
-
-        if ( !exists("carstm_model_label", p))  p$carstm_model_label = "default_gam"
-        p$carstm_model_call = paste(
-          'gam( formula =',  p$variabletomodel,
-          ' ~ 1 + factor(AUID) + s(t) + s(z) + s(substrate.grainsize) + s(yr) + s(dyear),
-            data= M[ which(M$tag=="observations"), ],
-            family=gaussian(link="identity")
-          )'
-        )
-      }
+    if ( grepl("glm", p$carstm_modelengine) ) {
+      if ( !exists("carstm_model_label", p))  p$carstm_model_label = "default_glm"
+      p$carstm_model_call = paste(
+        'glm( formula =',  p$variabletomodel,
+        ' ~ 1 + factor(AUID) + t + z + substrate.grainsize +tiyr,
+          data= M[ which(M$tag=="observations"), ],
+          family=gaussian(link="identity")
+        )'
+      )
     }
 
+    if ( grepl("gam", p$carstm_modelengine) ) {
+      p$libs = unique( c( p$libs, project.library ( "mgcv"  ) ) )
+
+      if ( !exists("carstm_model_label", p))  p$carstm_model_label = "default_gam"
+      p$carstm_model_call = paste(
+        'gam( formula =',  p$variabletomodel,
+        ' ~ 1 + factor(AUID) + s(t) + s(z) + s(substrate.grainsize) + s(yr) + s(dyear),
+          data= M[ which(M$tag=="observations"), ],
+          family=gaussian(link="identity")
+        )'
+      )
+    }
+
+    
     if (!exists("nsims", p) ) p$nsims = 10000
 
     p = carstm_parameters( p=p)  # fill in anything missing and some checks
