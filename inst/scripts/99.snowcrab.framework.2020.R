@@ -10,14 +10,17 @@
 # expects bio.snowcrab/inst/scripts/03.abundance_estimation_carstm.r to have been run ..
 # we are running simpler variations of that model here
 
+
+  # adjust based upon RAM requirements and ncores
+  inla.setOption(num.threads= floor( parallel::detectCores() / 2) )
+  inla.setOption(blas.num.threads= 2 )
+
+
   p = bio.snowcrab::snowcrab_carstm( DS="parameters", assessment.years=1999:2018 )
 
+
   # misc run params adjustments here:
-  p$inla_num.threads = 2
-  p$inla_blas.num.threads = 2
   p$modeldata = 'snowcrab_carstm( p=p, DS="carstm_inputs" )'
-
-
 
 
 # -------------------------------------------------
@@ -26,14 +29,17 @@
   p$variabletomodel = "totwgt"
   p$selection$type = "biomass" # d efault is "number"  ... specify to override
   p$carstm_modelengine = "glm"
-  p$carstm_model_call = paste( '
-    glm( formula = ', p$variabletomodel, '  ~ AUID:year -1,
-         family = gaussian(link="identity"),
-         data = M[ which(M$tag=="observations"), ],
-    ) ' )
+
+  p$carstm_model_formula = as.formula( paste(
+    p$variabletomodel, '  ~ AUID:year -1 ' ))
+  
+  p$carstm_model_family = gaussian(link="identity")
+  
   M = snowcrab_carstm( p=p, DS="carstm_inputs", redo=FALSE )  # will redo if not found
   M$year = as.factor(M$year)
   M[,p$variabletomodel] = M[,p$variabletomodel] / M$data_offset  # cannot do offsets in gaussian linear model
+  M = M[ which(M$tag=="observations"), ]
+
   fit = carstm_model( p=p, M=M )
 
 
@@ -44,13 +50,15 @@
   p$carstm_model_label = "factorial_poisson_glm"
   p$variabletomodel = "totno"
   p$carstm_modelengine = "glm"
-  p$carstm_model_call = paste( '
-    glm( formula = ', p$variabletomodel, '  ~ AUID:year -1 + offset( log(data_offset)),
-         family = poisson(link="log"),
-         data = M[ which(M$tag=="observations"), ],
-    ) ' )
+
+  p$carstm_model_formula = as.formula( paste(
+    p$variabletomodel, ' ~ AUID:year -1 + offset( log(data_offset)) '))
+
+  p$carstm_model_family = poisson(link="log")
   M = snowcrab_carstm( p=p, DS="carstm_inputs", redo=FALSE )  # will redo if not found
   M$year = as.factor(M$year)
+  M = M[ which(M$tag=="observations"), ]
+
   fit = carstm_model( p=p, M=M )
 
 
@@ -64,20 +72,12 @@
   p$variabletomodel = "totwgt"
   p$selection$type = "biomass" # d efault is "number"  ... specify to override
   p$carstm_modelengine = "inla"
-  p$carstm_model_call = paste(
-    'inla( formula =', p$variabletomodel, ' ~ year_factor:auid ,
-      family = "gaussian",
-      data= M,
-      control.compute=list(dic=TRUE, cpo=TRUE, waic=TRUE, config=TRUE),
-      control.results=list(return.marginals.random=TRUE, return.marginals.predictor=TRUE ),
-      # control.predictor=list(compute=FALSE, link=1 ),
-      control.fixed = list(prec.intercept = 1),
-      # control.fixed = H$fixed,  # priors for fixed effects, generic is ok
-      control.inla = list(cmin = 0, tolerance=1e-2), # increase in case values are too close to zero
-      # control.inla = list(cmin = 0,  tolerance=1e-12), # increase in case values are too close to zero
-    verbose=TRUE
-    )'
-  )
+
+  p$carstm_model_formula = as.formula( paste(
+    p$variabletomodel, ' ~ year_factor:auid '))
+
+  p$carstm_model_family = "gaussian"
+
   M = snowcrab_carstm( p=p, DS="carstm_inputs", redo=FALSE )  # will redo if not found
 
   # remove unsampled locations in factorial methods to get sensible stats
@@ -101,22 +101,14 @@
   p$carstm_predict_force_range = TRUE  # for factorial models this is necessary to prevent meainingless predictions
   p$variabletomodel = "totno"
   p$carstm_modelengine = "inla"
-  p$carstm_model_call = paste(
-    'inla( formula =', p$variabletomodel,
-    ' ~ -1
-       + year_factor:auid
-       + offset( log(data_offset)) ,
-      family = "poisson",
-      data= M,
-      control.compute=list(dic=TRUE, cpo=TRUE, waic=TRUE, config=TRUE),
-      control.results=list(return.marginals.random=TRUE, return.marginals.predictor=TRUE ),
-      control.predictor=list(compute=FALSE, link=1 ),
-      control.fixed = list(prec.intercept = 1),
-      # control.fixed = H$fixed,  # priors for fixed effects, generic is ok
-      control.inla = list(cmin = 0, h=1e-2, tolerance=1e-4), # increase in case values are too close to zero
-      verbose=TRUE
-    )'
-  )
+
+  p$carstm_model_formula = as.formula( paste(
+    p$variabletomodel, ' ~ -1', 
+       ' + year_factor:auid ',
+       ' + offset( log(data_offset)) ' ))
+
+  p$carstm_model_family = "poisson"
+
   M = snowcrab_carstm( p=p, DS="carstm_inputs", redo=FALSE )  # will redo if not found
 
     # remove unsampled locations in factorial methods to get sensible stats
@@ -143,24 +135,18 @@
   p$carstm_predict_force_range = TRUE  # for factorial models this is necessary to prevent meainingless predictions
   p$variabletomodel = "totno"
   p$carstm_modelengine = "inla"
-  p$carstm_model_call = paste(
-    'inla( formula =', p$variabletomodel,
-    ' ~ -1
-       + year_factor
-       + auid
-       + year_factor:auid
-       + offset( log(data_offset)) ,
-      family = "poisson",
-      data= M,
-      control.compute=list(dic=TRUE, cpo=TRUE, waic=TRUE, config=TRUE),
-      control.results=list(return.marginals.random=TRUE, return.marginals.predictor=TRUE ),
-      control.predictor=list(compute=FALSE, link=1 ),
-      control.fixed = list(prec.intercept = 1),
-      # control.fixed = H$fixed,  # priors for fixed effects, generic is ok
-      control.inla = list(cmin = 0, h=1e-2, tolerance=1e-4), # increase in case values are too close to zero
-      verbose=TRUE
-    )'
-  )
+
+
+  p$carstm_model_formula = as.formula( paste(
+    p$variabletomodel, ' ~ -1',
+       ' + year_factor', 
+       ' + auid', 
+       ' + year_factor:auid ', 
+       ' + offset( log(data_offset)) ' 
+  ))
+  
+  p$carstm_model_family = "poisson"
+
   M = snowcrab_carstm( p=p, DS="carstm_inputs", redo=FALSE )  # will redo if not found
 
   # remove unsampled locations in factorial methods to get sensible stats
@@ -183,30 +169,22 @@
   p$variabletomodel = "totno"
   p$carstm_modelengine = "inla"
   p$carstm_predict_force_range = TRUE  # for factorial models this is necessary to prevent meainingless predictions
-  p$carstm_model_call = paste(
-    'inla( formula =', p$variabletomodel,
-    ' ~ -1
-       + year_factor
-       + auid
-       + year_factor:auid
-        + f( dyri, model="ar1", hyper=H$ar1 )
-        + f( inla.group( z, method="quantile", n=9 ), model="rw2", scale.model=TRUE, hyper=H$rw2)
-        + f( inla.group( substrate.grainsize, method="quantile", n=9 ), model="rw2", scale.model=TRUE, hyper=H$rw2)
-        + f( inla.group( t, method="quantile", n=9 ), model="rw2", scale.model=TRUE, hyper=H$rw2)
-        + f( inla.group( pca1, method="quantile", n=9 ), model="rw2", scale.model=TRUE, hyper=H$rw2)
-        + f( inla.group( pca2, method="quantile", n=9 ), model="rw2", scale.model=TRUE, hyper=H$rw2)
-       + offset( log(data_offset)) ,
-      family = "poisson",
-      data= M,
-      control.compute=list(dic=TRUE, cpo=TRUE, waic=TRUE, config=TRUE),
-      control.results=list(return.marginals.random=TRUE, return.marginals.predictor=TRUE ),
-      control.predictor=list(compute=FALSE, link=1 ),
-      control.fixed = list(prec.intercept = 1),
-      # control.fixed = H$fixed,  # priors for fixed effects, generic is ok
-      control.inla = list(cmin = 0, h=1e-2, tolerance=1e-4), # increase in case values are too close to zero
-      verbose=TRUE
-    )'
-  )
+
+  p$carstm_model_formula = as.formula( paste(
+    p$variabletomodel, ' ~ -1 ', 
+       ' + year_factor',
+       ' + auid',
+       ' + year_factor:auid',
+       ' + f( dyri, model="ar1", hyper=H$ar1 )',
+       ' + f( inla.group( z, method="quantile", n=9 ), model="rw2", scale.model=TRUE, hyper=H$rw2)',
+       ' + f( inla.group( substrate.grainsize, method="quantile", n=9 ), model="rw2", scale.model=TRUE, hyper=H$rw2)',
+       ' + f( inla.group( t, method="quantile", n=9 ), model="rw2", scale.model=TRUE, hyper=H$rw2)',
+       ' + f( inla.group( pca1, method="quantile", n=9 ), model="rw2", scale.model=TRUE, hyper=H$rw2)',
+       ' + f( inla.group( pca2, method="quantile", n=9 ), model="rw2", scale.model=TRUE, hyper=H$rw2)',
+       ' + offset( log(data_offset)) ' 
+  ))
+  p$carstm_model_family = "poisson"
+  
   M = snowcrab_carstm( p=p, DS="carstm_inputs", redo=FALSE )  # will redo if not found
   # remove unsampled locations in factorial methods to get sensible stats
   M$uid = paste( M$AUID, M$year, sep="." )
@@ -219,7 +197,6 @@
   M$auid = factor( M$auid)
   M[,p$variabletomodel] = floor( M[,p$variabletomodel] )  # poisson wants integers
 
-
   fit = carstm_model( p=p, M=M )
 
 
@@ -230,26 +207,19 @@
   p$carstm_model_label = "covariates_only"
   p$variabletomodel = "totno"
   p$carstm_modelengine = "inla"
-  p$carstm_model_call = paste(
-    'inla( formula =', p$variabletomodel,
-    ' ~ -1
-        + f( inla.group( z, method="quantile", n=9 ), model="rw2", scale.model=TRUE, hyper=H$rw2)
-        + f( inla.group( substrate.grainsize, method="quantile", n=9 ), model="rw2", scale.model=TRUE, hyper=H$rw2)
-        + f( inla.group( t, method="quantile", n=9 ), model="rw2", scale.model=TRUE, hyper=H$rw2)
-        + f( inla.group( pca1, method="quantile", n=9 ), model="rw2", scale.model=TRUE, hyper=H$rw2)
-        + f( inla.group( pca2, method="quantile", n=9 ), model="rw2", scale.model=TRUE, hyper=H$rw2)
-       + offset( log(data_offset)) ,
-      family = "poisson",
-      data= M,
-      control.compute=list(dic=TRUE, cpo=TRUE, waic=TRUE, config=TRUE),
-      control.results=list(return.marginals.random=TRUE, return.marginals.predictor=TRUE ),
-      control.predictor=list(compute=FALSE, link=1 ),
-      control.fixed = list(prec.intercept = 1),
-      # control.fixed = H$fixed,  # priors for fixed effects, generic is ok
-      control.inla = list(cmin = 0, h=1e-2, tolerance=1e-4), # increase in case values are too close to zero
-      verbose=TRUE
-    )'
-  )
+
+  p$carstm_model_formula = as.formula( paste(
+    p$variabletomodel, ' ~ -1 ', 
+      ' + f( inla.group( z, method="quantile", n=9 ), model="rw2", scale.model=TRUE, hyper=H$rw2) ',
+      ' + f( inla.group( substrate.grainsize, method="quantile", n=9 ), model="rw2", scale.model=TRUE, hyper=H$rw2) ',
+      ' + f( inla.group( t, method="quantile", n=9 ), model="rw2", scale.model=TRUE, hyper=H$rw2) ',
+      ' + f( inla.group( pca1, method="quantile", n=9 ), model="rw2", scale.model=TRUE, hyper=H$rw2) ',
+      ' + f( inla.group( pca2, method="quantile", n=9 ), model="rw2", scale.model=TRUE, hyper=H$rw2) ',
+      ' + offset( log(data_offset))  '
+  ))
+
+  p$carstm_model_family = "poisson"
+  
   M = snowcrab_carstm( p=p, DS="carstm_inputs", redo=FALSE )  # will redo if not found
   # remove unsampled locations in factorial methods to get sensible stats
   M$uid = paste( M$AUID, M$year, sep="." )
@@ -273,27 +243,17 @@
   p$carstm_model_label = "mixed_effects_simple"
   p$variabletomodel = "totno"
   p$carstm_modelengine = "inla"
-  p$carstm_model_call = paste(
-    'inla( formula =', p$variabletomodel,
-      ' ~ 1
-        + offset( log(data_offset))
-        + year_factor
-        + f( auid, model="bym2", graph=slot(sppoly, "nb"), scale.model=TRUE, constr=TRUE, hyper=H$bym2),
-        family = "poisson",
-        data= M,
-        control.compute=list(dic=TRUE, cpo=TRUE, waic=TRUE, config=TRUE),
-        control.results=list(return.marginals.random=TRUE, return.marginals.predictor=TRUE ),
-        control.predictor=list(compute=FALSE, link=1 ),
-        # control.fixed = list(prec.intercept = 0.1),
-        control.fixed = H$fixed,  # priors for fixed effects, generic is ok
-        control.inla = list(cmin = 0, h=1e-6, tolerance=1e-12), # increase in case values are too close to zero
-        # control.inla=list( strategy="laplace", cutoff=1e-6, correct=TRUE, correct.verbose=FALSE ),
-        # control.inla = list( h=1e-6, tolerance=1e-12), # increase in case values are too close to zero
-        # control.inla = list(h=1e-3, tolerance=1e-9, cmin=0), # restart=3), # restart a few times in case posteriors are poorly defined
-        # control.mode = list( restart=TRUE, result=RES ), # restart from previous estimates
-      verbose=TRUE
-    )'
-  )
+
+ 
+  p$carstm_model_formula = as.formula( paste(
+    p$variabletomodel, ' ~ 1 ', 
+      ' + offset( log(data_offset)) ',
+      ' + year_factor', 
+      ' + f( auid, model="bym2", graph=slot(sppoly, "nb"), scale.model=TRUE, constr=TRUE, hyper=H$bym2)'
+  ))
+
+  p$carstm_model_family = "poisson"
+
   M = snowcrab_carstm( p=p, DS="carstm_inputs", redo=FALSE )  # will redo if not found
   M$year_factor = factor(M$year)
   M[,p$variabletomodel] = floor( M[,p$variabletomodel] )  # poisson wants integers
@@ -305,29 +265,17 @@
   p$carstm_model_label = "mixed_effects_static"
   p$variabletomodel = "totno"
   p$carstm_modelengine = "inla"
-  p$carstm_model_call = paste(
-    'inla( formula =', p$variabletomodel,
-      ' ~ 1
-        + offset( log(data_offset))
-        + year_factor
-        + f( inla.group( z, method="quantile", n=9 ), model="rw2", scale.model=TRUE, hyper=H$rw2)
-        + f( inla.group( substrate.grainsize, method="quantile", n=9 ), model="rw2", scale.model=TRUE, hyper=H$rw2)
-        + f( auid, model="bym2", graph=slot(sppoly, "nb"), scale.model=TRUE, constr=TRUE, hyper=H$bym2),
-        family = "poisson",
-        data= M,
-        control.compute=list(dic=TRUE, cpo=TRUE, waic=TRUE, config=TRUE),
-        control.results=list(return.marginals.random=TRUE, return.marginals.predictor=TRUE ),
-        control.predictor=list(compute=FALSE, link=1 ),
-        # control.fixed = list(prec.intercept = 0.1),
-        control.fixed = H$fixed,  # priors for fixed effects, generic is ok
-        control.inla = list(cmin = 0, h=1e-6, tolerance=1e-12), # increase in case values are too close to zero
-        # control.inla=list( strategy="laplace", cutoff=1e-6, correct=TRUE, correct.verbose=FALSE ),
-        # control.inla = list( h=1e-6, tolerance=1e-12), # increase in case values are too close to zero
-        # control.inla = list(h=1e-3, tolerance=1e-9, cmin=0), # restart=3), # restart a few times in case posteriors are poorly defined
-        # control.mode = list( restart=TRUE, result=RES ), # restart from previous estimates
-      verbose=TRUE
-    )'
-  )
+
+  p$carstm_model_formula = as.formula( paste(
+    p$variabletomodel, ' ~ 1 ', 
+      ' + offset( log(data_offset)) ',
+      ' + year_factor', 
+      ' + f( inla.group( z, method="quantile", n=9 ), model="rw2", scale.model=TRUE, hyper=H$rw2)' , 
+      ' + f( inla.group( substrate.grainsize, method="quantile", n=9 ), model="rw2", scale.model=TRUE, hyper=H$rw2) ', 
+      ' + f( auid, model="bym2", graph=slot(sppoly, "nb"), scale.model=TRUE, constr=TRUE, hyper=H$bym2) '
+  ))
+  p$carstm_model_family = "poisson"
+
   M = snowcrab_carstm( p=p, DS="carstm_inputs", redo=FALSE )  # will redo if not found
   M$year_factor = factor(M$year)
   # M$auid = factor( M$auid)
@@ -340,32 +288,21 @@
   p$carstm_model_label = "mixed_effects_dynamic"
   p$variabletomodel = "totno"
   p$carstm_modelengine = "inla"
-  p$carstm_model_call = paste(
-    'inla( formula =', p$variabletomodel,
-      ' ~ 1
-        + offset( log(data_offset))
-        + year_factor
-        + f( inla.group( z, method="quantile", n=9 ), model="rw2", scale.model=TRUE, hyper=H$rw2)
-        + f( inla.group( substrate.grainsize, method="quantile", n=9 ), model="rw2", scale.model=TRUE, hyper=H$rw2)
-        + f( inla.group( t, method="quantile", n=9 ), model="rw2", scale.model=TRUE, hyper=H$rw2)
-        + f( inla.group( pca1, method="quantile", n=9 ), model="rw2", scale.model=TRUE, hyper=H$rw2)
-        + f( inla.group( pca2, method="quantile", n=9 ), model="rw2", scale.model=TRUE, hyper=H$rw2)
-        + f( auid, model="bym2", graph=slot(sppoly, "nb"), scale.model=TRUE, constr=TRUE, hyper=H$bym2),
-        family = "poisson",
-        data= M,
-        control.compute=list(dic=TRUE, cpo=TRUE, waic=TRUE, config=TRUE),
-        control.results=list(return.marginals.random=TRUE, return.marginals.predictor=TRUE ),
-        control.predictor=list(compute=FALSE, link=1 ),
-        # control.fixed = list(prec.intercept = 0.1),
-        control.fixed = H$fixed,  # priors for fixed effects, generic is ok
-        control.inla = list(cmin = 0, h=1e-6, tolerance=1e-12), # increase in case values are too close to zero
-        # control.inla=list( strategy="laplace", cutoff=1e-6, correct=TRUE, correct.verbose=FALSE ),
-        # control.inla = list( h=1e-6, tolerance=1e-12), # increase in case values are too close to zero
-        # control.inla = list(h=1e-3, tolerance=1e-9, cmin=0), # restart=3), # restart a few times in case posteriors are poorly defined
-        # control.mode = list( restart=TRUE, result=RES ), # restart from previous estimates
-      verbose=TRUE
-    )'
-  )
+
+  p$carstm_model_formula = as.formula( paste(
+    p$variabletomodel, ' ~ 1 ', 
+      ' + offset( log(data_offset)) ',
+      ' + year_factor', 
+      ' + f( inla.group( z, method="quantile", n=9 ), model="rw2", scale.model=TRUE, hyper=H$rw2)', 
+      ' + f( inla.group( substrate.grainsize, method="quantile", n=9 ), model="rw2", scale.model=TRUE, hyper=H$rw2)', 
+      ' + f( inla.group( t, method="quantile", n=9 ), model="rw2", scale.model=TRUE, hyper=H$rw2)', 
+      ' + f( inla.group( pca1, method="quantile", n=9 ), model="rw2", scale.model=TRUE, hyper=H$rw2)', 
+      ' + f( inla.group( pca2, method="quantile", n=9 ), model="rw2", scale.model=TRUE, hyper=H$rw2)', 
+      ' + f( auid, model="bym2", graph=slot(sppoly, "nb"), scale.model=TRUE, constr=TRUE, hyper=H$bym2)' 
+  ))
+  
+  p$carstm_model_family = "poisson"
+
   M = snowcrab_carstm( p=p, DS="carstm_inputs", redo=FALSE )  # will redo if not found
   M$year_factor = factor(M$year)
   M[,p$variabletomodel] = floor( M[,p$variabletomodel] )  # poisson wants integers
@@ -376,32 +313,19 @@
   p$carstm_model_label = "separable"
   p$variabletomodel = "totno"
   p$carstm_modelengine = "inla"
-  p$carstm_model_call = paste(
-    'inla( formula =', p$variabletomodel,
-      ' ~ 1
-        + offset( log(data_offset))
-        + f( year_factor, model="ar1", hyper=H$ar1 )
-        + f( inla.group( z, method="quantile", n=9 ), model="rw2", scale.model=TRUE, hyper=H$rw2)
-        + f( inla.group( substrate.grainsize, method="quantile", n=9 ), model="rw2", scale.model=TRUE, hyper=H$rw2)
-        + f( inla.group( t, method="quantile", n=9 ), model="rw2", scale.model=TRUE, hyper=H$rw2)
-        + f( inla.group( pca1, method="quantile", n=9 ), model="rw2", scale.model=TRUE, hyper=H$rw2)
-        + f( inla.group( pca2, method="quantile", n=9 ), model="rw2", scale.model=TRUE, hyper=H$rw2)
-        + f( auid, model="bym2", graph=slot(sppoly, "nb"), scale.model=TRUE, constr=TRUE, hyper=H$bym2),
-        family = "poisson",
-        data= M,
-        control.compute=list(dic=TRUE, cpo=TRUE, waic=TRUE, config=TRUE),
-        control.results=list(return.marginals.random=TRUE, return.marginals.predictor=TRUE ),
-        control.predictor=list(compute=FALSE, link=1 ),
-        # control.fixed = list(prec.intercept = 0.1),
-        control.fixed = H$fixed,  # priors for fixed effects, generic is ok
-        control.inla = list(cmin = 0, h=1e-6, tolerance=1e-12), # increase in case values are too close to zero
-        # control.inla=list( strategy="laplace", cutoff=1e-6, correct=TRUE, correct.verbose=FALSE ),
-        # control.inla = list( h=1e-6, tolerance=1e-12), # increase in case values are too close to zero
-        # control.inla = list(h=1e-3, tolerance=1e-9, cmin=0), # restart=3), # restart a few times in case posteriors are poorly defined
-        # control.mode = list( restart=TRUE, result=RES ), # restart from previous estimates
-      verbose=TRUE
-    )'
-  )
+  p$carstm_model_formula = as.formula( paste(
+    p$variabletomodel, ' ~ 1 ', 
+      ' + offset( log(data_offset)) ',
+      ' + f( year_factor, model="ar1", hyper=H$ar1 )',
+      ' + f( inla.group( z, method="quantile", n=9 ), model="rw2", scale.model=TRUE, hyper=H$rw2)',
+      ' + f( inla.group( substrate.grainsize, method="quantile", n=9 ), model="rw2", scale.model=TRUE, hyper=H$rw2)',
+      ' + f( inla.group( t, method="quantile", n=9 ), model="rw2", scale.model=TRUE, hyper=H$rw2)',
+      ' + f( inla.group( pca1, method="quantile", n=9 ), model="rw2", scale.model=TRUE, hyper=H$rw2)',
+      ' + f( inla.group( pca2, method="quantile", n=9 ), model="rw2", scale.model=TRUE, hyper=H$rw2)',
+      ' + f( auid, model="bym2", graph=slot(sppoly, "nb"), scale.model=TRUE, constr=TRUE, hyper=H$bym2)' 
+  ))
+  
+  p$carstm_model_family = "poisson"
   fit = carstm_model( p=p, M=p$modeldata )
 
 
@@ -411,32 +335,15 @@
   p$carstm_model_label = "separable_simple"
   p$variabletomodel = "totno"
   p$carstm_modelengine = "inla"
-  p$carstm_model_call = paste(
-    'inla( formula =', p$variabletomodel,
-      ' ~ 1
-        + offset( log(data_offset))
-        + f( year_factor, model="ar1", hyper=H$ar1 )
-        + f( auid, model="bym2", graph=slot(sppoly, "nb"), scale.model=TRUE, constr=TRUE, hyper=H$bym2),
-        family = "poisson",
-        data= M,
-        control.compute=list(dic=TRUE, cpo=TRUE, waic=TRUE, config=TRUE),
-        control.results=list(return.marginals.random=TRUE, return.marginals.predictor=TRUE ),
-        control.predictor=list(compute=FALSE, link=1 ),
-        # control.fixed = list(prec.intercept = 0.1),
-        control.fixed = H$fixed,  # priors for fixed effects, generic is ok
-        control.inla = list(cmin = 0, h=1e-6, tolerance=1e-12), # increase in case values are too close to zero
-        # control.inla = list(cmin = 0 ),
-        # control.inla = list( h=1e-6, tolerance=1e-12), # increase in case values are too close to zero
-        # control.inla=list( strategy="laplace", cutoff=1e-6, correct=TRUE, correct.verbose=FALSE ),
-        # control.inla = list( h=1e-6, tolerance=1e-12), # increase in case values are too close to zero
-        # control.inla = list(h=1e-3, tolerance=1e-9, cmin=0), # restart=3), # restart a few times in case posteriors are poorly defined
-        # control.mode = list( restart=TRUE, result=RES ), # restart from previous estimates
-      verbose=TRUE
-    )'
-  )
+  p$carstm_model_formula = as.formula( paste(
+    p$variabletomodel, ' ~ 1 ', 
+      ' + offset( log(data_offset)) ',
+      ' + f( year_factor, model="ar1", hyper=H$ar1 ) ',
+      ' + f( auid, model="bym2", graph=slot(sppoly, "nb"), scale.model=TRUE, constr=TRUE, hyper=H$bym2) '
+  ))
+  
+  p$carstm_model_family = "poisson"
   fit = carstm_model( p=p, M=p$modeldata )
-
-
 
 
 
@@ -444,29 +351,14 @@
   p$carstm_model_label = "nonseparable_simple" # nonseparable, basic
   p$variabletomodel = "totno"
   p$carstm_modelengine = "inla"
-  p$carstm_model_call = paste(
-    'inla( formula =', p$variabletomodel,
-      ' ~ 1
-        + offset( log(data_offset))
-        + f( auid, model="bym2", graph=slot(sppoly, "nb"), group=year_factor, scale.model=TRUE, constr=TRUE, hyper=H$bym2, control.group=list(model="ar1", hyper=H$ar1_group)),
-        family = "poisson",
-        data= M,
-        control.compute=list(dic=TRUE, cpo=TRUE, waic=TRUE, config=TRUE),
-        control.results=list(return.marginals.random=TRUE, return.marginals.predictor=TRUE ),
-        control.predictor=list(compute=FALSE, link=1 ),
-        # control.fixed = list(prec.intercept = 0.1),
-        control.fixed = H$fixed,  # priors for fixed effects, generic is ok
-        control.inla = list(cmin = 0 ),
-        # control.inla = list( h=1e-6, tolerance=1e-12), # increase in case values are too close to zero
-        # control.inla=list( strategy="laplace", cutoff=1e-6, correct=TRUE, correct.verbose=FALSE ),
-        # control.inla = list( h=1e-6, tolerance=1e-12), # increase in case values are too close to zero
-        # control.inla = list(h=1e-3, tolerance=1e-9, cmin=0), # restart=3), # restart a few times in case posteriors are poorly defined
-        # control.mode = list( restart=TRUE, result=RES ), # restart from previous estimates
-      verbose=TRUE
-    )'
-  )
+  p$carstm_model_formula = as.formula( paste(
+    p$variabletomodel, ' ~ 1 ', 
+      ' + offset( log(data_offset)) ',
+      ' + f( auid, model="bym2", graph=slot(sppoly, "nb"), group=year_factor, scale.model=TRUE, constr=TRUE, hyper=H$bym2, control.group=list(model="ar1", hyper=H$ar1_group)) '
+  ))
+  
+  p$carstm_model_family = "poisson"
   fit = carstm_model( p=p, M=p$modeldata )
-
 
 
 
@@ -475,33 +367,19 @@
   p$carstm_model_label = "nonseparable_space-time"
   p$variabletomodel = "totno"
   p$carstm_modelengine = "inla"
-  p$carstm_model_call = paste(
-    'inla( formula =', p$variabletomodel,
-      ' ~ 1
-        + offset( log(data_offset))
-        + f( dyri, model="ar1", hyper=H$ar1 )
-        + f( inla.group( t, method="quantile", n=9 ), model="rw2", scale.model=TRUE, hyper=H$rw2)
-        + f( inla.group( z, method="quantile", n=9 ), model="rw2", scale.model=TRUE, hyper=H$rw2)
-        + f( inla.group( substrate.grainsize, method="quantile", n=9 ), model="rw2", scale.model=TRUE, hyper=H$rw2)
-        + f( inla.group( pca1, method="quantile", n=9 ), model="rw2", scale.model=TRUE, hyper=H$rw2)
-        + f( inla.group( pca2, method="quantile", n=9 ), model="rw2", scale.model=TRUE, hyper=H$rw2)
-        + f( auid, model="bym2", graph=slot(sppoly, "nb"), group=year_factor, scale.model=TRUE, constr=TRUE, hyper=H$bym2, control.group=list(model="ar1", hyper=H$ar1_group)),
-        family = "poisson",
-        data= M,
-        control.compute=list(dic=TRUE, cpo=TRUE, waic=TRUE, config=TRUE),
-        control.results=list(return.marginals.random=TRUE, return.marginals.predictor=TRUE ),
-        control.predictor=list(compute=FALSE, link=1 ),
-        # control.fixed = list(prec.intercept = 0.1),
-        control.fixed = H$fixed,  # priors for fixed effects, generic is ok
-        control.inla = list(cmin = 0 ),
-        # control.inla = list( h=1e-6, tolerance=1e-12), # increase in case values are too close to zero
-        # control.inla=list( strategy="laplace", cutoff=1e-6, correct=TRUE, correct.verbose=FALSE ),
-        # control.inla = list( h=1e-6, tolerance=1e-12), # increase in case values are too close to zero
-        # control.inla = list(h=1e-3, tolerance=1e-9, cmin=0), # restart=3), # restart a few times in case posteriors are poorly defined
-        # control.mode = list( restart=TRUE, result=RES ), # restart from previous estimates
-      verbose=TRUE
-    )'
-  )
+  p$carstm_model_formula = as.formula( paste(
+    p$variabletomodel, ' ~ 1 ', 
+      ' + offset( log(data_offset)) ',
+      ' + f( dyri, model="ar1", hyper=H$ar1 ) ',
+      ' + f( inla.group( t, method="quantile", n=9 ), model="rw2", scale.model=TRUE, hyper=H$rw2) ',
+      ' + f( inla.group( z, method="quantile", n=9 ), model="rw2", scale.model=TRUE, hyper=H$rw2) ',
+      ' + f( inla.group( substrate.grainsize, method="quantile", n=9 ), model="rw2", scale.model=TRUE, hyper=H$rw2) ',
+      ' + f( inla.group( pca1, method="quantile", n=9 ), model="rw2", scale.model=TRUE, hyper=H$rw2) ',
+      ' + f( inla.group( pca2, method="quantile", n=9 ), model="rw2", scale.model=TRUE, hyper=H$rw2) ',
+      ' + f( auid, model="bym2", graph=slot(sppoly, "nb"), group=year_factor, scale.model=TRUE, constr=TRUE, hyper=H$bym2, control.group=list(model="ar1", hyper=H$ar1_group)) '
+  ))
+  
+  p$carstm_model_family = "poisson"
   fit = carstm_model( p=p, M=p$modeldata )
 
 
@@ -511,67 +389,37 @@
   p$carstm_model_label = "nonseparable_space-time_no_pca"
   p$variabletomodel = "totno"
   p$carstm_modelengine = "inla"
-  p$carstm_model_call = paste(
-    'inla( formula =', p$variabletomodel,
-      ' ~ 1
-        + offset( log(data_offset))
-        + f( dyri, model="ar1", hyper=H$ar1 )
-        + f( inla.group( t, method="quantile", n=9 ), model="rw2", scale.model=TRUE, hyper=H$rw2)
-        + f( inla.group( z, method="quantile", n=9 ), model="rw2", scale.model=TRUE, hyper=H$rw2)
-        + f( inla.group( substrate.grainsize, method="quantile", n=9 ), model="rw2", scale.model=TRUE, hyper=H$rw2)
-        + f( auid, model="bym2", graph=slot(sppoly, "nb"), group=year_factor, scale.model=TRUE, constr=TRUE, hyper=H$bym2, control.group=list(model="ar1", hyper=H$ar1_group)),
-        family = "poisson",
-        data= M,
-        control.compute=list(dic=TRUE, cpo=TRUE, waic=TRUE, config=TRUE),
-        control.results=list(return.marginals.random=TRUE, return.marginals.predictor=TRUE ),
-        control.predictor=list(compute=FALSE, link=1 ),
-        # control.fixed = list(prec.intercept = 0.1),
-        control.fixed = H$fixed,  # priors for fixed effects, generic is ok
-        control.inla = list(cmin = 0 ),
-        # control.inla = list( h=1e-6, tolerance=1e-12), # increase in case values are too close to zero
-        # control.inla=list( strategy="laplace", cutoff=1e-6, correct=TRUE, correct.verbose=FALSE ),
-        # control.inla = list( h=1e-6, tolerance=1e-12), # increase in case values are too close to zero
-        # control.inla = list(h=1e-3, tolerance=1e-9, cmin=0), # restart=3), # restart a few times in case posteriors are poorly defined
-        # control.mode = list( restart=TRUE, result=RES ), # restart from previous estimates
-      verbose=TRUE
-    )'
-  )
+  p$carstm_model_formula = as.formula( paste(
+    p$variabletomodel, ' ~ 1 ', 
+      ' + offset( log(data_offset)) ',
+      ' + f( dyri, model="ar1", hyper=H$ar1 ) ',
+      ' + f( inla.group( t, method="quantile", n=9 ), model="rw2", scale.model=TRUE, hyper=H$rw2) ',
+      ' + f( inla.group( z, method="quantile", n=9 ), model="rw2", scale.model=TRUE, hyper=H$rw2) ',
+      ' + f( inla.group( substrate.grainsize, method="quantile", n=9 ), model="rw2", scale.model=TRUE, hyper=H$rw2) ',
+      ' + f( auid, model="bym2", graph=slot(sppoly, "nb"), group=year_factor, scale.model=TRUE, constr=TRUE, hyper=H$bym2, control.group=list(model="ar1", hyper=H$ar1_group)) '
+  ))
+  
+  p$carstm_model_family = "poisson"
   fit = carstm_model( p=p, M=p$modeldata )
-
-
 
 
 # -------------------------------------------------
   p$carstm_model_label = "nonseparable_time-space"
   p$variabletomodel = "totno"
   p$carstm_modelengine = "inla"
-  p$carstm_model_call = paste(
-    'inla( formula =', p$variabletomodel,
-      ' ~ 1
-        + offset( log(data_offset))
-        + f( year_factor, model="ar1", hyper=H$ar1, group=auid, control.group=list(model="besag", graph=slot(sppoly, "nb"), scale.model=TRUE ) )
-        + f( dyri, model="ar1", hyper=H$ar1 )
-        + f( inla.group( t, method="quantile", n=9 ), model="rw2", scale.model=TRUE, hyper=H$rw2)
-        + f( inla.group( z, method="quantile", n=9 ), model="rw2", scale.model=TRUE, hyper=H$rw2)
-        + f( inla.group( substrate.grainsize, method="quantile", n=9 ), model="rw2", scale.model=TRUE, hyper=H$rw2)
-        + f( inla.group( pca1, method="quantile", n=9 ), model="rw2", scale.model=TRUE, hyper=H$rw2)
-        + f( inla.group( pca2, method="quantile", n=9 ), model="rw2", scale.model=TRUE, hyper=H$rw2),
-        family = "poisson",
-        data= M,
-        control.compute=list(dic=TRUE, cpo=TRUE, waic=TRUE, config=TRUE),
-        control.results=list(return.marginals.random=TRUE, return.marginals.predictor=TRUE ),
-        control.predictor=list(compute=FALSE, link=1 ),
-        # control.fixed = list(prec.intercept = 0.1),
-        control.fixed = H$fixed,  # priors for fixed effects, generic is ok
-        control.inla = list(cmin = 0 ),
-        # control.inla = list( h=1e-6, tolerance=1e-12), # increase in case values are too close to zero
-        # control.inla=list( strategy="laplace", cutoff=1e-6, correct=TRUE, correct.verbose=FALSE ),
-        # control.inla = list( h=1e-6, tolerance=1e-12), # increase in case values are too close to zero
-        # control.inla = list(h=1e-3, tolerance=1e-9, cmin=0), # restart=3), # restart a few times in case posteriors are poorly defined
-        # control.mode = list( restart=TRUE, result=RES ), # restart from previous estimates
-      verbose=TRUE
-    )'
-  )
+  p$carstm_model_formula = as.formula( paste(
+    p$variabletomodel, ' ~ 1 ', 
+      ' + offset( log(data_offset)) ',
+      ' + f( year_factor, model="ar1", hyper=H$ar1, group=auid, control.group=list(model="besag", graph=slot(sppoly, "nb"), scale.model=TRUE ) ) ',
+      ' + f( dyri, model="ar1", hyper=H$ar1 ) ',
+      ' + f( inla.group( t, method="quantile", n=9 ), model="rw2", scale.model=TRUE, hyper=H$rw2) ',
+      ' + f( inla.group( z, method="quantile", n=9 ), model="rw2", scale.model=TRUE, hyper=H$rw2) ',
+      ' + f( inla.group( substrate.grainsize, method="quantile", n=9 ), model="rw2", scale.model=TRUE, hyper=H$rw2) ',
+      ' + f( inla.group( pca1, method="quantile", n=9 ), model="rw2", scale.model=TRUE, hyper=H$rw2) ',
+      ' + f( inla.group( pca2, method="quantile", n=9 ), model="rw2", scale.model=TRUE, hyper=H$rw2) '
+  ))
+  
+  p$carstm_model_family = "poisson"
   fit = carstm_model( p=p, M=p$modeldata )
 
 
@@ -580,37 +428,19 @@
   p$carstm_model_label = "inla_zeroinflatedpoisson0_full"
   p$variabletomodel = "totno"
   p$carstm_modelengine = "inla"
-  p$carstm_model_call = paste(
-    'inla( formula =', p$variabletomodel,
-      ' ~ 1
-        + offset( log(data_offset))
-        + f( dyri, model="ar1", hyper=H$ar1 )
-        + f( inla.group( t, method="quantile", n=9 ), model="rw2", scale.model=TRUE, hyper=H$rw2)
-        + f( inla.group( z, method="quantile", n=9 ), model="rw2", scale.model=TRUE, hyper=H$rw2)
-        + f( inla.group( substrate.grainsize, method="quantile", n=9 ), model="rw2", scale.model=TRUE, hyper=H$rw2)
-        + f( inla.group( pca1, method="quantile", n=9 ), model="rw2", scale.model=TRUE, hyper=H$rw2)
-        + f( inla.group( pca2, method="quantile", n=9 ), model="rw2", scale.model=TRUE, hyper=H$rw2)
-        + f( auid, model="bym2", graph=slot(sppoly, "nb"), group=year_factor, scale.model=TRUE, constr=TRUE, hyper=H$bym2, control.group=list(model="ar1", hyper=H$ar1_group)),
-        family = "zeroinflatedpoisson0",
-        data= M,
-        control.compute=list(dic=TRUE, cpo=TRUE, waic=TRUE, config=TRUE),
-        control.results=list(return.marginals.random=TRUE, return.marginals.predictor=TRUE ),
-        control.predictor=list(compute=FALSE, link=1 ),
-        # control.fixed = list(prec.intercept = 0.1),
-        control.fixed = H$fixed,  # priors for fixed effects, generic is ok
-        control.inla = list(cmin = 0 ),
-        # control.inla = list( h=1e-6, tolerance=1e-12), # increase in case values are too close to zero
-        # control.inla=list( strategy="laplace", cutoff=1e-6, correct=TRUE, correct.verbose=FALSE ),
-        # control.inla = list( h=1e-6, tolerance=1e-12), # increase in case values are too close to zero
-        # control.inla = list(h=1e-3, tolerance=1e-9, cmin=0), # restart=3), # restart a few times in case posteriors are poorly defined
-        # control.mode = list( restart=TRUE, result=RES ), # restart from previous estimates
-      verbose=TRUE
-    )'
-  )
-  fit = carstm_model( p=p, M=p$modeldata )
-
-
-
+  p$carstm_model_formula = as.formula( paste(
+    p$variabletomodel, ' ~ 1 ', 
+      ' + offset( log(data_offset)) ',
+      ' + f( dyri, model="ar1", hyper=H$ar1 ) ',
+      ' + f( inla.group( t, method="quantile", n=9 ), model="rw2", scale.model=TRUE, hyper=H$rw2) ',
+      ' + f( inla.group( z, method="quantile", n=9 ), model="rw2", scale.model=TRUE, hyper=H$rw2) ',
+      ' + f( inla.group( substrate.grainsize, method="quantile", n=9 ), model="rw2", scale.model=TRUE, hyper=H$rw2) ',
+      ' + f( inla.group( pca1, method="quantile", n=9 ), model="rw2", scale.model=TRUE, hyper=H$rw2) ',
+      ' + f( inla.group( pca2, method="quantile", n=9 ), model="rw2", scale.model=TRUE, hyper=H$rw2) ',
+      ' + f( auid, model="bym2", graph=slot(sppoly, "nb"), group=year_factor, scale.model=TRUE, constr=TRUE, hyper=H$bym2, control.group=list(model="ar1", hyper=H$ar1_group)) '
+  ))
+  p$carstm_model_family =  "zeroinflatedpoisson0"
+    fit = carstm_model( p=p, M=p$modeldata )
 
 
 
@@ -618,33 +448,19 @@
   p$carstm_model_label = "inla_zeroinflatedpoisson1_full"  # strange
   p$variabletomodel = "totno"
   p$carstm_modelengine = "inla"
-  p$carstm_model_call = paste(
-    'inla( formula =', p$variabletomodel,
-      ' ~ 1
-        + offset( log(data_offset))
-        + f( dyri, model="ar1", hyper=H$ar1 )
-        + f( inla.group( t, method="quantile", n=9 ), model="rw2", scale.model=TRUE, hyper=H$rw2)
-        + f( inla.group( z, method="quantile", n=9 ), model="rw2", scale.model=TRUE, hyper=H$rw2)
-        + f( inla.group( substrate.grainsize, method="quantile", n=9 ), model="rw2", scale.model=TRUE, hyper=H$rw2)
-        + f( inla.group( pca1, method="quantile", n=9 ), model="rw2", scale.model=TRUE, hyper=H$rw2)
-        + f( inla.group( pca2, method="quantile", n=9 ), model="rw2", scale.model=TRUE, hyper=H$rw2)
-        + f( auid, model="bym2", graph=slot(sppoly, "nb"), group=year_factor, scale.model=TRUE, constr=TRUE, hyper=H$bym2, control.group=list(model="ar1", hyper=H$ar1_group)),
-        family = "zeroinflatedpoisson1",
-        data= M,
-        control.compute=list(dic=TRUE, cpo=TRUE, waic=TRUE, config=TRUE),
-        control.results=list(return.marginals.random=TRUE, return.marginals.predictor=TRUE ),
-        control.predictor=list(compute=FALSE, link=1 ),
-        # control.fixed = list(prec.intercept = 0.1),
-        control.fixed = H$fixed,  # priors for fixed effects, generic is ok
-        control.inla = list(cmin = 0 ),
-        # control.inla = list( h=1e-6, tolerance=1e-12), # increase in case values are too close to zero
-        # control.inla=list( strategy="laplace", cutoff=1e-6, correct=TRUE, correct.verbose=FALSE ),
-        # control.inla = list( h=1e-6, tolerance=1e-12), # increase in case values are too close to zero
-        # control.inla = list(h=1e-3, tolerance=1e-9, cmin=0), # restart=3), # restart a few times in case posteriors are poorly defined
-        # control.mode = list( restart=TRUE, result=RES ), # restart from previous estimates
-      verbose=TRUE
-    )'
-  )
+  p$carstm_model_formula = as.formula( paste(
+    p$variabletomodel, ' ~ 1 ', 
+      ' + offset( log(data_offset)) ',
+      ' + f( dyri, model="ar1", hyper=H$ar1 ) ',
+      ' + f( inla.group( t, method="quantile", n=9 ), model="rw2", scale.model=TRUE, hyper=H$rw2) ',
+      ' + f( inla.group( z, method="quantile", n=9 ), model="rw2", scale.model=TRUE, hyper=H$rw2) ',
+      ' + f( inla.group( substrate.grainsize, method="quantile", n=9 ), model="rw2", scale.model=TRUE, hyper=H$rw2) ',
+      ' + f( inla.group( pca1, method="quantile", n=9 ), model="rw2", scale.model=TRUE, hyper=H$rw2) ',
+      ' + f( inla.group( pca2, method="quantile", n=9 ), model="rw2", scale.model=TRUE, hyper=H$rw2) ',
+      ' + f( auid, model="bym2", graph=slot(sppoly, "nb"), group=year_factor, scale.model=TRUE, constr=TRUE, hyper=H$bym2, control.group=list(model="ar1", hyper=H$ar1_group)) '
+  ))
+
+  p$carstm_model_family =  "zeroinflatedpoisson1"
   fit = carstm_model( p=p, M=p$modeldata )
 
 
@@ -838,10 +654,6 @@
 
   p = bio.snowcrab::snowcrab_carstm( DS="parameters", assessment.years=1999:2018 )
 
-  # misc run params adjustments here:
-  p$inla_num.threads = 2
-  p$inla_blas.num.threads = 2
-
   p$modeldata = 'snowcrab_carstm( p=p, DS="carstm_inputs" )'
 
 
@@ -867,38 +679,20 @@
   p$variabletomodel = "pa"
   p$carstm_model_label = "nonseparable_space-time_pa_immature_small"
   p$carstm_modelengine = "inla"
-  p$carstm_model_call = paste(
-    'inla( formula =', p$variabletomodel,
-      ' ~ 1
-        + f( dyri, model="ar1", hyper=H$ar1 )
-        + f( inla.group( t, method="quantile", n=9 ), model="rw2", scale.model=TRUE, hyper=H$rw2)
-        + f( inla.group( z, method="quantile", n=9 ), model="rw2", scale.model=TRUE, hyper=H$rw2)
-        + f( inla.group( substrate.grainsize, method="quantile", n=9 ), model="rw2", scale.model=TRUE, hyper=H$rw2)
-        + f( inla.group( pca1, method="quantile", n=9 ), model="rw2", scale.model=TRUE, hyper=H$rw2)
-        + f( inla.group( pca2, method="quantile", n=9 ), model="rw2", scale.model=TRUE, hyper=H$rw2)
-        + f( auid, model="bym2", graph=slot(sppoly, "nb"), group=year_factor, scale.model=TRUE, constr=TRUE, hyper=H$bym2, control.group=list(model="ar1", hyper=H$ar1_group)),
-        data= M,
+  p$carstm_model_formula = as.formula( paste(
+    p$variabletomodel, ' ~ 1 ', 
+      ' + f( dyri, model="ar1", hyper=H$ar1 ) ', 
+      ' + f( inla.group( t, method="quantile", n=9 ), model="rw2", scale.model=TRUE, hyper=H$rw2) ', 
+      ' + f( inla.group( z, method="quantile", n=9 ), model="rw2", scale.model=TRUE, hyper=H$rw2) ', 
+      ' + f( inla.group( substrate.grainsize, method="quantile", n=9 ), model="rw2", scale.model=TRUE, hyper=H$rw2) ', 
+      ' + f( inla.group( pca1, method="quantile", n=9 ), model="rw2", scale.model=TRUE, hyper=H$rw2) ', 
+      ' + f( inla.group( pca2, method="quantile", n=9 ), model="rw2", scale.model=TRUE, hyper=H$rw2) ', 
+      ' + f( auid, model="bym2", graph=slot(sppoly, "nb"), group=year_factor, scale.model=TRUE, constr=TRUE, hyper=H$bym2, control.group=list(model="ar1", hyper=H$ar1_group)) '
+  ))
 
-        family = "binomial",  # "nbinomial", "betabinomial", "zeroinflatedbinomial0" , "zeroinflatednbinomial0"
-
-        control.family=list(control.link=list(model="logit")),
-        control.compute=list(dic=TRUE, cpo=TRUE, waic=TRUE, config=TRUE),
-        control.results=list(return.marginals.random=TRUE, return.marginals.predictor=TRUE ),
-        control.predictor=list(compute=FALSE, link=1 ),
-        # control.fixed = list(prec.intercept = 0.1),
-        control.fixed = H$fixed,  # priors for fixed effects, generic is ok
-        control.inla = list(cmin = 0 ),
-        # control.inla = list( h=1e-6, tolerance=1e-12), # increase in case values are too close to zero
-        # control.inla=list( strategy="laplace", cutoff=1e-6, correct=TRUE, correct.verbose=FALSE ),
-        # control.inla = list( h=1e-6, tolerance=1e-12), # increase in case values are too close to zero
-        # control.inla = list(h=1e-3, tolerance=1e-9, cmin=0), # restart=3), # restart a few times in case posteriors are poorly defined
-        # control.mode = list( restart=TRUE, result=RES ), # restart from previous estimates
-      verbose=TRUE
-    )'
-  )
-
-
-
+  p$carstm_model_family = "binomial"  # "nbinomial", "betabinomial", "zeroinflatedbinomial0" , "zeroinflatednbinomial0"
+  p$carstm_model_inla_control_familiy = list(control.link=list(model='logit'))  
+  
   M = snowcrab_carstm( p=p, DS="carstm_inputs", redo=TRUE )  # will redo if not found
   M = NULL; gc()
   fit = carstm_model( p=p, M=p$modeldata )
@@ -929,38 +723,20 @@
   p$variabletomodel = "pa"
   p$carstm_model_label = "nonseparable_space-time_pa_fishable"
   p$carstm_modelengine = "inla"
-  p$carstm_model_call = paste(
-    'inla( formula =', p$variabletomodel,
-      ' ~ 1
-        + f( dyri, model="ar1", hyper=H$ar1 )
-        + f( inla.group( t, method="quantile", n=9 ), model="rw2", scale.model=TRUE, hyper=H$rw2)
-        + f( inla.group( z, method="quantile", n=9 ), model="rw2", scale.model=TRUE, hyper=H$rw2)
-        + f( inla.group( substrate.grainsize, method="quantile", n=9 ), model="rw2", scale.model=TRUE, hyper=H$rw2)
-        + f( inla.group( pca1, method="quantile", n=9 ), model="rw2", scale.model=TRUE, hyper=H$rw2)
-        + f( inla.group( pca2, method="quantile", n=9 ), model="rw2", scale.model=TRUE, hyper=H$rw2)
-        + f( auid, model="bym2", graph=slot(sppoly, "nb"), group=year_factor, scale.model=TRUE, constr=TRUE, hyper=H$bym2, control.group=list(model="ar1", hyper=H$ar1_group)),
-        data= M,
+  p$carstm_model_formula = as.formula( paste(
+    p$variabletomodel, ' ~ 1 ', 
+      ' + f( dyri, model="ar1", hyper=H$ar1 ) ', 
+      ' + f( inla.group( t, method="quantile", n=9 ), model="rw2", scale.model=TRUE, hyper=H$rw2) ', 
+      ' + f( inla.group( z, method="quantile", n=9 ), model="rw2", scale.model=TRUE, hyper=H$rw2) ', 
+      ' + f( inla.group( substrate.grainsize, method="quantile", n=9 ), model="rw2", scale.model=TRUE, hyper=H$rw2) ', 
+      ' + f( inla.group( pca1, method="quantile", n=9 ), model="rw2", scale.model=TRUE, hyper=H$rw2) ', 
+      ' + f( inla.group( pca2, method="quantile", n=9 ), model="rw2", scale.model=TRUE, hyper=H$rw2) ', 
+      ' + f( auid, model="bym2", graph=slot(sppoly, "nb"), group=year_factor, scale.model=TRUE, constr=TRUE, hyper=H$bym2, control.group=list(model="ar1", hyper=H$ar1_group)) '
+  ))
 
-        family = "binomial",  # "nbinomial", "betabinomial", "zeroinflatedbinomial0" , "zeroinflatednbinomial0"
-
-        control.family=list(control.link=list(model="logit")),
-        control.compute=list(dic=TRUE, cpo=TRUE, waic=TRUE, config=TRUE),
-        control.results=list(return.marginals.random=TRUE, return.marginals.predictor=TRUE ),
-        control.predictor=list(compute=FALSE, link=1 ),
-        # control.fixed = list(prec.intercept = 0.1),
-        control.fixed = H$fixed,  # priors for fixed effects, generic is ok
-        control.inla = list(cmin = 0 ),
-        # control.inla = list( h=1e-6, tolerance=1e-12), # increase in case values are too close to zero
-        # control.inla=list( strategy="laplace", cutoff=1e-6, correct=TRUE, correct.verbose=FALSE ),
-        # control.inla = list( h=1e-6, tolerance=1e-12), # increase in case values are too close to zero
-        # control.inla = list(h=1e-3, tolerance=1e-9, cmin=0), # restart=3), # restart a few times in case posteriors are poorly defined
-        # control.mode = list( restart=TRUE, result=RES ), # restart from previous estimates
-      verbose=TRUE
-    )'
-  )
-
-
-
+  p$carstm_model_family = "binomial"  # "nbinomial", "betabinomial", "zeroinflatedbinomial0" , "zeroinflatednbinomial0"
+  p$carstm_model_inla_control_familiy = list(control.link=list(model='logit'))  
+ 
   M = snowcrab_carstm( p=p, DS="carstm_inputs", redo=TRUE )  # will redo if not found
   M = NULL; gc()
   fit = carstm_model( p=p, M=p$modeldata )
@@ -989,38 +765,20 @@
   p$variabletomodel = "pa"
   p$carstm_model_label = "nonseparable_space-time_pa_mature_females"
   p$carstm_modelengine = "inla"
-  p$carstm_model_call = paste(
-    'inla( formula =', p$variabletomodel,
-      ' ~ 1
-        + f( dyri, model="ar1", hyper=H$ar1 )
-        + f( inla.group( t, method="quantile", n=9 ), model="rw2", scale.model=TRUE, hyper=H$rw2)
-        + f( inla.group( z, method="quantile", n=9 ), model="rw2", scale.model=TRUE, hyper=H$rw2)
-        + f( inla.group( substrate.grainsize, method="quantile", n=9 ), model="rw2", scale.model=TRUE, hyper=H$rw2)
-        + f( inla.group( pca1, method="quantile", n=9 ), model="rw2", scale.model=TRUE, hyper=H$rw2)
-        + f( inla.group( pca2, method="quantile", n=9 ), model="rw2", scale.model=TRUE, hyper=H$rw2)
-        + f( auid, model="bym2", graph=slot(sppoly, "nb"), group=year_factor, scale.model=TRUE, constr=TRUE, hyper=H$bym2, control.group=list(model="ar1", hyper=H$ar1_group)),
-        data= M,
+  p$carstm_model_formula = as.formula( paste(
+    p$variabletomodel, ' ~ 1 ', 
+      ' + f( dyri, model="ar1", hyper=H$ar1 ) ', 
+      ' + f( inla.group( t, method="quantile", n=9 ), model="rw2", scale.model=TRUE, hyper=H$rw2) ', 
+      ' + f( inla.group( z, method="quantile", n=9 ), model="rw2", scale.model=TRUE, hyper=H$rw2) ', 
+      ' + f( inla.group( substrate.grainsize, method="quantile", n=9 ), model="rw2", scale.model=TRUE, hyper=H$rw2) ', 
+      ' + f( inla.group( pca1, method="quantile", n=9 ), model="rw2", scale.model=TRUE, hyper=H$rw2) ', 
+      ' + f( inla.group( pca2, method="quantile", n=9 ), model="rw2", scale.model=TRUE, hyper=H$rw2) ', 
+      ' + f( auid, model="bym2", graph=slot(sppoly, "nb"), group=year_factor, scale.model=TRUE, constr=TRUE, hyper=H$bym2, control.group=list(model="ar1", hyper=H$ar1_group)) '
+  ) )
 
-        family = "binomial",  # "nbinomial", "betabinomial", "zeroinflatedbinomial0" , "zeroinflatednbinomial0"
-
-        control.family=list(control.link=list(model="logit")),
-        control.compute=list(dic=TRUE, cpo=TRUE, waic=TRUE, config=TRUE),
-        control.results=list(return.marginals.random=TRUE, return.marginals.predictor=TRUE ),
-        control.predictor=list(compute=FALSE, link=1 ),
-        # control.fixed = list(prec.intercept = 0.1),
-        control.fixed = H$fixed,  # priors for fixed effects, generic is ok
-        control.inla = list(cmin = 0 ),
-        # control.inla = list( h=1e-6, tolerance=1e-12), # increase in case values are too close to zero
-        # control.inla=list( strategy="laplace", cutoff=1e-6, correct=TRUE, correct.verbose=FALSE ),
-        # control.inla = list( h=1e-6, tolerance=1e-12), # increase in case values are too close to zero
-        # control.inla = list(h=1e-3, tolerance=1e-9, cmin=0), # restart=3), # restart a few times in case posteriors are poorly defined
-        # control.mode = list( restart=TRUE, result=RES ), # restart from previous estimates
-      verbose=TRUE
-    )'
-  )
-
-
-
+  p$carstm_model_family = "binomial"  # "nbinomial", "betabinomial", "zeroinflatedbinomial0" , "zeroinflatednbinomial0"
+  p$carstm_model_inla_control_familiy = list(control.link=list(model='logit'))  
+ 
   M = snowcrab_carstm( p=p, DS="carstm_inputs", redo=TRUE )  # will redo if not found
   M = NULL; gc()
   fit = carstm_model( p=p, M=p$modeldata )
@@ -1050,38 +808,20 @@
   p$variabletomodel = "pa"
   p$carstm_model_label = "nonseparable_space-time_pa_immature"
   p$carstm_modelengine = "inla"
-  p$carstm_model_call = paste(
-    'inla( formula =', p$variabletomodel,
-      ' ~ 1
-        + f( dyri, model="ar1", hyper=H$ar1 )
-        + f( inla.group( t, method="quantile", n=9 ), model="rw2", scale.model=TRUE, hyper=H$rw2)
-        + f( inla.group( z, method="quantile", n=9 ), model="rw2", scale.model=TRUE, hyper=H$rw2)
-        + f( inla.group( substrate.grainsize, method="quantile", n=9 ), model="rw2", scale.model=TRUE, hyper=H$rw2)
-        + f( inla.group( pca1, method="quantile", n=9 ), model="rw2", scale.model=TRUE, hyper=H$rw2)
-        + f( inla.group( pca2, method="quantile", n=9 ), model="rw2", scale.model=TRUE, hyper=H$rw2)
-        + f( auid, model="bym2", graph=slot(sppoly, "nb"), group=year_factor, scale.model=TRUE, constr=TRUE, hyper=H$bym2, control.group=list(model="ar1", hyper=H$ar1_group)),
-        data= M,
+  p$carstm_model_formula = as.formula( paste(
+    p$variabletomodel, ' ~ 1 ', 
+      ' + f( dyri, model="ar1", hyper=H$ar1 ) ',
+      ' + f( inla.group( t, method="quantile", n=9 ), model="rw2", scale.model=TRUE, hyper=H$rw2) ',
+      ' + f( inla.group( z, method="quantile", n=9 ), model="rw2", scale.model=TRUE, hyper=H$rw2) ',
+      ' + f( inla.group( substrate.grainsize, method="quantile", n=9 ), model="rw2", scale.model=TRUE, hyper=H$rw2) ',
+      ' + f( inla.group( pca1, method="quantile", n=9 ), model="rw2", scale.model=TRUE, hyper=H$rw2) ',
+      ' + f( inla.group( pca2, method="quantile", n=9 ), model="rw2", scale.model=TRUE, hyper=H$rw2) ',
+      ' + f( auid, model="bym2", graph=slot(sppoly, "nb"), group=year_factor, scale.model=TRUE, constr=TRUE, hyper=H$bym2, control.group=list(model="ar1", hyper=H$ar1_group)) '
+  ) )
 
-        family = "binomial",  # "nbinomial", "betabinomial", "zeroinflatedbinomial0" , "zeroinflatednbinomial0"
-
-        control.family=list(control.link=list(model="logit")),
-        control.compute=list(dic=TRUE, cpo=TRUE, waic=TRUE, config=TRUE),
-        control.results=list(return.marginals.random=TRUE, return.marginals.predictor=TRUE ),
-        control.predictor=list(compute=FALSE, link=1 ),
-        # control.fixed = list(prec.intercept = 0.1),
-        control.fixed = H$fixed,  # priors for fixed effects, generic is ok
-        control.inla = list(cmin = 0 ),
-        # control.inla = list( h=1e-6, tolerance=1e-12), # increase in case values are too close to zero
-        # control.inla=list( strategy="laplace", cutoff=1e-6, correct=TRUE, correct.verbose=FALSE ),
-        # control.inla = list( h=1e-6, tolerance=1e-12), # increase in case values are too close to zero
-        # control.inla = list(h=1e-3, tolerance=1e-9, cmin=0), # restart=3), # restart a few times in case posteriors are poorly defined
-        # control.mode = list( restart=TRUE, result=RES ), # restart from previous estimates
-      verbose=TRUE
-    )'
-  )
-
-
-
+  p$carstm_model_family = "binomial"  # "nbinomial", "betabinomial", "zeroinflatedbinomial0" , "zeroinflatednbinomial0"
+  p$carstm_model_inla_control_familiy = list(control.link=list(model='logit'))  
+ 
   M = snowcrab_carstm( p=p, DS="carstm_inputs", redo=TRUE )  # will redo if not found
   M = NULL; gc()
   fit = carstm_model( p=p, M=p$modeldata )
@@ -1110,9 +850,8 @@
   p$variabletomodel = "pa"
   p$carstm_model_label = "nonseparable_space-time_pa_fishable_nbinomial"
   p$carstm_modelengine = "inla"
-  p$carstm_model_call = paste(
-    'inla( formula =', p$variabletomodel,
-      ' ~ 1
+  p$carstm_model_formula = as.formula( paste(
+    p$variabletomodel, ' ~ 1 ', 
         + f( dyri, model="ar1", hyper=H$ar1 )
         + f( inla.group( t, method="quantile", n=9 ), model="rw2", scale.model=TRUE, hyper=H$rw2)
         + f( inla.group( z, method="quantile", n=9 ), model="rw2", scale.model=TRUE, hyper=H$rw2)
@@ -1120,28 +859,11 @@
         + f( inla.group( pca1, method="quantile", n=9 ), model="rw2", scale.model=TRUE, hyper=H$rw2)
         + f( inla.group( pca2, method="quantile", n=9 ), model="rw2", scale.model=TRUE, hyper=H$rw2)
         + f( auid, model="bym2", graph=slot(sppoly, "nb"), group=year_factor, scale.model=TRUE, constr=TRUE, hyper=H$bym2, control.group=list(model="ar1", hyper=H$ar1_group)),
-        data= M,
+  ) )
 
-        family ="nbinomial", #  "binomial",  # "nbinomial", "betabinomial", "zeroinflatedbinomial0" , "zeroinflatednbinomial0"
-
-        # control.family=list(control.link=list(model="logit")),
-        control.compute=list(dic=TRUE, cpo=TRUE, waic=TRUE, config=TRUE),
-        control.results=list(return.marginals.random=TRUE, return.marginals.predictor=TRUE ),
-        control.predictor=list(compute=FALSE, link=1 ),
-        # control.fixed = list(prec.intercept = 0.1),
-        control.fixed = H$fixed,  # priors for fixed effects, generic is ok
-        control.inla = list(cmin = 0 ),
-        # control.inla = list( h=1e-6, tolerance=1e-12), # increase in case values are too close to zero
-        # control.inla=list( strategy="laplace", cutoff=1e-6, correct=TRUE, correct.verbose=FALSE ),
-        # control.inla = list( h=1e-6, tolerance=1e-12), # increase in case values are too close to zero
-        # control.inla = list(h=1e-3, tolerance=1e-9, cmin=0), # restart=3), # restart a few times in case posteriors are poorly defined
-        # control.mode = list( restart=TRUE, result=RES ), # restart from previous estimates
-      verbose=TRUE
-    )'
-  )
-
-
-
+  p$carstm_model_family = "nbinomial"  # "nbinomial", "betabinomial", "zeroinflatedbinomial0" , "zeroinflatednbinomial0"
+  p$carstm_model_inla_control_familiy = NULL  
+ 
   M = snowcrab_carstm( p=p, DS="carstm_inputs", redo=TRUE )  # will redo if not found
   M = NULL; gc()
   fit = carstm_model( p=p, M=p$modeldata )
@@ -1171,37 +893,19 @@
   p$variabletomodel = "pa"
   p$carstm_model_label = "nonseparable_space-time_pa_fishable_zeroinflatedbinomial0"
   p$carstm_modelengine = "inla"
-  p$carstm_model_call = paste(
-    'inla( formula =', p$variabletomodel,
-      ' ~ 1
-        + f( dyri, model="ar1", hyper=H$ar1 )
-        + f( inla.group( t, method="quantile", n=9 ), model="rw2", scale.model=TRUE, hyper=H$rw2)
-        + f( inla.group( z, method="quantile", n=9 ), model="rw2", scale.model=TRUE, hyper=H$rw2)
-        + f( inla.group( substrate.grainsize, method="quantile", n=9 ), model="rw2", scale.model=TRUE, hyper=H$rw2)
-        + f( inla.group( pca1, method="quantile", n=9 ), model="rw2", scale.model=TRUE, hyper=H$rw2)
-        + f( inla.group( pca2, method="quantile", n=9 ), model="rw2", scale.model=TRUE, hyper=H$rw2)
-        + f( auid, model="bym2", graph=slot(sppoly, "nb"), group=year_factor, scale.model=TRUE, constr=TRUE, hyper=H$bym2, control.group=list(model="ar1", hyper=H$ar1_group)),
-        data= M,
+  p$carstm_model_formula = as.formula( paste(
+    p$variabletomodel, ' ~ 1 ', 
+      ' + f( dyri, model="ar1", hyper=H$ar1 ) ', 
+      ' + f( inla.group( t, method="quantile", n=9 ), model="rw2", scale.model=TRUE, hyper=H$rw2) ', 
+      ' + f( inla.group( z, method="quantile", n=9 ), model="rw2", scale.model=TRUE, hyper=H$rw2) ', 
+      ' + f( inla.group( substrate.grainsize, method="quantile", n=9 ), model="rw2", scale.model=TRUE, hyper=H$rw2) ', 
+      ' + f( inla.group( pca1, method="quantile", n=9 ), model="rw2", scale.model=TRUE, hyper=H$rw2) ', 
+      ' + f( inla.group( pca2, method="quantile", n=9 ), model="rw2", scale.model=TRUE, hyper=H$rw2) ', 
+      ' + f( auid, model="bym2", graph=slot(sppoly, "nb"), group=year_factor, scale.model=TRUE, constr=TRUE, hyper=H$bym2, control.group=list(model="ar1", hyper=H$ar1_group))  '
+  ) )
 
-        family ="zeroinflatedbinomial0", #  "binomial",  # "nbinomial", "betabinomial", "zeroinflatedbinomial0" , "zeroinflatednbinomial0"
-
-        # control.family=list(control.link=list(model="logit")),
-        control.compute=list(dic=TRUE, cpo=TRUE, waic=TRUE, config=TRUE),
-        control.results=list(return.marginals.random=TRUE, return.marginals.predictor=TRUE ),
-        control.predictor=list(compute=FALSE, link=1 ),
-        # control.fixed = list(prec.intercept = 0.1),
-        control.fixed = H$fixed,  # priors for fixed effects, generic is ok
-        control.inla = list(cmin = 0 ),
-        # control.inla = list( h=1e-6, tolerance=1e-12), # increase in case values are too close to zero
-        # control.inla=list( strategy="laplace", cutoff=1e-6, correct=TRUE, correct.verbose=FALSE ),
-        # control.inla = list( h=1e-6, tolerance=1e-12), # increase in case values are too close to zero
-        # control.inla = list(h=1e-3, tolerance=1e-9, cmin=0), # restart=3), # restart a few times in case posteriors are poorly defined
-        # control.mode = list( restart=TRUE, result=RES ), # restart from previous estimates
-      verbose=TRUE
-    )'
-  )
-
-
+  p$carstm_model_family  = "zeroinflatedbinomial0", #  "binomial",  # "nbinomial", "betabinomial", "zeroinflatedbinomial0" , "zeroinflatednbinomial0"
+  p$carstm_model_inla_control_familiy = NULL  
 
   M = snowcrab_carstm( p=p, DS="carstm_inputs", redo=TRUE )  # will redo if not found
   M = NULL; gc()
@@ -1232,35 +936,19 @@
   p$variabletomodel = "pa"
   p$carstm_model_label = "nonseparable_space-time_pa_fishable_zeroinflatedbinomial1"
   p$carstm_modelengine = "inla"
-  p$carstm_model_call = paste(
-    'inla( formula =', p$variabletomodel,
-      ' ~ 1
-        + f( dyri, model="ar1", hyper=H$ar1 )
-        + f( inla.group( t, method="quantile", n=9 ), model="rw2", scale.model=TRUE, hyper=H$rw2)
-        + f( inla.group( z, method="quantile", n=9 ), model="rw2", scale.model=TRUE, hyper=H$rw2)
-        + f( inla.group( substrate.grainsize, method="quantile", n=9 ), model="rw2", scale.model=TRUE, hyper=H$rw2)
-        + f( inla.group( pca1, method="quantile", n=9 ), model="rw2", scale.model=TRUE, hyper=H$rw2)
-        + f( inla.group( pca2, method="quantile", n=9 ), model="rw2", scale.model=TRUE, hyper=H$rw2)
-        + f( auid, model="bym2", graph=slot(sppoly, "nb"), group=year_factor, scale.model=TRUE, constr=TRUE, hyper=H$bym2, control.group=list(model="ar1", hyper=H$ar1_group)),
-        data= M,
+  p$carstm_model_formula = as.formula( paste(
+    p$variabletomodel, ' ~ 1 ', 
+      ' + f( dyri, model="ar1", hyper=H$ar1 ) ', 
+      ' + f( inla.group( t, method="quantile", n=9 ), model="rw2", scale.model=TRUE, hyper=H$rw2) ', 
+      ' + f( inla.group( z, method="quantile", n=9 ), model="rw2", scale.model=TRUE, hyper=H$rw2) ', 
+      ' + f( inla.group( substrate.grainsize, method="quantile", n=9 ), model="rw2", scale.model=TRUE, hyper=H$rw2) ', 
+      ' + f( inla.group( pca1, method="quantile", n=9 ), model="rw2", scale.model=TRUE, hyper=H$rw2) ', 
+      ' + f( inla.group( pca2, method="quantile", n=9 ), model="rw2", scale.model=TRUE, hyper=H$rw2) ', 
+      ' + f( auid, model="bym2", graph=slot(sppoly, "nb"), group=year_factor, scale.model=TRUE, constr=TRUE, hyper=H$bym2, control.group=list(model="ar1", hyper=H$ar1_group)) '
+  ) )
 
-        family ="zeroinflatedbinomial1", #  "binomial",  # "nbinomial", "betabinomial", "zeroinflatedbinomial0" , "zeroinflatednbinomial0"
-
-        # control.family=list(control.link=list(model="logit")),
-        control.compute=list(dic=TRUE, cpo=TRUE, waic=TRUE, config=TRUE),
-        control.results=list(return.marginals.random=TRUE, return.marginals.predictor=TRUE ),
-        control.predictor=list(compute=FALSE, link=1 ),
-        # control.fixed = list(prec.intercept = 0.1),
-        control.fixed = H$fixed,  # priors for fixed effects, generic is ok
-        control.inla = list(cmin = 0 ),
-        # control.inla = list( h=1e-6, tolerance=1e-12), # increase in case values are too close to zero
-        # control.inla=list( strategy="laplace", cutoff=1e-6, correct=TRUE, correct.verbose=FALSE ),
-        # control.inla = list( h=1e-6, tolerance=1e-12), # increase in case values are too close to zero
-        # control.inla = list(h=1e-3, tolerance=1e-9, cmin=0), # restart=3), # restart a few times in case posteriors are poorly defined
-        # control.mode = list( restart=TRUE, result=RES ), # restart from previous estimates
-      verbose=TRUE
-    )'
-  )
+  p$carstm_model_family  = "zeroinflatedbinomial1", #  "binomial",  # "nbinomial", "betabinomial", "zeroinflatedbinomial0" , "zeroinflatednbinomial0"
+  p$carstm_model_inla_control_familiy = NULL  
 
 
 
@@ -1434,9 +1122,6 @@ year.assessment = 2018
 
  p = bio.snowcrab::snowcrab_carstm( DS="parameters", assessment.years=1999:year.assessment )
 
-  # misc run params adjustments here:
-  p$inla_num.threads = 6
-  p$inla_blas.num.threads = 6
 
   plot.dir=paste(p$modeldir,"prediction.plots", year.assessment, sep="/" )
 

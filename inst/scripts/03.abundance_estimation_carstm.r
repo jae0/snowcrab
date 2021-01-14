@@ -7,6 +7,10 @@
 
 year.assessment = 2020
 
+# adjust based upon RAM requirements and ncores
+inla.setOption(num.threads= floor( parallel::detectCores() / 2) )
+inla.setOption(blas.num.threads= 2 )
+
 
 # -------------------------------------------------
 # Part 1 -- construct basic parameter list defining the main characteristics of the study
@@ -15,9 +19,6 @@ year.assessment = 2020
 
   # p$modeldir = "..."  # use this to specifiy alt location to save model output files
 
-  # misc run params adjustments here:
-  p$inla_num.threads = 6
-  p$inla_blas.num.threads = 6
 
   plot.dir=paste(p$modeldir, "prediction.plots", year.assessment, sep="/" )
 

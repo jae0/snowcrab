@@ -15,7 +15,8 @@ snowcrab_carstm = function( p=NULL, DS="parameters", redo=FALSE, extrapolation_l
         p$data_root = NULL
         p$datadir  = NULL
         p$data_transformation= NULL
-        p$carstm_model_call = NULL  # defaults to generic
+        p$carstm_model_formula = NULL  # defaults to generic
+        p$carstm_model_family = NULL  # defaults to generic
 
         p = bio.snowcrab::snowcrab_parameters(p=p, ...)
       }
@@ -127,26 +128,18 @@ snowcrab_carstm = function( p=NULL, DS="parameters", redo=FALSE, extrapolation_l
 
     if ( grepl("glm", p$carstm_modelengine) ) {
       if ( !exists("carstm_model_label", p))  p$carstm_model_label = "default_glm"
-      p$carstm_model_call = paste(
-        'glm( formula =',  p$variabletomodel,
-        ' ~ 1 + factor(AUID) + t + z + substrate.grainsize +tiyr,
-          data= M[ which(M$tag=="observations"), ],
-          family=gaussian(link="identity")
-        )'
-      )
+      p$carstm_model_formula = as.formula( paste(
+        p$variabletomodel, ' ~ 1 + factor(AUID) + t + z + substrate.grainsize + tiyr' ))
+      p$carstm_model_formula = gaussian(link="identity") 
+      # data = M[ which(M$tag=="observations"), ]
     }
 
     if ( grepl("gam", p$carstm_modelengine) ) {
-      p$libs = unique( c( p$libs, project.library ( "mgcv"  ) ) )
-
       if ( !exists("carstm_model_label", p))  p$carstm_model_label = "default_gam"
-      p$carstm_model_call = paste(
-        'gam( formula =',  p$variabletomodel,
-        ' ~ 1 + factor(AUID) + s(t) + s(z) + s(substrate.grainsize) + s(yr) + s(dyear),
-          data= M[ which(M$tag=="observations"), ],
-          family=gaussian(link="identity")
-        )'
-      )
+      p$carstm_model_formula = as.formula( paste(
+        p$variabletomodel, ' ~ 1 + factor(AUID) + s(t) + s(z) + s(substrate.grainsize) + s(yr) + s(dyear) '))
+      # data= M[ which(M$tag=="observations"), ],
+      p$carstm_model_formula = gaussian(link="identity") 
     }
 
     

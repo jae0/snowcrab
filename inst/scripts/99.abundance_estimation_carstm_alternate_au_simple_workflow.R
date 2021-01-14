@@ -15,6 +15,11 @@
 
   yrs = 1999:2020
 
+    # adjust based upon RAM requirements and ncores
+    inla.setOption(num.threads= floor( parallel::detectCores() / 2) )
+    inla.setOption(blas.num.threads= 2 )
+
+
 
   areal_units_type = "tesselation"
   areal_units_resolution_km = 1
@@ -23,7 +28,7 @@
         DS="parameters",
         assessment.years=yrs,
         modeldir = project.datadirectory("bio.snowcrab", "modelled", "testing" ),  ## <--- important: specify save location
-        carstm_model_label = paste( "testing", areal_units_type, areal_units_resolution_km, areal_units_constraint_nmin, sep="_" ),
+        carstm_model_label = "testing",
         inputdata_spatial_discretization_planar_km = 1,
         boundingbox = list( xlim = c(-70.5, -56.5), ylim=c(39.5, 47.5)), # bounding box for plots using spplot
         areal_units_proj4string_planar_km = projection_proj4string("utm20"), # set up default map projection
@@ -31,9 +36,7 @@
         areal_units_constraint_nmin = areal_units_constraint_nmin,
         areal_units_type= areal_units_type,
         areal_units_resolution_km = areal_units_resolution_km,
-        sa_threshold_km2 = 5,
-        inla_num.threads = 4,
-        inla_blas.num.threads = 4
+        sa_threshold_km2 = 5 
       )
     sppoly = areal_units( p=p, redo=TRUE )  # to create
   }
@@ -47,7 +50,7 @@
           DS="parameters",
           assessment.years=yrs,
           modeldir = project.datadirectory("bio.snowcrab", "modelled", "testing" ),  ## <--- important: specify save location
-          carstm_model_label = paste( "testing", areal_units_type, areal_units_resolution_km, areal_units_constraint_nmin, sep="_" ),
+          carstm_model_label = "testing",
           inputdata_spatial_discretization_planar_km = 1,
           boundingbox = list( xlim = c(-70.5, -56.5), ylim=c(39.5, 47.5)), # bounding box for plots using spplot
           areal_units_proj4string_planar_km = projection_proj4string("utm20"), # set up default map projection
@@ -55,9 +58,7 @@
           areal_units_constraint_nmin = areal_units_constraint_nmin,
           areal_units_type= areal_units_type,
           areal_units_resolution_km = areal_units_resolution_km,
-          sa_threshold_km2 = areal_units_resolution_km/2,
-          inla_num.threads = 4,
-          inla_blas.num.threads = 4
+          sa_threshold_km2 = areal_units_resolution_km/2
         )
       sppoly = areal_units( p=p, redo=TRUE )  # to create
     }
@@ -99,7 +100,7 @@ if (0) {
     DS="parameters",
     assessment.years=1999:2019,
     modeldir = project.datadirectory("bio.snowcrab", "modelled", "testing" ),  ## <--- important: specify save location
-    carstm_model_label = paste( "testing", areal_units_type, areal_units_resolution_km, areal_units_constraint_nmin, sep="_" ),
+    carstm_model_label = "testing",
     inputdata_spatial_discretization_planar_km = 1,
     boundingbox = list( xlim = c(-70.5, -56.5), ylim=c(39.5, 47.5)), # bounding box for plots using spplot
     areal_units_proj4string_planar_km = projection_proj4string("utm20"), # set up default map projection
@@ -107,9 +108,7 @@ if (0) {
     areal_units_constraint_nmin = areal_units_constraint_nmin,
     areal_units_type= areal_units_type,
     areal_units_resolution_km = areal_units_resolution_km,
-    sa_threshold_km2 = 5,
-    inla_num.threads = 1,
-    inla_blas.num.threads = 1
+    sa_threshold_km2 = 5 
   )
 
 
@@ -354,36 +353,19 @@ if (0) {
 if (0) {
   # use alternate model -- zero-inflated1
 
-          p$carstm_model_label = "zeroinflated"  #unique to this project ... to permit alt model forms/variations within the same overall carstm
-
-          p$carstm_model_call = paste(
-          'inla( formula =', p$variabletomodel,
-          ' ~ 1
-            + offset( log(data_offset))
-            + f( dyri, model="ar1", hyper=H$ar1 )
-            + f( inla.group( t, method="quantile", n=9 ), model="rw2", scale.model=TRUE, hyper=H$rw2)
-            + f( inla.group( z, method="quantile", n=9 ), model="rw2", scale.model=TRUE, hyper=H$rw2)
-            + f( inla.group( substrate.grainsize, method="quantile", n=9 ), model="rw2", scale.model=TRUE, hyper=H$rw2)
-            + f( inla.group( pca1, method="quantile", n=9 ), model="rw2", scale.model=TRUE, hyper=H$rw2)
-            + f( inla.group( pca2, method="quantile", n=9 ), model="rw2", scale.model=TRUE, hyper=H$rw2)
-            + f( auid, model="bym2", graph=slot(sppoly, "nb"), group=year_factor, scale.model=TRUE, constr=TRUE, hyper=H$bym2, control.group=list(model="ar1", hyper=H$ar1_group)),
-            family = "zeroinflatedpoisson1",
-            data= M,
-            control.compute=list(cpo=TRUE, waic=TRUE, dic=TRUE, config=TRUE),
-            control.results=list(return.marginals.random=TRUE, return.marginals.predictor=TRUE ),
-            control.predictor=list(compute=FALSE, link=1 ),
-            #control.fixed = list(prec.intercept = 0.1),
-            control.fixed = H$fixed,  # priors for fixed effects, generic is ok
-            control.inla = list(cmin = 0, h=1e-4, tolerance=1e-9, strategy="adaptive", optimise.strategy="smart"),
-            # control.inla = list( h=1e-6, tolerance=1e-12), # increase in case values are too close to zero
-            #control.inla=list( strategy="laplace", cutoff=1e-6, correct=TRUE, correct.verbose=FALSE ),
-            # control.inla = list( h=1e-6, tolerance=1e-12), # increase in case values are too close to zero
-            # control.inla = list(h=1e-3, tolerance=1e-9, cmin=0), # restart=3), # restart a few times in case posteriors are poorly defined
-            # control.mode = list( restart=TRUE, result=RES ), # restart from previous estimates
-          verbose=TRUE
-          )'
-        )
-
+    p$carstm_model_label = "zeroinflated"  #unique to this project ... to permit alt model forms/variations within the same overall carstm
+    p$carstm_model_formula = as.formula( paste(
+      p$variabletomodel, ' ~ 1',
+        ' + offset( log(data_offset))',
+        ' + f( dyri, model="ar1", hyper=H$ar1 )',
+        ' + f( inla.group( t, method="quantile", n=9 ), model="rw2", scale.model=TRUE, hyper=H$rw2)',
+        ' + f( inla.group( z, method="quantile", n=9 ), model="rw2", scale.model=TRUE, hyper=H$rw2)',
+        ' + f( inla.group( substrate.grainsize, method="quantile", n=9 ), model="rw2", scale.model=TRUE, hyper=H$rw2)',
+        ' + f( inla.group( pca1, method="quantile", n=9 ), model="rw2", scale.model=TRUE, hyper=H$rw2)',
+        ' + f( inla.group( pca2, method="quantile", n=9 ), model="rw2", scale.model=TRUE, hyper=H$rw2)',
+        ' + f( auid, model="bym2", graph=slot(sppoly, "nb"), group=year_factor, scale.model=TRUE, constr=TRUE, hyper=H$bym2, control.group=list(model="ar1", hyper=H$ar1_group))'
+    ) )
+    p$carstm_model_family = "zeroinflatedpoisson1"
 
 }
 
