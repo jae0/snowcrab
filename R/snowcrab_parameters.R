@@ -8,23 +8,24 @@ snowcrab_parameters = function( p=list(), year.assessment=NULL, project_name="bi
 
   # ---------------------
   # create/update library list
-  p$libs = unique( c( p$libs, RLibrary ( "colorspace",  "geosphere", "lattice",
-    "maps", "mapdata", "maptools", "parallel",  "rgdal", "rgeos",  "sp", "splancs", "rgeos", "bigmemory", "numDeriv", "lubridate", "parallel", "fields", "mgcv" ) ) )
+  p$libs = unique( c( p$libs, RLibrary ( "colorspace",  "geosphere", "lattice", "GADMTools",
+    "maps", "mapdata", "maptools", "parallel",  "rgdal", "rgeos",  "sp", "spdep", "sf" ,
+    "rgeos", "bigmemory", "numDeriv", "lubridate", "parallel", "fields", "mgcv" ) ) )
   p$libs = unique( c( p$libs, project.library (
-    "aegis", "bio.taxonomy", "stmv", "aegis.polygons", "aegis.coastline", "netmensuration", "bio.snowcrab" ) ) )
+    "aegis", "bio.taxonomy", "stmv",
+    "aegis.bathymetry", "aegis.polygons", "aegis.coastline",
+    "aegis.survey", "aegis.temperature",
+    "aegis.substrate", "aegis.speciescomposition",
+    "netmensuration", "bio.snowcrab" ) ) )
 
-  # ---------------------
-
-  #  usually the datadir is a subdirectory: "data" of data_root as in snowcrab_carstm, .. might cause problems
 
   p = parameters_add_without_overwriting( p, project_name = project_name )
   p = parameters_add_without_overwriting( p, data_root = project.datadirectory( p$project_name  ) )
-  p = parameters_add_without_overwriting( p, datadir  = p$data_root )  # all unprocessed inputs (and simple manipulations)
+  p = parameters_add_without_overwriting( p, datadir  = p$data_root )  # all unprocessed inputs (and simple manipulations) ..   #  usually the datadir is a subdirectory: "data" of data_root as in snowcrab_db, .. might cause problems
   p = parameters_add_without_overwriting( p, modeldir = file.path( p$data_root, "modelled" ) )  # all model outputs
 
   if ( !file.exists(p$datadir) ) dir.create( p$datadir, showWarnings=FALSE, recursive=TRUE )
   if ( !file.exists(p$modeldir) ) dir.create( p$modeldir, showWarnings=FALSE, recursive=TRUE )
-
 
 
   p$project.outputdir = project.datadirectory( p$project_name, "output" ) #required for interpolations and mapping
@@ -89,8 +90,10 @@ snowcrab_parameters = function( p=list(), year.assessment=NULL, project_name="bi
   p$fisheries.grid.resolution = 2
 
   # required for lookups
-  p$inputdata_spatial_discretization_planar_km = 1
-  p$inputdata_temporal_discretization_yr = 1/12
+  p = parameters_add_without_overwriting( p,
+      inputdata_spatial_discretization_planar_km = p$pres ,  # 1 km .. some thinning .. requires 32 GB RAM and limit of speed -- controls resolution of data prior to modelling to reduce data set and speed up modelling
+      inputdata_temporal_discretization_yr = 1/12,
+  }
 
   p$regions.to.model = c( "cfanorth", "cfasouth", "cfa4x", "cfaall" )
   p$plottimes=c("annual", "globalaverage")
@@ -122,9 +125,6 @@ snowcrab_parameters = function( p=list(), year.assessment=NULL, project_name="bi
     if (!exists("stmv_variables", p)) p$stmv_variables = list()
     if (!exists("LOCS", p$stmv_variables)) p$stmv_variables$LOCS=c("plon", "plat")
     if (!exists("TIME", p$stmv_variables)) p$stmv_variables$TIME="tiyr"
-
-    p$inputdata_spatial_discretization_planar_km = p$pres  # 1 km .. requires 32 GB RAM and limit of speed -- controls resolution of data prior to modelling to reduce data set and speed up modelling
-    p$inputdata_temporal_discretization_yr = 1/12  # ie., monthly .. controls resolution of data prior to modelling to reduce data set and speed up modelling }
 
     if (!exists("storage_backend", p)) p$storage_backend="bigmemory.ram"
 
@@ -269,8 +269,6 @@ snowcrab_parameters = function( p=list(), year.assessment=NULL, project_name="bi
     if (!exists("LOCS", p$stmv_variables)) p$stmv_variables$LOCS=c("plon", "plat")
     if (!exists("TIME", p$stmv_variables)) p$stmv_variables$TIME="tiyr"
 
-    p$inputdata_spatial_discretization_planar_km = p$pres  # 1 km .. requires 32 GB RAM and limit of speed -- controls resolution of data prior to modelling to reduce data set and speed up modelling
-    p$inputdata_temporal_discretization_yr = 1/12  # ie., monthly .. controls resolution of data prior to modelling to reduce data set and speed up modelling }
 
     if (!exists("storage_backend", p)) p$storage_backend="bigmemory.ram"
 
@@ -349,5 +347,122 @@ snowcrab_parameters = function( p=list(), year.assessment=NULL, project_name="bi
   }
 
 
+
+  if (project_class %in% c("carstm") ) {
+
+    p$libs = c( p$libs, project.library ( "carstm", "INLA"  ) )
+
+    p$project_class = "carstm"
+
+
+    # p$taxa.of.interest = aegis.survey::groundfish_variablelist("catch.summary")
+    # p$season = "summer"
+    # p$taxa =  "maxresolved"
+
+    p = parameters_add_without_overwriting( p,
+      groundfish_species_code=2526,
+      speciesname = "Snow crab",
+      spatial_domain = "snowcrab",
+      yrs = p$yrs,
+      quantile_bounds =c(0, 0.99) # trim upper bounds
+    )
+
+    p = parameters_add_without_overwriting( p,
+      trawlable_units = "sweptarea",  # <<<<<<<<<<<<<<<<<< also:  "standardtow", "sweptarea" (for groundfish surveys)
+      areal_units_xydata = "snowcrab_db(p=p, DS='areal_units_input')",
+      areal_units_type = "lattice", # "stmv_lattice" to use ageis fields instead of carstm fields ... note variables are not the same
+      areal_units_overlay = "snowcrab_managementareas", # currently: "snowcrab_managementareas",  "groundfish_strata" .. additional polygon layers for subsequent analysis for now ..
+      areal_units_resolution_km = 25, # km dim of lattice ~ 1 hr
+      areal_units_constraint = "snowcrab",  # locations of data as constraint .. "snowcrab" loads these automatically, otherwise a xy matrix of positions
+      areal_units_constraint_nmin = 3,
+      areal_units_proj4string_planar_km = aegis::projection_proj4string("utm20"),  # coord system to use for areal estimation and gridding for carstm
+      areal_units_timeperiod = "none",
+      tus="yr",
+      fraction_todrop = 1/5,
+      fraction_cv = 1.0,
+      fraction_good_bad = 0.9,
+      nAU_min = 30,
+      carstm_modelengine = "inla",  # {model engine}.{label to use to store}
+      carstm_model_label = "default",
+      carstm_inputs_aggregated = FALSE
+    )
+
+
+    if ( !exists("selection", p)) p$selection=list()
+    if ( !exists("type", p$selection) ) p$selection$type = "number"
+    if ( !exists("biologicals", p$selection) ) p$selection$biologicals = list(
+      spec_bio=bio.taxonomy::taxonomy.recode( from="spec", to="parsimonious", tolookup=p$groundfish_species_code ),
+      sex=0, # male
+      mat=1, # do not use maturity status in groundfish data as it is suspect ..
+      len= c( 95, 200 )/10, #  mm -> cm ; aegis_db in cm
+      ranged_data="len"
+    )
+
+    if ( !exists("survey", p$selection) ) p$selection$survey = list(
+      data.source = ifelse (p$selection$type=="number", c("snowcrab"), c("snowcrab", "groundfish")),
+      yr = p$yrs,      # time frame for comparison specified above
+      settype = 1, # same as geartype in groundfish_survey_db
+      polygon_enforce=TRUE,  # make sure mis-classified stations or incorrectly entered positions get filtered out
+      strata_toremove = NULL #,  # emphasize that all data enters analysis initially ..
+      # ranged_data = c("dyear")  # not used .. just to show how to use range_data
+    )
+
+    if ( !exists("carstm_inputdata_model_source", p))  p$carstm_inputdata_model_source = list()
+    p$carstm_inputdata_model_source = parameters_add_without_overwriting( p$carstm_inputdata_model_source,
+      bathymetry = "stmv",  # "stmv", "hybrid", "carstm"
+      substrate = "stmv",  # "stmv", "hybrid", "carstm"
+      temperature = "carstm",  # "stmv", "hybrid", "carstm"
+      speciescomposition = "carstm" # "stmv", "hybrid", "carstm"
+    )
+
+    if ( !exists("variabletomodel", p)) p$variabletomodel = "totno"
+
+    if ( !exists("carstm_modelengine", p)) p$carstm_modelengine = "inla"  # {model engine}.{label to use to store}
+
+
+
+    if ( grepl("inla", p$carstm_modelengine) ) {
+      if ( !exists("carstm_model_label", p))  p$carstm_model_label = "production"
+      if ( !exists("carstm_model_formula", p)  ) {
+        p$carstm_model_formula = as.formula( paste(
+         p$variabletomodel, ' ~ 1',
+            ' + offset( log(data_offset)) ',
+            ' + f( dyri, model="ar1", hyper=H$ar1 ) ',
+            ' + f( inla.group( t, method="quantile", n=9 ), model="rw2", scale.model=TRUE, hyper=H$rw2) ',
+            ' + f( inla.group( z, method="quantile", n=9 ), model="rw2", scale.model=TRUE, hyper=H$rw2) ',
+            ' + f( inla.group( substrate.grainsize, method="quantile", n=9 ), model="rw2", scale.model=TRUE, hyper=H$rw2) ',
+            ' + f( inla.group( pca1, method="quantile", n=9 ), model="rw2", scale.model=TRUE, hyper=H$rw2) ',
+            ' + f( inla.group( pca2, method="quantile", n=9 ), model="rw2", scale.model=TRUE, hyper=H$rw2) ',
+            ' + f( auid, model="bym2", graph=slot(sppoly, "nb"), group=year_factor, scale.model=TRUE, constr=TRUE, hyper=H$bym2, control.group=list(model="ar1", hyper=H$ar1_group)) '
+         ) )
+      }
+      if ( !exists("carstm_model_family", p)  )  p$carstm_model_family = "poisson"
+    }
+
+      #    + f(tiyr, model="ar1", hyper=H$ar1 )
+      # + f(year,  model="ar1", hyper=H$ar1 )
+
+    if ( grepl("glm", p$carstm_modelengine) ) {
+      if ( !exists("carstm_model_label", p))  p$carstm_model_label = "default_glm"
+      p$carstm_model_formula = as.formula( paste(
+        p$variabletomodel, ' ~ 1 + factor(AUID) + t + z + substrate.grainsize + tiyr' ))
+      p$carstm_model_formula = gaussian(link="identity")
+      # data = M[ which(M$tag=="observations"), ]
+    }
+
+    if ( grepl("gam", p$carstm_modelengine) ) {
+      if ( !exists("carstm_model_label", p))  p$carstm_model_label = "default_gam"
+      p$carstm_model_formula = as.formula( paste(
+        p$variabletomodel, ' ~ 1 + factor(AUID) + s(t) + s(z) + s(substrate.grainsize) + s(yr) + s(dyear) '))
+      # data= M[ which(M$tag=="observations"), ],
+      p$carstm_model_formula = gaussian(link="identity")
+    }
+
+    if (!exists("nsims", p) ) p$nsims = 10000
+
+    p = carstm_parameters( p=p)  # fill in anything missing and some checks
+
+    return(p)
+  }
 
 }

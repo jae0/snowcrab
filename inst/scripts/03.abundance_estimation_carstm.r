@@ -15,7 +15,7 @@ inla.setOption(blas.num.threads= 2 )
 # -------------------------------------------------
 # Part 1 -- construct basic parameter list defining the main characteristics of the study
 # require(aegis)
- p = bio.snowcrab::snowcrab_carstm( DS="parameters", assessment.years=1999:year.assessment )
+ p = bio.snowcrab::snowcrab_parameters( DS="carstm", assessment.years=1999:year.assessment )
 
   # p$modeldir = "..."  # use this to specifiy alt location to save model output files
 
@@ -35,9 +35,9 @@ inla.setOption(blas.num.threads= 2 )
   # plot(sppoly)
   # spplot( sppoly, "au_sa_km2", main="AUID", sp.layout=p$coastLayout )
   dev.new(); plot( sppoly[, "au_sa_km2"], main="AUID", breaks = "quantile", nbreaks = 8, pal=sf.colors(8) )
-  
-  
-  
+
+
+
 # -------------------------------------------------
 # Part 3 -- create covariate field for bathymetry
 # bathymetry -- ensure the data assimilation in bathymetry is first completed :: 01.bathymetry_data.R
@@ -102,13 +102,13 @@ inla.setOption(blas.num.threads= 2 )
 
 # -------------------------------------------------
 # Part 8 -- Snow crab abundance -- main mode used for production
-  M = snowcrab_carstm( p=p, DS="carstm_inputs", redo=TRUE )  # will redo if not found
+  M = snowcrab_db( p=p, DS="carstm_inputs", redo=TRUE )  # will redo if not found
   #To compare values of M, run the following line:
   #load(paste(p$modeldir, "M.summary.rdata", sep="/"))
 
   M = NULL; gc()
 
-  fit = carstm_model( p=p, M='snowcrab_carstm( p=p, DS="carstm_inputs" )' ) # 151 configs and long optim .. 19 hrs
+  fit = carstm_model( p=p, M='snowcrab_db( p=p, DS="carstm_inputs" )' ) # 151 configs and long optim .. 19 hrs
   # fit = carstm_model( p=p, DS="carstm_modelled_fit")
 
   summary(fit)
@@ -123,11 +123,11 @@ inla.setOption(blas.num.threads= 2 )
   s$dic$dic
   s$dic$p.eff
 
-  RES = snowcrab_carstm(p=p, DS="carstm_output_compute" )
-  # RES = snowcrab_carstm(p=p, DS="carstm_output_timeseries" )
+  RES = snowcrab_db(p=p, DS="carstm_output_compute" )
+  # RES = snowcrab_db(p=p, DS="carstm_output_timeseries" )
 
-  bio = snowcrab_carstm(p=p, DS="carstm_output_spacetime_biomass" )
-  num = snowcrab_carstm(p=p, DS="carstm_output_spacetime_number" )
+  bio = snowcrab_db(p=p, DS="carstm_output_spacetime_biomass" )
+  num = snowcrab_db(p=p, DS="carstm_output_spacetime_number" )
 
   plot( cfaall ~ yrs, data=RES, lty="solid", lwd=4, pch=20, col="slateblue", type="b", ylab="Biomass (kt)", xlab="")
   lines( cfaall_lb ~ yrs, data=RES, lty="dotted", lwd=2, col="slategray" )

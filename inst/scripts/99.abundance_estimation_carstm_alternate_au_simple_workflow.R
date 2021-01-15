@@ -24,8 +24,8 @@
   areal_units_type = "tesselation"
   areal_units_resolution_km = 1
   for ( areal_units_constraint_nmin in c( 0, 1, 3, 5, 10, 15, 20, 25, 30, 40, 50  ) ) {
-      p = bio.snowcrab::snowcrab_carstm(
-        DS="parameters",
+      p = bio.snowcrab::snowcrab_parameters(
+        DS="carstm",
         assessment.years=yrs,
         modeldir = project.datadirectory("bio.snowcrab", "modelled", "testing" ),  ## <--- important: specify save location
         carstm_model_label = "testing",
@@ -36,7 +36,7 @@
         areal_units_constraint_nmin = areal_units_constraint_nmin,
         areal_units_type= areal_units_type,
         areal_units_resolution_km = areal_units_resolution_km,
-        sa_threshold_km2 = 5 
+        sa_threshold_km2 = 5
       )
     sppoly = areal_units( p=p, redo=TRUE )  # to create
   }
@@ -46,8 +46,8 @@
   areal_units_type = "lattice"
   for ( areal_units_resolution_km in c( 5, 10, 15, 20, 25, 30, 40, 50, 60, 80, 100 ) ) {
     for ( areal_units_constraint_nmin in c( 0, 3, 5, 10, 15  ) ) {
-        p = bio.snowcrab::snowcrab_carstm(
-          DS="parameters",
+        p = bio.snowcrab::snowcrab_parameters(
+          DS="carstm",
           assessment.years=yrs,
           modeldir = project.datadirectory("bio.snowcrab", "modelled", "testing" ),  ## <--- important: specify save location
           carstm_model_label = "testing",
@@ -96,8 +96,8 @@ if (0) {
   #   areal_units_resolution_km =  40
   areal_units_resolution_km = 1
 
-  p = bio.snowcrab::snowcrab_carstm(
-    DS="parameters",
+  p = bio.snowcrab::snowcrab_parameters(
+    DS="carstm",
     assessment.years=1999:2019,
     modeldir = project.datadirectory("bio.snowcrab", "modelled", "testing" ),  ## <--- important: specify save location
     carstm_model_label = "testing",
@@ -108,7 +108,7 @@ if (0) {
     areal_units_constraint_nmin = areal_units_constraint_nmin,
     areal_units_type= areal_units_type,
     areal_units_resolution_km = areal_units_resolution_km,
-    sa_threshold_km2 = 5 
+    sa_threshold_km2 = 5
   )
 
 
@@ -370,9 +370,9 @@ if (0) {
 }
 
 
-  M = snowcrab_carstm( p=p, DS="carstm_inputs", redo=TRUE )  # will redo if not found
-  fit = carstm_model( p=p, M='snowcrab_carstm( p=p, DS="carstm_inputs" )' ) # 151 configs and long optim .. 19 hrs
-  RES = snowcrab_carstm(p=p, DS="carstm_output_compute" )
+  M = snowcrab_db( p=p, DS="carstm_inputs", redo=TRUE )  # will redo if not found
+  fit = carstm_model( p=p, M='snowcrab_db( p=p, DS="carstm_inputs" )' ) # 151 configs and long optim .. 19 hrs
+  RES = snowcrab_db(p=p, DS="carstm_output_compute" )
 
   if (0) {
 
@@ -412,9 +412,9 @@ if (0) {
         carstm_plot( p=p, res=res, vn=vn, time_match=time_match )
       }
 
-      RES = snowcrab_carstm(p=p, DS="carstm_output_timeseries" )
-      bio = snowcrab_carstm(p=p, DS="carstm_output_spacetime_biomass" )
-      num = snowcrab_carstm(p=p, DS="carstm_output_spacetime_number" )
+      RES = snowcrab_db(p=p, DS="carstm_output_timeseries" )
+      bio = snowcrab_db(p=p, DS="carstm_output_spacetime_biomass" )
+      num = snowcrab_db(p=p, DS="carstm_output_spacetime_number" )
 
 
       plot( cfaall ~ yrs, data=RES, lty="solid", lwd=4, pch=20, col="slateblue", type="b", ylab="Biomass (kt)", xlab="")
@@ -473,12 +473,12 @@ if (0) {
   )
 
 
-  M = snowcrab_carstm( p=p, DS="carstm_inputs", redo=TRUE )  # will redo if not found
-  fit = carstm_model( p=p, M='snowcrab_carstm( p=p, DS="carstm_inputs" )' ) # 151 configs and long optim .. 19 hrs
+  M = snowcrab_db( p=p, DS="carstm_inputs", redo=TRUE )  # will redo if not found
+  fit = carstm_model( p=p, M='snowcrab_db( p=p, DS="carstm_inputs" )' ) # 151 configs and long optim .. 19 hrs
   fit =  carstm_model( p=p, DS="carstm_modelled_fit" )  # extract currently saved model fit
   summary(fit)
   res = carstm_summary( p=p )
-  RES = snowcrab_carstm(p=p, DS="carstm_output_compute" )
+  RES = snowcrab_db(p=p, DS="carstm_output_compute" )
 
 
 
