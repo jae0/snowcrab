@@ -1308,81 +1308,60 @@ snowcrab.db = function( DS, p=NULL, yrs=NULL, fn.root=NULL, redo=FALSE, extrapol
       varname = "AUID"
     )
     M = M[!is.na(M$AUID),]
+    M$AUID = as.character( M$AUID )  # match each datum to an area
+
 
     names(M)[which(names(M)=="yr") ] = "year"
     # M = M[ which(M$year %in% p$yrs), ]
     # M$tiyr = lubridate::decimal_date ( M$timestamp )
     # M$dyear = M$tiyr - M$year
 
+
+    # bathymetry lookup
     pB = bathymetry_parameters( p=parameters_reset(p), project_class="carstm"  )
-    vnmod = pB$variabletomodel
-    if (!(exists(vnmod, M ))) M[,vnmod] = NA
-
-      iM = which(!is.finite( M[, vnmod] ))
-      if (length(iM > 0)) {
-        LU = bathymetry_db ( p=bathymetry_parameters( spatial_domain=p$spatial_domain, project_class="core"  ), DS="aggregated_data" )  # raw data
-        LU = lonlat2planar(LU, proj.type=p$aegis_proj4string_planar_km)
-        LU_map = array_map( "xy->1", LU[,c("plon","plat")], gridparams=p$gridparams )
-        M_map = array_map( "xy->1", M[iM,c("plon","plat")], gridparams=p$gridparams )
-        M[iM, vnmod] = LU[match( M_map, LU_map ), paste(vnmod, "mean", sep=".") ]
-
-        # if any still missing then use a mean depth by AUID
-        iM = NULL
-        iM =  which( !is.finite(M[, vnmod]))
-        if (length(iM) > 0) {
-          LU$AUID = st_points_in_polygons(
-            pts = st_as_sf( LU, coords=c("lon","lat"), crs=crs_lonlat ),
-            polys = sppoly[, "AUID"],
-            varname="AUID"
-          )
-          oo = tapply( LU[, paste(vnmod, "mean", sep="." )], LU$AUID, FUN=median, na.rm=TRUE )
-          jj = match( as.character( M$AUID[iM]), as.character( names(oo )) )
-          M[iM, vnmod] = oo[jj ]
-        }
+    vnB = pB$variabletomodel
+    if ( !(exists(vnB, M ))) {
+      vnB2 = paste(vnB, "mean", sep=".")
+      if ((exists(vnB2, M ))) {
+        names(M)[which(names(M) == vnB2 )] = vnB
+      } else {
+        M[,vnB] = NA
       }
-      M = M[ is.finite(M[ , vnmod]  ) , ]
+    }
+    iM = which(!is.finite( M[, vnB] ))
+    if (length(iM > 0)) {
+      M[iM, vnB] = bathymetry_lookup_rawdata( spatial_domain=p$spatial_domain, lonlat=M[iM, c("lon", "lat")], sppoly=sppoly )
+    }
 
-      if (p$carstm_inputs_aggregated) {
-        if ( exists("spatial_domain", p)) {
-          M = M[ geo_subset( spatial_domain=p$spatial_domain, Z=M ) , ] # need to be careful with extrapolation ...  filter depths
-        }
+    if (p$carstm_inputs_aggregated) {
+      if ( exists("spatial_domain", p)) {
+        M = M[ geo_subset( spatial_domain=p$spatial_domain, Z=M ) , ] # need to be careful with extrapolation ...  filter depths
       }
+    }
+
+    if ( p$carstm_inputdata_model_source$bathymetry %in% c("stmv", "hybrid") ) {
+      pBD = bathymetry_parameters(  spatial_domain=p$spatial_domain, project_class=p$carstm_inputdata_model_source$bathymetry )  # full default
+      LU = bathymetry_db( p=pBD, DS="baseline", varnames="all" )
+      LU_map = array_map( "xy->1", LU[,c("plon","plat")], gridparams=p$gridparams )
+      M_map  = array_map( "xy->1", M[, c("plon","plat")], gridparams=p$gridparams )
+      iML = match( M_map, LU_map )
+      vns = intersect(  c( "z", "dZ", "ddZ", "b.sdSpatial", "b.sdObs", "b.phi", "b.nu", "b.localrange" ), names(LU) )
+      for (vn in setdiff( vns, "z") ) {
+        M[, vn] = LU[ iML, vn ]
+    }
+      M = M[ is.finite( rowSums( M[ , vns])  ) , ]
+    }
 
 
+    # substrate lookup
+    pS = substrate_parameters( p=parameters_reset(p), project_class="carstm"  )
+    if (!(exists(pB$variabletomodel, M ))) M[,pS$variabletomodel] = NA
+    iM = which(!is.finite( M[, pS$variabletomodel] ))
+    if (length(iM > 0)) {
+      M[iM, pS$variabletomodel] = substrate_lookup_rawdata( spatial_domain=p$spatial_domain, lonlat=M[iM, c("lon", "lat")], sppoly=sppoly )
+    }
+    M = M[ is.finite(M[ , pS$variabletomodel]  ) , ]
 
-      pS = substrate_parameters( p=parameters_reset(p), project_class="carstm"  )
-      vnmod = pS$variabletomodel
-      if (!(exists(vnmod, M ))) M[,vnmod] = NA
-
-      iM = which(!is.finite(M[, vnmod]))
-      if (length(iM) > 0 ) {
-        LU = substrate_db ( p=substrate_parameters( spatial_domain=p$spatial_domain, project_class="core"  ), DS="aggregated_data" )  # raw data
-        LU = LU[ which( LU$lon > p$corners$lon[1] & LU$lon < p$corners$lon[2]  & LU$lat > p$corners$lat[1] & LU$lat < p$corners$lat[2] ), ]
-        LU = lonlat2planar(LU, proj.type=p$aegis_proj4string_planar_km)
-        # levelplot( eval(paste(vnmod, "mean", sep="."))~plon+plat, data=M, aspect="iso")
-        LU_map = array_map( "xy->1", LU[,c("plon","plat")], gridparams=p$gridparams )
-        M_map  = array_map( "xy->1", M[iM, c("plon","plat")], gridparams=p$gridparams )
-        M[iM, vnmod] = LU[ match( M_map, LU_map ), paste(vnmod, "mean", sep=".") ]
-        LU_map = NULL
-        M_map = NULL
-        iM = NULL
-
-        # if any still missing then use a mean substrate by AUID
-        iM =  which( !is.finite(M[, vnmod]))
-        if (length(iM) > 0) {
-          LU$AUID = st_points_in_polygons(
-            pts = st_as_sf( LU, coords=c("lon","lat"), crs=crs_lonlat ),
-            polys = sppoly[, "AUID"],
-            varname="AUID"
-          )
-          LU = tapply( LU[, paste(vnmod, "mean", sep="." )], LU$AUID, FUN=median, na.rm=TRUE )
-          iML = match( as.character( M$AUID[iM]), as.character( names(LU )) )
-          M[iM, vnmod] = LU[iML ]
-        }
-        iM = NULL
-        LU = NULL
-        iML = NULL
-      }
 
 
       pT = temperature_parameters( p=parameters_reset(p), project_class="carstm"  )
