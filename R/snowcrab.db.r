@@ -1317,7 +1317,9 @@ snowcrab.db = function( DS, p=NULL, yrs=NULL, fn.root=NULL, redo=FALSE, extrapol
     # M$dyear = M$tiyr - M$year
 
 
-    # bathymetry lookup
+
+    # --------------------------
+     # bathymetry lookup
     pB = bathymetry_parameters( p=parameters_reset(p), project_class="carstm"  )
     vnB = pB$variabletomodel
     if ( !(exists(vnB, M ))) {
@@ -1353,9 +1355,11 @@ snowcrab.db = function( DS, p=NULL, yrs=NULL, fn.root=NULL, redo=FALSE, extrapol
     }
 
 
-    # substrate lookup
+  
+    # --------------------------
+   # substrate lookup
     pS = substrate_parameters( p=parameters_reset(p), project_class="carstm"  )
-    if (!(exists(pB$variabletomodel, M ))) M[,pS$variabletomodel] = NA
+    if (!(exists(pS$variabletomodel, M ))) M[,pS$variabletomodel] = NA
     iM = which(!is.finite( M[, pS$variabletomodel] ))
     if (length(iM > 0)) {
       M[iM, pS$variabletomodel] = substrate_lookup_rawdata( spatial_domain=p$spatial_domain, lonlat=M[iM, c("lon", "lat")], sppoly=sppoly )
@@ -1364,47 +1368,15 @@ snowcrab.db = function( DS, p=NULL, yrs=NULL, fn.root=NULL, redo=FALSE, extrapol
 
 
 
-      pT = temperature_parameters( p=parameters_reset(p), project_class="carstm"  )
-      vnmod = pT$variabletomodel
-      if (!(exists(vnmod, M ))) M[,vnmod] = NA
+    # --------------------------
+    # temperature observations lookup
+    pT = temperature_parameters( p=parameters_reset(p), project_class="carstm"  )
+    if (!(exists(pT$variabletomodel, M ))) M[,pT$variabletomodel] = NA
+    iM = which(!is.finite( M[, pT$variabletomodel] ))
+    if (length(iM > 0)) {
+      M[iM, pT$variabletomodel] = temperature_lookup_rawdata( spatial_domain=p$spatial_domain, lonlat=M[iM, c("lon", "lat", "timestamp")], sppoly=sppoly )
+    }
 
-      iM = which(!is.finite(M[, vnmod]))
-      if (length(iM) > 0 ) {
-
-        tz = "America/Halifax"
-        T = data.frame( timestamp = M$timestamp[iM] )
-        if (! "POSIXct" %in% class(T$timestamp)  ) T$timestamp = as.POSIXct( T$timestamp, tz=tz, origin=lubridate::origin  )
-        T$yr = lubridate::year(T$timestamp)
-        T$dyear = lubridate::decimal_date( T$timestamp ) - T$yr
-        LU = temperature_db ( p=temperature_parameters( spatial_domain=p$spatial_domain, project_class="core" ), year.assessment=max(p$yrs), DS="aggregated_data" )  # raw data
-        names(LU)[ which(names(LU) =="temperature.mean") ] = vnmod
-        LU = LU[ which( LU$lon > p$corners$lon[1] & LU$lon < p$corners$lon[2]  & LU$lat > p$corners$lat[1] & LU$lat < p$corners$lat[2] ), ]
-        LU = lonlat2planar(LU, proj.type=p$aegis_proj4string_planar_km)
-        LUT_map = array_map( "ts->1", LU[,c("yr", "dyear")], dims=c(p$ny, p$nw), res=c( 1, 1/p$nw ), origin=c( min(p$yrs), 0) )
-        LUS_map = array_map( "xy->1", LU[,c("plon","plat")], gridparams=p$gridparams )
-        T_map = array_map( "ts->1", T[, c("yr", "dyear")], dims=c(p$ny, p$nw), res=c( 1, 1/p$nw ), origin=c( min(p$yrs), 0) )
-        M_map = array_map( "xy->1", M[iM, c("plon","plat")], gridparams=p$gridparams )
-        iLM = match( paste(M_map, T_map, sep="_"), paste(LUS_map, LUT_map, sep="_") )
-        M[ iM, vnmod ] = LU[ iLM, paste(vnmod, "mean", sep="." ) ]
-        LU = LUT_map = LUS_map = T = T_map = M_map = iLM = NULL
-
-        iM =  which( !is.finite(M[, vnmod]))
-        if (length(iM) > 0) {
-          LU$AUID = st_points_in_polygons(
-            pts = st_as_sf( LU, coords=c("lon","lat"), crs=crs_lonlat ),
-            polys = sppoly[, "AUID"],
-            varname="AUID"
-          )
-          LU_dyear_discret = discretize_data( LU$dyear, p$discretization$dyear )
-          M_dyear_discret = discretize_data( M$dyear, p$discretization$dyear )  # LU$dyear is discretized. . match discretization
-          LU$uid = paste(LU$AUID, LU$yr, LU_dyear_discret, sep=".")
-          M$uid =  paste(M$AUID, M$yr, M_dyear_discret, sep=".")
-          LU = tapply( LU[, paste(vnmod, "mean", sep="." )], LU$uid, FUN=median, na.rm=TRUE )
-          iLM = match( as.character( M$uid[iM]), as.character( names(LU )) )
-          M[iM, vnmod] = LU[iLM ]
-        }
-
-      }
 
 
     pPC1 = speciescomposition_parameters( p=parameters_reset(p), project_class="carstm", variabletomodel="pca1" )
