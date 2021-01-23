@@ -1398,7 +1398,7 @@ snowcrab.db = function( DS, p=NULL, yrs=NULL, fn.root=NULL, redo=FALSE, extrapol
         if (length(jj) > 0) M[iM, vnmod] = LU[ iLM ]
         iM =  which( !is.finite(M[, vnmod]))
         if (length(iM) > 0) {
-          LU = carstm_summary ( p=pPC1 )
+          LU = carstm_model ( p=pPC1, DS="carstm_modelled_summary" )
           au_map = match( M$AUID[iM], dimnames(LU)$AUID )
           year_map = match( as.character(M$yr[iM]), dimnames(LU)$yr )
           dindex = cbind(au_map, year_map )
@@ -1431,7 +1431,7 @@ snowcrab.db = function( DS, p=NULL, yrs=NULL, fn.root=NULL, redo=FALSE, extrapol
         if (length(jj) > 0) M[iM, vnmod] = LU[ iLM ]
         iM =  which( !is.finite(M[, vnmod]))
         if (length(iM) > 0) {
-          LU = carstm_summary ( p=pPC2 )
+          LU = carstm_model ( p=pPC2, DS="carstm_modelled_summary" )
           au_map = match( M$AUID[iM], dimnames(LU)$AUID )
           year_map = match( as.character(M$yr[iM]), dimnames(LU)$yr )
           dindex = cbind(au_map, year_map )
@@ -1471,13 +1471,13 @@ snowcrab.db = function( DS, p=NULL, yrs=NULL, fn.root=NULL, redo=FALSE, extrapol
     APS[,p$variabletomodel] = NA
 
 
-    BI = carstm_summary ( p=pB )
+    BI = carstm_model ( p=pB, DS="carstm_modelled_summary" )
     jj = match( as.character( APS$AUID), as.character( BI$AUID) )
     APS[, pB$variabletomodel] = BI[[ paste(pB$variabletomodel,"predicted",sep="." ) ]] [jj]
     jj =NULL
     BI = NULL
 
-    SI = carstm_summary ( p=pS )
+    SI = carstm_model ( p=pS, DS="carstm_modelled_summary" )
     jj = match( as.character( APS$AUID), as.character( SI$AUID) )
     APS[, pS$variabletomodel] = SI[[ paste(pS$variabletomodel,"predicted",sep="." )]] [jj]
     jj =NULL
@@ -1497,7 +1497,7 @@ snowcrab.db = function( DS, p=NULL, yrs=NULL, fn.root=NULL, redo=FALSE, extrapol
     APS$dyear = APS$tiyr - APS$yr
 
 
-    TI = carstm_summary ( p=pT )
+    TI = carstm_model ( p=pT, DS="carstm_modelled_summary" )
     TI = TI[[ paste(pT$variabletomodel,"predicted",sep="." )]]
     au_map = match( APS$AUID, dimnames(TI)$AUID )
     year_map = match( as.character(APS$yr), dimnames(TI)$yr )
@@ -1508,7 +1508,7 @@ snowcrab.db = function( DS, p=NULL, yrs=NULL, fn.root=NULL, redo=FALSE, extrapol
     TI = NULL
 
 
-    PI = carstm_summary ( p=pPC1 )
+    PI = carstm_model ( p=pPC1, DS="carstm_modelled_summary" )
     PI = PI[[ paste(pPC1$variabletomodel,"predicted",sep="." )]]
     au_map = match( APS$AUID, dimnames(PI)$AUID )
     year_map = match( as.character(APS$yr), dimnames(PI)$yr )
@@ -1516,7 +1516,7 @@ snowcrab.db = function( DS, p=NULL, yrs=NULL, fn.root=NULL, redo=FALSE, extrapol
     APS[, pPC1$variabletomodel] = PI [dindex]
     PI = NULL
 
-    PI = carstm_summary ( p=pPC2 )
+    PI = carstm_model ( p=pPC2, DS="carstm_modelled_summary" )
     PI = PI[[ paste(pPC2$variabletomodel,"predicted",sep="." )]]
     au_map = match( APS$AUID, dimnames(PI)$AUID )
     year_map = match( as.character(APS$yr), dimnames(PI)$yr )
@@ -1789,7 +1789,7 @@ snowcrab.db = function( DS, p=NULL, yrs=NULL, fn.root=NULL, redo=FALSE, extrapol
     }
     iM =  which( !is.finite(M[, pPC1$variabletomodel]))
     if (length(iM) > 0) {
-      PI = carstm_summary ( p=pPC1 )
+      PI = carstm_model ( p=pPC1, DS="carstm_modelled_summary" )
       au_map = match( M$AUID[iM], dimnames(PI)$AUID )
       year_map = match( as.character(M$yr[iM]), dimnames(PI)$yr )
       dindex = cbind(au_map, year_map )
@@ -1826,7 +1826,7 @@ snowcrab.db = function( DS, p=NULL, yrs=NULL, fn.root=NULL, redo=FALSE, extrapol
     }
     iM =  which( !is.finite(M[, pPC2$variabletomodel]))
     if (length(iM) > 0) {
-      PI = carstm_summary ( p=pPC2 )
+      PI = carstm_model ( p=pPC2, DS="carstm_modelled_summary" )
       au_map = match( M$AUID[iM], dimnames(PI)$AUID )
       year_map = match( as.character(M$yr[iM]), dimnames(PI)$yr )
       dindex = cbind(au_map, year_map )
@@ -1866,13 +1866,13 @@ snowcrab.db = function( DS, p=NULL, yrs=NULL, fn.root=NULL, redo=FALSE, extrapol
 
 
 
-    BI = carstm_summary ( p=pB )
+    BI = carstm_model ( p=pB, DS="carstm_modelled_summary" )
     jj = match( as.character( APS$AUID), as.character( BI$AUID) )
     APS[, pB$variabletomodel] = BI[[ paste(pB$variabletomodel,"predicted",sep="." ) ]] [jj]
     jj =NULL
     BI = NULL
 
-    SI = carstm_summary ( p=pS )
+    SI = carstm_model ( p=pS, DS="carstm_modelled_summary" )
     jj = match( as.character( APS$AUID), as.character( SI$AUID) )
     APS[, pS$variabletomodel] = SI[[ paste(pS$variabletomodel,"predicted",sep="." )]] [jj]
     jj =NULL
@@ -1892,7 +1892,7 @@ snowcrab.db = function( DS, p=NULL, yrs=NULL, fn.root=NULL, redo=FALSE, extrapol
     APS$dyear = APS$tiyr - APS$yr
 
 
-    TI = carstm_summary ( p=pT )
+    TI = carstm_model ( p=pT, DS="carstm_modelled_summary" )
     TI = TI[[ paste(pT$variabletomodel,"predicted",sep="." )]]
     au_map = match( APS$AUID, dimnames(TI)$AUID )
     year_map = match( as.character(APS$yr), dimnames(TI)$yr )
@@ -1903,7 +1903,7 @@ snowcrab.db = function( DS, p=NULL, yrs=NULL, fn.root=NULL, redo=FALSE, extrapol
     TI = NULL
 
 
-    PI = carstm_summary ( p=pPC1 )
+    PI = carstm_model ( p=pPC1, DS="carstm_modelled_summary" )
     PI = PI[[ paste(pPC1$variabletomodel,"predicted",sep="." )]]
     au_map = match( APS$AUID, dimnames(PI)$AUID )
     year_map = match( as.character(APS$yr), dimnames(PI)$yr )
@@ -1911,7 +1911,7 @@ snowcrab.db = function( DS, p=NULL, yrs=NULL, fn.root=NULL, redo=FALSE, extrapol
     APS[, pPC1$variabletomodel] = PI [dindex]
     PI = NULL
 
-    PI = carstm_summary ( p=pPC2 )
+    PI = carstm_model ( p=pPC2, DS="carstm_modelled_summary" )
     PI = PI[[ paste(pPC2$variabletomodel,"predicted",sep="." )]]
     au_map = match( APS$AUID, dimnames(PI)$AUID )
     year_map = match( as.character(APS$yr), dimnames(PI)$yr )
@@ -2006,7 +2006,7 @@ snowcrab.db = function( DS, p=NULL, yrs=NULL, fn.root=NULL, redo=FALSE, extrapol
     # construct meanweights matrix used to convert number to weight
 
     fit = carstm_model( p=p, DS="carstm_modelled_fit" ) # to load currently saved res
-    res = carstm_summary( p=p  )
+    res = carstm_model( p=p, DS="carstm_modelled_summary"  )
 
     if (p$carstm_modelengine == "inla") {
       ps = inla.posterior.sample(n=p$nsims, fit, selection=list(Predictor=0))  # only predictions

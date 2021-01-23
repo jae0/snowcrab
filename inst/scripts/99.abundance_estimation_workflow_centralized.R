@@ -139,11 +139,17 @@ if (0) {
       fit =  carstm_model( p=p, DS="carstm_modelled_fit" )  # extract currently saved model fit
       summary(fit)
 
-      res = carstm_summary( p=p )
+      res = carstm_model( p=p, DS="carstm_modelled_summary" )
 
       vn = paste(p$variabletomodel, "predicted", sep=".")
-      carstm_plot( p=p, res=res, vn=vn, time_match=list(year="2019" ) )     # maps of some of the results
-
+      carstm_map( res=res, vn=vn, time_match=list(year="2019" ), 
+        # at=seq(-2, 10, by=2),          
+        sp.layout = p$coastLayout, 
+        col.regions = p$mypalette, 
+        main=paste( vn, paste0(time_match, collapse="-") )  
+      )
+     
+     
       plot(fit)
       plot(fit, plot.prior=TRUE, plot.hyperparameters=TRUE, plot.fixed.effects=FALSE, single=TRUE )
       s = summary(fit)
@@ -151,27 +157,37 @@ if (0) {
       s$dic$p.eff
 
       # maps of some of the results
+      time_match = NULL
+      time_match = list(year="2000")
+      time_match = list(year="2000", dyear="0.65" )
+      
       vn = paste(p$variabletomodel, "random_sample_iid", sep=".")
-      if (exists(vn, res)) carstm_plot( p=p, res=res, vn=vn, time_match=list(year="2019", dyear="0.65") )
+      carstm_map( res=res, vn=vn, time_match=time_match, 
+        # at=seq(-2, 10, by=2),          
+        sp.layout = p$coastLayout, 
+        col.regions = p$mypalette, 
+        main=paste( vn, paste0(time_match, collapse="-") )  
+      )
+
 
       vn = paste(p$variabletomodel, "random_auid_nonspatial", sep=".")
-      if (exists(vn, res)) {
-        res_dim = dim( res[[vn]] )
-        if (res_dim == 1 ) time_match = NULL
-        if (res_dim == 2 ) time_match = list(year="2000")
-        if (res_dim == 3 ) time_match = list(year="2000", dyear="0.65" )
-        carstm_plot( p=p, res=res, vn=vn, time_match=time_match )
-      }
+      carstm_map( res=res, vn=vn, time_match=time_match, 
+        # at=seq(-2, 10, by=2),          
+        sp.layout = p$coastLayout, 
+        col.regions = p$mypalette, 
+        main=paste( vn, paste0(time_match, collapse="-") )  
+      )
+
 
       vn = paste(p$variabletomodel, "random_auid_spatial", sep=".")
-      if (exists(vn, res)) {
-        res_dim = dim( res[[vn]] )
-        if (res_dim == 1 ) time_match = NULL
-        if (res_dim == 2 ) time_match = list(year="2000")
-        if (res_dim == 3 ) time_match = list(year="2000", dyear="0.65" )
-        carstm_plot( p=p, res=res, vn=vn, time_match=time_match )
-      }
-
+      carstm_map( res=res, vn=vn, time_match=time_match, 
+        # at=seq(-2, 10, by=2),          
+        sp.layout = p$coastLayout, 
+        col.regions = p$mypalette, 
+        main=paste( vn, paste0(time_match, collapse="-") )  
+      )
+     
+      
       RES = snowcrab_db(p=p, DS="carstm_output_timeseries" )
       bio = snowcrab_db(p=p, DS="carstm_output_spacetime_biomass" )
       num = snowcrab_db(p=p, DS="carstm_output_spacetime_number" )
@@ -236,11 +252,17 @@ if (0) {
 
 
   M = snowcrab_db( p=p, DS="carstm_inputs_hybrid", redo=TRUE )  # will redo if not found
+ 
   fit = carstm_model( p=p, M='snowcrab_db( p=p, DS="carstm_inputs_hybrid" )' ) # 151 configs and long optim .. 19 hrs
-  fit =  carstm_model( p=p, DS="carstm_modelled_fit" )  # extract currently saved model fit
-  summary(fit)
-  res = carstm_summary( p=p )
-  RES = snowcrab_db(p=p, DS="carstm_output_compute" )
+  # fit =  carstm_model( p=p, DS="carstm_modelled_fit" )  # extract currently saved model fit
+  
+  
+  res = carstm_model( p=p, DS="carstm_modelled_summary"  ) # to load currently saved results
+  res$summary$dic$dic
+  res$summary$dic$p.eff
+  res$dyear
+
+RES = snowcrab_db(p=p, DS="carstm_output_compute" )
 
 
 

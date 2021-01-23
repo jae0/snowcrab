@@ -69,16 +69,20 @@ inla.setOption(blas.num.threads= 2 )
 
   # to plot predicted temperature maps for last six years
 
-  res = carstm_summary( p=pT )
+  res = carstm_model( p=pT, DS="carstm_modelled_summary" )
   recent=as.character((year.assessment-6): year.assessment)
   vn = paste(pT$variabletomodel, "predicted", sep=".")
   for (x in recent){
     fn=paste(x,"t",  "pdf", sep=".")
     outfile=paste(plot.dir, fn, sep="/")
-    each.plot=   carstm_plot( p=pT, res=res, vn=vn, time_match=list(year=x, dyear="0.85" ) )
-    pdf(outfile)
-    print(each.plot)
-    dev.off()
+    o = carstm_map( res=res, vn=vn, time_match=list(year=x, dyear="0.85" ) , 
+        # at=seq(-2, 10, by=2), 
+        sp.layout = p$coastLayout, 
+        col.regions = p$mypalette, 
+        main=vn 
+      )
+    # png( filename=outfile, width=3072, height=2304, pointsize=40, res=300  ); print(o); dev.off()
+    pdf(outfile); print(o); dev.off()
   }
 
 
@@ -108,20 +112,53 @@ inla.setOption(blas.num.threads= 2 )
 
   M = NULL; gc()
 
+
   fit = carstm_model( p=p, M='snowcrab_db( p=p, DS="carstm_inputs" )' ) # 151 configs and long optim .. 19 hrs
   # fit = carstm_model( p=p, DS="carstm_modelled_fit")
 
-  summary(fit)
-  res = carstm_summary( p=p )
+    # extract results
+    if (0) {
+      # very large files .. slow 
+      fit = carstm_model( p=p, DS="carstm_modelled_fit" )  # extract currently saved model fit
+      plot(fit)
+      plot(fit, plot.prior=TRUE, plot.hyperparameters=TRUE, plot.fixed.effects=FALSE )
+    }
+
+
+  res = carstm_model( p=p, DS="carstm_modelled_summary"  ) # to load currently saved results
+  res$summary$dic$dic
+  res$summary$dic$p.eff
+  res$dyear
 
   vn = paste(p$variabletomodel, "predicted", sep=".")
-  carstm_plot( p=p, res=res, vn=vn, time_match=list(year="2000" ) )     # maps of some of the results
+  carstm_map( res=res, vn=vn, time_match=list(year="2000" ),  
+    # at=seq(-2, 10, by=2),          
+    sp.layout = p$coastLayout, 
+    col.regions = p$mypalette, 
+    main=paste("Predicted abundance", paste0(time_match, collapse="-") )  
+  )
 
-  plot(fit)
-  plot(fit, plot.prior=TRUE, plot.hyperparameters=TRUE, plot.fixed.effects=FALSE, single=TRUE )
-  s = summary(fit)
-  s$dic$dic
-  s$dic$p.eff
+
+  # map all :
+  vn = paste(p$variabletomodel, "predicted", sep=".")
+  outputdir = file.path( gsub( ".rdata", "", dirname(res$fn_res) ), "figures", vn )
+  if ( !file.exists(outputdir)) dir.create( outputdir, recursive=TRUE, showWarnings=FALSE )
+
+
+  for (y in res$yrs ){
+
+      time_match = list( year=as.character(y)  )
+      fn_root = paste( "Bottom temperature",  paste0(time_match, collapse=" - ") )
+      fn = file.path( outdir, paste(fn_root, "png", sep=".") )
+      o = carstm_map(  res=res, vn=vn, time_match=time_match, 
+        # at=seq(-2, 10, by=2), 
+        sp.layout = p$coastLayout, 
+        col.regions = p$mypalette, 
+        main=fn_root 
+      )
+      png( filename=fn, width=3072, height=2304, pointsize=40, res=300  ); print(o); dev.off()
+  }
+  
 
   RES = snowcrab_db(p=p, DS="carstm_output_compute" )
   # RES = snowcrab_db(p=p, DS="carstm_output_timeseries" )
@@ -166,11 +203,11 @@ inla.setOption(blas.num.threads= 2 )
   for (x in recent){
     slot(sppoly, "data")[,vn] = bio[,x]
     brks = interval_break(X= sppoly[[vn]], n=length(p$mypalette), style="quantile")
-    each.plot=spplot( sppoly, vn, col.regions=p$mypalette, main=x, at=brks, sp.layout=p$coastLayout, col="transparent" )
+    o=spplot( sppoly, vn, col.regions=p$mypalette, main=x, at=brks, sp.layout=p$coastLayout, col="transparent" )
     fn=paste(x,"biomass",  "pdf", sep=".")
     outfile=paste(plot.dir, fn, sep="/")
     pdf(outfile)
-    print(each.plot)
+    print(o)
     dev.off()
   }
 

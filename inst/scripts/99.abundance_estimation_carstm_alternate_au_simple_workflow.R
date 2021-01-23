@@ -171,11 +171,14 @@ if (0) {
     fit = carstm_model( p=pB, DS="carstm_modelled_fit" )  # extract currently saved model fit
     summary(fit)
 
-    res = carstm_summary( p=pB )  # load summary
+    res = carstm_model( p=pB, DS="carstm_modelled_summary"  ) # to load currently saved results
+    res$summary$dic$dic
+    res$summary$dic$p.eff
+    res$dyear
 
     # maps of some of the results
     vn = paste(pB$variabletomodel, "predicted", sep=".")
-    zplot = carstm_plot( p=pB, res=res, vn=vn )
+    zplot = carstm_map( res=res, vn=vn )
     print(zplot)
 
      #to save map of predicted
@@ -186,14 +189,13 @@ if (0) {
     }
 
     vn = paste(pB$variabletomodel, "predicted_se", sep=".")
-    zplot=carstm_plot( p=pB, res=res, vn=vn )
-    print(zplot)
-
+    carstm_map( res=res, vn=vn )
+    
     vn = paste(pB$variabletomodel, "random_auid_nonspatial", sep=".")
-    carstm_plot( p=pB, res=res, vn=vn )
+    carstm_map( res=res, vn=vn )
 
     vn = paste(pB$variabletomodel, "random_auid_spatial", sep=".")
-    carstm_plot( p=pB, res=res, vn=vn )
+    carstm_map( res=res, vn=vn )
 
     plot(fit, plot.prior=TRUE, plot.hyperparameters=TRUE, plot.fixed.effects=FALSE, single=TRUE )
 
@@ -215,19 +217,22 @@ if (0) {
     fit = carstm_model( p=pS, DS="carstm_modelled_fit" )  # extract currently saved model fit
     summary(fit)
 
-    res = carstm_summary( p=pS )  # load summary
+    res = carstm_model( p=pS, DS="carstm_modelled_summary"  ) # to load currently saved results
+    res$summary$dic$dic
+    res$summary$dic$p.eff
+    res$dyear
 
     vn = paste(pS$variabletomodel, "predicted", sep=".")
-    carstm_plot( p=pS, res=res, vn=vn ) # maps of some of the results
+    carstm_map( res=res, vn=vn ) # maps of some of the results
 
     vn = paste(pS$variabletomodel, "predicted_se", sep=".")
-    carstm_plot( p=pS, res=res, vn=vn )
+    carstm_map( res=res, vn=vn )
 
     vn = paste(pS$variabletomodel, "random_auid_nonspatial", sep=".")
-    carstm_plot( p=pS, res=res, vn=vn )
+    carstm_map( res=res, vn=vn )
 
     vn = paste(pS$variabletomodel, "random_auid_spatial", sep=".")
-    carstm_plot( p=pS, res=res, vn=vn )
+    carstm_map( res=res, vn=vn )
 
     plot(fit, plot.prior=TRUE, plot.hyperparameters=TRUE, plot.fixed.effects=FALSE, single=TRUE )
   }
@@ -250,18 +255,23 @@ if (0) {
     fit = carstm_model( p=pT, DS="carstm_modelled_fit" )  # extract currently saved model fit
     summary(fit)
 
-    res = carstm_summary( p=pT )
+    res = carstm_model( p=pT, DS="carstm_modelled_summary"  ) # to load currently saved results
+    res$summary$dic$dic
+    res$summary$dic$p.eff
+    res$dyear
+
+    time_match=list(year="2000", dyear="0.65" )
 
     vn = paste(pT$variabletomodel, "predicted", sep=".")
-    carstm_plot( p=pT, res=res, vn=vn, time_match=list(year="2000", dyear="0.65" ) )       # maps of some of the results -- note maps of other dyears do not exists as they are not predicted upon
+    carstm_map( res=res, vn=vn, time_match=time_match )       # maps of some of the results -- note maps of other dyears do not exists as they are not predicted upon
 
     vn = paste(pT$variabletomodel, "predicted_se", sep=".")
-    carstm_plot( p=pT, res=res, vn=vn, time_match=list(year="2000", dyear="0.65" ) )       # maps of some of the results
+    carstm_map( res=res, vn=vn, time_match=time_match )       # maps of some of the results
 
     vn = paste(pT$variabletomodel, "random_auid_nonspatial", sep=".")
-    carstm_plot( p=pT, res=res, vn=vn, time_match=list(year="2000"  ) )       # maps of some of the results
+    carstm_map( res=res, vn=vn, time_match=time_match )       # maps of some of the results
     vn = paste(pT$variabletomodel, "random_auid_spatial", sep=".")
-    carstm_plot( p=pT, res=res, vn=vn, time_match=list(year="2000"  ) )       # maps of some of the results
+    carstm_map( res=res, vn=vn, time_match=time_match )       # maps of some of the results
 
 
     plot(fit, plot.prior=TRUE, plot.hyperparameters=TRUE, plot.fixed.effects=FALSE, single=TRUE )
@@ -273,7 +283,7 @@ if (0) {
     # for (x in recent){
     #   fn=paste(x,"t",  "pdf", sep=".")
     #   outfile=paste(plot.dir, fn, sep="/")
-    #   each.plot=   carstm_plot( p=pT, res=res, vn=vn, time_match=list(year=x, dyear="0.65" ) )
+    #   each.plot=   carstm_map(  res=res, vn=vn, time_match=time_match )
     #   pdf(outfile)
     #   print(each.plot)
     #   dev.off()
@@ -296,19 +306,26 @@ if (0) {
       fit = carstm_model( p=pPC1, DS="carstm_modelled_fit" )  # extract currently saved model fit
       summary(fit)
 
-      res = carstm_summary( p=pPC1  )
+      res = carstm_model( p=pPC1, DS="carstm_modelled_summary"  ) # to load currently saved results
+      res$summary$dic$dic
+      res$summary$dic$p.eff
+      res$dyear
 
       plot( fit, plot.prior=TRUE, plot.hyperparameters=TRUE, plot.fixed.effects=FALSE )
 
+      time_match=list(year="2017", dyear="0.65" ) 
+
       vn = paste(pPC1$variabletomodel, "predicted", sep=".")
-      carstm_plot( p=pPC1, res=res, vn=vn, time_match=list(year="2017" ), dyear="0.65" ) # maps of some of the results
+      carstm_map( res=res, vn=vn, time_match=time_match ) # maps of some of the results
+      
       vn = paste(pPC1$variabletomodel, "predicted_se", sep=".")
-      carstm_plot( p=pPC1, res=res, vn=vn, time_match=list(year="2017" ), dyear="0.65" ) # maps of some of the results
+      carstm_map( res=res, vn=vn, time_match=time_match ) # maps of some of the results
 
       vn = paste(pPC1$variabletomodel, "random_auid_nonspatial", sep=".")
-      carstm_plot( p=pPC1, res=res, vn=vn, time_match=list(year="2017" ), dyear="0.65" )       # maps of some of the results , dyear="0.65"
+      carstm_map( res=res, vn=vn, time_match=time_match )       # maps of some of the results , dyear="0.65"
+      
       vn = paste(pPC1$variabletomodel, "random_auid_spatial", sep=".")
-      carstm_plot( p=pPC1, res=res, vn=vn, time_match=list(year="2017" ), dyear="0.65" )       # maps of some of the results , dyear="0.65"
+      carstm_map( res=res, vn=vn, time_match=time_match )       # maps of some of the results , dyear="0.65"
   }
 
 
@@ -327,19 +344,26 @@ if (0) {
     fit = carstm_model( p=pPC2, DS="carstm_modelled_fit" )  # extract currently saved model fit
     summary(fit)
 
-    res = carstm_summary( p=pPC2  )
+    res = carstm_model( p=pPC2, DS="carstm_modelled_summary"  ) # to load currently saved results
+    res$summary$dic$dic
+    res$summary$dic$p.eff
+    res$dyear
 
     plot( fit, plot.prior=TRUE, plot.hyperparameters=TRUE, plot.fixed.effects=FALSE )
 
+    time_match=list(year="2017", dyear="0.65" ) 
+
     vn = paste(pPC2$variabletomodel, "predicted", sep=".")
-    carstm_plot( p=pPC2, res=res, vn=vn, time_match=list(year="2017" ), dyear="0.65" )       # maps of some of the results
+    carstm_map( res=res, vn=vn, time_match=time_match )       # maps of some of the results
+    
     vn = paste(pPC2$variabletomodel, "predicted_se", sep=".")
-    carstm_plot( p=pPC2, res=res, vn=vn, time_match=list(year="2017" ), dyear="0.65" ) # maps of some of the results
+    carstm_map( res=res, vn=vn, time_match=time_match ) # maps of some of the results
 
     vn = paste(pPC2$variabletomodel, "random_auid_nonspatial", sep=".")
-    carstm_plot( p=pPC2, res=res, vn=vn, time_match=list(year="2017" ), dyear="0.65" )       # maps of some of the results , dyear="0.65"
+    carstm_map( res=res, vn=vn, time_match=time_match )       # maps of some of the results , dyear="0.65"
+    
     vn = paste(pPC2$variabletomodel, "random_auid_spatial", sep=".")
-    carstm_plot( p=pPC2, res=res, vn=vn, time_match=list(year="2017" ), dyear="0.65" )       # maps of some of the results , dyear="0.65"
+    carstm_map( res=res, vn=vn, time_match=time_match )       # maps of some of the results , dyear="0.65"
 
   }
 
@@ -372,17 +396,22 @@ if (0) {
 
   M = snowcrab_db( p=p, DS="carstm_inputs", redo=TRUE )  # will redo if not found
   fit = carstm_model( p=p, M='snowcrab_db( p=p, DS="carstm_inputs" )' ) # 151 configs and long optim .. 19 hrs
+ 
   RES = snowcrab_db(p=p, DS="carstm_output_compute" )
 
   if (0) {
 
       fit =  carstm_model( p=p, DS="carstm_modelled_fit" )  # extract currently saved model fit
-      summary(fit)
 
-      res = carstm_summary( p=p )
+      res = carstm_model( p=p, DS="carstm_modelled_summary"  ) # to load currently saved results
+      res$summary$dic$dic
+      res$summary$dic$p.eff
+      res$dyear
+
+      time_match=list(year="2019" )
 
       vn = paste(p$variabletomodel, "predicted", sep=".")
-      carstm_plot( p=p, res=res, vn=vn, time_match=list(year="2019" ) )     # maps of some of the results
+      carstm_map( res=res, vn=vn, time_match=time_match )     # maps of some of the results
 
       plot(fit)
       plot(fit, plot.prior=TRUE, plot.hyperparameters=TRUE, plot.fixed.effects=FALSE, single=TRUE )
@@ -390,27 +419,19 @@ if (0) {
       s$dic$dic
       s$dic$p.eff
 
+
       # maps of some of the results
+      time_match=list(year="2019", dyear="0.65")
+      
       vn = paste(p$variabletomodel, "random_sample_iid", sep=".")
-      if (exists(vn, res)) carstm_plot( p=p, res=res, vn=vn, time_match=list(year="2019", dyear="0.65") )
+      carstm_map(  res=res, vn=vn, time_match=time_match )
 
       vn = paste(p$variabletomodel, "random_auid_nonspatial", sep=".")
-      if (exists(vn, res)) {
-        res_dim = dim( res[[vn]] )
-        if (res_dim == 1 ) time_match = NULL
-        if (res_dim == 2 ) time_match = list(year="2000")
-        if (res_dim == 3 ) time_match = list(year="2000", dyear="0.65" )
-        carstm_plot( p=p, res=res, vn=vn, time_match=time_match )
-      }
+      carstm_map( res=res, vn=vn, time_match=time_match )
 
       vn = paste(p$variabletomodel, "random_auid_spatial", sep=".")
-      if (exists(vn, res)) {
-        res_dim = dim( res[[vn]] )
-        if (res_dim == 1 ) time_match = NULL
-        if (res_dim == 2 ) time_match = list(year="2000")
-        if (res_dim == 3 ) time_match = list(year="2000", dyear="0.65" )
-        carstm_plot( p=p, res=res, vn=vn, time_match=time_match )
-      }
+      carstm_map( res=res, vn=vn, time_match=time_match )
+
 
       RES = snowcrab_db(p=p, DS="carstm_output_timeseries" )
       bio = snowcrab_db(p=p, DS="carstm_output_spacetime_biomass" )
@@ -476,8 +497,13 @@ if (0) {
   M = snowcrab_db( p=p, DS="carstm_inputs", redo=TRUE )  # will redo if not found
   fit = carstm_model( p=p, M='snowcrab_db( p=p, DS="carstm_inputs" )' ) # 151 configs and long optim .. 19 hrs
   fit =  carstm_model( p=p, DS="carstm_modelled_fit" )  # extract currently saved model fit
-  summary(fit)
-  res = carstm_summary( p=p )
+
+
+  res = carstm_model( p=p, DS="carstm_modelled_summary"  ) # to load currently saved results
+  res$summary$dic$dic
+  res$summary$dic$p.eff
+  res$dyear
+
   RES = snowcrab_db(p=p, DS="carstm_output_compute" )
 
 

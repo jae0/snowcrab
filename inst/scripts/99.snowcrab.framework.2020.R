@@ -492,7 +492,7 @@
 
 
   # for mapping
-  res = carstm_summary( p=p, carstm_model_label=p$carstm_model_label )
+  res = carstm_model( p=p, carstm_model_label=p$carstm_model_label, DS="carstm_modelled_summary" )
 
 
   if (0) {
@@ -560,28 +560,34 @@
   spplot( sppoly, vn, col.regions=p$mypalette, main=vn, at=brks, sp.layout=p$coastLayout, col="transparent" )
 
 
+  time_match = NULL
+  time_match = list(year=yrc)
+  time_match = list(year=yrc, dyear="0.85" )
+  
   vn = paste(p$variabletomodel, "random_sample_iid", sep=".")
-  if (exists(vn, res)) carstm_plot( p=p, res=res, vn=vn, time_match=list(year="1950", dyear="0.05") )
+  carstm_map( res=res, vn=vn, time_match=time_match, 
+    # at=seq(-2, 10, by=2),          
+    sp.layout = p$coastLayout, 
+    col.regions = p$mypalette, 
+    main=paste( vn, paste0(time_match, collapse="-") )  )
 
 
   vn = paste(p$variabletomodel, "random_auid_nonspatial", sep=".")
-  if (exists(vn, res)) {
-    res_dim = length( dim( res[[vn]] ) )
-    if (res_dim == 1 ) time_match = NULL
-    if (res_dim == 2 ) time_match = list(year=yrc)
-    if (res_dim == 3 ) time_match = list(year=yrc, dyear="0.85" )
-    carstm_plot( p=p, res=res, vn=vn, main=paste(vn, yrc), time_match=time_match )
-  }
+  carstm_map( res=res, vn=vn,  time_match=time_match, 
+    # at=seq(-2, 10, by=2),          
+    sp.layout = p$coastLayout, 
+    col.regions = p$mypalette, 
+    main=paste( vn, paste0(time_match, collapse="-") )  )
 
+  
   vn = paste(p$variabletomodel, "random_auid_spatial", sep=".")
-  if (exists(vn, res)) {
-    res_dim = length( dim( res[[vn]] ) )
-    if (res_dim == 1 ) time_match = NULL
-    if (res_dim == 2 ) time_match = list(year=yrc)
-    if (res_dim == 3 ) time_match = list(year=yrc, dyear="0.85" )
-    carstm_plot( p=p, res=res, vn=vn, main=paste(vn, yrc), time_match=time_match )
-  }
+  carstm_map( res=res, vn=vn,  time_match=time_match, 
+    # at=seq(-2, 10, by=2),          
+    sp.layout = p$coastLayout, 
+    col.regions = p$mypalette, 
+    main=paste( vn, paste0(time_match, collapse="-") )  )
 
+  
 
 
 
@@ -971,7 +977,7 @@
 # extract results and examine
   fit =  carstm_model( p=p, DS="carstm_modelled_fit" )  # extract currently saved model fit
 
-  res = carstm_summary( p=p, carstm_model_label=p$carstm_model_label )
+  res = carstm_model( p=p, carstm_model_label=p$carstm_model_label, DS="carstm_modelled_summary" )
 
 
   if (0) {
@@ -1031,26 +1037,34 @@
 
 
 
+
+  time_match = NULL
+  time_match = list(year=yrc)
+  time_match = list(year=yrc, dyear="0.85" )
+  
   vn = paste(p$variabletomodel, "random_sample_iid", sep=".")
-  if (exists(vn, res)) carstm_plot( p=p, res=res, vn=vn, time_match=list(year="1950", dyear="0.05") )
+  carstm_map( res=res, vn=vn, time_match=time_match, 
+    # at=seq(-2, 10, by=2),          
+    sp.layout = p$coastLayout, 
+    col.regions = p$mypalette, 
+    main=paste( vn, paste0(time_match, collapse="-") )  )
+
 
   vn = paste(p$variabletomodel, "random_auid_nonspatial", sep=".")
-  if (exists(vn, res)) {
-    res_dim = length( dim( res[[vn]] ) )
-    if (res_dim == 1 ) time_match = NULL
-    if (res_dim == 2 ) time_match = list(year="2000")
-    if (res_dim == 3 ) time_match = list(year="2000", dyear="0.85" )
-    carstm_plot( p=p, res=res, vn=vn, time_match=time_match )
-  }
+  carstm_map( res=res, vn=vn, time_match=time_match, 
+    # at=seq(-2, 10, by=2),          
+    sp.layout = p$coastLayout, 
+    col.regions = p$mypalette, 
+    main=paste( vn, paste0(time_match, collapse="-") )  )
 
+  
   vn = paste(p$variabletomodel, "random_auid_spatial", sep=".")
-  if (exists(vn, res)) {
-    res_dim = length( dim( res[[vn]] ) )
-    if (res_dim == 1 ) time_match = NULL
-    if (res_dim == 2 ) time_match = list(year="2000")
-    if (res_dim == 3 ) time_match = list(year="2000", dyear="0.85" )
-    carstm_plot( p=p, res=res, vn=vn, time_match=time_match )
-  }
+  carstm_map( res=res, vn=vn, time_match=time_match, 
+    # at=seq(-2, 10, by=2),          
+    sp.layout = p$coastLayout, 
+    col.regions = p$mypalette, 
+    main=paste( vn, paste0(time_match, collapse="-") )  )
+
 
 
 
@@ -1112,8 +1126,8 @@
 
 
 year.assessment = 2018
-#To add a title to any carstm_plot, please see below example
-#carstm_plot( p=p, res=res, vn=vn, main=list(label="my plot title", cex=2) )
+#To add a title to any carstm_map, please see below example
+#carstm_map( res=res, vn=vn, main=list(label="my plot title", cex=2) )
 
 
 # -------------------------------------------------
@@ -1134,7 +1148,7 @@ year.assessment = 2018
   fit =  carstm_model( p=p, DS="carstm_modelled_fit" )  # extract currently saved model fit
   summary(fit)
 
-  res = carstm_summary( p=p  )
+  res = carstm_model( p=p, DS="carstm_modelled_summary"  )
 
 
 
