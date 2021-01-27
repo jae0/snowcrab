@@ -444,14 +444,7 @@
 
       ii = which(!is.finite(logbook$z))
       if (length(ii)>0) {
-        pB = bathymetry_parameters( spatial_domain=p$spatial_domain, project_class="core"  )
-        BS = bathymetry_db ( p=pB, DS="aggregated_data" )  # raw data
-        BS_map = array_map( "xy->1", BS[,c("plon","plat")], gridparams=p$gridparams )
-        logbook_map  = array_map( "xy->1", logbook[ii, c("plon","plat")], gridparams=p$gridparams )
-        logbook[ii, pB$variabletomodel] = BS[ match( logbook_map, BS_map ), "z.mean" ]
-        BS = NULL
-        BS_map = NULL
-        logbook_map = NULL
+        logbook$z[ii] =  bathymetry_lookup_rawdata( spatial_domain=p$spatial_domain, M=logbook[ ii, c("lon", "lat")] ) 
       }
       logbook$z = log( logbook$z )
 
@@ -459,22 +452,9 @@
       if (length(ii)>0) logbook = logbook[ -ii, ]
 
       # bring in time varing features:: temperature
-      ii = which(!is.finite(set$t))
+      ii = which(!is.finite(logbook$t))
       if (length(ii)>0){
-          tz = "America/Halifax"
-          locs = logbook[ii, c("plon","plat")]
-          timestamp = logbook$timestamp[ii]
-          if (! "POSIXct" %in% class(timestamp)  ) timestamp = as.POSIXct( timestamp, tz=tz, origin=lubridate::origin  )
-          BS = temperature_db ( p=p, year.assessment=max(p$yrs), DS="aggregated_data" )  # raw data
-          BT_map = array_map( "ts->1", BS[,c("yr", "dyear")], dims=c(p$ny, p$nw), res=c( 1, 1/p$nw ), origin=c( min(p$yrs), 0) )
-          BS_map = array_map( "xy->1", BS[,c("plon","plat")], gridparams=gridparams )
-          tstamp = data.frame( yr = lubridate::year(timestamp) )
-          tstamp$dyear = lubridate::decimal_date( timestamp ) - tstamp$yr
-          timestamp_map = array_map( "ts->1", tstamp[, c("yr", "dyear")], dims=c(p$ny, p$nw), res=c( 1, 1/p$nw ), origin=c( min(p$yrs), 0) )
-          locs_map = array_map( "xy->1", locs[,c("plon","plat")], gridparams=gridparams )
-          locs_index = match( paste(locs_map, timestamp_map, sep="_"), paste(BS_map, BT_map, sep="_") )
-          logbook$t[ii] = BS[locs_index, vnames]
-          BS = BT_map = BS_map = tstamp = timestamp_map = locs_map = locs_index = NULL
+        logbook$t[ii] = temperature_lookup_rawdata( spatial_domain=p$spatial_domain, M=logbook[ ii, c("lon", "lat", "timestamp")] )
       }
 
 			save( logbook, file=fn, compress=T )
