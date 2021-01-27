@@ -158,16 +158,18 @@ if (0) {
 # Part 3 -- create covariate field for bathymetry
 # bathymetry -- ensure the data assimilation in bathymetry is first completed :: 01.bathymetry_data.R
 
-  pB = aegis.bathymetry::bathymetry_parameters( p=parameters_reset(p), project_class="carstm"  )
+  pB = aegis.bathymetry::bathymetry_parameters( project_class="carstm"  )
+  
   # M = bathymetry_db( p=pB, DS="aggregated_data" , redo=TRUE )  # not used if raw data are being used
-  M = NULL; gc()
-  M = bathymetry_db( p=pB, DS="carstm_inputs", redo=TRUE  ) # will redo if not found
-  M = NULL; gc()
+  # M = bathymetry_db( p=pB, DS="carstm_inputs", redo=TRUE  ) # will redo if not found
+  # M = NULL; gc()
 
-  fit = carstm_model( p=pB, M='bathymetry_db( p=p, DS="carstm_inputs" )', DS="redo"  ) # run model and obtain predictions
+  # fit = carstm_model( p=pB, DS="carstm_modelled_fit" )  # extract currently saved model fit
+  res = carstm_model( p=pB, DS="carstm_modelled_summary"  ) # to load currently saved results
 
   if (0) {
-    # to use a saved instance
+    # to redo
+    fit = carstm_model( p=pB, DS="carstm_modelled_fit" )  # extract currently saved model fit
     fit = carstm_model( p=pB, DS="carstm_modelled_fit" )  # extract currently saved model fit
     summary(fit)
 
@@ -206,15 +208,17 @@ if (0) {
 # Part 4 -- create covariate field for  substrate
 # ensure the data assimilation in substrate is first completed :: 01.substrate_data.R
 
-  pS = substrate_parameters( p=parameters_reset(p), project_class="carstm"  )
-  M = substrate_db( p=pS, DS="aggregated_data", redo=TRUE )  # used for data matching/lookup in other aegis projects that use substrate
-  M = substrate_db( p=pS, DS="carstm_inputs", redo=TRUE )  # will redo if not found
-  M = NULL; gc()
-  fit = carstm_model( p=pS, M='substrate_db( p=p, DS="carstm_inputs")', DS="redo" )  # run model and obtain predictions
+  pS = substrate_parameters( project_class="carstm" )
+  fit = carstm_model( p=pS, DS="carstm_modelled_fit" )  # extract currently saved model fit
+  res = carstm_model( p=pS, DS="carstm_modelled_summary"  ) # to load currently saved results
+  
 
   if (0) {
     # to use a saved instance
-    fit = carstm_model( p=pS, DS="carstm_modelled_fit" )  # extract currently saved model fit
+    M = substrate_db( p=pS, DS="aggregated_data", redo=TRUE )  # used for data matching/lookup in other aegis projects that use substrate
+    M = substrate_db( p=pS, DS="carstm_inputs", redo=TRUE )  # will redo if not found
+    M = NULL; gc()
+    fit = carstm_model( p=pS, M='substrate_db( p=p, DS="carstm_inputs")', DS="redo" )  # run model and obtain predictions
     summary(fit)
 
     res = carstm_model( p=pS, DS="carstm_modelled_summary"  ) # to load currently saved results
@@ -245,17 +249,17 @@ if (0) {
 # ensure the data assimilation in temperature is first completed :: 01.temperature_data.R
 
   pT = temperature_parameters( p=parameters_reset(p), project_class="carstm"  )
-  M = temperature_db( p=pT, DS="aggregated_data", redo=TRUE )  #  used for data matching/lookup in other aegis projects that use temperature
-  M = temperature_db( p=pT, DS="carstm_inputs", redo=TRUE )  # will redo if not found
-  M = NULL; gc()
-  fit = carstm_model( p=pT, M='temperature_db( p=p, DS="carstm_inputs")', DS="redo"  ) # run model and obtain predictions
+  fit = carstm_model( p=pT, DS="carstm_modelled_fit" )  # extract currently saved model fit
+  summary(fit)
+
+  res = carstm_model( p=pT, DS="carstm_modelled_summary"  ) # to load currently saved results
 
   if (0) {
+    M = temperature_db( p=pT, DS="aggregated_data", redo=TRUE )  #  used for data matching/lookup in other aegis projects that use temperature
+    M = temperature_db( p=pT, DS="carstm_inputs", redo=TRUE )  # will redo if not found
+    M = NULL; gc()
+    fit = carstm_model( p=pT, M='temperature_db( p=p, DS="carstm_inputs")', DS="redo"  ) # run model and obtain predictions
     # to use a saved instance
-    fit = carstm_model( p=pT, DS="carstm_modelled_fit" )  # extract currently saved model fit
-    summary(fit)
-
-    res = carstm_model( p=pT, DS="carstm_modelled_summary"  ) # to load currently saved results
     res$summary$dic$dic
     res$summary$dic$p.eff
     res$dyear
@@ -297,16 +301,16 @@ if (0) {
 # ensure that survey data is assimilated : bio.snowcrab::01snowcb_data.R, aegis.survey::01.surveys.data.R , etc.
 
   pPC1 = speciescomposition_parameters( p=parameters_reset(p), project_class="carstm", variabletomodel="pca1" )
-  M = speciescomposition_db( p=pPC1, DS="carstm_inputs",  redo=TRUE )  # will redo if not found
-  M = NULL; gc()
-  fit = carstm_model( p=pPC1, M='speciescomposition_db( p=p, DS="carstm_inputs" )', DS="redo"   ) # run model and obtain predictions
+  fit = carstm_model( p=pPC1, DS="carstm_modelled_fit" )  # extract currently saved model fit
+  summary(fit)
+
+  res = carstm_model( p=pPC1, DS="carstm_modelled_summary"  ) # to load currently saved results
 
   if (0) {
+      M = speciescomposition_db( p=pPC1, DS="carstm_inputs",  redo=TRUE )  # will redo if not found
+      M = NULL; gc()
+      fit = carstm_model( p=pPC1, M='speciescomposition_db( p=p, DS="carstm_inputs" )', DS="redo"   ) # run model and obtain predictions
       # to use a saved instance
-      fit = carstm_model( p=pPC1, DS="carstm_modelled_fit" )  # extract currently saved model fit
-      summary(fit)
-
-      res = carstm_model( p=pPC1, DS="carstm_modelled_summary"  ) # to load currently saved results
       res$summary$dic$dic
       res$summary$dic$p.eff
       res$dyear
@@ -335,16 +339,17 @@ if (0) {
 # ensure that survey data is assimilated : bio.snowcrab::01snowcb_data.R, aegis.survey::01.surveys.data.R ,
 
   pPC2 = speciescomposition_parameters( p=parameters_reset(p), project_class="carstm", variabletomodel="pca2")
-  M = speciescomposition_db( p=pPC2, DS="carstm_inputs", redo=TRUE )  # will redo if not found
-  M = NULL; gc()
-  fit = carstm_model( p=pPC2, M='speciescomposition_db( p=p, DS="carstm_inputs" )', DS="redo"  ) # run model and obtain predictions
+  fit = carstm_model( p=pPC2, DS="carstm_modelled_fit" )  # extract currently saved model fit
+  summary(fit)
+
+  res = carstm_model( p=pPC2, DS="carstm_modelled_summary"  ) # to load currently saved results
+
   if (0) {
 
+    M = speciescomposition_db( p=pPC2, DS="carstm_inputs", redo=TRUE )  # will redo if not found
+    M = NULL; gc()
+    fit = carstm_model( p=pPC2, M='speciescomposition_db( p=p, DS="carstm_inputs" )', DS="redo"  ) # run model and obtain predictions
     # to use a saved instance
-    fit = carstm_model( p=pPC2, DS="carstm_modelled_fit" )  # extract currently saved model fit
-    summary(fit)
-
-    res = carstm_model( p=pPC2, DS="carstm_modelled_summary"  ) # to load currently saved results
     res$summary$dic$dic
     res$summary$dic$p.eff
     res$dyear
@@ -374,24 +379,24 @@ if (0) {
 # Part 8 -- Snow crab anbundance -- main mode used for production
 
 
-if (0) {
-  # use alternate model -- zero-inflated1
+  if (0) {
+    # use alternate model -- zero-inflated1
 
-    p$carstm_model_label = "zeroinflated"  #unique to this project ... to permit alt model forms/variations within the same overall carstm
-    p$carstm_model_formula = as.formula( paste(
-      p$variabletomodel, ' ~ 1',
-        ' + offset( log(data_offset))',
-        ' + f( dyri, model="ar1", hyper=H$ar1 )',
-        ' + f( inla.group( t, method="quantile", n=9 ), model="rw2", scale.model=TRUE, hyper=H$rw2)',
-        ' + f( inla.group( z, method="quantile", n=9 ), model="rw2", scale.model=TRUE, hyper=H$rw2)',
-        ' + f( inla.group( substrate.grainsize, method="quantile", n=9 ), model="rw2", scale.model=TRUE, hyper=H$rw2)',
-        ' + f( inla.group( pca1, method="quantile", n=9 ), model="rw2", scale.model=TRUE, hyper=H$rw2)',
-        ' + f( inla.group( pca2, method="quantile", n=9 ), model="rw2", scale.model=TRUE, hyper=H$rw2)',
-        ' + f( auid, model="bym2", graph=slot(sppoly, "nb"), group=year_factor, scale.model=TRUE, constr=TRUE, hyper=H$bym2, control.group=list(model="ar1", hyper=H$ar1_group))'
-    ) )
-    p$carstm_model_family = "zeroinflatedpoisson1"
+      p$carstm_model_label = "zeroinflated"  #unique to this project ... to permit alt model forms/variations within the same overall carstm
+      p$carstm_model_formula = as.formula( paste(
+        p$variabletomodel, ' ~ 1',
+          ' + offset( log(data_offset))',
+          ' + f( dyri, model="ar1", hyper=H$ar1 )',
+          ' + f( inla.group( t, method="quantile", n=9 ), model="rw2", scale.model=TRUE, hyper=H$rw2)',
+          ' + f( inla.group( z, method="quantile", n=9 ), model="rw2", scale.model=TRUE, hyper=H$rw2)',
+          ' + f( inla.group( substrate.grainsize, method="quantile", n=9 ), model="rw2", scale.model=TRUE, hyper=H$rw2)',
+          ' + f( inla.group( pca1, method="quantile", n=9 ), model="rw2", scale.model=TRUE, hyper=H$rw2)',
+          ' + f( inla.group( pca2, method="quantile", n=9 ), model="rw2", scale.model=TRUE, hyper=H$rw2)',
+          ' + f( auid, model="bym2", graph=slot(sppoly, "nb"), group=year_factor, scale.model=TRUE, constr=TRUE, hyper=H$bym2, control.group=list(model="ar1", hyper=H$ar1_group))'
+      ) )
+      p$carstm_model_family = "zeroinflatedpoisson1"
 
-}
+  }
 
 
   M = snowcrab_db( p=p, DS="carstm_inputs", redo=TRUE )  # will redo if not found

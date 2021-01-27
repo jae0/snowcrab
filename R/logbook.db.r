@@ -131,13 +131,10 @@
       # filter by depth ..
       # use the match/map syntax in bathymetry and filter out shallow sets .. < 10 m? TODO
       # keep those in the domain and deeper than depth=10 m
-      z = bathymetry_db(p=p, DS="baseline", varnames=c("plon", "plat", "z"))
-      aoi = which( z$z > 10 ) # negative = above land
-      pidz = array_map( "xy->1", z[aoi,c("plon", "plat")], gridparams=p$gridparams )
-      pidl = array_map( "xy->1", lgbk[,c("plon", "plat")], gridparams=p$gridparams )
-      inaoi = which( is.finite( match( pidl, pidz ) ))
-      good = which(is.finite( inaoi))
-      lgbk = lgbk[ good,]
+
+      z =  bathymetry_lookup_rawdata( spatial_domain=p$spatial_domain, M=lgbk[, c("lon", "lat")] ) 
+      aoi = which( z > 10 ) # negative = above land
+      lgbk = lgbk[ aoi,]
 
 
       # only accept "correctly" positioned data within each subarea ... in case miscoded data have a large effect

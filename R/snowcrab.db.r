@@ -1644,193 +1644,71 @@ snowcrab.db = function( DS, p=NULL, yrs=NULL, fn.root=NULL, redo=FALSE, extrapol
     # M$dyear = M$tiyr - M$year
 
 
-
-    pB = bathymetry_parameters( p=parameters_reset(p), project_class="carstm"  )
-    vnmod = pB$variabletomodel
-    if (!(exists(vnmod, M ))) M[,vnmod] = NA
-        # already has depth .. but in case some are missing data
-
-    iM = which(!is.finite( M[, vnmod] ))
-      if (length(iM > 0)) {
-        LU = bathymetry_db ( p=bathymetry_parameters( spatial_domain=p$spatial_domain, project_class="core"  ), DS="aggregated_data" )  # raw data
-        LU = lonlat2planar(LU, proj.type=p$aegis_proj4string_planar_km)
-        LU_map = array_map( "xy->1", LU[,c("plon","plat")], gridparams=p$gridparams )
-        M_map = array_map( "xy->1", M[,c("plon","plat")], gridparams=p$gridparams )
-        M[iM, vnmod] = LU[match( M_map, LU_map ), paste(vnmod, "mean", sep=".")  ]
-
-        # if any still missing then use a mean depth by AUID
-        iM = NULL
-        iM =  which( !is.finite(M[, vnmod]))
-        if (length(iM) > 0) {
-          LU$AUID = st_points_in_polygons(
-            pts = st_as_sf( LU, coords=c("lon","lat"), crs=crs_lonlat ),
-            polys = sppoly[, "AUID"],
-            varname="AUID"
-          )
-          oo = tapply( LU[, paste(vnmod, "mean", sep="." )], LU$AUID, FUN=median, na.rm=TRUE )
-          jj = match( as.character( M$AUID[iM]), as.character( names(oo )) )
-          M[iM, vnmod] = oo[jj ]
-        }
+  # --------------------------
+    # bathymetry observations  lookup
+    pB = bathymetry_parameters( project_class="core"  )
+    vnB = pB$variabletomodel
+    if ( !(exists(vnB, M ))) {
+      vnB2 = paste(vnB, "mean", sep=".")
+      if ((exists(vnB2, M ))) {
+        names(M)[which(names(M) == vnB2 )] = vnB
+      } else {
+        M[,vnB] = NA
       }
-      M = M[ is.finite(M[ , vnmod]  ) , ]
+    }
+    iM = which(!is.finite( M[, vnB] ))
+    if (length(iM > 0)) {
+      M[iM, vnB] = bathymetry_lookup_rawdata( spatial_domain=p$spatial_domain, M=M[iM, c("lon", "lat")], sppoly=sppoly )
+    }
 
-      if (p$carstm_inputs_aggregated) {
-        if ( exists("spatial_domain", p)) {
-          M = M[ geo_subset( spatial_domain=p$spatial_domain, Z=M ) , ] # need to be careful with extrapolation ...  filter depths
-        }
+    M = M[ is.finite(M[ , vnmod]  ) , ]
+
+
+    if (p$carstm_inputs_aggregated) {
+      if ( exists("spatial_domain", p)) {
+        M = M[ geo_subset( spatial_domain=p$spatial_domain, Z=M ) , ] # need to be careful with extrapolation ...  filter depths
       }
+    }
 
 
-      # substrate observations
-
-      pS = substrate_parameters( p=parameters_reset(p), project_class="carstm"  )
-      vnmod = pS$variabletomodel
-      if (!(exists(vnmod, M ))) M[,vnmod] = NA
-
-      iM = which(!is.finite(M[, vnmod]))
-      if (length(iM) > 0 ) {
-        LU = substrate_db ( p=substrate_parameters( spatial_domain=p$spatial_domain, project_class="core"  ), DS="aggregated_data" )  # raw data
-        LU = LU[ which( LU$lon > p$corners$lon[1] & LU$lon < p$corners$lon[2]  & LU$lat > p$corners$lat[1] & LU$lat < p$corners$lat[2] ), ]
-        LU = lonlat2planar(LU, proj.type=p$aegis_proj4string_planar_km)
-        # levelplot( eval(paste(vnmod, "mean", sep="."))~plon+plat, data=M, aspect="iso")
-        LU_map = array_map( "xy->1", LU[,c("plon","plat")], gridparams=p$gridparams )
-        M_map  = array_map( "xy->1", M[iM, c("plon","plat")], gridparams=p$gridparams )
-        M[iM, vnmod] = LU[ match( M_map, LU_map ), paste(vnmod, "mean", sep=".") ]
-        LU_map = NULL
-        M_map = NULL
-        iM = NULL
-
-        # if any still missing then use a mean substrate by AUID
-        iM =  which( !is.finite(M[, vnmod]))
-        if (length(iM) > 0) {
-          LU$AUID = st_points_in_polygons(
-            pts = st_as_sf( LU, coords=c("lon","lat"), crs=crs_lonlat ),
-            polys = sppoly[, "AUID"],
-            varname="AUID"
-          )
-          LU = tapply( LU[, paste(vnmod, "mean", sep="." )], LU$AUID, FUN=median, na.rm=TRUE )
-          iML = match( as.character( M$AUID[iM]), as.character( names(LU )) )
-          M[iM, vnmod] = LU[iML ]
-        }
-        iM = NULL
-        LU = NULL
-        iML = NULL
-      }
-
-
-      # temperature observations
-      pT = temperature_parameters( p=parameters_reset(p), project_class="carstm"  )
-      if (!(exists(pT$variabletomodel, M ))) M[,pT$variabletomodel] = NA
-
-      iM = which(!is.finite(M[, pT$variabletomodel]))
-      if (length(iM) > 0 ) {
-
-        tz = "America/Halifax"
-        T = data.frame( timestamp = M$timestamp[iM] )
-        if (! "POSIXct" %in% class(T$timestamp)  ) T$timestamp = as.POSIXct( T$timestamp, tz=tz, origin=lubridate::origin  )
-        T$yr = lubridate::year(T$timestamp)
-        T$dyear = lubridate::decimal_date( T$timestamp ) - T$yr
-        LU = temperature_db ( p=temperature_parameters( spatial_domain=p$spatial_domain, project_class="core" ), year.assessment=max(p$yrs), DS="aggregated_data" )  # raw data
-        names(LU)[ which(names(LU) =="temperature.mean") ] = vnmod
-        LU = LU[ which( LU$lon > p$corners$lon[1] & LU$lon < p$corners$lon[2]  & LU$lat > p$corners$lat[1] & LU$lat < p$corners$lat[2] ), ]
-        LU = lonlat2planar(LU, proj.type=p$aegis_proj4string_planar_km)
-        LUT_map = array_map( "ts->1", LU[,c("yr", "dyear")], dims=c(p$ny, p$nw), res=c( 1, 1/p$nw ), origin=c( min(p$yrs), 0) )
-        LUS_map = array_map( "xy->1", LU[,c("plon","plat")], gridparams=p$gridparams )
-        T_map = array_map( "ts->1", T[, c("yr", "dyear")], dims=c(p$ny, p$nw), res=c( 1, 1/p$nw ), origin=c( min(p$yrs), 0) )
-        M_map = array_map( "xy->1", M[iM, c("plon","plat")], gridparams=p$gridparams )
-        iLM = match( paste(M_map, T_map, sep="_"), paste(LUS_map, LUT_map, sep="_") )
-        M[ iM, vnmod ] = LU[ iLM, paste(vnmod, "mean", sep="." ) ]
-        LU = LUT_map = LUS_map = T = T_map = M_map = iLM = NULL
-
-        iM =  which( !is.finite(M[, vnmod]))
-        if (length(iM) > 0) {
-          LU$AUID = st_points_in_polygons(
-            pts = st_as_sf( LU, coords=c("lon","lat"), crs=crs_lonlat ),
-            polys = sppoly[, "AUID"],
-            varname="AUID"
-          )
-          LU_dyear_discret = discretize_data( LU$dyear, p$discretization$dyear )
-          M_dyear_discret = discretize_data( M$dyear, p$discretization$dyear )  # LU$dyear is discretized. . match discretization
-          LU$uid = paste(LU$AUID, LU$yr, LU_dyear_discret, sep=".")
-          M$uid =  paste(M$AUID, M$yr, M_dyear_discret, sep=".")
-          LU = tapply( LU[, paste(vnmod, "mean", sep="." )], LU$uid, FUN=median, na.rm=TRUE )
-          iLM = match( as.character( M$uid[iM]), as.character( names(LU )) )
-          M[iM, vnmod] = LU[iLM ]
-        }
-
-
-      }
+    # --------------------------
+    # substrate observations  lookup
+    pS = substrate_parameters( project_class="core"  )
+    if (!(exists(pS$variabletomodel, M ))) M[,pS$variabletomodel] = NA
+    iM = which(!is.finite( M[, pS$variabletomodel] ))
+    if (length(iM > 0)) {
+      M[iM, pS$variabletomodel] = substrate_lookup_rawdata( spatial_domain=p$spatial_domain, M=M[iM, c("lon", "lat")], sppoly=sppoly )
+    }
+    M = M[ is.finite(M[ , pS$variabletomodel]  ) , ]
 
 
 
+    # --------------------------
+    # temperature observations lookup
+    pT = temperature_parameters( project_class="core"  )
+    if (!(exists(pT$variabletomodel, M ))) M[,pT$variabletomodel] = NA
+    iM = which(!is.finite( M[, pT$variabletomodel] ))
+    if (length(iM > 0)) {
+      M[iM, pT$variabletomodel] = temperature_lookup_rawdata( spatial_domain=p$spatial_domain, M=M[iM, c("lon", "lat", "timestamp")], sppoly=sppoly )
+    }
 
-    pPC1 = speciescomposition_parameters( p=parameters_reset(p), project_class="carstm", variabletomodel="pca1" )
+
+    # --------------------------
+
+    pPC1 = speciescomposition_parameters(  project_class="core", variabletomodel="pca1" )
     if (!(exists(pPC1$variabletomodel, M ))) M[,pPC1$variabletomodel] = NA
-
     iM = which(!is.finite(M[, pPC1$variabletomodel]))
     if (length(iM) > 0 ) {
-      pc1 = speciescomposition_db( p=pPC1, DS="speciescomposition"  )
-      ii = match( M$id, pc1$id)
-      M[iM, pPC1$variabletomodel] = pc1[ii, pPC1$variabletomodel]
+      M[iM, pPC1$variabletomodel] = speciescomposition_lookup_rawdata( spatial_domain=p$spatial_domain, M=M[iM, c("lon", "lat", "timestamp")], sppoly=sppoly, vnmod=pPC1$variabletomodel )
     }
 
-    iM =  which( !is.finite(M[, pPC1$variabletomodel]))
-    if (length(iM) > 0) {
-      pc1 = speciescomposition_db( p=pPC1, DS="speciescomposition"  )
-      pc1 = planar2lonlat( pc1, proj.type=p$aegis_proj4string_planar_km )
-      pc1$AUID = st_points_in_polygons(
-        pts = st_as_sf( pc1, coords=c("lon","lat"), crs=crs_lonlat ),
-        polys = sppoly[, "AUID"],
-        varname = "AUID"
-      )
-      oo = tapply( pc1[, pPC1$variabletomodel ], pc1$AUID, FUN=median, na.rm=TRUE )
-      jj = match( as.character( M$AUID[iM]), as.character( names(oo )) )
-      if (length(jj) > 0) M[iM, pPC1$variabletomodel] = oo[jj ]
-    }
-    iM =  which( !is.finite(M[, pPC1$variabletomodel]))
-    if (length(iM) > 0) {
-      PI = carstm_model ( p=pPC1, DS="carstm_modelled_summary" )
-      au_map = match( M$AUID[iM], dimnames(PI)$AUID )
-      year_map = match( as.character(M$yr[iM]), dimnames(PI)$yr )
-      dindex = cbind(au_map, year_map )
-      M[iM, pPC1$variabletomodel] = PI [dindex]
-    }
+    # --------------------------
 
-
-
-    pPC2 = speciescomposition_parameters( p=parameters_reset(p), project_class="carstm", variabletomodel="pca2")
+    pPC2 = speciescomposition_parameters(  project_class="core", variabletomodel="pca2" )
     if (!(exists(pPC2$variabletomodel, M ))) M[,pPC2$variabletomodel] = NA
-
     iM = which(!is.finite(M[, pPC2$variabletomodel]))
     if (length(iM) > 0 ) {
-      pc2 = speciescomposition_db( p=pPC2, DS="speciescomposition"  )
-      ii = match( M$id, pc2$id)
-      M[iM, pPC2$variabletomodel] = pc2[ii, pPC2$variabletomodel]
-    }
-
-
-
-    iM =  which( !is.finite(M[, pPC2$variabletomodel]))
-    if (length(iM) > 0) {
-      pc2 = speciescomposition_db( p=pPC2, DS="speciescomposition"  )
-      pc2 = planar2lonlat( pc2, proj.type=p$aegis_proj4string_planar_km )
-      pc2$AUID = st_points_in_polygons(
-        pts = st_as_sf( pc2, coords=c("lon","lat"), crs=crs_lonlat ),
-        polys = sppoly[, "AUID"],
-        varname = "AUID"
-      )
-
-      oo = tapply( pc2[, pPC2$variabletomodel ], pc2$AUID, FUN=median, na.rm=TRUE )
-      jj = match( as.character( M$AUID[iM]), as.character( names(oo )) )
-      if (length(jj) > 0) M[iM, pPC2$variabletomodel] = oo[jj ]
-    }
-    iM =  which( !is.finite(M[, pPC2$variabletomodel]))
-    if (length(iM) > 0) {
-      PI = carstm_model ( p=pPC2, DS="carstm_modelled_summary" )
-      au_map = match( M$AUID[iM], dimnames(PI)$AUID )
-      year_map = match( as.character(M$yr[iM]), dimnames(PI)$yr )
-      dindex = cbind(au_map, year_map )
-      M[iM, pPC2$variabletomodel] = PI [dindex]
+      M[iM, pPC2$variabletomodel] = speciescomposition_lookup_rawdata( spatial_domain=p$spatial_domain, M=M[iM, c("lon", "lat", "timestamp")], sppoly=sppoly, vnmod=pPC2$variabletomodel )
     }
 
 
@@ -1849,10 +1727,10 @@ snowcrab.db = function( DS, p=NULL, yrs=NULL, fn.root=NULL, redo=FALSE, extrapol
     M$tag = "observations"
 
 
-      # end observations
-      # ----------
+    # end observations
+    # ----------
 
-      # predicted locations (APS)
+    # predicted locations (APS)
 
 
 
