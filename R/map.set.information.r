@@ -16,9 +16,14 @@ map.set.information = function(p, outdir, variables, mapyears, interpolate.metho
     if (missing(mapyears)) mapyears = sort( unique(set$yr) )
     if (exists( "libs", p)) RLibrary( p$libs )
 
+    predlocs = spatial_grid(p) 
+    predlocs = planar2lonlat( predlocs,  proj.type=p$aegis_proj4string_planar_km   )
+    predlocs$z = bathymetry_lookup_rawdata( spatial_domain=p$spatial_domain, M=predlocs[, c("lon", "lat")] ) 
+    predlocs = predlocs[ geo_subset( spatial_domain=p$spatial_domain, Z=predlocs ), ]
+  
     for ( v in variables ) {
       for ( y in mapyears ) {
-         predlocs = bathymetry_db(p=p, DS="baseline")
+     
           ratio=FALSE
           outfn = paste( v,y, sep=".")
           outloc = file.path( outdir,v)
