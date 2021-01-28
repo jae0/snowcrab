@@ -12,7 +12,6 @@ map.fisheries.data = function(p, outdir,  FUN, yrs, variable='effort',probs=c(0,
 
   if(variable=='landings')x$z = x$z/1000
 
-  predlocs = bathymetry_db(p=p, DS="baseline")
   er = quantile( x$z[x$z>0], probs=probs)  # range of all years
   ler = er
 
