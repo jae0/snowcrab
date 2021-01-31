@@ -1014,7 +1014,8 @@ snowcrab.db = function( DS, p=NULL, yrs=NULL, fn.root=NULL, redo=FALSE, extrapol
     # bring in time invariant features:: depth
     ii = which(!is.finite(set$z))
     if (length(ii)>0){
-      set$z[ii] =  bathymetry_lookup_rawdata( spatial_domain=p$spatial_domain, M=set[ ii, c("lon", "lat")] ) 
+      set$z[ii] =  bathymetry_lookup( LOCS=set[ ii, c("lon", "lat")], spatial_domain=p$spatial_domain, lookup_from="core", lookup_to="points" , lookup_from_class="aggregated_data" ) # core=="rawdata"
+ 
     }
 
     set$z = log( set$z )
@@ -1309,7 +1310,8 @@ snowcrab.db = function( DS, p=NULL, yrs=NULL, fn.root=NULL, redo=FALSE, extrapol
     }
     iM = which(!is.finite( M[, vnB] ))
     if (length(iM > 0)) {
-      M[iM, vnB] = bathymetry_lookup_rawdata( spatial_domain=p$spatial_domain, M=M[iM, c("lon", "lat")], sppoly=sppoly )
+      M[iM, vnB] = bathymetry_lookup( LOCS=M[ iM, c("lon", "lat")], spatial_domain=p$spatial_domain, lookup_from="core", lookup_to="points" , lookup_from_class="aggregated_data" ) # core=="rawdata"
+ 
     }
 
     if (p$carstm_inputs_aggregated) {
@@ -1339,8 +1341,9 @@ snowcrab.db = function( DS, p=NULL, yrs=NULL, fn.root=NULL, redo=FALSE, extrapol
     if (!(exists(pS$variabletomodel, M ))) M[,pS$variabletomodel] = NA
     iM = which(!is.finite( M[, pS$variabletomodel] ))
     if (length(iM > 0)) {
-      M[iM, pS$variabletomodel] = substrate_lookup_rawdata( spatial_domain=p$spatial_domain, M=M[iM, c("lon", "lat")], sppoly=sppoly )
+      M[iM, pS$variabletomodel] = substrate_lookup( LOCS=M[iM, c("lon", "lat")], spatial_domain=p$spatial_domain, lookup_from="core", lookup_to="points" , lookup_from_class="aggregated_data" ) # core=="rawdata"
     }
+
     M = M[ is.finite(M[ , pS$variabletomodel]  ) , ]
 
 
@@ -1638,7 +1641,8 @@ snowcrab.db = function( DS, p=NULL, yrs=NULL, fn.root=NULL, redo=FALSE, extrapol
     }
     iM = which(!is.finite( M[, vnB] ))
     if (length(iM > 0)) {
-      M[iM, vnB] = bathymetry_lookup_rawdata( spatial_domain=p$spatial_domain, M=M[iM, c("lon", "lat")], sppoly=sppoly )
+      M[iM, vnB] = bathymetry_lookup( LOCS=M[ iM, c("lon", "lat")], spatial_domain=p$spatial_domain, lookup_from="core", lookup_to="points" , lookup_from_class="aggregated_data" ) # core=="rawdata"
+ 
     }
 
     M = M[ is.finite(M[ , vnmod]  ) , ]
@@ -1657,8 +1661,9 @@ snowcrab.db = function( DS, p=NULL, yrs=NULL, fn.root=NULL, redo=FALSE, extrapol
     if (!(exists(pS$variabletomodel, M ))) M[,pS$variabletomodel] = NA
     iM = which(!is.finite( M[, pS$variabletomodel] ))
     if (length(iM > 0)) {
-      M[iM, pS$variabletomodel] = substrate_lookup_rawdata( spatial_domain=p$spatial_domain, M=M[iM, c("lon", "lat")], sppoly=sppoly )
+      M[iM, pS$variabletomodel] = substrate_lookup( LOCS=M[iM, c("lon", "lat")], spatial_domain=p$spatial_domain, lookup_from="core", lookup_to="points" , lookup_from_class="aggregated_data" ) # core=="rawdata"
     }
+
     M = M[ is.finite(M[ , pS$variabletomodel]  ) , ]
 
 
