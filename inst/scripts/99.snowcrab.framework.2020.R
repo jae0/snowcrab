@@ -20,7 +20,7 @@
 
 
   # misc run params adjustments here:
-  p$modeldata = 'snowcrab_db( p=p, DS="carstm_inputs" )'
+  p$modeldata = 'snowcrab.db( p=p, DS="carstm_inputs" )'
 
 
 # -------------------------------------------------
@@ -35,7 +35,7 @@
 
   p$carstm_model_family = gaussian(link="identity")
 
-  M = snowcrab_db( p=p, DS="carstm_inputs", redo=FALSE )  # will redo if not found
+  M = snowcrab.db( p=p, DS="carstm_inputs", redo=FALSE )  # will redo if not found
   M$year = as.factor(M$year)
   M[,p$variabletomodel] = M[,p$variabletomodel] / M$data_offset  # cannot do offsets in gaussian linear model
   M = M[ which(M$tag=="observations"), ]
@@ -55,7 +55,7 @@
     p$variabletomodel, ' ~ AUID:year -1 + offset( log(data_offset)) '))
 
   p$carstm_model_family = poisson(link="log")
-  M = snowcrab_db( p=p, DS="carstm_inputs", redo=FALSE )  # will redo if not found
+  M = snowcrab.db( p=p, DS="carstm_inputs", redo=FALSE )  # will redo if not found
   M$year = as.factor(M$year)
   M = M[ which(M$tag=="observations"), ]
 
@@ -78,7 +78,7 @@
 
   p$carstm_model_family = "gaussian"
 
-  M = snowcrab_db( p=p, DS="carstm_inputs", redo=FALSE )  # will redo if not found
+  M = snowcrab.db( p=p, DS="carstm_inputs", redo=FALSE )  # will redo if not found
 
   # remove unsampled locations in factorial methods to get sensible stats
   M$uid = paste( M$AUID, M$year, sep="." )
@@ -109,7 +109,7 @@
 
   p$carstm_model_family = "poisson"
 
-  M = snowcrab_db( p=p, DS="carstm_inputs", redo=FALSE )  # will redo if not found
+  M = snowcrab.db( p=p, DS="carstm_inputs", redo=FALSE )  # will redo if not found
 
     # remove unsampled locations in factorial methods to get sensible stats
   M$uid = paste( M$AUID, M$year, sep="." )
@@ -147,7 +147,7 @@
 
   p$carstm_model_family = "poisson"
 
-  M = snowcrab_db( p=p, DS="carstm_inputs", redo=FALSE )  # will redo if not found
+  M = snowcrab.db( p=p, DS="carstm_inputs", redo=FALSE )  # will redo if not found
 
   # remove unsampled locations in factorial methods to get sensible stats
   M$uid = paste( M$AUID, M$year, sep="." )
@@ -185,7 +185,7 @@
   ))
   p$carstm_model_family = "poisson"
 
-  M = snowcrab_db( p=p, DS="carstm_inputs", redo=FALSE )  # will redo if not found
+  M = snowcrab.db( p=p, DS="carstm_inputs", redo=FALSE )  # will redo if not found
   # remove unsampled locations in factorial methods to get sensible stats
   M$uid = paste( M$AUID, M$year, sep="." )
   withdata = unique( M$uid[which(M$tag== "observations")])
@@ -220,7 +220,7 @@
 
   p$carstm_model_family = "poisson"
 
-  M = snowcrab_db( p=p, DS="carstm_inputs", redo=FALSE )  # will redo if not found
+  M = snowcrab.db( p=p, DS="carstm_inputs", redo=FALSE )  # will redo if not found
   # remove unsampled locations in factorial methods to get sensible stats
   M$uid = paste( M$AUID, M$year, sep="." )
   withdata = unique( M$uid[which(M$tag== "observations")])
@@ -254,7 +254,7 @@
 
   p$carstm_model_family = "poisson"
 
-  M = snowcrab_db( p=p, DS="carstm_inputs", redo=FALSE )  # will redo if not found
+  M = snowcrab.db( p=p, DS="carstm_inputs", redo=FALSE )  # will redo if not found
   M$year_factor = factor(M$year)
   M[,p$variabletomodel] = floor( M[,p$variabletomodel] )  # poisson wants integers
   fit = carstm_model( p=p, M=M )
@@ -276,7 +276,7 @@
   ))
   p$carstm_model_family = "poisson"
 
-  M = snowcrab_db( p=p, DS="carstm_inputs", redo=FALSE )  # will redo if not found
+  M = snowcrab.db( p=p, DS="carstm_inputs", redo=FALSE )  # will redo if not found
   M$year_factor = factor(M$year)
   # M$auid = factor( M$auid)
   M[,p$variabletomodel] = floor( M[,p$variabletomodel] )  # poisson wants integers
@@ -303,7 +303,7 @@
 
   p$carstm_model_family = "poisson"
 
-  M = snowcrab_db( p=p, DS="carstm_inputs", redo=FALSE )  # will redo if not found
+  M = snowcrab.db( p=p, DS="carstm_inputs", redo=FALSE )  # will redo if not found
   M$year_factor = factor(M$year)
   M[,p$variabletomodel] = floor( M[,p$variabletomodel] )  # poisson wants integers
   fit = carstm_model( p=p, M=M )
@@ -504,7 +504,7 @@
 
 
   sppoly = areal_units( p=p )  # to reload
-  # M = snowcrab_db( p=p, DS="carstm_inputs" )
+  # M = snowcrab.db( p=p, DS="carstm_inputs" )
   # M$yr = M$year  # req for meanweights
 
   # # mean weight by auidxyear
@@ -520,11 +520,11 @@
 
   # aggregate time series
 
-  RES = snowcrab_db(p=p, DS="carstm_output_compute"   )
+  RES = snowcrab.db(p=p, DS="carstm_output_compute"   )
 
-  RES = snowcrab_db(p=p, DS="carstm_output_timeseries"  )
-  bio = snowcrab_db(p=p, DS="carstm_output_spacetime_biomass"  )
-  num = snowcrab_db(p=p, DS="carstm_output_spacetime_number"  )
+  RES = snowcrab.db(p=p, DS="carstm_output_timeseries"  )
+  bio = snowcrab.db(p=p, DS="carstm_output_spacetime_biomass"  )
+  num = snowcrab.db(p=p, DS="carstm_output_spacetime_number"  )
 
   # plots with mean and 95% CI
 
@@ -637,7 +637,7 @@
       p$variabletomodel = "totwgt"
     }
     p$carstm_model_label=lab
-    res_ts[[lab]] = snowcrab_db(p=p, DS="carstm_output_timeseries"  )
+    res_ts[[lab]] = snowcrab.db(p=p, DS="carstm_output_timeseries"  )
   }
 
   dev.new(width=11, height=7)
@@ -660,7 +660,7 @@
 
   p = bio.snowcrab::snowcrab_parameters( project_class="carstm", assessment.years=1999:2018 )
 
-  p$modeldata = 'snowcrab_db( p=p, DS="carstm_inputs" )'
+  p$modeldata = 'snowcrab.db( p=p, DS="carstm_inputs" )'
 
 
 
@@ -699,7 +699,7 @@
   p$carstm_model_family = "binomial"  # "nbinomial", "betabinomial", "zeroinflatedbinomial0" , "zeroinflatednbinomial0"
   p$carstm_model_inla_control_familiy = list(control.link=list(model='logit'))
 
-  M = snowcrab_db( p=p, DS="carstm_inputs", redo=TRUE )  # will redo if not found
+  M = snowcrab.db( p=p, DS="carstm_inputs", redo=TRUE )  # will redo if not found
   M = NULL; gc()
   fit = carstm_model( p=p, M=p$modeldata )
 
@@ -743,7 +743,7 @@
   p$carstm_model_family = "binomial"  # "nbinomial", "betabinomial", "zeroinflatedbinomial0" , "zeroinflatednbinomial0"
   p$carstm_model_inla_control_familiy = list(control.link=list(model='logit'))
 
-  M = snowcrab_db( p=p, DS="carstm_inputs", redo=TRUE )  # will redo if not found
+  M = snowcrab.db( p=p, DS="carstm_inputs", redo=TRUE )  # will redo if not found
   M = NULL; gc()
   fit = carstm_model( p=p, M=p$modeldata )
 
@@ -785,7 +785,7 @@
   p$carstm_model_family = "binomial"  # "nbinomial", "betabinomial", "zeroinflatedbinomial0" , "zeroinflatednbinomial0"
   p$carstm_model_inla_control_familiy = list(control.link=list(model='logit'))
 
-  M = snowcrab_db( p=p, DS="carstm_inputs", redo=TRUE )  # will redo if not found
+  M = snowcrab.db( p=p, DS="carstm_inputs", redo=TRUE )  # will redo if not found
   M = NULL; gc()
   fit = carstm_model( p=p, M=p$modeldata )
 
@@ -828,7 +828,7 @@
   p$carstm_model_family = "binomial"  # "nbinomial", "betabinomial", "zeroinflatedbinomial0" , "zeroinflatednbinomial0"
   p$carstm_model_inla_control_familiy = list(control.link=list(model='logit'))
 
-  M = snowcrab_db( p=p, DS="carstm_inputs", redo=TRUE )  # will redo if not found
+  M = snowcrab.db( p=p, DS="carstm_inputs", redo=TRUE )  # will redo if not found
   M = NULL; gc()
   fit = carstm_model( p=p, M=p$modeldata )
 
@@ -870,7 +870,7 @@
   p$carstm_model_family = "nbinomial"  # "nbinomial", "betabinomial", "zeroinflatedbinomial0" , "zeroinflatednbinomial0"
   p$carstm_model_inla_control_familiy = NULL
 
-  M = snowcrab_db( p=p, DS="carstm_inputs", redo=TRUE )  # will redo if not found
+  M = snowcrab.db( p=p, DS="carstm_inputs", redo=TRUE )  # will redo if not found
   M = NULL; gc()
   fit = carstm_model( p=p, M=p$modeldata )
 
@@ -913,7 +913,7 @@
   p$carstm_model_family  = "zeroinflatedbinomial0", #  "binomial",  # "nbinomial", "betabinomial", "zeroinflatedbinomial0" , "zeroinflatednbinomial0"
   p$carstm_model_inla_control_familiy = NULL
 
-  M = snowcrab_db( p=p, DS="carstm_inputs", redo=TRUE )  # will redo if not found
+  M = snowcrab.db( p=p, DS="carstm_inputs", redo=TRUE )  # will redo if not found
   M = NULL; gc()
   fit = carstm_model( p=p, M=p$modeldata )
 
@@ -958,7 +958,7 @@
 
 
 
-  M = snowcrab_db( p=p, DS="carstm_inputs", redo=TRUE )  # will redo if not found
+  M = snowcrab.db( p=p, DS="carstm_inputs", redo=TRUE )  # will redo if not found
   M = NULL; gc()
   fit = carstm_model( p=p, M=p$modeldata )
 
@@ -999,10 +999,10 @@
 
 
   # surface area weighted average
-  RES = snowcrab_db(p=p, DS="carstm_output_compute"  )
-  RES = snowcrab_db(p=p, DS="carstm_output_timeseries"  )
+  RES = snowcrab.db(p=p, DS="carstm_output_compute"  )
+  RES = snowcrab.db(p=p, DS="carstm_output_timeseries"  )
 
-  pa = snowcrab_db(p=p, DS="carstm_output_spacetime_pa"  )
+  pa = snowcrab.db(p=p, DS="carstm_output_spacetime_pa"  )
 
 # plots with 95% PI
 
@@ -1104,7 +1104,7 @@
           p$variabletomodel = "totwgt"
         }
         p$carstm_model_label=lab
-        res_ts[[lab]] = snowcrab_db(p=p, DS="carstm_output_timeseries"  )
+        res_ts[[lab]] = snowcrab.db(p=p, DS="carstm_output_timeseries"  )
       }
 
       dev.new(width=11, height=7)

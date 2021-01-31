@@ -21,7 +21,7 @@ snowcrab_parameters = function( p=list(), year.assessment=NULL, project_name="bi
 
   p = parameters_add_without_overwriting( p, project_name = project_name )
   p = parameters_add_without_overwriting( p, data_root = project.datadirectory( p$project_name  ) )
-  p = parameters_add_without_overwriting( p, datadir  = p$data_root )  # all unprocessed inputs (and simple manipulations) ..   #  usually the datadir is a subdirectory: "data" of data_root as in snowcrab_db, .. might cause problems
+  p = parameters_add_without_overwriting( p, datadir  = p$data_root )  # all unprocessed inputs (and simple manipulations) ..   #  usually the datadir is a subdirectory: "data" of data_root as in snowcrab.db, .. might cause problems
   p = parameters_add_without_overwriting( p, modeldir = file.path( p$data_root, "modelled" ) )  # all model outputs
 
   if ( !file.exists(p$datadir) ) dir.create( p$datadir, showWarnings=FALSE, recursive=TRUE )
@@ -369,7 +369,7 @@ snowcrab_parameters = function( p=list(), year.assessment=NULL, project_name="bi
 
     p = parameters_add_without_overwriting( p,
       trawlable_units = "sweptarea",  # <<<<<<<<<<<<<<<<<< also:  "standardtow", "sweptarea" (for groundfish surveys)
-      areal_units_xydata = "snowcrab_db(p=p, DS='areal_units_input')",
+      areal_units_xydata = "snowcrab.db(p=p, DS='areal_units_input')",
       areal_units_type = "lattice", # "stmv_lattice" to use ageis fields instead of carstm fields ... note variables are not the same
       areal_units_overlay = "snowcrab_managementareas", # currently: "snowcrab_managementareas",  "groundfish_strata" .. additional polygon layers for subsequent analysis for now ..
       areal_units_resolution_km = 25, # km dim of lattice ~ 1 hr

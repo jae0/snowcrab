@@ -399,10 +399,10 @@ if (0) {
   }
 
 
-  M = snowcrab_db( p=p, DS="carstm_inputs", redo=TRUE )  # will redo if not found
-  fit = carstm_model( p=p, M='snowcrab_db( p=p, DS="carstm_inputs" )' ) # 151 configs and long optim .. 19 hrs
+  M = snowcrab.db( p=p, DS="carstm_inputs", redo=TRUE )  # will redo if not found
+  fit = carstm_model( p=p, M='snowcrab.db( p=p, DS="carstm_inputs" )' ) # 151 configs and long optim .. 19 hrs
  
-  RES = snowcrab_db(p=p, DS="carstm_output_compute" )
+  RES = snowcrab.db(p=p, DS="carstm_output_compute" )
 
   if (0) {
 
@@ -438,9 +438,9 @@ if (0) {
       carstm_map( res=res, vn=vn, time_match=time_match )
 
 
-      RES = snowcrab_db(p=p, DS="carstm_output_timeseries" )
-      bio = snowcrab_db(p=p, DS="carstm_output_spacetime_biomass" )
-      num = snowcrab_db(p=p, DS="carstm_output_spacetime_number" )
+      RES = snowcrab.db(p=p, DS="carstm_output_timeseries" )
+      bio = snowcrab.db(p=p, DS="carstm_output_spacetime_biomass" )
+      num = snowcrab.db(p=p, DS="carstm_output_spacetime_number" )
 
 
       plot( cfaall ~ yrs, data=RES, lty="solid", lwd=4, pch=20, col="slateblue", type="b", ylab="Biomass (kt)", xlab="")
@@ -499,8 +499,8 @@ if (0) {
   )
 
 
-  M = snowcrab_db( p=p, DS="carstm_inputs", redo=TRUE )  # will redo if not found
-  fit = carstm_model( p=p, M='snowcrab_db( p=p, DS="carstm_inputs" )' ) # 151 configs and long optim .. 19 hrs
+  M = snowcrab.db( p=p, DS="carstm_inputs", redo=TRUE )  # will redo if not found
+  fit = carstm_model( p=p, M='snowcrab.db( p=p, DS="carstm_inputs" )' ) # 151 configs and long optim .. 19 hrs
   fit =  carstm_model( p=p, DS="carstm_modelled_fit" )  # extract currently saved model fit
 
 
@@ -509,7 +509,7 @@ if (0) {
   res$summary$dic$p.eff
   res$dyear
 
-  RES = snowcrab_db(p=p, DS="carstm_output_compute" )
+  RES = snowcrab.db(p=p, DS="carstm_output_compute" )
 
 
 

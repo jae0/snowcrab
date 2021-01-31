@@ -595,7 +595,7 @@ snowcrab.db = function( DS, p=NULL, yrs=NULL, fn.root=NULL, redo=FALSE, extrapol
         }
       }
 
-      xydata = snowcrab_db( p=p, DS="set.clean"  )  #
+      xydata = snowcrab.db( p=p, DS="set.clean"  )  #
       xydata = xydata[ , c("lon", "lat", "yr" )]
       save(xydata, file=fn, compress=TRUE )
       return( xydata )
@@ -1926,7 +1926,7 @@ snowcrab.db = function( DS, p=NULL, yrs=NULL, fn.root=NULL, redo=FALSE, extrapol
 
     if (p$selection$type %in% c("biomass", "number") ) {
 
-      # M = snowcrab_db( p=p, DS="carstm_inputs" )
+      # M = snowcrab.db( p=p, DS="carstm_inputs" )
 
       M = res$M
       M$yr = M$year  # req for meanweights

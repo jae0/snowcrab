@@ -20,7 +20,7 @@ snowcrab_tsdata = function( p, assessment_years=2000:p$year.assessment, areas=c(
   L = as.data.frame( L[ match( assessment_years, rownames(L) ), areas ] )
 
   # biomass data: post-fishery biomass are determined by survey B)
-  B = snowcrab_db(p=p, DS="carstm_output_timeseries"  )
+  B = snowcrab.db(p=p, DS="carstm_output_timeseries"  )
 
   rownames(B) = B$yrs
   B = as.data.frame( B[ match( assessment_years, B$yrs ), areas ] )

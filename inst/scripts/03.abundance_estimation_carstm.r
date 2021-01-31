@@ -106,14 +106,14 @@ inla.setOption(blas.num.threads= 2 )
 
 # -------------------------------------------------
 # Part 8 -- Snow crab abundance -- main mode used for production
-  M = snowcrab_db( p=p, DS="carstm_inputs", redo=TRUE )  # will redo if not found
+  M = snowcrab.db( p=p, DS="carstm_inputs", redo=TRUE )  # will redo if not found
   #To compare values of M, run the following line:
   #load(paste(p$modeldir, "M.summary.rdata", sep="/"))
 
   M = NULL; gc()
 
 
-  fit = carstm_model( p=p, M='snowcrab_db( p=p, DS="carstm_inputs" )' ) # 151 configs and long optim .. 19 hrs
+  fit = carstm_model( p=p, M='snowcrab.db( p=p, DS="carstm_inputs" )' ) # 151 configs and long optim .. 19 hrs
   # fit = carstm_model( p=p, DS="carstm_modelled_fit")
 
     # extract results
@@ -160,11 +160,11 @@ inla.setOption(blas.num.threads= 2 )
   }
   
 
-  RES = snowcrab_db(p=p, DS="carstm_output_compute" )
-  # RES = snowcrab_db(p=p, DS="carstm_output_timeseries" )
+  RES = snowcrab.db(p=p, DS="carstm_output_compute" )
+  # RES = snowcrab.db(p=p, DS="carstm_output_timeseries" )
 
-  bio = snowcrab_db(p=p, DS="carstm_output_spacetime_biomass" )
-  num = snowcrab_db(p=p, DS="carstm_output_spacetime_number" )
+  bio = snowcrab.db(p=p, DS="carstm_output_spacetime_biomass" )
+  num = snowcrab.db(p=p, DS="carstm_output_spacetime_number" )
 
   plot( cfaall ~ yrs, data=RES, lty="solid", lwd=4, pch=20, col="slateblue", type="b", ylab="Biomass (kt)", xlab="")
   lines( cfaall_lb ~ yrs, data=RES, lty="dotted", lwd=2, col="slategray" )
