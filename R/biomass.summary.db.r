@@ -178,7 +178,7 @@
       }
 
       # biomass data: post-fishery biomass are determined by survey B)
-      pSC = bio.snowcrab::snowcrab_parameters( DS="carstm", assessment.years=2000:p$year.assessment )
+      pSC = bio.snowcrab::snowcrab_parameters( project_class="carstm", assessment.years=2000:p$year.assessment )
       B = bio.snowcrab::snowcrab_db(p=pSC, DS="carstm_output_timeseries"  )
 
      # areas=c("cfanorth", "cfasouth", "cfa4x", "cfa23", "cfa24")

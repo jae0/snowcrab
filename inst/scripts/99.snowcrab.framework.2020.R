@@ -16,7 +16,7 @@
   inla.setOption(blas.num.threads= 2 )
 
 
-  p = bio.snowcrab::snowcrab_parameters( DS="carstm", assessment.years=1999:2018 )
+  p = bio.snowcrab::snowcrab_parameters( project_class="carstm", assessment.years=1999:2018 )
 
 
   # misc run params adjustments here:
@@ -658,7 +658,7 @@
 
 
 
-  p = bio.snowcrab::snowcrab_parameters( DS="carstm", assessment.years=1999:2018 )
+  p = bio.snowcrab::snowcrab_parameters( project_class="carstm", assessment.years=1999:2018 )
 
   p$modeldata = 'snowcrab_db( p=p, DS="carstm_inputs" )'
 
@@ -1134,7 +1134,7 @@ year.assessment = 2018
 # Part 1 -- construct basic parameter list defining the main characteristics of the study
 # require(aegis)
 
- p = bio.snowcrab::snowcrab_parameters( DS="carstm", assessment.years=1999:year.assessment )
+ p = bio.snowcrab::snowcrab_parameters( project_class="carstm", assessment.years=1999:year.assessment )
 
 
   plot.dir=paste(p$modeldir,"prediction.plots", year.assessment, sep="/" )

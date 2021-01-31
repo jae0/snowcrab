@@ -114,7 +114,7 @@ snowcrab.db( DS="set.clean.redo", p=p ) #Updated stats data, need to redo to upd
 # local lookup tables are required for the following snowcrab.db steps
 # using grids as specfified below:
 
-  pC = bio.snowcrab::snowcrab_parameters( DS="carstm", assessment.years=1999:year.assessment )
+  pC = bio.snowcrab::snowcrab_parameters( project_class="carstm", assessment.years=1999:year.assessment )
   pB = aegis.bathymetry::bathymetry_parameters( p=parameters_reset(pC), project_class="carstm"  )
   pS = substrate_parameters( p=parameters_reset(pC), project_class="carstm"  )
   pT = temperature_parameters( p=parameters_reset(pC), project_class="carstm"  )

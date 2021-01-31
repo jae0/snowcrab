@@ -15,7 +15,7 @@ inla.setOption(blas.num.threads= 2 )
 # -------------------------------------------------
 # Part 1 -- construct basic parameter list defining the main characteristics of the study
 # require(aegis)
- p = bio.snowcrab::snowcrab_parameters( DS="carstm", assessment.years=1999:year.assessment )
+ p = bio.snowcrab::snowcrab_parameters( project_class="carstm", assessment.years=1999:year.assessment )
 
   # p$modeldir = "..."  # use this to specifiy alt location to save model output files
 
