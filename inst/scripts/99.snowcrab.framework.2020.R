@@ -18,6 +18,7 @@
 
   p = bio.snowcrab::snowcrab_parameters( project_class="carstm", assessment.years=1999:2018 )
 
+  sppoly = areal_units( p=p, redo=TRUE )  # to reload
 
   # misc run params adjustments here:
   p$modeldata = 'snowcrab.db( p=p, DS="carstm_inputs" )'
