@@ -1024,7 +1024,8 @@ snowcrab.db = function( DS, p=NULL, yrs=NULL, fn.root=NULL, redo=FALSE, extrapol
     # bring in time varing features:: temperature
     ii = which(!is.finite(set$t))
     if (length(ii)>0){
-      set$t[ii] = temperature_lookup_rawdata( spatial_domain=p$spatial_domain, M=set[ ii, c("lon", "lat", "timestamp")] )
+      set$t[ii] = temperature_lookup( spatial_domain=p$spatial_domain, LOCS=set[ ii, c("lon", "lat", "timestamp")],lookup_from="core", lookup_to="points", lookup_from_class="aggregated_data", tz="America/Halifax"  )
+
     }
 
 
@@ -1314,10 +1315,8 @@ snowcrab.db = function( DS, p=NULL, yrs=NULL, fn.root=NULL, redo=FALSE, extrapol
  
     }
 
-    if (p$carstm_inputs_aggregated) {
-      if ( exists("spatial_domain", p)) {
+    if ( exists("spatial_domain", p)) {
         M = M[ geo_subset( spatial_domain=p$spatial_domain, Z=M ) , ] # need to be careful with extrapolation ...  filter depths
-      }
     }
 
     if ( p$carstm_inputdata_model_source$bathymetry %in% c("stmv", "hybrid") ) {
@@ -1354,77 +1353,29 @@ snowcrab.db = function( DS, p=NULL, yrs=NULL, fn.root=NULL, redo=FALSE, extrapol
     if (!(exists(pT$variabletomodel, M ))) M[,pT$variabletomodel] = NA
     iM = which(!is.finite( M[, pT$variabletomodel] ))
     if (length(iM > 0)) {
-      M[iM, pT$variabletomodel] = temperature_lookup_rawdata( spatial_domain=p$spatial_domain, M=M[iM, c("lon", "lat", "timestamp")], sppoly=sppoly )
+      M[iM, pT$variabletomodel] = temperature_lookup( spatial_domain=p$spatial_domain, LOCS=M[ iM, c("lon", "lat", "timestamp")],lookup_from="core", lookup_to="points", lookup_from_class="aggregated_data", tz="America/Halifax"  )
+
     }
 
 
-
     pPC1 = speciescomposition_parameters( p=parameters_reset(p), project_class="carstm", variabletomodel="pca1" )
-    vnmod = pPC1$variabletomodel
-    if (!(exists(vnmod, M ))) M[,vnmod] = NA
+    if (!(exists(pPC1$variabletomodel, M ))) M[,pPC1$variabletomodel] = NA
+    iM = which(!is.finite( M[, pPC1$variabletomodel] ))
+    if (length(iM > 0)) {
+      M[iM, pPC1$variabletomodel] = temperature_lookup( spatial_domain=p$spatial_domain, LOCS=M[ iM, c("lon", "lat", "timestamp")],lookup_from="core", lookup_to="points", lookup_from_class="aggregated_data", tz="America/Halifax"  )
 
-    iM = which(!is.finite(M[, vnmod]))
-    if (length(iM) > 0 ) {
-      LU = speciescomposition_db( p=pPC1, DS="speciescomposition"  )
-      LU = planar2lonlat(LU, proj.type=p$aegis_proj4string_planar_km )
-      iM = match( M$id, LU$id)
-      M[iM, vnmod] = LU[iM, vnmod]
-      iM =  which( !is.finite(M[, vnmod]))
-      if (length(iM) > 0) {
-        LU$AUID = st_points_in_polygons(
-          pts = st_as_sf( LU, coords=c("lon","lat"), crs=crs_lonlat ),
-          polys = sppoly[, "AUID"],
-          varname="AUID"
-        )
-        LU = tapply( LU[, vnmod], LU$AUID, FUN=median, na.rm=TRUE )
-        iLM = match( as.character( M$AUID[iM]), as.character( names(LU )) )
-        if (length(jj) > 0) M[iM, vnmod] = LU[ iLM ]
-        iM =  which( !is.finite(M[, vnmod]))
-        if (length(iM) > 0) {
-          LU = carstm_model ( p=pPC1, DS="carstm_modelled_summary" )
-          au_map = match( M$AUID[iM], dimnames(LU)$AUID )
-          year_map = match( as.character(M$yr[iM]), dimnames(LU)$yr )
-          dindex = cbind(au_map, year_map )
-          M[iM, vnmod] = LU [dindex]
-        }
-      }
     }
 
 
 
     pPC2 = speciescomposition_parameters( p=parameters_reset(p), project_class="carstm", variabletomodel="pca2" )
-    vnmod = pPC2$variabletomodel
-    if (!(exists(vnmod, M ))) M[,vnmod] = NA
+    if (!(exists(pPC2$variabletomodel, M ))) M[,pPC2$variabletomodel] = NA
+    iM = which(!is.finite( M[, pPC2$variabletomodel] ))
+    if (length(iM > 0)) {
+      M[iM, pPC2$variabletomodel] = temperature_lookup( spatial_domain=p$spatial_domain, LOCS=M[ iM, c("lon", "lat", "timestamp")],lookup_from="core", lookup_to="points", lookup_from_class="aggregated_data", tz="America/Halifax"  )
 
-    iM = which(!is.finite(M[, vnmod]))
-    if (length(iM) > 0 ) {
-      LU = speciescomposition_db( p=pPC2, DS="speciescomposition"  )
-      LU = planar2lonlat(LU, proj.type=p$aegis_proj4string_planar_km )
-      iM = match( M$id, LU$id)
-      M[iM, vnmod] = LU[iM, vnmod]
-      iM =  which( !is.finite(M[, vnmod]))
-      if (length(iM) > 0) {
-        LU$AUID = st_points_in_polygons(
-          pts = st_as_sf( LU, coords=c("lon","lat"), crs=crs_lonlat ),
-          polys = sppoly[, "AUID"],
-          varname="AUID"
-        )
-        LU = tapply( LU[, vnmod], LU$AUID, FUN=median, na.rm=TRUE )
-        iLM = match( as.character( M$AUID[iM]), as.character( names(LU )) )
-        if (length(jj) > 0) M[iM, vnmod] = LU[ iLM ]
-        iM =  which( !is.finite(M[, vnmod]))
-        if (length(iM) > 0) {
-          LU = carstm_model ( p=pPC2, DS="carstm_modelled_summary" )
-          au_map = match( M$AUID[iM], dimnames(LU)$AUID )
-          year_map = match( as.character(M$yr[iM]), dimnames(LU)$yr )
-          dindex = cbind(au_map, year_map )
-          M[iM, vnmod] = LU [dindex]
-        }
-      }
     }
 
-
-    PI = NULL
     M$plon = NULL
     M$plat = NULL
     M$lon = NULL
@@ -1452,19 +1403,20 @@ snowcrab.db = function( DS, p=NULL, yrs=NULL, fn.root=NULL, redo=FALSE, extrapol
     APS$AUID = as.character( APS$AUID )
     APS$tag ="predictions"
     APS[,p$variabletomodel] = NA
-
-
-    BI = carstm_model ( p=pB, DS="carstm_modelled_summary" )
-    jj = match( as.character( APS$AUID), as.character( BI$AUID) )
-    APS[, pB$variabletomodel] = BI[[ paste(pB$variabletomodel,"predicted",sep="." ) ]] [jj]
-    jj =NULL
-    BI = NULL
-
-    SI = carstm_model ( p=pS, DS="carstm_modelled_summary" )
-    jj = match( as.character( APS$AUID), as.character( SI$AUID) )
-    APS[, pS$variabletomodel] = SI[[ paste(pS$variabletomodel,"predicted",sep="." )]] [jj]
-    jj =NULL
-    SI = NULL
+    
+    APS[, pB$variabletomodel] = bathymetry_lookup(  LOCS=sppoly, 
+      lookup_from = p$carstm_inputdata_model_source$bathymetry,
+      lookup_to = "areal_units", 
+      spatial_domain=p$spatial_domain, 
+      vnames="z" 
+    ) 
+    
+    APS[, pS$variabletomodel] = substrate_lookup(  LOCS=sppoly, 
+      lookup_from = p$carstm_inputdata_model_source$substrate,
+      lookup_to = "areal_units", 
+      spatial_domain=p$spatial_domain, 
+      vnames="substrate.grainsize" 
+    ) 
 
     # to this point APS is static, now add time dynamics (teperature)
     # ---------------------
@@ -1480,32 +1432,33 @@ snowcrab.db = function( DS, p=NULL, yrs=NULL, fn.root=NULL, redo=FALSE, extrapol
     APS$dyear = APS$tiyr - APS$yr
 
 
-    TI = carstm_model ( p=pT, DS="carstm_modelled_summary" )
-    TI = TI[[ paste(pT$variabletomodel,"predicted",sep="." )]]
-    au_map = match( APS$AUID, dimnames(TI)$AUID )
-    year_map = match( as.character(APS$yr), dimnames(TI)$yr )
-    dyear_breaks = c(p$dyears, p$dyears[length(p$dyears)]+ diff(p$dyears)[1] )
-    dyear_map = as.numeric( cut( APS$dyear, breaks=dyear_breaks, include.lowest=TRUE, ordered_result=TRUE, right=FALSE ) )
-    dindex = cbind(au_map, year_map, dyear_map )
-    APS[, pT$variabletomodel] = TI[ dindex]
-    TI = NULL
+    APS[, pT$variabletomodel] = temperature_lookup(  LOCS=APS[ , c("AUID", "timestamp")], LOCS_AU=sppoly, 
+      lookup_from = p$carstm_inputdata_model_source$bathymetry,
+      lookup_to = "areal_units", 
+      spatial_domain=p$spatial_domain, 
+      tz="America/Halifax",
+      vnames="substrate.grainsize" 
+    ) 
 
 
-    PI = carstm_model ( p=pPC1, DS="carstm_modelled_summary" )
-    PI = PI[[ paste(pPC1$variabletomodel,"predicted",sep="." )]]
-    au_map = match( APS$AUID, dimnames(PI)$AUID )
-    year_map = match( as.character(APS$yr), dimnames(PI)$yr )
-    dindex = cbind(au_map, year_map )
-    APS[, pPC1$variabletomodel] = PI [dindex]
-    PI = NULL
+    APS[, pPC1$variabletomodel] = speciescomposition_lookup(  LOCS=APS[ , c("AUID", "timestamp")], LOCS_AU=sppoly, 
+      lookup_from = p$carstm_inputdata_model_source$pca1,
+      lookup_to = "areal_units", 
+      spatial_domain=p$spatial_domain, 
+      tz="America/Halifax",
+      vnames="pca1" 
+    ) 
 
-    PI = carstm_model ( p=pPC2, DS="carstm_modelled_summary" )
-    PI = PI[[ paste(pPC2$variabletomodel,"predicted",sep="." )]]
-    au_map = match( APS$AUID, dimnames(PI)$AUID )
-    year_map = match( as.character(APS$yr), dimnames(PI)$yr )
-    dindex = cbind(au_map, year_map  )
-    APS[, pPC2$variabletomodel] = PI [dindex]
-    PI = NULL
+
+    APS[, pPC2$variabletomodel] = speciescomposition_lookup(  LOCS=APS[ , c("AUID", "timestamp")], LOCS_AU=sppoly, 
+      lookup_from = p$carstm_inputdata_model_source$pca2,
+      lookup_to = "areal_units", 
+      spatial_domain=p$spatial_domain, 
+      tz="America/Halifax",
+      vnames="pca2" 
+    ) 
+
+
 
     # useful vars to have for analyses outside of carstm_summary
     varstoadd = c( "totwgt", "totno", "sa", "data_offset",  "zn", "qn" )
@@ -1674,7 +1627,7 @@ snowcrab.db = function( DS, p=NULL, yrs=NULL, fn.root=NULL, redo=FALSE, extrapol
     if (!(exists(pT$variabletomodel, M ))) M[,pT$variabletomodel] = NA
     iM = which(!is.finite( M[, pT$variabletomodel] ))
     if (length(iM > 0)) {
-      M[iM, pT$variabletomodel] = temperature_lookup_rawdata( spatial_domain=p$spatial_domain, M=M[iM, c("lon", "lat", "timestamp")], sppoly=sppoly )
+      M[iM, pT$variabletomodel] = temperature_lookup( spatial_domain=p$spatial_domain, LOCS=M[ iM, c("lon", "lat", "timestamp")],lookup_from="core", lookup_to="points", lookup_from_class="aggregated_data", tz="America/Halifax"  )
     }
 
 

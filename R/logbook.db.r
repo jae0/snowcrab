@@ -455,7 +455,7 @@
       # bring in time varing features:: temperature
       ii = which(!is.finite(logbook$t))
       if (length(ii)>0){
-        logbook$t[ii] = temperature_lookup_rawdata( spatial_domain=p$spatial_domain, M=logbook[ ii, c("lon", "lat", "timestamp")] )
+        logbook$t[ii] = temperature_lookup( spatial_domain=p$spatial_domain, LOCS=logbook[ ii, c("lon", "lat", "timestamp")],lookup_from="core", lookup_to="points", lookup_from_class="aggregated_data", tz="America/Halifax"  )
       }
 
 			save( logbook, file=fn, compress=T )
