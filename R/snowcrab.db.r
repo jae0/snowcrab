@@ -1433,7 +1433,7 @@ snowcrab.db = function( DS, p=NULL, yrs=NULL, fn.root=NULL, redo=FALSE, extrapol
     APS[, pT$variabletomodel] = temperature_lookup(  LOCS=APS[ , c("AUID", "timestamp")], LOCS_AU=sppoly, 
       lookup_from = p$carstm_inputdata_model_source$temperature,
       lookup_to = "areal_units", 
-      tz="America/Halifax",
+      vnames_from="t.predicted",
       vnames="t" 
     ) 
 
@@ -1441,7 +1441,6 @@ snowcrab.db = function( DS, p=NULL, yrs=NULL, fn.root=NULL, redo=FALSE, extrapol
     APS[, pPC1$variabletomodel] = speciescomposition_lookup(  LOCS=APS[ , c("AUID", "timestamp")], LOCS_AU=sppoly, 
       lookup_from = p$carstm_inputdata_model_source$pca1,
       lookup_to = "areal_units", 
-      tz="America/Halifax",
       vnames="pca1" 
     ) 
 
@@ -1449,7 +1448,6 @@ snowcrab.db = function( DS, p=NULL, yrs=NULL, fn.root=NULL, redo=FALSE, extrapol
     APS[, pPC2$variabletomodel] = speciescomposition_lookup(  LOCS=APS[ , c("AUID", "timestamp")], LOCS_AU=sppoly, 
       lookup_from = p$carstm_inputdata_model_source$pca2,
       lookup_to = "areal_units", 
-      tz="America/Halifax",
       vnames="pca2" 
     ) 
 
