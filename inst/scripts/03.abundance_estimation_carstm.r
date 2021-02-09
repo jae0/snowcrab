@@ -8,6 +8,7 @@
 year.assessment = 2020
 
 # adjust based upon RAM requirements and ncores
+require(INLA)
 inla.setOption(num.threads= floor( parallel::detectCores() / 2) )
 inla.setOption(blas.num.threads= 2 )
 

@@ -75,7 +75,7 @@ snowcrab_parameters = function( p=list(), year.assessment=NULL, project_name="bi
   # output timeslices for predictions in decimla years, yes all of them here
   p$prediction_ts = p$yrs + p$prediction_dyear
 
-  p = temporal_parameters(p=p, aegis_dimensionality="space-year")
+  p = temporal_parameters(p=p, aegis_dimensionality="space-year", timezone="America/Halifax")
 
   p$spatial_domain="snowcrab"
   p$spatial_domain_subareas = NULL # add cfa's as subareas .. TODO

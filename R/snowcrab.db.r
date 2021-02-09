@@ -1428,6 +1428,7 @@ snowcrab.db = function( DS, p=NULL, yrs=NULL, fn.root=NULL, redo=FALSE, extrapol
     names(APS) = c(vn, "tiyr")
     APS$yr = aegis_floor( APS$tiyr)
     APS$dyear = APS$tiyr - APS$yr
+    APS$timestamp = lubridate::date_decimal( APS$tiyr, tz=p$timezone )
 
 
     APS[, pT$variabletomodel] = temperature_lookup(  LOCS=APS[ , c("AUID", "timestamp")], AU_target=sppoly, 
