@@ -20,13 +20,13 @@ inla.setOption(blas.num.threads= 2 )
   # p$modeldir = "..."  # use this to specifiy alt location to save model output files
 
 
-  plot.dir=paste(p$modeldir, "prediction.plots", year.assessment, sep="/" )
 
 # ------------------------------------------------
 # Part 2 -- polygon structure
   if (0) {
     # create if not yet made
     for (au in c("cfanorth", "cfasouth", "cfa4x", "cfaall" )) plot(polygon_managementareas( species="snowcrab", au))
+    xydata = snowcrab.db( p=p, DS="areal_units_input", redo=TRUE )
     sppoly = areal_units( p=p, redo=TRUE )  # create constrained polygons with neighbourhood as an attribute
     coastLayout = aegis.coastline::coastline_layout( p=p, redo=TRUE )
     MS = NULL
@@ -34,76 +34,10 @@ inla.setOption(blas.num.threads= 2 )
   sppoly = areal_units( p=p )  # to reload
   # plot(sppoly)
   # spplot( sppoly, "au_sa_km2", main="AUID", sp.layout=p$coastLayout )
-  dev.new(); plot( sppoly[, "au_sa_km2"], main="AUID", breaks = "quantile", nbreaks = 8, pal=sf.colors(8) )
+  dev.new(); 
+  plot( sppoly[, "au_sa_km2"], main="AUID", breaks = "quantile", nbreaks = 8, pal=sf.colors(8) )
 
-
-
-# -------------------------------------------------
-# Part 3 -- create covariate field for bathymetry
-# bathymetry -- ensure the data assimilation in bathymetry is first completed :: 01.bathymetry_data.R
-  pB = bathymetry_parameters( p=parameters_reset(p), project_class="carstm"  )
-  M = bathymetry_db( p=pB, DS="aggregated_data" , redo=TRUE )
-  M = bathymetry_db( p=pB, DS="carstm_inputs", redo=TRUE  ) # will redo if not found
-  M = NULL; gc()
-  fit = carstm_model( p=pB, M='bathymetry_db( p=pB, DS="carstm_inputs" )', DS="redo"  ) # run model and obtain
-
-
-# -------------------------------------------------
-# Part 4 -- create covariate field for  substrate
-# ensure the data assimilation in substrate is first completed :: 01.substrate_data.R
-  pS = substrate_parameters( p=parameters_reset(p), project_class="carstm"  )
-  M = substrate_db( p=pS, DS="aggregated_data", redo=TRUE )  # used for data matching/lookup in other aegis projects that use substrate
-  M = substrate_db( p=pS, DS="carstm_inputs", redo=TRUE )  # will redo if not found
-  M = NULL; gc()
-  fit = carstm_model( p=pS, M='substrate_db( p=pS, DS="carstm_inputs")', DS="redo" )  # run model and obtain predictions
-
-
-# -------------------------------------------------
-# Part 5 -- create covariate field for temperature
-# ensure the data assimilation in temperature is first completed :: 01.temperature_data.R
-  pT = temperature_parameters( p=parameters_reset(p), project_class="carstm"  )
-  M = temperature_db( p=pT, DS="aggregated_data", redo=TRUE )  #  used for data matching/lookup in other aegis projects that use temperature
-  M = temperature_db( p=pT, DS="carstm_inputs", redo=TRUE )  # will redo if not found
-  M = NULL; gc()
-  fit = carstm_model( p=pT, M='temperature_db( p=pT, DS="carstm_inputs")', DS="redo"  ) # run model and obtain predictions
-
-  # to plot predicted temperature maps for last six years
-
-  res = carstm_model( p=pT, DS="carstm_modelled_summary" )
-  recent=as.character((year.assessment-6): year.assessment)
-  vn = paste(pT$variabletomodel, "predicted", sep=".")
-  for (x in recent){
-    fn=paste(x,"t",  "pdf", sep=".")
-    outfile=paste(plot.dir, fn, sep="/")
-    o = carstm_map( res=res, vn=vn, time_match=list(year=x, dyear="0.85" ) , 
-        # at=seq(-2, 10, by=2), 
-        sp.layout = p$coastLayout, 
-        col.regions = p$mypalette, 
-        main=vn 
-      )
-    # png( filename=outfile, width=3072, height=2304, pointsize=40, res=300  ); print(o); dev.off()
-    pdf(outfile); print(o); dev.off()
-  }
-
-
-# -------------------------------------------------
-# Part 6 -- create covariate field for species composition 1
-# ensure that survey data is assimilated : bio.snowcrab::01snowcb_data.R, aegis.survey::01.surveys.data.R , etc.
-  pPC1 = speciescomposition_parameters( p=parameters_reset(p), project_class="carstm", variabletomodel="pca1" )
-  M = speciescomposition_db( p=pPC1, DS="carstm_inputs",  redo=TRUE )  # will redo if not found
-  M = NULL; gc()
-  fit = carstm_model( p=pPC1, M='speciescomposition_db( p=p, DS="carstm_inputs" )', DS="redo"   ) # run model and obtain predictions
-
-
-# -------------------------------------------------
-# Part 7 -- create covariate field for species composition 2
-# ensure that survey data is assimilated : bio.snowcrab::01snowcb_data.R, aegis.survey::01.surveys.data.R ,
-  pPC2 = speciescomposition_parameters( p=parameters_reset(p), project_class="carstm", variabletomodel="pca2")
-  M = speciescomposition_db( p=pPC2, DS="carstm_inputs", redo=TRUE )  # will redo if not found
-  M = NULL; gc()
-  fit = carstm_model( p=pPC2, M='speciescomposition_db( p=p, DS="carstm_inputs" )', DS="redo"  ) # run model and obtain predictions
-
-
+ 
 # -------------------------------------------------
 # Part 8 -- Snow crab abundance -- main mode used for production
   M = snowcrab.db( p=p, DS="carstm_inputs", redo=TRUE )  # will redo if not found
@@ -199,6 +133,8 @@ inla.setOption(blas.num.threads= 2 )
   #to save plots of the last six years:
   #Needs to be run in Windows or outside Linux Rstudio for now
   recent=as.character((year.assessment-6): year.assessment)
+
+  plot.dir=paste(p$modeldir, "prediction.plots", year.assessment, sep="/" )
 
   for (x in recent){
     slot(sppoly, "data")[,vn] = bio[,x]
