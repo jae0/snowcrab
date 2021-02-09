@@ -1440,14 +1440,14 @@ snowcrab.db = function( DS, p=NULL, yrs=NULL, fn.root=NULL, redo=FALSE, extrapol
 
 
     APS[, pPC1$variabletomodel] = speciescomposition_lookup(  LOCS=APS[ , c("AUID", "timestamp")], AU_target=sppoly, 
-      lookup_from = p$carstm_inputdata_model_source$pca1,
+      lookup_from = p$carstm_inputdata_model_source$speciescomposition,
       lookup_to = "areal_units", 
-      vnames="pca1" 
+      vnames="pca1"
     ) 
 
 
     APS[, pPC2$variabletomodel] = speciescomposition_lookup(  LOCS=APS[ , c("AUID", "timestamp")], AU_target=sppoly, 
-      lookup_from = p$carstm_inputdata_model_source$pca2,
+      lookup_from = p$carstm_inputdata_model_source$speciescomposition,
       lookup_to = "areal_units", 
       vnames="pca2" 
     ) 
