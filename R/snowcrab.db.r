@@ -1349,7 +1349,7 @@ snowcrab.db = function( DS, p=NULL, yrs=NULL, fn.root=NULL, redo=FALSE, extrapol
 
     # --------------------------
     # temperature observations lookup
-    pT = temperature_parameters( p=parameters_reset(p), project_class="carstm"  )
+    pT = temperature_parameters( p=parameters_reset(p), project_class="carstm", year.assessment=p$year.assessment  )
     if (!(exists(pT$variabletomodel, M ))) M[,pT$variabletomodel] = NA
     iM = which(!is.finite( M[, pT$variabletomodel] ))
     if (length(iM > 0)) {
@@ -1360,7 +1360,7 @@ snowcrab.db = function( DS, p=NULL, yrs=NULL, fn.root=NULL, redo=FALSE, extrapol
     }
 
 
-    pPC1 = speciescomposition_parameters( p=parameters_reset(p), project_class="carstm", variabletomodel="pca1" )
+    pPC1 = speciescomposition_parameters( p=parameters_reset(p), project_class="carstm", variabletomodel="pca1" , year.assessment=p$year.assessment)
     if (!(exists(pPC1$variabletomodel, M ))) M[,pPC1$variabletomodel] = NA
     iM = which(!is.finite( M[, pPC1$variabletomodel] ))
     if (length(iM > 0)) {
@@ -1372,7 +1372,7 @@ snowcrab.db = function( DS, p=NULL, yrs=NULL, fn.root=NULL, redo=FALSE, extrapol
 
 
 
-    pPC2 = speciescomposition_parameters( p=parameters_reset(p), project_class="carstm", variabletomodel="pca2" )
+    pPC2 = speciescomposition_parameters( p=parameters_reset(p), project_class="carstm", variabletomodel="pca2", year.assessment=p$year.assessment )
     if (!(exists(pPC2$variabletomodel, M ))) M[,pPC2$variabletomodel] = NA
     iM = which(!is.finite( M[, pPC2$variabletomodel] ))
     if (length(iM > 0)) {
