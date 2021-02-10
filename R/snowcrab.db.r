@@ -1353,7 +1353,9 @@ snowcrab.db = function( DS, p=NULL, yrs=NULL, fn.root=NULL, redo=FALSE, extrapol
     if (!(exists(pT$variabletomodel, M ))) M[,pT$variabletomodel] = NA
     iM = which(!is.finite( M[, pT$variabletomodel] ))
     if (length(iM > 0)) {
-      M[iM, pT$variabletomodel] = temperature_lookup( spatial_domain=p$spatial_domain, LOCS=M[ iM, c("lon", "lat", "timestamp")],lookup_from="core", lookup_to="points", lookup_from_class="aggregated_data", tz="America/Halifax"  )
+      M[iM, pT$variabletomodel] = temperature_lookup( spatial_domain=p$spatial_domain, LOCS=M[ iM, c("lon", "lat", "timestamp")],lookup_from="core", lookup_to="points", lookup_from_class="aggregated_data", tz="America/Halifax",
+          year.assessment=p$year.assessment
+        )
 
     }
 
@@ -1362,7 +1364,9 @@ snowcrab.db = function( DS, p=NULL, yrs=NULL, fn.root=NULL, redo=FALSE, extrapol
     if (!(exists(pPC1$variabletomodel, M ))) M[,pPC1$variabletomodel] = NA
     iM = which(!is.finite( M[, pPC1$variabletomodel] ))
     if (length(iM > 0)) {
-      M[iM, pPC1$variabletomodel] = temperature_lookup( spatial_domain=p$spatial_domain, LOCS=M[ iM, c("lon", "lat", "timestamp")],lookup_from="core", lookup_to="points", lookup_from_class="aggregated_data", tz="America/Halifax"  )
+      M[iM, pPC1$variabletomodel] = temperature_lookup( spatial_domain=p$spatial_domain, LOCS=M[ iM, c("lon", "lat", "timestamp")],lookup_from="core", lookup_to="points", lookup_from_class="aggregated_data", tz="America/Halifax" ,
+          year.assessment=p$year.assessment
+        )
 
     }
 
@@ -1372,7 +1376,9 @@ snowcrab.db = function( DS, p=NULL, yrs=NULL, fn.root=NULL, redo=FALSE, extrapol
     if (!(exists(pPC2$variabletomodel, M ))) M[,pPC2$variabletomodel] = NA
     iM = which(!is.finite( M[, pPC2$variabletomodel] ))
     if (length(iM > 0)) {
-      M[iM, pPC2$variabletomodel] = temperature_lookup( spatial_domain=p$spatial_domain, LOCS=M[ iM, c("lon", "lat", "timestamp")],lookup_from="core", lookup_to="points", lookup_from_class="aggregated_data", tz="America/Halifax"  )
+      M[iM, pPC2$variabletomodel] = temperature_lookup( spatial_domain=p$spatial_domain, LOCS=M[ iM, c("lon", "lat", "timestamp")],lookup_from="core", lookup_to="points", lookup_from_class="aggregated_data", tz="America/Halifax" ,
+          year.assessment=p$year.assessment
+        )
 
     }
 
@@ -1435,22 +1441,26 @@ snowcrab.db = function( DS, p=NULL, yrs=NULL, fn.root=NULL, redo=FALSE, extrapol
       lookup_from = p$carstm_inputdata_model_source$temperature,
       lookup_to = "areal_units", 
       vnames_from="t.predicted",
-      vnames="t" 
-    ) 
+      vnames="t" ,
+      year.assessment=p$year.assessment
+    )
 
 
     APS[, pPC1$variabletomodel] = speciescomposition_lookup(  LOCS=APS[ , c("AUID", "timestamp")], AU_target=sppoly, 
       lookup_from = p$carstm_inputdata_model_source$speciescomposition,
       lookup_to = "areal_units", 
-      vnames="pca1"
-    ) 
+      vnames="pca1" ,
+      year.assessment=p$year.assessment
+    )
 
 
     APS[, pPC2$variabletomodel] = speciescomposition_lookup(  LOCS=APS[ , c("AUID", "timestamp")], AU_target=sppoly, 
       lookup_from = p$carstm_inputdata_model_source$speciescomposition,
       lookup_to = "areal_units", 
-      vnames="pca2" 
-    ) 
+      vnames="pca2"  ,
+      year.assessment=p$year.assessment
+    )
+
 
 
 
