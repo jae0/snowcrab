@@ -436,7 +436,7 @@ snowcrab_parameters = function( p=list(), year.assessment=NULL, project_name="bi
             ' + f( auid, model="bym2", graph=slot(sppoly, "nb"), group=year_factor, scale.model=TRUE, constr=TRUE, hyper=H$bym2, control.group=list(model="ar1", hyper=H$ar1_group)) '
          ) )
       }
-      if ( !exists("carstm_model_family", p)  )  p$carstm_model_family = "poisson"
+      if ( !exists("carstm_model_family", p)  )  p$carstm_model_family =  "zeroinflatedpoisson0" # "poisson"  
     }
 
       #    + f(tiyr, model="ar1", hyper=H$ar1 )

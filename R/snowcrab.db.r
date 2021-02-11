@@ -1795,10 +1795,10 @@ snowcrab.db = function( DS, p=NULL, yrs=NULL, fn.root=NULL, redo=FALSE, extrapol
 
     if ( !file.exists(outputdir)) dir.create( outputdir, recursive=TRUE, showWarnings=FALSE )
 
-    fn     = file.path( outputdir, gsub(".rdata", paste(aufns, "aggregated_timeseries", "rdata", sep="." ), aufns)  )
-    fn_no  = file.path( outputdir, gsub(".rdata", paste(aufns, "space_timeseries_number", "rdata", sep="." ), aufns) )
-    fn_bio = file.path( outputdir, gsub(".rdata", paste(aufns, "space_timeseries_biomass", "rdata", sep="." ), aufns) )
-    fn_pa  = file.path( outputdir, gsub(".rdata", paste(aufns, "space_timeseries_pa", "rdata", sep="." ), aufns)  )
+    fn     =  paste( gsub(".rdata", "", aufns), "aggregated_timeseries", "rdata", sep="." )  
+    fn_no  =  paste( gsub(".rdata", "", aufns), "space_timeseries_number", "rdata", sep="." ) 
+    fn_bio =  paste( gsub(".rdata", "", aufns), "space_timeseries_biomass", "rdata", sep="." ) 
+    fn_pa  =  paste( gsub(".rdata", "", aufns), "space_timeseries_pa", "rdata", sep="." )  
 
     if ( DS=="carstm_output_timeseries" ) {
       RES = NA
@@ -1913,7 +1913,7 @@ snowcrab.db = function( DS, p=NULL, yrs=NULL, fn.root=NULL, redo=FALSE, extrapol
           biom[ uu] = extrapolation_replacement
           warning("\n Extreme-valued predictions were found, capping them to max observed rates .. \n you might want to have more informed priors, or otherwise set extrapolation_replacement=NA to replacement value \n")
         }
-        biom[biom > extrapolation_limit[2]] = extrapolation_limit[2]
+        biom[biom > extrapolation_limit ] = extrapolation_limit
         nums = biom / wgts
         save( biom, file=fn_bio, compress=TRUE )
         save( nums, file=fn_no, compress=TRUE )
@@ -1959,7 +1959,7 @@ snowcrab.db = function( DS, p=NULL, yrs=NULL, fn.root=NULL, redo=FALSE, extrapol
           nums[ uu] = extrapolation_replacement
           warning("\n Extreme-valued predictions were found, capping them to max observed rates .. \n you might want to have more informed priors, or otherwise set extrapolation=NA to replacement value \n")
         }
-        nums[nums > extrapolation_limit[2]] = extrapolation_limit[2]
+        nums[nums > extrapolation_limit] = extrapolation_limit
         biom = nums * wgts
         save( biom, file=fn_bio, compress=TRUE )
         save( nums, file=fn_no, compress=TRUE )

@@ -29,14 +29,10 @@ inla.setOption(blas.num.threads= 2 )
     for (au in c("cfanorth", "cfasouth", "cfa4x", "cfaall" )) plot(polygon_managementareas( species="snowcrab", au))
     xydata = snowcrab.db( p=p, DS="areal_units_input", redo=TRUE )
     sppoly = areal_units( p=p, redo=TRUE )  # create constrained polygons with neighbourhood as an attribute
-    coastLayout = aegis.coastline::coastline_layout( p=p, redo=TRUE )
     MS = NULL
   }
   sppoly = areal_units( p=p )  # to reload
-  # plot(sppoly)
-  # spplot( sppoly, "au_sa_km2", main="AUID", sp.layout=p$coastLayout )
-  dev.new(); 
-  plot( sppoly[, "au_sa_km2"], main="AUID", breaks = "quantile", nbreaks = 8, pal=sf.colors(8) )
+  plot( sppoly[, "au_sa_km2"]  )
 
  
 # -------------------------------------------------
@@ -92,20 +88,22 @@ inla.setOption(blas.num.threads= 2 )
   if ( !file.exists(outputdir)) dir.create( outputdir, recursive=TRUE, showWarnings=FALSE )
 
 
-  for (y in res$yrs ){
+  for (y in res$year ){
 
       time_match = list( year=as.character(y)  )
-      fn_root = paste( "Bottom temperature",  paste0(time_match, collapse=" - ") )
-      fn = file.path( outdir, paste(fn_root, "png", sep=".") )
-      o = carstm_map(  res=res, vn=vn, time_match=time_match, 
+      fn_root = paste("Predicted_abundance", paste0(time_match, collapse="-"), sep="_")
+      fn = file.path( outputdir, paste(fn_root, "pdf", sep=".") )
+
+      pdf( file=fn, width=8, height=6, bg='white', pointsize=10 )
+        carstm_map(  res=res, vn=vn, time_match=time_match, 
 #          breaks = seq(-0.5, 0.5, by=0.1),
           coastline=coastline,
           isobaths=isobaths,
-          main=paste("Predicted abundance", paste0(time_match, collapse="-") )  
-       main=fn_root 
-      )
-      png( filename=fn, width=3072, height=2304, pointsize=40, res=300  ); print(o); dev.off()
+          main=paste("Predicted abundance", paste0(time_match, collapse="-") )
+        )  
+      dev.off()
   }
+  
   
 
   RES = snowcrab.db(p=p, DS="carstm_output_compute" )
@@ -139,25 +137,35 @@ inla.setOption(blas.num.threads= 2 )
 
 
   # map it ..mean density
-  vn = "pred"
-  slot(sppoly, "data")[,vn] = bio[,"2019"]
-  brks = interval_break(X= sppoly[[vn]], n=length(p$mypalette), style="quantile")
-  spplot( sppoly, vn, col.regions=p$mypalette, main=vn, at=brks, sp.layout=p$coastLayout, col="transparent" )
 
-  #to save plots of the last six years:
-  #Needs to be run in Windows or outside Linux Rstudio for now
-  recent=as.character((year.assessment-6): year.assessment)
+  vn = paste(p$variabletomodel, "predicted", sep=".")
 
-  plot.dir=paste(p$modeldir, "prediction.plots", year.assessment, sep="/" )
+  outputdir = file.path( p$modeldir, p$carstm_model_label, "predicted.biomass.densitites" )
 
-  for (x in recent){
-    slot(sppoly, "data")[,vn] = bio[,x]
-    brks = interval_break(X= sppoly[[vn]], n=length(p$mypalette), style="quantile")
-    o=spplot( sppoly, vn, col.regions=p$mypalette, main=x, at=brks, sp.layout=p$coastLayout, col="transparent" )
-    fn=paste(x,"biomass",  "pdf", sep=".")
-    outfile=paste(plot.dir, fn, sep="/")
-    pdf(outfile)
-    print(o)
+  if ( !file.exists(outputdir)) dir.create( outputdir, recursive=TRUE, showWarnings=FALSE )
+
+  brks = interval_break(X=bio[,"2020"], n=length(p$mypalette), style="quantile")
+
+  for (i in 1:length(p$yrs) ){
+    y = as.character( p$yrs[i] )
+    sppoly[,vn] = bio[,y]
+    fn = file.path( outputdir , paste( "biomass", y, "pdf", sep=".") )
+
+    pdf( file=fn, width=8, height=6, bg='white', pointsize=10 )
+
+      plot( sppoly[vn], 
+          border = "lightslateblue", 
+          lwd = 0.8, 
+          breaks = brks,
+          coastline=coastline,
+          isobaths=isobaths,
+          main=paste("Predicted abundance density", y ),
+          reset = FALSE
+      )
+
+      plot( st_transform( coastline, crs=st_crs(sppoly) ), col="whitesmoke", lwd=1.0, add=TRUE)
+      plot( st_transform( isobaths,  crs=st_crs(sppoly) ), col="lightgray", lwd=0.3, add=TRUE) 
+
     dev.off()
   }
 
