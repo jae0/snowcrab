@@ -1356,7 +1356,6 @@ snowcrab.db = function( DS, p=NULL, yrs=NULL, fn.root=NULL, redo=FALSE, extrapol
       M[iM, pT$variabletomodel] = temperature_lookup(  LOCS=M[ iM, c("lon", "lat", "timestamp")],lookup_from="core", lookup_to="points", lookup_from_class="aggregated_data", tz="America/Halifax",
           year.assessment=p$year.assessment
         )
-
     }
 
 
@@ -1387,9 +1386,9 @@ snowcrab.db = function( DS, p=NULL, yrs=NULL, fn.root=NULL, redo=FALSE, extrapol
     M$lon = NULL
     M$lat = NULL
 
-    M = M[ which(is.finite(M[, pB$variabletomodel] )),]
-    M = M[ which(is.finite(M[, pS$variabletomodel] )),]
-    M = M[ which(is.finite(M[, pT$variabletomodel] )),]
+    # M = M[ which(is.finite(M[, pB$variabletomodel] )),]
+    # M = M[ which(is.finite(M[, pS$variabletomodel] )),]
+    # M = M[ which(is.finite(M[, pT$variabletomodel] )),]
     M = M[ which(!is.na(M$AUID)),]
     M$AUID = as.character( M$AUID )  # match each datum to an area
 
