@@ -132,7 +132,7 @@
       # use the match/map syntax in bathymetry and filter out shallow sets .. < 10 m? TODO
       # keep those in the domain and deeper than depth=10 m
 
-      z = bathymetry_lookup( LOCS=lgbk[, c("lon", "lat")], spatial_domain=p$spatial_domain, lookup_from="core", lookup_to="points" , lookup_from_class="aggregated_data" ) # core=="rawdata"
+      z = bathymetry_lookup( LOCS=lgbk[, c("lon", "lat")], lookup_from="core", lookup_to="points" , lookup_from_class="aggregated_data" ) # core=="rawdata"
 
       aoi = which( z > 10 ) # negative = above land
       lgbk = lgbk[ aoi,]
@@ -445,7 +445,7 @@
 
       ii = which(!is.finite(logbook$z))
       if (length(ii)>0) {
-        logbook$z[ii] = bathymetry_lookup( LOCS=logbook[ ii, c("lon", "lat")], spatial_domain=p$spatial_domain, lookup_from="core", lookup_to="points" , lookup_from_class="aggregated_data" ) # core=="rawdata"
+        logbook$z[ii] = bathymetry_lookup( LOCS=logbook[ ii, c("lon", "lat")],  lookup_from="core", lookup_to="points" , lookup_from_class="aggregated_data" ) # core=="rawdata"
       }
       logbook$z = log( logbook$z )
 
@@ -455,7 +455,7 @@
       # bring in time varing features:: temperature
       ii = which(!is.finite(logbook$t))
       if (length(ii)>0){
-        logbook$t[ii] = temperature_lookup( spatial_domain=p$spatial_domain, LOCS=logbook[ ii, c("lon", "lat", "timestamp")],lookup_from="core", lookup_to="points", lookup_from_class="aggregated_data", tz="America/Halifax"  )
+        logbook$t[ii] = temperature_lookup( LOCS=logbook[ ii, c("lon", "lat", "timestamp")],lookup_from="core", lookup_to="points", lookup_from_class="aggregated_data", tz="America/Halifax"  )
       }
 
 			save( logbook, file=fn, compress=T )

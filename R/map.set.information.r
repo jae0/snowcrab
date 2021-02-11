@@ -18,7 +18,7 @@ map.set.information = function(p, outdir, variables, mapyears, interpolate.metho
 
     predlocs = spatial_grid(p) 
     predlocs = planar2lonlat( predlocs,  proj.type=p$aegis_proj4string_planar_km   )
-    predlocs$z = bathymetry_lookup( LOCS=predlocs[, c("lon", "lat")], spatial_domain=p$spatial_domain, lookup_from="core", lookup_to="points" , lookup_from_class="aggregated_data" ) # core=="rawdata"
+    predlocs$z = bathymetry_lookup( LOCS=predlocs[, c("lon", "lat")], lookup_from="core", lookup_to="points" , lookup_from_class="aggregated_data" ) # core=="rawdata"
      
     predlocs = predlocs[ geo_subset( spatial_domain=p$spatial_domain, Z=predlocs ), ]
   

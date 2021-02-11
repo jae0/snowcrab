@@ -65,13 +65,25 @@ inla.setOption(blas.num.threads= 2 )
   res$summary$dic$p.eff
   res$dyear
 
+
+  require(aegis.coastline)
+  coastline = coastline_db( p=p, DS="eastcoast_gadm" )
+  coastline = st_transform( coastline, st_crs(p$aegis_proj4string_planar_km) )
+
+  # depth contours
+  require(aegis.polygons)
+  isobaths = aegis.bathymetry::isobath_db( p=p, depths=c(50, 100, 200, 400, 800)  )
+  isobaths = st_transform( isobaths, st_crs(p$aegis_proj4string_planar_km) )
+
+  time_match = list( year=as.character(2020)  )
+
   vn = paste(p$variabletomodel, "predicted", sep=".")
-  carstm_map( res=res, vn=vn, time_match=list(year="2000" ),  
-    # at=seq(-2, 10, by=2),          
-    sp.layout = p$coastLayout, 
-    col.regions = p$mypalette, 
-    main=paste("Predicted abundance", paste0(time_match, collapse="-") )  
-  )
+     carstm_map(  res=res, vn=vn, time_match=time_match , 
+          coastline=coastline,
+          isobaths=isobaths,
+          main=paste("Predicted abundance", paste0(time_match, collapse="-") )  
+     )
+    )
 
 
   # map all :
@@ -86,10 +98,11 @@ inla.setOption(blas.num.threads= 2 )
       fn_root = paste( "Bottom temperature",  paste0(time_match, collapse=" - ") )
       fn = file.path( outdir, paste(fn_root, "png", sep=".") )
       o = carstm_map(  res=res, vn=vn, time_match=time_match, 
-        # at=seq(-2, 10, by=2), 
-        sp.layout = p$coastLayout, 
-        col.regions = p$mypalette, 
-        main=fn_root 
+#          breaks = seq(-0.5, 0.5, by=0.1),
+          coastline=coastline,
+          isobaths=isobaths,
+          main=paste("Predicted abundance", paste0(time_match, collapse="-") )  
+       main=fn_root 
       )
       png( filename=fn, width=3072, height=2304, pointsize=40, res=300  ); print(o); dev.off()
   }

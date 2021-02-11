@@ -1014,7 +1014,7 @@ snowcrab.db = function( DS, p=NULL, yrs=NULL, fn.root=NULL, redo=FALSE, extrapol
     # bring in time invariant features:: depth
     ii = which(!is.finite(set$z))
     if (length(ii)>0){
-      set$z[ii] =  bathymetry_lookup( LOCS=set[ ii, c("lon", "lat")], spatial_domain=p$spatial_domain, lookup_from="core", lookup_to="points" , lookup_from_class="aggregated_data" ) # core=="rawdata"
+      set$z[ii] =  bathymetry_lookup( LOCS=set[ ii, c("lon", "lat")],  lookup_from="core", lookup_to="points" , lookup_from_class="aggregated_data" ) # core=="rawdata"
  
     }
 
@@ -1024,7 +1024,7 @@ snowcrab.db = function( DS, p=NULL, yrs=NULL, fn.root=NULL, redo=FALSE, extrapol
     # bring in time varing features:: temperature
     ii = which(!is.finite(set$t))
     if (length(ii)>0){
-      set$t[ii] = temperature_lookup( spatial_domain=p$spatial_domain, LOCS=set[ ii, c("lon", "lat", "timestamp")],lookup_from="core", lookup_to="points", lookup_from_class="aggregated_data", tz="America/Halifax"  )
+      set$t[ii] = temperature_lookup( LOCS=set[ ii, c("lon", "lat", "timestamp")],lookup_from="core", lookup_to="points", lookup_from_class="aggregated_data", tz="America/Halifax"  )
 
     }
 
@@ -1311,7 +1311,7 @@ snowcrab.db = function( DS, p=NULL, yrs=NULL, fn.root=NULL, redo=FALSE, extrapol
     }
     iM = which(!is.finite( M[, vnB] ))
     if (length(iM > 0)) {
-      M[iM, vnB] = bathymetry_lookup( LOCS=M[ iM, c("lon", "lat")], spatial_domain=p$spatial_domain, lookup_from="core", lookup_to="points" , lookup_from_class="aggregated_data" ) # core=="rawdata"
+      M[iM, vnB] = bathymetry_lookup( LOCS=M[ iM, c("lon", "lat")],  lookup_from="core", lookup_to="points" , lookup_from_class="aggregated_data" ) # core=="rawdata"
  
     }
 
@@ -1340,7 +1340,7 @@ snowcrab.db = function( DS, p=NULL, yrs=NULL, fn.root=NULL, redo=FALSE, extrapol
     if (!(exists(pS$variabletomodel, M ))) M[,pS$variabletomodel] = NA
     iM = which(!is.finite( M[, pS$variabletomodel] ))
     if (length(iM > 0)) {
-      M[iM, pS$variabletomodel] = substrate_lookup( LOCS=M[iM, c("lon", "lat")], spatial_domain=p$spatial_domain, lookup_from="core", lookup_to="points" , lookup_from_class="aggregated_data" ) # core=="rawdata"
+      M[iM, pS$variabletomodel] = substrate_lookup( LOCS=M[iM, c("lon", "lat")], lookup_from="core", lookup_to="points" , lookup_from_class="aggregated_data" ) # core=="rawdata"
     }
 
     M = M[ is.finite(M[ , pS$variabletomodel]  ) , ]
@@ -1353,7 +1353,7 @@ snowcrab.db = function( DS, p=NULL, yrs=NULL, fn.root=NULL, redo=FALSE, extrapol
     if (!(exists(pT$variabletomodel, M ))) M[,pT$variabletomodel] = NA
     iM = which(!is.finite( M[, pT$variabletomodel] ))
     if (length(iM > 0)) {
-      M[iM, pT$variabletomodel] = temperature_lookup( spatial_domain=p$spatial_domain, LOCS=M[ iM, c("lon", "lat", "timestamp")],lookup_from="core", lookup_to="points", lookup_from_class="aggregated_data", tz="America/Halifax",
+      M[iM, pT$variabletomodel] = temperature_lookup(  LOCS=M[ iM, c("lon", "lat", "timestamp")],lookup_from="core", lookup_to="points", lookup_from_class="aggregated_data", tz="America/Halifax",
           year.assessment=p$year.assessment
         )
 
@@ -1364,7 +1364,7 @@ snowcrab.db = function( DS, p=NULL, yrs=NULL, fn.root=NULL, redo=FALSE, extrapol
     if (!(exists(pPC1$variabletomodel, M ))) M[,pPC1$variabletomodel] = NA
     iM = which(!is.finite( M[, pPC1$variabletomodel] ))
     if (length(iM > 0)) {
-      M[iM, pPC1$variabletomodel] = temperature_lookup( spatial_domain=p$spatial_domain, LOCS=M[ iM, c("lon", "lat", "timestamp")],lookup_from="core", lookup_to="points", lookup_from_class="aggregated_data", tz="America/Halifax" ,
+      M[iM, pPC1$variabletomodel] = speciescomposition_lookup(  LOCS=M[ iM, c("lon", "lat", "timestamp")],lookup_from="core", lookup_to="points", lookup_from_class="aggregated_data", tz="America/Halifax" ,
           year.assessment=p$year.assessment
         )
 
@@ -1376,7 +1376,7 @@ snowcrab.db = function( DS, p=NULL, yrs=NULL, fn.root=NULL, redo=FALSE, extrapol
     if (!(exists(pPC2$variabletomodel, M ))) M[,pPC2$variabletomodel] = NA
     iM = which(!is.finite( M[, pPC2$variabletomodel] ))
     if (length(iM > 0)) {
-      M[iM, pPC2$variabletomodel] = temperature_lookup( spatial_domain=p$spatial_domain, LOCS=M[ iM, c("lon", "lat", "timestamp")],lookup_from="core", lookup_to="points", lookup_from_class="aggregated_data", tz="America/Halifax" ,
+      M[iM, pPC2$variabletomodel] = speciescomposition_lookup( LOCS=M[ iM, c("lon", "lat", "timestamp")],lookup_from="core", lookup_to="points", lookup_from_class="aggregated_data", tz="America/Halifax" ,
           year.assessment=p$year.assessment
         )
 
@@ -1432,8 +1432,8 @@ snowcrab.db = function( DS, p=NULL, yrs=NULL, fn.root=NULL, redo=FALSE, extrapol
     n_aps = nrow(APS)
     APS = cbind( APS[ rep.int(1:n_aps, p$nt), ], rep.int( p$prediction_ts, rep(n_aps, p$nt )) )
     names(APS) = c(vn, "tiyr")
-    APS$yr = aegis_floor( APS$tiyr)
-    APS$dyear = APS$tiyr - APS$yr
+    APS$year = aegis_floor( APS$tiyr)
+    APS$dyear = APS$tiyr - APS$year
     APS$timestamp = lubridate::date_decimal( APS$tiyr, tz=p$timezone )
 
 
@@ -1470,7 +1470,9 @@ snowcrab.db = function( DS, p=NULL, yrs=NULL, fn.root=NULL, redo=FALSE, extrapol
     for (vn in varstoadd) if (!exists( vn, APS)) APS[,vn] = NA
     APS$data_offset = 1  # force to solve for unit area
 
+
     M = rbind( M[, names(APS)], APS )
+
     APS = NULL
 
 
@@ -1598,7 +1600,7 @@ snowcrab.db = function( DS, p=NULL, yrs=NULL, fn.root=NULL, redo=FALSE, extrapol
     }
     iM = which(!is.finite( M[, vnB] ))
     if (length(iM > 0)) {
-      M[iM, vnB] = bathymetry_lookup( LOCS=M[ iM, c("lon", "lat")], spatial_domain=p$spatial_domain, lookup_from="core", lookup_to="points" , lookup_from_class="aggregated_data" ) # core=="rawdata"
+      M[iM, vnB] = bathymetry_lookup( LOCS=M[ iM, c("lon", "lat")], lookup_from="core", lookup_to="points" , lookup_from_class="aggregated_data" ) # core=="rawdata"
  
     }
 
@@ -1618,7 +1620,7 @@ snowcrab.db = function( DS, p=NULL, yrs=NULL, fn.root=NULL, redo=FALSE, extrapol
     if (!(exists(pS$variabletomodel, M ))) M[,pS$variabletomodel] = NA
     iM = which(!is.finite( M[, pS$variabletomodel] ))
     if (length(iM > 0)) {
-      M[iM, pS$variabletomodel] = substrate_lookup( LOCS=M[iM, c("lon", "lat")], spatial_domain=p$spatial_domain, lookup_from="core", lookup_to="points" , lookup_from_class="aggregated_data" ) # core=="rawdata"
+      M[iM, pS$variabletomodel] = substrate_lookup( LOCS=M[iM, c("lon", "lat")], lookup_from="core", lookup_to="points" , lookup_from_class="aggregated_data" ) # core=="rawdata"
     }
 
     M = M[ is.finite(M[ , pS$variabletomodel]  ) , ]
@@ -1631,7 +1633,7 @@ snowcrab.db = function( DS, p=NULL, yrs=NULL, fn.root=NULL, redo=FALSE, extrapol
     if (!(exists(pT$variabletomodel, M ))) M[,pT$variabletomodel] = NA
     iM = which(!is.finite( M[, pT$variabletomodel] ))
     if (length(iM > 0)) {
-      M[iM, pT$variabletomodel] = temperature_lookup( spatial_domain=p$spatial_domain, LOCS=M[ iM, c("lon", "lat", "timestamp")],lookup_from="core", lookup_to="points", lookup_from_class="aggregated_data", tz="America/Halifax"  )
+      M[iM, pT$variabletomodel] = temperature_lookup( LOCS=M[ iM, c("lon", "lat", "timestamp")],lookup_from="core", lookup_to="points", lookup_from_class="aggregated_data", tz="America/Halifax"  )
     }
 
 
@@ -1641,7 +1643,7 @@ snowcrab.db = function( DS, p=NULL, yrs=NULL, fn.root=NULL, redo=FALSE, extrapol
     if (!(exists(pPC1$variabletomodel, M ))) M[,pPC1$variabletomodel] = NA
     iM = which(!is.finite(M[, pPC1$variabletomodel]))
     if (length(iM) > 0 ) {
-      M[iM, pPC1$variabletomodel] = speciescomposition_lookup_rawdata( spatial_domain=p$spatial_domain, M=M[iM, c("lon", "lat", "timestamp")], sppoly=sppoly, vnmod=pPC1$variabletomodel )
+      M[iM, pPC1$variabletomodel] = speciescomposition_lookup_rawdata( M=M[iM, c("lon", "lat", "timestamp")], sppoly=sppoly, vnmod=pPC1$variabletomodel )
     }
 
     # --------------------------
@@ -1650,7 +1652,7 @@ snowcrab.db = function( DS, p=NULL, yrs=NULL, fn.root=NULL, redo=FALSE, extrapol
     if (!(exists(pPC2$variabletomodel, M ))) M[,pPC2$variabletomodel] = NA
     iM = which(!is.finite(M[, pPC2$variabletomodel]))
     if (length(iM) > 0 ) {
-      M[iM, pPC2$variabletomodel] = speciescomposition_lookup_rawdata( spatial_domain=p$spatial_domain, M=M[iM, c("lon", "lat", "timestamp")], sppoly=sppoly, vnmod=pPC2$variabletomodel )
+      M[iM, pPC2$variabletomodel] = speciescomposition_lookup_rawdata( M=M[iM, c("lon", "lat", "timestamp")], sppoly=sppoly, vnmod=pPC2$variabletomodel )
     }
 
 
