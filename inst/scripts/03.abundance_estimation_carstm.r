@@ -38,6 +38,7 @@ inla.setOption(blas.num.threads= 2 )
 # -------------------------------------------------
 # Part 8 -- Snow crab abundance -- main mode used for production
   M = snowcrab.db( p=p, DS="carstm_inputs", redo=TRUE )  # will redo if not found
+
   #To compare values of M, run the following line:
   #load(paste(p$modeldir, "M.summary.rdata", sep="/"))
 
@@ -79,7 +80,8 @@ inla.setOption(blas.num.threads= 2 )
           isobaths=isobaths,
           main=paste("Predicted abundance", paste0(time_match, collapse="-") )  
      )
-    )
+    
+    
 
 
   # map all :
@@ -106,8 +108,9 @@ inla.setOption(blas.num.threads= 2 )
   
   
 
-  RES = snowcrab.db(p=p, DS="carstm_output_compute" )
-  # RES = snowcrab.db(p=p, DS="carstm_output_timeseries" )
+  snowcrab.db(p=p, DS="carstm_output_compute" )
+  
+  RES = snowcrab.db(p=p, DS="carstm_output_timeseries" )
 
   bio = snowcrab.db(p=p, DS="carstm_output_spacetime_biomass" )
   num = snowcrab.db(p=p, DS="carstm_output_spacetime_number" )
