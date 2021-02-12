@@ -1257,24 +1257,16 @@ snowcrab.db = function( DS, p=NULL, yrs=NULL, fn.root=NULL, redo=FALSE, extrapol
     # do this immediately to reduce storage for sppoly (before adding other variables)
     M = snowcrab.db( p=p, DS="biological_data" )  # will redo if not found .. not used here but used for data matching/lookup in other aegis projects that use bathymetry
   
-    M$totno = round(M$totno)
-
     # some survey timestamps extend into January (e.g., 2020) force them to be part of the correct "survey year", i.e., "yr"
     i = which(lubridate::month(M$timestamp)==1)
     if (length(i) > 0) M$timestamp[i] = M$timestamp[i] - lubridate::duration(month=1)
 
     M$tiyr = lubridate::decimal_date(M$timestamp)
 
-    # M$totno = M$totno_adjusted / M$cf_set_no   # convert density to counts
-    # M$totwgt = M$totwgt_adjusted / M$cf_set_mass # convert density to total wgt
-
-    # M$data_offset = 1 / M$cf_set_no  ## offset only used in poisson model
-
-
     # globally remove all unrealistic data
-    # p$quantile_bounds_data = c(0.0005, 0.9995)
-    if (exists("quantile_bounds_data", p)) {
-      TR = quantile(M[,p$variabletomodel], probs=p$quantile_bounds_data, na.rm=TRUE ) # this was -1.7, 21.8 in 2015
+    # p$quantile_bounds = c(0.0005, 0.9995)
+    if (exists("quantile_bounds", p)) {
+      TR = quantile(M[,p$variabletomodel], probs=p$quantile_bounds, na.rm=TRUE ) # this was -1.7, 21.8 in 2015
       keep = which( M[,p$variabletomodel] >=  TR[1] & M[,p$variabletomodel] <=  TR[2] )
       if (length(keep) > 0 ) M = M[ keep, ]
         # this was -1.7, 21.8 in 2015
@@ -1563,9 +1555,9 @@ snowcrab.db = function( DS, p=NULL, yrs=NULL, fn.root=NULL, redo=FALSE, extrapol
 
 
     # globally remove all unrealistic data
-    # p$quantile_bounds_data = c(0.0005, 0.9995)
-    if (exists("quantile_bounds_data", p)) {
-      TR = quantile(M[,p$variabletomodel], probs=p$quantile_bounds_data, na.rm=TRUE ) # this was -1.7, 21.8 in 2015
+    # p$quantile_bounds = c(0.0005, 0.9995)
+    if (exists("quantile_bounds", p)) {
+      TR = quantile(M[,p$variabletomodel], probs=p$quantile_bounds, na.rm=TRUE ) # this was -1.7, 21.8 in 2015
       keep = which( M[,p$variabletomodel] >=  TR[1] & M[,p$variabletomodel] <=  TR[2] )
       if (length(keep) > 0 ) M = M[ keep, ]
         # this was -1.7, 21.8 in 2015

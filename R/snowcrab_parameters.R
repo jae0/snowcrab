@@ -399,7 +399,7 @@ snowcrab_parameters = function( p=list(), year.assessment=NULL, project_name="bi
     )
 
     if ( !exists("survey", p$selection) ) p$selection$survey = list(
-      data.source = ifelse (p$selection$type=="number", c("snowcrab"), c("snowcrab", "groundfish")),
+      data.source = ifelse (p$selection$type %in% c("number", "biomass"), c("snowcrab"), c("snowcrab", "groundfish")),
       yr = p$yrs,      # time frame for comparison specified above
       settype = 1, # same as geartype in groundfish_survey_db
       polygon_enforce=TRUE,  # make sure mis-classified stations or incorrectly entered positions get filtered out
