@@ -1631,7 +1631,7 @@ snowcrab.db = function( DS, p=NULL, yrs=NULL, fn.root=NULL, redo=FALSE, extrapol
     }
 
     M = M[ is.finite(M[ , pT$variabletomodel]  ) , ]
-    M = M[ which( M[, pT$variabletomodel]  ) < 14 ) , ]  #
+    M = M[ which( M[, pT$variabletomodel]  < 14 ) , ]  #
 
 
     # --------------------------
