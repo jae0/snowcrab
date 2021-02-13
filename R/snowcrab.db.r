@@ -1442,7 +1442,7 @@ snowcrab.db = function( DS, p=NULL, yrs=NULL, fn.root=NULL, redo=FALSE, extrapol
     APS[, pT$variabletomodel] = temperature_lookup(  LOCS=APS[ , c("AUID", "timestamp")], AU_target=sppoly, 
       lookup_from = p$carstm_inputdata_model_source$temperature,
       lookup_to = "areal_units", 
-      vnames_from= paste( pT$variabletomodel, "predicted", sep=".")
+      vnames_from= paste( pT$variabletomodel, "predicted", sep="."), 
       vnames=pT$variabletomodel ,
       year.assessment=p$year.assessment
     )
@@ -1451,7 +1451,7 @@ snowcrab.db = function( DS, p=NULL, yrs=NULL, fn.root=NULL, redo=FALSE, extrapol
     APS[, pPC1$variabletomodel] = speciescomposition_lookup(  LOCS=APS[ , c("AUID", "timestamp")], AU_target=sppoly, 
       lookup_from = p$carstm_inputdata_model_source$speciescomposition,
       lookup_to = "areal_units", 
-      vnames_from= paste( pPC1$variabletomodel, "predicted", sep=".")
+      vnames_from= paste( pPC1$variabletomodel, "predicted", sep="."), 
       vnames=pPC1$variabletomodel ,
       year.assessment=p$year.assessment
     )
@@ -1460,7 +1460,7 @@ snowcrab.db = function( DS, p=NULL, yrs=NULL, fn.root=NULL, redo=FALSE, extrapol
     APS[, pPC2$variabletomodel] = speciescomposition_lookup(  LOCS=APS[ , c("AUID", "timestamp")], AU_target=sppoly, 
       lookup_from = p$carstm_inputdata_model_source$speciescomposition,
       lookup_to = "areal_units", 
-      vnames_from= paste( pPC2$variabletomodel, "predicted", sep=".")
+      vnames_from= paste( pPC2$variabletomodel, "predicted", sep="."), 
       vnames=pPC2$variabletomodel,
       year.assessment=p$year.assessment
     )
