@@ -1947,7 +1947,7 @@ snowcrab.db = function( DS, p=NULL, yrs=NULL, fn.root=NULL, redo=FALSE, extrapol
         nnn = which( !is.finite(nums ))
         if (length(nnn)>0 ) NA_mask = nnn
 
-        if (is.na(extrapolation_limit)) extrapolation_limit = max(M$totno/M$data_offset, na.rm=T) # 28921.8426
+        if (is.na(extrapolation_limit)) extrapolation_limit = quantile( M$totno/M$data_offset, probs=p$quantile_bounds[2], na.rm=T) # 28921.8426
         uu = which( nums > extrapolation_limit )
         if (length(uu) > 0 ) {
           if (is.character(extrapolation_replacement)) if (extrapolation_replacement=="extrapolation_limit" ) extrapolation_replacement = extrapolation_limit

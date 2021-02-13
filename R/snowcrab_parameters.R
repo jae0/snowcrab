@@ -77,6 +77,8 @@ snowcrab_parameters = function( p=list(), year.assessment=NULL, project_name="bi
 
   p = temporal_parameters(p=p, aegis_dimensionality="space-year", timezone="America/Halifax")
 
+  p$quantile_bounds =c(0, 0.95) # trim upper bounds
+
   p$spatial_domain="snowcrab"
   p$spatial_domain_subareas = NULL # add cfa's as subareas .. TODO
   p = spatial_parameters( p=p )  # data are from this domain .. so far
@@ -363,8 +365,7 @@ snowcrab_parameters = function( p=list(), year.assessment=NULL, project_name="bi
       groundfish_species_code=2526,
       speciesname = "Snow crab",
       spatial_domain = "snowcrab",
-      yrs = p$yrs,
-      quantile_bounds =c(0, 0.95) # trim upper bounds
+      yrs = p$yrs 
     )
 
     p = parameters_add_without_overwriting( p,
@@ -436,8 +437,8 @@ snowcrab_parameters = function( p=list(), year.assessment=NULL, project_name="bi
             ' + f( auid, model="bym2", graph=slot(sppoly, "nb"), group=year_factor, scale.model=TRUE, constr=TRUE, hyper=H$bym2, control.group=list(model="ar1", hyper=H$ar1_group)) '
          ) )
       }
-      if ( !exists("carstm_model_family", p)  )  p$carstm_model_family =  "zeroinflatedpoisson0"    
-#      if ( !exists("carstm_model_family", p)  )  p$carstm_model_family =  "poisson"  
+#      if ( !exists("carstm_model_family", p)  )  p$carstm_model_family =  "zeroinflatedpoisson0"    
+      if ( !exists("carstm_model_family", p)  )  p$carstm_model_family =  "poisson"  
     }
 
       #    + f(tiyr, model="ar1", hyper=H$ar1 )
