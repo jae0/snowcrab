@@ -2,29 +2,23 @@
 
 # Snow crab --- Areal unit modelling of habitat  -- no reliance upon stmv fields
 
-# some issues running in MS Windows .. might need to run in Linux
-#Virtual box install of Ubuntu or Debian is likely easiest option
-
-year.assessment = 2020
-
-# adjust based upon RAM requirements and ncores
-require(INLA)
-inla.setOption(num.threads= floor( parallel::detectCores() / 2) )
-inla.setOption(blas.num.threads= 2 )
-
 
 # -------------------------------------------------
 # Part 1 -- construct basic parameter list defining the main characteristics of the study
 # require(aegis)
- p = bio.snowcrab::snowcrab_parameters( project_class="carstm", assessment.years=1999:year.assessment )
 
-  # p$modeldir = "..."  # use this to specifiy alt location to save model output files
+  year.assessment = 2020
 
-
+  p = bio.snowcrab::snowcrab_parameters( project_class="carstm", assessment.years=1999:year.assessment )
 
 # ------------------------------------------------
 # Part 2 -- polygon structure
   if (0) {
+    # adjust based upon RAM requirements and ncores
+    require(INLA)
+    inla.setOption(num.threads= floor( parallel::detectCores() / 2) )
+    inla.setOption(blas.num.threads= 2 )
+
     # create if not yet made
     for (au in c("cfanorth", "cfasouth", "cfa4x", "cfaall" )) plot(polygon_managementareas( species="snowcrab", au))
     xydata = snowcrab.db( p=p, DS="areal_units_input", redo=TRUE )
