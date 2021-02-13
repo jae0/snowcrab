@@ -39,6 +39,16 @@ inla.setOption(blas.num.threads= 2 )
 # Part 8 -- Snow crab abundance -- main mode used for production
   M = snowcrab.db( p=p, DS="carstm_inputs", redo=TRUE )  # will redo if not found
 
+      wgts = meanweights_by_arealunit(
+        set=M[M$tag=="observations",],
+        AUID=as.character( sppoly$AUID ),
+        yrs=p$yrs,
+        fillall=TRUE,
+        annual_breakdown=TRUE,
+        robustify_quantiles=c(0, 0.99)  # high upper bounds are more dangerous
+      )
+
+
   #To compare values of M, run the following line:
   #load(paste(p$modeldir, "M.summary.rdata", sep="/"))
 
@@ -106,7 +116,7 @@ inla.setOption(blas.num.threads= 2 )
       dev.off()
   }
   
-  
+
 
   snowcrab.db(p=p, DS="carstm_output_compute" )
   

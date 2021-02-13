@@ -1,5 +1,5 @@
 
-snowcrab.db = function( DS, p=NULL, yrs=NULL, fn.root=NULL, redo=FALSE, extrapolation_limit=NA, extrapolation_replacement=NA, ... ) {
+snowcrab.db = function( DS, p=NULL, yrs=NULL, fn.root=NULL, redo=FALSE, extrapolation_limit=NA, extrapolation_replacement="extrapolation_limit", ... ) {
 
 	# handles all basic data tables, etc. ...
 
@@ -1825,7 +1825,7 @@ snowcrab.db = function( DS, p=NULL, yrs=NULL, fn.root=NULL, redo=FALSE, extrapol
     res = carstm_model( p=p, DS="carstm_modelled_summary"  )
 
     if (p$carstm_modelengine == "inla") {
-      ps = inla.posterior.sample(n=p$nsims, fit, selection=list(Predictor=0))  # only predictions
+      ps = inla.posterior.sample(n=p$nsims, fit, selection=list(Predictor=0))  # only predictions, 0== all predictions
     }
 
     if (p$carstm_modelengine %in% c( "glm", "gam") ) {
@@ -1901,7 +1901,8 @@ snowcrab.db = function( DS, p=NULL, yrs=NULL, fn.root=NULL, redo=FALSE, extrapol
         nnn = which( !is.finite(biom ))
         if (length(nnn)>0 ) NA_mask = nnn
 
-        if (is.na(extrapolation_limit)) extrapolation_limit = max(M$totwgt/M$data_offset, na.rm=T) # 28921.8426
+        if (is.na(extrapolation_limit)) extrapolation_limit = quantile( M$totwgt/M$data_offset, probs=p$quantile_bounds[2], na.rm=T) # 28921.8426
+
         uu = which( biom > extrapolation_limit )
         if (length(uu) > 0 ) {
           if (is.character(extrapolation_replacement)) if (extrapolation_replacement=="extrapolation_limit" ) extrapolation_replacement = extrapolation_limit
@@ -1909,7 +1910,10 @@ snowcrab.db = function( DS, p=NULL, yrs=NULL, fn.root=NULL, redo=FALSE, extrapol
           warning("\n Extreme-valued predictions were found, capping them to max observed rates .. \n you might want to have more informed priors, or otherwise set extrapolation_replacement=NA to replacement value \n")
         }
         biom[biom > extrapolation_limit ] = extrapolation_limit
-        nums = biom / wgts
+        
+        biom = biom / 10^6  # kg / km^2 -> kt / km^2
+
+        nums = biom / wgts   # (n * 10^6) / km^2
         save( biom, file=fn_bio, compress=TRUE )
         save( nums, file=fn_no, compress=TRUE )
 
@@ -1927,13 +1931,15 @@ snowcrab.db = function( DS, p=NULL, yrs=NULL, fn.root=NULL, redo=FALSE, extrapol
             }
 
             biom[!is.finite(biom)] = NA
+            biom = biom / 10^6  # kg / km^2 -> kt / km^2
+            
             o = list()
-            o$cfaall    = colSums( biom * sppoly$au_sa_km2/ 10^6, na.rm=TRUE )
-            o$cfanorth  = colSums( biom * sppoly$cfanorth_surfacearea/ 10^6, na.rm=TRUE )
-            o$cfasouth  = colSums( biom * sppoly$cfasouth_surfacearea/ 10^6, na.rm=TRUE )
-            o$cfa23     = colSums( biom * sppoly$cfa23_surfacearea/ 10^6, na.rm=TRUE )
-            o$cfa24     = colSums( biom * sppoly$cfa24_surfacearea/ 10^6, na.rm=TRUE )
-            o$cfa4x     = colSums( biom * sppoly$cfa4x_surfacearea/ 10^6, na.rm=TRUE )
+            o$cfaall    = colSums( biom * sppoly$au_sa_km2, na.rm=TRUE )
+            o$cfanorth  = colSums( biom * sppoly$cfanorth_surfacearea, na.rm=TRUE )
+            o$cfasouth  = colSums( biom * sppoly$cfasouth_surfacearea, na.rm=TRUE )
+            o$cfa23     = colSums( biom * sppoly$cfa23_surfacearea, na.rm=TRUE )
+            o$cfa24     = colSums( biom * sppoly$cfa24_surfacearea, na.rm=TRUE )
+            o$cfa4x     = colSums( biom * sppoly$cfa4x_surfacearea, na.rm=TRUE )
             return(o)
           }, simplify=TRUE
         )
@@ -1941,6 +1947,7 @@ snowcrab.db = function( DS, p=NULL, yrs=NULL, fn.root=NULL, redo=FALSE, extrapol
 
 
       if (p$selection$type == "number") {
+
         nums = res[[ paste( p$variabletomodel, "predicted", sep=".")]]
         nums[!is.finite(nums)] = NA
         NA_mask = NULL
@@ -1955,7 +1962,10 @@ snowcrab.db = function( DS, p=NULL, yrs=NULL, fn.root=NULL, redo=FALSE, extrapol
           warning("\n Extreme-valued predictions were found, capping them to max observed rates .. \n you might want to have more informed priors, or otherwise set extrapolation=NA to replacement value \n")
         }
         nums[nums > extrapolation_limit] = extrapolation_limit
-        biom = nums * wgts
+        
+        biom = nums * wgts / 10^6  # kg / km^2 -> kt / km^2
+        nums = nums / 10^6  # n * 10^6 / km^2
+
         save( biom, file=fn_bio, compress=TRUE )
         save( nums, file=fn_no, compress=TRUE )
 
@@ -1973,15 +1983,15 @@ snowcrab.db = function( DS, p=NULL, yrs=NULL, fn.root=NULL, redo=FALSE, extrapol
             }
 
             nums[!is.finite(nums)] = NA
-            biom = nums * wgts
+            biom = nums * wgts / 10^6   # kg / km^2 -> kt / km^2
 
             o = list()
-            o$cfaall    = colSums( biom * sppoly$au_sa_km2/ 10^6, na.rm=TRUE )
-            o$cfanorth  = colSums( biom * sppoly$cfanorth_surfacearea/ 10^6, na.rm=TRUE )
-            o$cfasouth  = colSums( biom * sppoly$cfasouth_surfacearea/ 10^6, na.rm=TRUE )
-            o$cfa23     = colSums( biom * sppoly$cfa23_surfacearea/ 10^6, na.rm=TRUE )
-            o$cfa24     = colSums( biom * sppoly$cfa24_surfacearea/ 10^6, na.rm=TRUE )
-            o$cfa4x     = colSums( biom * sppoly$cfa4x_surfacearea/ 10^6, na.rm=TRUE )
+            o$cfaall    = colSums( biom * sppoly$au_sa_km2, na.rm=TRUE )
+            o$cfanorth  = colSums( biom * sppoly$cfanorth_surfacearea, na.rm=TRUE )
+            o$cfasouth  = colSums( biom * sppoly$cfasouth_surfacearea, na.rm=TRUE )
+            o$cfa23     = colSums( biom * sppoly$cfa23_surfacearea, na.rm=TRUE )
+            o$cfa24     = colSums( biom * sppoly$cfa24_surfacearea, na.rm=TRUE )
+            o$cfa4x     = colSums( biom * sppoly$cfa4x_surfacearea, na.rm=TRUE )
             return(o)
           }, simplify=TRUE
         )
