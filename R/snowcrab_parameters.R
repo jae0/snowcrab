@@ -364,7 +364,7 @@ snowcrab_parameters = function( p=list(), year.assessment=NULL, project_name="bi
       speciesname = "Snow crab",
       spatial_domain = "snowcrab",
       yrs = p$yrs,
-      quantile_bounds =c(0, 0.99) # trim upper bounds
+      quantile_bounds =c(0, 0.95) # trim upper bounds
     )
 
     p = parameters_add_without_overwriting( p,
@@ -422,22 +422,22 @@ snowcrab_parameters = function( p=list(), year.assessment=NULL, project_name="bi
 
 
     if ( grepl("inla", p$carstm_modelengine) ) {
-      if ( !exists("carstm_model_label", p))  p$carstm_model_label = "production"
+      if ( !exists("carstm_model_label", p))  p$carstm_model_label = "default"
       if ( !exists("carstm_model_formula", p)  ) {
         p$carstm_model_formula = as.formula( paste(
          p$variabletomodel, ' ~ 1',
             ' + offset( log(data_offset)) ',
             ' + f( dyri, model="ar1", hyper=H$ar1 ) ',
-            ' + f( inla.group( t, method="quantile", n=9 ), model="rw2", scale.model=TRUE, hyper=H$rw2) ',
-            ' + f( inla.group( z, method="quantile", n=9 ), model="rw2", scale.model=TRUE, hyper=H$rw2) ',
-            ' + f( inla.group( substrate.grainsize, method="quantile", n=9 ), model="rw2", scale.model=TRUE, hyper=H$rw2) ',
-            ' + f( inla.group( pca1, method="quantile", n=9 ), model="rw2", scale.model=TRUE, hyper=H$rw2) ',
-            ' + f( inla.group( pca2, method="quantile", n=9 ), model="rw2", scale.model=TRUE, hyper=H$rw2) ',
+            ' + f( inla.group( t, method="quantile", n=11 ), model="rw2", scale.model=TRUE, hyper=H$rw2) ',
+            ' + f( inla.group( z, method="quantile", n=11 ), model="rw2", scale.model=TRUE, hyper=H$rw2) ',
+            ' + f( inla.group( substrate.grainsize, method="quantile", n=11 ), model="rw2", scale.model=TRUE, hyper=H$rw2) ',
+            ' + f( inla.group( pca1, method="quantile", n=11 ), model="rw2", scale.model=TRUE, hyper=H$rw2) ',
+            ' + f( inla.group( pca2, method="quantile", n=11 ), model="rw2", scale.model=TRUE, hyper=H$rw2) ',
             ' + f( auid, model="bym2", graph=slot(sppoly, "nb"), group=year_factor, scale.model=TRUE, constr=TRUE, hyper=H$bym2, control.group=list(model="ar1", hyper=H$ar1_group)) '
          ) )
       }
-#      if ( !exists("carstm_model_family", p)  )  p$carstm_model_family =  "zeroinflatedpoisson0"    
-      if ( !exists("carstm_model_family", p)  )  p$carstm_model_family =  "poisson"  
+      if ( !exists("carstm_model_family", p)  )  p$carstm_model_family =  "zeroinflatedpoisson0"    
+#      if ( !exists("carstm_model_family", p)  )  p$carstm_model_family =  "poisson"  
     }
 
       #    + f(tiyr, model="ar1", hyper=H$ar1 )
