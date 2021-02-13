@@ -1630,6 +1630,9 @@ snowcrab.db = function( DS, p=NULL, yrs=NULL, fn.root=NULL, redo=FALSE, extrapol
       M[iM, pT$variabletomodel] = temperature_lookup( LOCS=M[ iM, c("lon", "lat", "timestamp")],lookup_from="core", lookup_to="points", lookup_from_class="aggregated_data", tz="America/Halifax"  )
     }
 
+    M = M[ is.finite(M[ , pT$variabletomodel]  ) , ]
+    M = M[ which( M[, pT$variabletomodel]  ) < 14 ) , ]  #
+
 
     # --------------------------
 
@@ -1637,8 +1640,9 @@ snowcrab.db = function( DS, p=NULL, yrs=NULL, fn.root=NULL, redo=FALSE, extrapol
     if (!(exists(pPC1$variabletomodel, M ))) M[,pPC1$variabletomodel] = NA
     iM = which(!is.finite(M[, pPC1$variabletomodel]))
     if (length(iM) > 0 ) {
-      M[iM, pPC1$variabletomodel] = speciescomposition_lookup_rawdata( M=M[iM, c("lon", "lat", "timestamp")], sppoly=sppoly, vnmod=pPC1$variabletomodel )
+      M[iM, pPC1$variabletomodel] = speciescomposition_lookup( M=M[iM, c("lon", "lat", "timestamp")], sppoly=sppoly, vnames=pPC1$variabletomodel , lookup_from="core", lookup_to="points", lookup_from_class="aggregated_data", tz="America/Halifax" )
     }
+    M = M[ which(is.finite(M[, pPC1$variabletomodel] )),]
 
     # --------------------------
 
@@ -1646,9 +1650,9 @@ snowcrab.db = function( DS, p=NULL, yrs=NULL, fn.root=NULL, redo=FALSE, extrapol
     if (!(exists(pPC2$variabletomodel, M ))) M[,pPC2$variabletomodel] = NA
     iM = which(!is.finite(M[, pPC2$variabletomodel]))
     if (length(iM) > 0 ) {
-      M[iM, pPC2$variabletomodel] = speciescomposition_lookup_rawdata( M=M[iM, c("lon", "lat", "timestamp")], sppoly=sppoly, vnmod=pPC2$variabletomodel )
+      M[iM, pPC2$variabletomodel] = speciescomposition_lookup( M=M[iM, c("lon", "lat", "timestamp")], sppoly=sppoly, vnames=pPC2$variabletomodel, lookup_from="core", lookup_to="points", lookup_from_class="aggregated_data", tz="America/Halifax"  )
     }
-
+    M = M[ which(is.finite(M[, pPC2$variabletomodel] )),]
 
     PI = NULL
     M$plon = NULL
@@ -1656,9 +1660,7 @@ snowcrab.db = function( DS, p=NULL, yrs=NULL, fn.root=NULL, redo=FALSE, extrapol
     M$lon = NULL
     M$lat = NULL
 
-    M = M[ which(is.finite(M[, pB$variabletomodel] )),]
-    M = M[ which(is.finite(M[, pS$variabletomodel] )),]
-    M = M[ which(is.finite(M[, pT$variabletomodel] )),]
+
     M = M[ which(!is.na(M$AUID)),]
     M$AUID = as.character( M$AUID )  # match each datum to an area
 
@@ -1681,18 +1683,18 @@ snowcrab.db = function( DS, p=NULL, yrs=NULL, fn.root=NULL, redo=FALSE, extrapol
     APS[,p$variabletomodel] = NA
 
 
+    APS[, pB$variabletomodel] = bathymetry_lookup(  LOCS=sppoly, 
+      lookup_from = p$carstm_inputdata_model_source$bathymetry,
+      lookup_to = "areal_units", 
+      vnames="z" 
+    ) 
+    
+    APS[, pS$variabletomodel] = substrate_lookup(  LOCS=sppoly, 
+      lookup_from = p$carstm_inputdata_model_source$substrate,
+      lookup_to = "areal_units", 
+      vnames="substrate.grainsize" 
+    ) 
 
-    BI = carstm_model ( p=pB, DS="carstm_modelled_summary" )
-    jj = match( as.character( APS$AUID), as.character( BI$AUID) )
-    APS[, pB$variabletomodel] = BI[[ paste(pB$variabletomodel,"predicted",sep="." ) ]] [jj]
-    jj =NULL
-    BI = NULL
-
-    SI = carstm_model ( p=pS, DS="carstm_modelled_summary" )
-    jj = match( as.character( APS$AUID), as.character( SI$AUID) )
-    APS[, pS$variabletomodel] = SI[[ paste(pS$variabletomodel,"predicted",sep="." )]] [jj]
-    jj =NULL
-    SI = NULL
 
     # to this point APS is static, now add time dynamics (teperature)
     # ---------------------
@@ -1708,32 +1710,31 @@ snowcrab.db = function( DS, p=NULL, yrs=NULL, fn.root=NULL, redo=FALSE, extrapol
     APS$dyear = APS$tiyr - APS$yr
 
 
-    TI = carstm_model ( p=pT, DS="carstm_modelled_summary" )
-    TI = TI[[ paste(pT$variabletomodel,"predicted",sep="." )]]
-    au_map = match( APS$AUID, dimnames(TI)$AUID )
-    year_map = match( as.character(APS$yr), dimnames(TI)$yr )
-    dyear_breaks = c(p$dyears, p$dyears[length(p$dyears)]+ diff(p$dyears)[1] )
-    dyear_map = as.numeric( cut( APS$dyear, breaks=dyear_breaks, include.lowest=TRUE, ordered_result=TRUE, right=FALSE ) )
-    dindex = cbind(au_map, year_map, dyear_map )
-    APS[, pT$variabletomodel] = TI[ dindex]
-    TI = NULL
+    APS[, pT$variabletomodel] = temperature_lookup(  LOCS=APS[ , c("AUID", "timestamp")], AU_target=sppoly, 
+      lookup_from = p$carstm_inputdata_model_source$temperature,
+      lookup_to = "areal_units", 
+      vnames_from= paste(pT$variabletomodel, "predicted", sep="."),
+      vnames=pT$variabletomodel,
+      year.assessment=p$year.assessment 
+    ) 
 
 
-    PI = carstm_model ( p=pPC1, DS="carstm_modelled_summary" )
-    PI = PI[[ paste(pPC1$variabletomodel,"predicted",sep="." )]]
-    au_map = match( APS$AUID, dimnames(PI)$AUID )
-    year_map = match( as.character(APS$yr), dimnames(PI)$yr )
-    dindex = cbind(au_map, year_map )
-    APS[, pPC1$variabletomodel] = PI [dindex]
-    PI = NULL
+    APS[, pPC1$variabletomodel] = speiescomposition_lookup(  LOCS=APS[ , c("AUID", "timestamp")], AU_target=sppoly, 
+      lookup_from = p$carstm_inputdata_model_source$speciescomposition,
+      lookup_to = "areal_units", 
+      vnames_from= paste(pPC1$variabletomodel, "predicted", sep="."),
+      vnames=pPC1$variabletomodel,
+      year.assessment=p$year.assessment 
+    ) 
 
-    PI = carstm_model ( p=pPC2, DS="carstm_modelled_summary" )
-    PI = PI[[ paste(pPC2$variabletomodel,"predicted",sep="." )]]
-    au_map = match( APS$AUID, dimnames(PI)$AUID )
-    year_map = match( as.character(APS$yr), dimnames(PI)$yr )
-    dindex = cbind(au_map, year_map  )
-    APS[, pPC2$variabletomodel] = PI [dindex]
-    PI = NULL
+
+    APS[, pPC2$variabletomodel] = speiescomposition_lookup(  LOCS=APS[ , c("AUID", "timestamp")], AU_target=sppoly, 
+      lookup_from = p$carstm_inputdata_model_source$speciescomposition,
+      lookup_to = "areal_units", 
+      vnames_from= paste(pPC2$variabletomodel, "predicted", sep="."),
+      vnames=pPC2$variabletomodel,
+      year.assessment=p$year.assessment 
+    ) 
 
     # useful vars to have for analyses outside of carstm_summary
     varstoadd = c( "totwgt", "totno", "sa", "data_offset",  "zn", "qn" )
