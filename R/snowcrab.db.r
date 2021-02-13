@@ -1310,6 +1310,8 @@ snowcrab.db = function( DS, p=NULL, yrs=NULL, fn.root=NULL, redo=FALSE, extrapol
  
     }
 
+    M = M[ is.finite(M[ , vnB]  ) , ]
+
     if ( exists("spatial_domain", p)) {
         M = M[ geo_subset( spatial_domain=p$spatial_domain, Z=M ) , ] # need to be careful with extrapolation ...  filter depths
     }
@@ -1354,16 +1356,22 @@ snowcrab.db = function( DS, p=NULL, yrs=NULL, fn.root=NULL, redo=FALSE, extrapol
     }
 
 
+    M = M[ is.finite(M[ , pT$variabletomodel]  ) , ]
+    M = M[ which( M[, pT$variabletomodel]  < 14 ) , ]  #
+
+
     pPC1 = speciescomposition_parameters( p=parameters_reset(p), project_class="carstm", variabletomodel="pca1" , year.assessment=p$year.assessment)
     if (!(exists(pPC1$variabletomodel, M ))) M[,pPC1$variabletomodel] = NA
     iM = which(!is.finite( M[, pPC1$variabletomodel] ))
     if (length(iM > 0)) {
       M[iM, pPC1$variabletomodel] = speciescomposition_lookup(  LOCS=M[ iM, c("lon", "lat", "timestamp")],lookup_from="core", lookup_to="points", lookup_from_class="aggregated_data", tz="America/Halifax" ,
-          year.assessment=p$year.assessment
+          year.assessment=p$year.assessment ,
+          vnames=pPC2$variabletomodel
         )
 
     }
 
+    M = M[ which(is.finite(M[, pPC1$variabletomodel] )),]
 
 
     pPC2 = speciescomposition_parameters( p=parameters_reset(p), project_class="carstm", variabletomodel="pca2", year.assessment=p$year.assessment )
@@ -1371,19 +1379,19 @@ snowcrab.db = function( DS, p=NULL, yrs=NULL, fn.root=NULL, redo=FALSE, extrapol
     iM = which(!is.finite( M[, pPC2$variabletomodel] ))
     if (length(iM > 0)) {
       M[iM, pPC2$variabletomodel] = speciescomposition_lookup( LOCS=M[ iM, c("lon", "lat", "timestamp")],lookup_from="core", lookup_to="points", lookup_from_class="aggregated_data", tz="America/Halifax" ,
-          year.assessment=p$year.assessment
+          year.assessment=p$year.assessment,
+          vnames=pPC2$variabletomodel
         )
 
     }
+    M = M[ which(is.finite(M[, pPC2$variabletomodel] )),]
+
 
     M$plon = NULL
     M$plat = NULL
     M$lon = NULL
     M$lat = NULL
-
-    # M = M[ which(is.finite(M[, pB$variabletomodel] )),]
-    # M = M[ which(is.finite(M[, pS$variabletomodel] )),]
-    # M = M[ which(is.finite(M[, pT$variabletomodel] )),]
+ 
     M = M[ which(!is.na(M$AUID)),]
     M$AUID = as.character( M$AUID )  # match each datum to an area
 
@@ -1434,8 +1442,8 @@ snowcrab.db = function( DS, p=NULL, yrs=NULL, fn.root=NULL, redo=FALSE, extrapol
     APS[, pT$variabletomodel] = temperature_lookup(  LOCS=APS[ , c("AUID", "timestamp")], AU_target=sppoly, 
       lookup_from = p$carstm_inputdata_model_source$temperature,
       lookup_to = "areal_units", 
-      vnames_from="t.predicted",
-      vnames="t" ,
+      vnames_from= paste( pT$variabletomodel, "predicted", sep=".")
+      vnames=pT$variabletomodel ,
       year.assessment=p$year.assessment
     )
 
@@ -1443,7 +1451,8 @@ snowcrab.db = function( DS, p=NULL, yrs=NULL, fn.root=NULL, redo=FALSE, extrapol
     APS[, pPC1$variabletomodel] = speciescomposition_lookup(  LOCS=APS[ , c("AUID", "timestamp")], AU_target=sppoly, 
       lookup_from = p$carstm_inputdata_model_source$speciescomposition,
       lookup_to = "areal_units", 
-      vnames="pca1" ,
+      vnames_from= paste( pPC1$variabletomodel, "predicted", sep=".")
+      vnames=pPC1$variabletomodel ,
       year.assessment=p$year.assessment
     )
 
@@ -1451,7 +1460,8 @@ snowcrab.db = function( DS, p=NULL, yrs=NULL, fn.root=NULL, redo=FALSE, extrapol
     APS[, pPC2$variabletomodel] = speciescomposition_lookup(  LOCS=APS[ , c("AUID", "timestamp")], AU_target=sppoly, 
       lookup_from = p$carstm_inputdata_model_source$speciescomposition,
       lookup_to = "areal_units", 
-      vnames="pca2"  ,
+      vnames_from= paste( pPC2$variabletomodel, "predicted", sep=".")
+      vnames=pPC2$variabletomodel,
       year.assessment=p$year.assessment
     )
 
@@ -1598,13 +1608,17 @@ snowcrab.db = function( DS, p=NULL, yrs=NULL, fn.root=NULL, redo=FALSE, extrapol
  
     }
 
-    M = M[ is.finite(M[ , vnmod]  ) , ]
+    M = M[ is.finite(M[ , vnB]  ) , ]
 
 
     if (p$carstm_inputs_aggregated) {
       if ( exists("spatial_domain", p)) {
         M = M[ geo_subset( spatial_domain=p$spatial_domain, Z=M ) , ] # need to be careful with extrapolation ...  filter depths
       }
+    }
+
+    if ( exists("spatial_domain", p)) {
+        M = M[ geo_subset( spatial_domain=p$spatial_domain, Z=M ) , ] # need to be careful with extrapolation ...  filter depths
     }
 
 
@@ -1627,7 +1641,8 @@ snowcrab.db = function( DS, p=NULL, yrs=NULL, fn.root=NULL, redo=FALSE, extrapol
     if (!(exists(pT$variabletomodel, M ))) M[,pT$variabletomodel] = NA
     iM = which(!is.finite( M[, pT$variabletomodel] ))
     if (length(iM > 0)) {
-      M[iM, pT$variabletomodel] = temperature_lookup( LOCS=M[ iM, c("lon", "lat", "timestamp")],lookup_from="core", lookup_to="points", lookup_from_class="aggregated_data", tz="America/Halifax"  )
+      M[iM, pT$variabletomodel] = temperature_lookup( LOCS=M[ iM, c("lon", "lat", "timestamp")],lookup_from="core", lookup_to="points", lookup_from_class="aggregated_data", tz="America/Halifax" ,
+          year.assessment=p$year.assessment )
     }
 
     M = M[ is.finite(M[ , pT$variabletomodel]  ) , ]
@@ -1640,7 +1655,9 @@ snowcrab.db = function( DS, p=NULL, yrs=NULL, fn.root=NULL, redo=FALSE, extrapol
     if (!(exists(pPC1$variabletomodel, M ))) M[,pPC1$variabletomodel] = NA
     iM = which(!is.finite(M[, pPC1$variabletomodel]))
     if (length(iM) > 0 ) {
-      M[iM, pPC1$variabletomodel] = speciescomposition_lookup( M=M[iM, c("lon", "lat", "timestamp")], sppoly=sppoly, vnames=pPC1$variabletomodel , lookup_from="core", lookup_to="points", lookup_from_class="aggregated_data", tz="America/Halifax" )
+      M[iM, pPC1$variabletomodel] = speciescomposition_lookup( M=M[iM, c("lon", "lat", "timestamp")], sppoly=sppoly, vnames=pPC1$variabletomodel , lookup_from="core", lookup_to="points", lookup_from_class="aggregated_data", tz="America/Halifax" ,
+          year.assessment=p$year.assessment ,
+          vnames=pPC2$variabletomodel )
     }
     M = M[ which(is.finite(M[, pPC1$variabletomodel] )),]
 
@@ -1650,11 +1667,12 @@ snowcrab.db = function( DS, p=NULL, yrs=NULL, fn.root=NULL, redo=FALSE, extrapol
     if (!(exists(pPC2$variabletomodel, M ))) M[,pPC2$variabletomodel] = NA
     iM = which(!is.finite(M[, pPC2$variabletomodel]))
     if (length(iM) > 0 ) {
-      M[iM, pPC2$variabletomodel] = speciescomposition_lookup( M=M[iM, c("lon", "lat", "timestamp")], sppoly=sppoly, vnames=pPC2$variabletomodel, lookup_from="core", lookup_to="points", lookup_from_class="aggregated_data", tz="America/Halifax"  )
+      M[iM, pPC2$variabletomodel] = speciescomposition_lookup( M=M[iM, c("lon", "lat", "timestamp")], sppoly=sppoly, vnames=pPC2$variabletomodel, lookup_from="core", lookup_to="points", lookup_from_class="aggregated_data", tz="America/Halifax" ,
+          year.assessment=p$year.assessment,
+          vnames=pPC2$variabletomodel  )
     }
     M = M[ which(is.finite(M[, pPC2$variabletomodel] )),]
 
-    PI = NULL
     M$plon = NULL
     M$plat = NULL
     M$lon = NULL
@@ -1891,7 +1909,7 @@ snowcrab.db = function( DS, p=NULL, yrs=NULL, fn.root=NULL, redo=FALSE, extrapol
         yrs=p$yrs,
         fillall=TRUE,
         annual_breakdown=TRUE,
-        robustify_quantiles=c(0, 0.99)  # high upper bounds are more dangerous
+        robustify_quantiles=p$quantile_bounds  # high upper bounds are more dangerous
       )
 
       if (p$selection$type == "biomass") {

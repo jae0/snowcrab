@@ -30,6 +30,16 @@ inla.setOption(blas.num.threads= 2 )
     xydata = snowcrab.db( p=p, DS="areal_units_input", redo=TRUE )
     sppoly = areal_units( p=p, redo=TRUE )  # create constrained polygons with neighbourhood as an attribute
     MS = NULL
+
+    wgts = meanweights_by_arealunit(
+      set=M[M$tag=="observations",],
+      AUID=as.character( sppoly$AUID ),
+      yrs=p$yrs,
+      fillall=TRUE,
+      annual_breakdown=TRUE,
+      robustify_quantiles=p$quantile_bounds # high upper bounds are more dangerous
+    )
+
   }
   sppoly = areal_units( p=p )  # to reload
   plot( sppoly[, "au_sa_km2"]  )
@@ -38,15 +48,6 @@ inla.setOption(blas.num.threads= 2 )
 # -------------------------------------------------
 # Part 8 -- Snow crab abundance -- main mode used for production
   M = snowcrab.db( p=p, DS="carstm_inputs", redo=TRUE )  # will redo if not found
-
-      wgts = meanweights_by_arealunit(
-        set=M[M$tag=="observations",],
-        AUID=as.character( sppoly$AUID ),
-        yrs=p$yrs,
-        fillall=TRUE,
-        annual_breakdown=TRUE,
-        robustify_quantiles=c(0, 0.99)  # high upper bounds are more dangerous
-      )
 
 
   #To compare values of M, run the following line:
