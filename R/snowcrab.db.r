@@ -1366,7 +1366,7 @@ snowcrab.db = function( DS, p=NULL, yrs=NULL, fn.root=NULL, redo=FALSE, extrapol
     if (length(iM > 0)) {
       M[iM, pPC1$variabletomodel] = speciescomposition_lookup(  LOCS=M[ iM, c("lon", "lat", "timestamp")],lookup_from="core", lookup_to="points", lookup_from_class="aggregated_data", tz="America/Halifax" ,
           year.assessment=p$year.assessment ,
-          vnames=pPC2$variabletomodel
+          vnames=pPC1$variabletomodel
         )
 
     }
@@ -1657,7 +1657,7 @@ snowcrab.db = function( DS, p=NULL, yrs=NULL, fn.root=NULL, redo=FALSE, extrapol
     if (length(iM) > 0 ) {
       M[iM, pPC1$variabletomodel] = speciescomposition_lookup( M=M[iM, c("lon", "lat", "timestamp")], sppoly=sppoly, vnames=pPC1$variabletomodel , lookup_from="core", lookup_to="points", lookup_from_class="aggregated_data", tz="America/Halifax" ,
           year.assessment=p$year.assessment ,
-          vnames=pPC2$variabletomodel )
+          vnames=pPC1$variabletomodel )
     }
     M = M[ which(is.finite(M[, pPC1$variabletomodel] )),]
 
