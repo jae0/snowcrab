@@ -4,16 +4,17 @@
 
 year.assessment = 2020   # NOTE: for 4X, the season 2019-2020 -> 2019
 
-p = bio.snowcrab::snowcrab_parameters( 
-  project_class="carstm", 
-  year.assessment=year.assessment,
-  assessment.years=1999:year.assessment ,
-  # modeldir = project.datadirectory("bio.snowcrab", "modelled", "testing" ),  ## <--- important: alter save location for this  .. default is "{project.datadirectory(*)}/modelled"
-  assessment_years = 2000:year.assessment,
-  vars.tomodel="R0.mass" )
 
+p = bio.snowcrab::snowcrab_parameters( project_class="carstm", year.assessment=year.assessment, assessment.years=1999:year.assessment  )
 
+ 
 # later:::ensureInitialized()  # solve mode error
+p$fishery_model$standata$Kmu = c( 5, 50, 1 )
+p$fishery_model$standata$rmu = c(1, 1, 1)
+p$fishery_model$standata$qmu = c(1, 1, 1)
+p$fishery_model$standata$Ksd = c(0.25, 0.25, 0.25) * p$fishery_model$standata$Kmu  # c( 2, 20, 0.5)
+p$fishery_model$standata$rsd = c(0.25, 0.25, 0.25) * p$fishery_model$standata$rmu  # rep( 0.3, 3)
+p$fishery_model$standata$qsd = c(0.25, 0.25, 0.25) * p$fishery_model$standata$qmu  # rep( 0.3, 3)
 
 tag = "default"
 # tag = "zeroinflated"
