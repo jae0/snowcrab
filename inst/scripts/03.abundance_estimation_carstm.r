@@ -152,11 +152,12 @@
 
   if ( !file.exists(outputdir)) dir.create( outputdir, recursive=TRUE, showWarnings=FALSE )
 
-  brks = interval_break(X=bio[,"2020"], n=length(p$mypalette), style="quantile")
+  brks = interval_break(X=bio[,"2020"], n=length(p$mypalette), style="quantile") * 10^6
+  sppoly = areal_units( p=p )  # to reload
 
   for (i in 1:length(p$yrs) ){
     y = as.character( p$yrs[i] )
-    sppoly[,vn] = bio[,y]
+    sppoly[,vn] = bio[,y] * 10^6
     fn = file.path( outputdir , paste( "biomass", y, "pdf", sep=".") )
 
     pdf( file=fn, width=8, height=6, bg='white', pointsize=10 )
@@ -184,6 +185,59 @@
   plot( fit$marginals.hyperpar$"Precision for setno", type="l")
 
 
+
+
+Fixed effects:
+             mean    sd 0.025quant 0.5quant 0.975quant  mode kld
+(Intercept) 6.602 0.102      6.403    6.602      6.801 6.602   0
+
+Random effects:
+  Name	  Model
+    dyri AR1 model
+   inla.group(t, method = "quantile", n = 11) RW2 model
+   inla.group(z, method = "quantile", n = 11) RW2 model
+   inla.group(substrate.grainsize, method = "quantile", n = 11) RW2 model
+   inla.group(pca1, method = "quantile", n = 11) RW2 model
+   inla.group(pca2, method = "quantile", n = 11) RW2 model
+   auid BYM2 model
+
+Model hyperparameters:
+                                                                             mean    sd 0.025quant 0.5quant 0.975quant
+Precision for dyri                                                         60.314 0.379     59.581   60.320     60.927
+Rho for dyri                                                                0.763 0.001      0.762    0.763      0.764
+Precision for inla.group(t, method = "quantile", n = 11)                   54.500 0.251     54.118   54.477     54.967
+Precision for inla.group(z, method = "quantile", n = 11)                   54.221 0.198     53.941   54.189     54.651
+Precision for inla.group(substrate.grainsize, method = "quantile", n = 11) 59.579 0.237     59.204   59.565     59.998
+Precision for inla.group(pca1, method = "quantile", n = 11)                55.907 0.503     55.023   55.885     56.787
+Precision for inla.group(pca2, method = "quantile", n = 11)                50.613 0.264     50.211   50.587     51.108
+Precision for auid                                                         32.051 0.028     31.992   32.052     32.102
+Phi for auid                                                                0.060 0.000      0.060    0.060      0.060
+GroupRho for auid                                                           0.850 0.000      0.850    0.850      0.852
+                                                                             mode
+Precision for dyri                                                         60.114
+Rho for dyri                                                                0.762
+Precision for inla.group(t, method = "quantile", n = 11)                   54.147
+Precision for inla.group(z, method = "quantile", n = 11)                   53.983
+Precision for inla.group(substrate.grainsize, method = "quantile", n = 11) 59.252
+Precision for inla.group(pca1, method = "quantile", n = 11)                55.481
+Precision for inla.group(pca2, method = "quantile", n = 11)                50.261
+Precision for auid                                                         32.058
+Phi for auid                                                                0.060
+GroupRho for auid                                                           0.850
+
+Expected number of effective parameters(stdev): 440.55(1.45)
+Number of equivalent replicates : 15.80 
+
+Deviance Information Criterion (DIC) ...............: 43123.14
+Deviance Information Criterion (DIC, saturated) ....: 27013.84
+Effective number of parameters .....................: 374.76
+
+Watanabe-Akaike information criterion (WAIC) ...: 44938.34
+Effective number of parameters .................: 1957.84
+
+Marginal log-Likelihood:  -21151.77 
+Posterior marginals for the linear predictor and
+ the fitted values are computed
 
 
 

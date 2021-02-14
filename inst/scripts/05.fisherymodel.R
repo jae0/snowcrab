@@ -2,41 +2,25 @@
 ## ---------
 #### final estimation of biomass via fishery models and associated figures and tables:
 
-year.assessment = 2019   # NOTE: for 4X, the season 2019-2020 -> 2019
+year.assessment = 2020   # NOTE: for 4X, the season 2019-2020 -> 2019
 
-p = bio.snowcrab::load.environment(
+p = bio.snowcrab::snowcrab_parameters( 
+  project_class="carstm", 
   year.assessment=year.assessment,
+  assessment.years=1999:year.assessment ,
+  # modeldir = project.datadirectory("bio.snowcrab", "modelled", "testing" ),  ## <--- important: alter save location for this  .. default is "{project.datadirectory(*)}/modelled"
   assessment_years = 2000:year.assessment,
-  vars.tomodel="R0.mass",
-  modeldir = project.datadirectory("bio.snowcrab", "modelled", "testing" ),  ## <--- important: alter save location for this  .. default is "{project.datadirectory(*)}/modelled"
-  areal_units_overlay="snowcrab_managementareas",
-  areal_units_resolution_km = 1,
-  #areal_units_resolution_km = 10,
-  #areal_units_resolution_km = 25,
-  # areal_units_type = "lattice",
-  areal_units_type = "tesselation",
-  areal_units_constraint_nmin= 10,
-  # using alt biomass index estmates
-  # carstm_model_label="production",
-  # carstm_model_label = paste( "testing", areal_units_type, areal_units_resolution_km, areal_units_constraint_nmin, sep="_" ),
-  # carstm_model_label="testing_lattice_10_10",
-  # carstm_model_label="testing_lattice_25_3",
-  # carstm_model_label="testing_snowcrab_polygons_tesselation_1_10",
-  carstm_model_label="testing_snowcrab_polygons_tesselation_1_10_zeroinflated",
-  # carstm_model_label="testing_snowcrab_polygons_tesselation_1_4",
-  carstm_modelengine = "inla",
-  libs=c("carstm")
-)
+  vars.tomodel="R0.mass" )
 
 
 # later:::ensureInitialized()  # solve mode error
 
 tag = "default"
-tag = "zeroinflated"
+# tag = "zeroinflated"
 
 # p = fishery_model( p=p, DS="logistic_parameters", tag=tag )  # gets run by default
 # str( p$fishery_model)
-res = fishery_model( p=p, DS="logistic", tag=tag, chains=3, iter=15000, warmup=10000, refresh=1000, control=list(adapt_delta=0.99 max_treedepth=18) )
+res = fishery_model( p=p, DS="logistic", tag=tag, chains=3, iter=15000, warmup=10000, refresh=1000, control=list(adapt_delta=0.99, max_treedepth=18) )
 # res = fishery_model( p=p, DS="logistic_samples", tag=tag )
 
 # frequency density of key parameters

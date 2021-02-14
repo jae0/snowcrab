@@ -1340,7 +1340,7 @@ snowcrab.db = function( DS, p=NULL, yrs=NULL, fn.root=NULL, redo=FALSE, extrapol
       M[iM, pS$variabletomodel] = substrate_lookup( LOCS=M[iM, c("lon", "lat")], lookup_from="core", lookup_to="points" , lookup_from_class="aggregated_data" ) # core=="rawdata"
     }
 
-    M = M[ is.finite(M[ , pS$variabletomodel]  ) , ]
+    # M = M[ is.finite(M[ , pS$variabletomodel]  ) , ]
 
 
 
@@ -1356,8 +1356,8 @@ snowcrab.db = function( DS, p=NULL, yrs=NULL, fn.root=NULL, redo=FALSE, extrapol
     }
 
 
-    M = M[ is.finite(M[ , pT$variabletomodel]  ) , ]
-    M = M[ which( M[, pT$variabletomodel]  < 14 ) , ]  #
+    # M = M[ is.finite(M[ , pT$variabletomodel]  ) , ]
+    # M = M[ which( M[, pT$variabletomodel]  < 14 ) , ]  #
 
 
     pPC1 = speciescomposition_parameters( p=parameters_reset(p), project_class="carstm", variabletomodel="pca1" , year.assessment=p$year.assessment)
@@ -1371,7 +1371,7 @@ snowcrab.db = function( DS, p=NULL, yrs=NULL, fn.root=NULL, redo=FALSE, extrapol
 
     }
 
-    M = M[ which(is.finite(M[, pPC1$variabletomodel] )),]
+    # M = M[ which(is.finite(M[, pPC1$variabletomodel] )),]
 
 
     pPC2 = speciescomposition_parameters( p=parameters_reset(p), project_class="carstm", variabletomodel="pca2", year.assessment=p$year.assessment )
@@ -1384,7 +1384,7 @@ snowcrab.db = function( DS, p=NULL, yrs=NULL, fn.root=NULL, redo=FALSE, extrapol
         )
 
     }
-    M = M[ which(is.finite(M[, pPC2$variabletomodel] )),]
+    # M = M[ which(is.finite(M[, pPC2$variabletomodel] )),]
 
 
     M$plon = NULL
