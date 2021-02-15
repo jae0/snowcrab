@@ -1266,10 +1266,10 @@ snowcrab.db = function( DS, p=NULL, yrs=NULL, fn.root=NULL, redo=FALSE, extrapol
     # globally remove all unrealistic data
     # p$quantile_bounds = c(0.0005, 0.9995)
     if (exists("quantile_bounds", p)) {
-      TR = quantile(M[,p$variabletomodel], probs=p$quantile_bounds, na.rm=TRUE ) # this was -1.7, 21.8 in 2015
+      TR = quantile(M[,p$variabletomodel], probs=p$quantile_bounds, na.rm=TRUE ) 
       keep = which( M[,p$variabletomodel] >=  TR[1] & M[,p$variabletomodel] <=  TR[2] )
       if (length(keep) > 0 ) M = M[ keep, ]
-        # this was -1.7, 21.8 in 2015
+        
     }
 
     # reduce size
@@ -1563,16 +1563,7 @@ snowcrab.db = function( DS, p=NULL, yrs=NULL, fn.root=NULL, redo=FALSE, extrapol
 
     # M$data_offset = 1 / M$cf_set_no  ## offset only used in poisson model
 
-
-    # globally remove all unrealistic data
-    # p$quantile_bounds = c(0.0005, 0.9995)
-    if (exists("quantile_bounds", p)) {
-      TR = quantile(M[,p$variabletomodel], probs=p$quantile_bounds, na.rm=TRUE ) # this was -1.7, 21.8 in 2015
-      keep = which( M[,p$variabletomodel] >=  TR[1] & M[,p$variabletomodel] <=  TR[2] )
-      if (length(keep) > 0 ) M = M[ keep, ]
-        # this was -1.7, 21.8 in 2015
-    }
-
+ 
     # reduce size
     M = M[ which( M$lon > p$corners$lon[1] & M$lon < p$corners$lon[2]  & M$lat > p$corners$lat[1] & M$lat < p$corners$lat[2] ), ]
     # levelplot(z.mean~plon+plat, data=M, aspect="iso")
@@ -1631,7 +1622,7 @@ snowcrab.db = function( DS, p=NULL, yrs=NULL, fn.root=NULL, redo=FALSE, extrapol
       M[iM, pS$variabletomodel] = substrate_lookup( LOCS=M[iM, c("lon", "lat")], lookup_from="core", lookup_to="points" , lookup_from_class="aggregated_data" ) # core=="rawdata"
     }
 
-    M = M[ is.finite(M[ , pS$variabletomodel]  ) , ]
+    # M = M[ is.finite(M[ , pS$variabletomodel]  ) , ]
 
 
 
@@ -1645,8 +1636,8 @@ snowcrab.db = function( DS, p=NULL, yrs=NULL, fn.root=NULL, redo=FALSE, extrapol
           year.assessment=p$year.assessment )
     }
 
-    M = M[ is.finite(M[ , pT$variabletomodel]  ) , ]
-    M = M[ which( M[, pT$variabletomodel]  < 14 ) , ]  #
+    # M = M[ is.finite(M[ , pT$variabletomodel]  ) , ]
+    # M = M[ which( M[, pT$variabletomodel]  < 14 ) , ]  #
 
 
     # --------------------------
@@ -1659,7 +1650,7 @@ snowcrab.db = function( DS, p=NULL, yrs=NULL, fn.root=NULL, redo=FALSE, extrapol
           year.assessment=p$year.assessment ,
           vnames=pPC1$variabletomodel )
     }
-    M = M[ which(is.finite(M[, pPC1$variabletomodel] )),]
+    # M = M[ which(is.finite(M[, pPC1$variabletomodel] )),]
 
     # --------------------------
 
@@ -1671,7 +1662,7 @@ snowcrab.db = function( DS, p=NULL, yrs=NULL, fn.root=NULL, redo=FALSE, extrapol
           year.assessment=p$year.assessment,
           vnames=pPC2$variabletomodel  )
     }
-    M = M[ which(is.finite(M[, pPC2$variabletomodel] )),]
+    # M = M[ which(is.finite(M[, pPC2$variabletomodel] )),]
 
     M$plon = NULL
     M$plat = NULL
