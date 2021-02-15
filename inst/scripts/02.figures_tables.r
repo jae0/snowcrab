@@ -3,7 +3,7 @@
 require(aegis)
 
 
-year.assessment = 2019
+year.assessment = 2020
 
   p = bio.snowcrab::load.environment( year.assessment=year.assessment )
 # loadfunctions('bio.snowcrab')
