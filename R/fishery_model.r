@@ -14,7 +14,6 @@ fishery_model = function(  p,  DS="stan", plotresults=TRUE, tag="default", ... )
     if (!exists("method", p$fishery_model)) p$fishery_model$method = "stan"  # "jags", etc.
     if (!exists("outdir", p$fishery_model)) p$fishery_model$outdir = file.path( p$modeldir, "fishery_model_results"  )
     if (!exists("fnres", p$fishery_model)) p$fishery_model$fnres  = file.path( p$fishery_model$outdir, paste( "surplus.prod.mcmc", p$year.assessment, p$fishery_model$method, tag, "rdata", sep=".") )
-    if (!exists("standata", p$fishery_model)) p$fishery_model$standata = snowcrab_tsdata( p=p, assessment_years=p$assessment_years )
     if (!exists("Kmu", p$fishery_model$standata)) p$fishery_model$standata$Kmu =  c( 5, 50, 1 )
     if (!exists("rmu", p$fishery_model$standata)) p$fishery_model$standata$rmu = c(1, 1, 1)
     if (!exists("qmu", p$fishery_model$standata)) p$fishery_model$standata$qmu = c(1, 1, 1)
@@ -242,7 +241,7 @@ fishery_model = function(  p,  DS="stan", plotresults=TRUE, tag="default", ... )
 
   if (DS=="stan_data" ) {
     # used?
-    sb = snowcrab_tsdata(p=p, assessment_years=2000:p$year.assessment)
+    sb = snowcrab_tsdata(p=p, assessment_years=p$yrs)
     return(sb)
   }
 
@@ -254,7 +253,6 @@ fishery_model = function(  p,  DS="stan", plotresults=TRUE, tag="default", ... )
     rstan_options(auto_write = TRUE)
     options(mc.cores = parallel::detectCores())
 
-    p = fishery_model( p=p, DS="logistic_parameters", tag=tag )
 
     message( "Output location is: ", p$fishery_model$outdir )
 

@@ -5,22 +5,26 @@
 year.assessment = 2020   # NOTE: for 4X, the season 2019-2020 -> 2019
 
 
-p = bio.snowcrab::snowcrab_parameters( project_class="carstm", year.assessment=year.assessment, assessment.years=1999:year.assessment  )
+p = bio.snowcrab::snowcrab_parameters( project_class="carstm",  assessment.years=1999:year.assessment  )
 
- 
+
+tag = "default"
+# tag = "zeroinflated"
+
+p = fishery_model( p=p, DS="logistic_parameters", tag=tag )
+
+p$fishery_model$standata = snowcrab_tsdata( p=p, assessment_years=p$yrs )
+
 # later:::ensureInitialized()  # solve mode error
-p$fishery_model$standata$Kmu = c( 5, 50, 1 )
+p$fishery_model$standata$Kmu = c(5, 50, 1)
 p$fishery_model$standata$rmu = c(1, 1, 1)
 p$fishery_model$standata$qmu = c(1, 1, 1)
 p$fishery_model$standata$Ksd = c(0.25, 0.25, 0.25) * p$fishery_model$standata$Kmu  # c( 2, 20, 0.5)
 p$fishery_model$standata$rsd = c(0.25, 0.25, 0.25) * p$fishery_model$standata$rmu  # rep( 0.3, 3)
 p$fishery_model$standata$qsd = c(0.25, 0.25, 0.25) * p$fishery_model$standata$qmu  # rep( 0.3, 3)
 
-tag = "default"
-# tag = "zeroinflated"
+str( p$fishery_model)
 
-# p = fishery_model( p=p, DS="logistic_parameters", tag=tag )  # gets run by default
-# str( p$fishery_model)
 res = fishery_model( p=p, DS="logistic", tag=tag, chains=3, iter=15000, warmup=10000, refresh=1000, control=list(adapt_delta=0.99, max_treedepth=18) )
 # res = fishery_model( p=p, DS="logistic_samples", tag=tag )
 
