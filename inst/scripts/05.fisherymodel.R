@@ -11,17 +11,17 @@ p = bio.snowcrab::snowcrab_parameters( project_class="carstm",  assessment.years
 tag = "default"
 # tag = "zeroinflated"
 
-p = fishery_model( p=p, DS="logistic_parameters", tag=tag )
-
-p$fishery_model$standata = snowcrab_tsdata( p=p, assessment_years=p$yrs )
+p$fishery_model = list( standata = snowcrab_tsdata( p=p, assessment_years=p$yrs ) )
 
 # later:::ensureInitialized()  # solve mode error
-p$fishery_model$standata$Kmu = c(5, 50, 1)
+p$fishery_model$standata$Kmu = c(3, 30, 1)
 p$fishery_model$standata$rmu = c(1, 1, 1)
 p$fishery_model$standata$qmu = c(1, 1, 1)
 p$fishery_model$standata$Ksd = c(0.25, 0.25, 0.25) * p$fishery_model$standata$Kmu  # c( 2, 20, 0.5)
 p$fishery_model$standata$rsd = c(0.25, 0.25, 0.25) * p$fishery_model$standata$rmu  # rep( 0.3, 3)
 p$fishery_model$standata$qsd = c(0.25, 0.25, 0.25) * p$fishery_model$standata$qmu  # rep( 0.3, 3)
+
+p = fishery_model( p=p, DS="logistic_parameters", tag=tag )
 
 str( p$fishery_model)
 

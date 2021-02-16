@@ -113,13 +113,11 @@ year.assessment = 2020
 
   # ------------------------------------------
   # Map: Logbook data
-  outdir = file.path( p$project.outputdir, "maps", "logbook","snowcrab","annual" )
-  p$corners = data.frame(plon=c(220, 990), plat=c(4750, 5270) )
-
-  map.fisheries.data( p=p, variable= 'effort', outdir=outdir, FUN=sum, probs=c(0,0.975))
-  map.fisheries.data( p=p, variable= 'cpue', outdir=outdir, FUN=mean, probs=c(0,0.975))
-  map.fisheries.data( p=p, variable= 'landings', outdir=outdir, FUN=sum, probs=c(0,0.975))
-
+  map.fisheries.data( 
+    outdir=file.path( p$project.outputdir, "maps", "logbook","snowcrab","annual" ), 
+    probs=c(0,0.975),
+    crs=st_crs( p$aegis_proj4string_planar_km )
+  )
 
   # --- TABLES ----
   # TODO-BZ add functionality for tables to be saved as pdf

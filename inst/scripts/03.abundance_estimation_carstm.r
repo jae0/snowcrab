@@ -9,7 +9,7 @@
 
   year.assessment = 2020
 
-  p = bio.snowcrab::snowcrab_parameters( project_class="carstm", assessment.years=1999:year.assessment )
+  p = bio.snowcrab::snowcrab_parameters( project_class="carstm", assessment.years=2000:year.assessment )
 
 # ------------------------------------------------
 # Part 2 -- polygon structure
