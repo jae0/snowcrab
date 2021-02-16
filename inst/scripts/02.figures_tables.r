@@ -1,12 +1,11 @@
 
   # Figures and tables obtained after completion of data assimilation and processing up to the end of "01.snowcrab.r"
-require(aegis)
 
 
 year.assessment = 2020
 
-  p = bio.snowcrab::load.environment( year.assessment=year.assessment )
-# loadfunctions('bio.snowcrab')
+p = bio.snowcrab::load.environment( year.assessment=year.assessment )
+
 
 
   # --- FIGURES ----
