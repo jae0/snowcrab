@@ -22,8 +22,6 @@ fishery_model = function(  p,  DS="stan", plotresults=TRUE, tag="default", ... )
     if (!exists("Ksd", p$fishery_model$standata)) p$fishery_model$standata$Ksd =  c(0.5, 0.5, 0.5) * p$fishery_model$standata$Kmu  # c( 2, 20, 0.5)
     if (!exists("rsd", p$fishery_model$standata)) p$fishery_model$standata$rsd =  c(0.5, 0.5, 0.5) * p$fishery_model$standata$rmu  # rep( 0.3, 3)
     if (!exists("qsd", p$fishery_model$standata)) p$fishery_model$standata$qsd =  c(0.5, 0.5, 0.5) * p$fishery_model$standata$qmu  # rep( 0.3, 3)
-    if (!exists("stancode", p$fishery_model)) p$fishery_model$stancode = fishery_model( p=p, DS="stan_surplus_production" )
-    if (!exists("stancode_compiled", p$fishery_model)) p$fishery_model$stancode_compiled = rstan::stan_model( model_code=p$fishery_model$stancode )
     message( "Results will be saved to:", p$fishery_model$outdir)
     return(p)
   }

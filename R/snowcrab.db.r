@@ -1101,8 +1101,8 @@ snowcrab.db = function( DS, p=NULL, yrs=NULL, fn.root=NULL, redo=FALSE, extrapol
 
   if ( DS=="biological_data") {
 
-    set = aegis.survey::survey_db( p=p, DS="filter" ) # mature male > 95 mm
-
+    set = aegis.survey::survey_db( p=p, DS="filter" ) 
+    
     if ( p$selection$type=="number") {
       # should be snowcrab survey data only taken care of p$selection$survey = "snowcrab"
       # robustify input data: .. upper bound trim
@@ -1262,18 +1262,6 @@ snowcrab.db = function( DS, p=NULL, yrs=NULL, fn.root=NULL, redo=FALSE, extrapol
     if (length(i) > 0) M$timestamp[i] = M$timestamp[i] - lubridate::duration(month=1)
 
     M$tiyr = lubridate::decimal_date(M$timestamp)
-
-    # globally remove all unrealistic data
-    # p$quantile_bounds = c(0.0005, 0.9995)
-    if (exists("quantile_bounds", p)) {
-      TR = quantile(M[,p$variabletomodel], probs=p$quantile_bounds, na.rm=TRUE ) 
-      
-      ii = which( M[,p$variabletomodel] > TR[2] )
-      if ( length(ii) > 0 ) M[ii,p$variabletomodel] = TR[2]
-
-      ii = which( M[,p$variabletomodel] < TR[1] )
-      if ( length(ii) > 0 ) M[ii,p$variabletomodel] = TR[1]
-    }
 
     # reduce size
     M = M[ which( M$lon > p$corners$lon[1] & M$lon < p$corners$lon[2]  & M$lat > p$corners$lat[1] & M$lat < p$corners$lat[2] ), ]
@@ -1558,15 +1546,8 @@ snowcrab.db = function( DS, p=NULL, yrs=NULL, fn.root=NULL, redo=FALSE, extrapol
     i = which(lubridate::month(M$timestamp)==1)
     if (length(i) > 0) M$timestamp[i] = M$timestamp[i] - lubridate::duration(month=1)
 
+    M$tiyr = lubridate::decimal_date(M$timestamp)
 
-    M$tiyr=lubridate::decimal_date(M$timestamp)
-
-    # M$totno = M$totno_adjusted / M$cf_set_no   # convert density to counts
-    # M$totwgt = M$totwgt_adjusted / M$cf_set_mass # convert density to total wgt
-
-    # M$data_offset = 1 / M$cf_set_no  ## offset only used in poisson model
-
- 
     # reduce size
     M = M[ which( M$lon > p$corners$lon[1] & M$lon < p$corners$lon[2]  & M$lat > p$corners$lat[1] & M$lat < p$corners$lat[2] ), ]
     # levelplot(z.mean~plon+plat, data=M, aspect="iso")

@@ -115,7 +115,8 @@ p = bio.snowcrab::load.environment( year.assessment=year.assessment )
   map.fisheries.data( 
     outdir=file.path( p$project.outputdir, "maps", "logbook","snowcrab","annual" ), 
     probs=c(0,0.975),
-    crs=st_crs( p$aegis_proj4string_planar_km )
+    crs=st_crs( p$aegis_proj4string_planar_km ),
+    outformat="svg"
   )
 
   # --- TABLES ----

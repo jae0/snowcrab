@@ -3,9 +3,10 @@ map.fisheries.data = function(
   yrs, 
   variables=c('effort', 'cpue', 'landings') ,
   FUN = c(sum, mean, sum),
-  probs=c(0.1, 0.9), 
-  pres=10,
-  crs = st_crs( projection_proj4string("lonlat_wgs84"))  
+  probs=c(0.025, 0.975), 
+  pres = 10,
+  crs = st_crs( projection_proj4string("lonlat_wgs84"))  ,
+  outformat="pdf"
   ) {
 
   require(sf)
@@ -68,16 +69,19 @@ map.fisheries.data = function(
       sppoly$z[ sppoly$z > er[2] ] = er[2] # set levels higher than max datarange to max datarange
 
       # do the map
-      fn = file.path( outloc, paste(outfn, "pdf", sep="." ) )
+      fn = file.path( outloc, paste(outfn, outformat, sep="." ) )
 
-      pdf( file=fn, width=9, height=7, bg='white', pointsize=12 )
+      if (outformat=="pdf") pdf( file=fn, width=9, height=7, bg='white', pointsize=12 )
+      if (outformat=="svg") svg( filename=fn, width=9, height=7, bg='white', pointsize=12   )
+      if (outformat=="png") png( filename=fn, width=3072, height=2304, pointsize=40, res=300 )
+
         tmap_mode("plot")
         o = tm_shape( sppoly, projection=crs ) +
           tm_polygons(
             "z",
             style = "cont",
             breaks = datarange,
-            title= paste( vn, ":", yrs[i] ),
+            title= passte( vn, ":", yrs[i] ),
             border.col = NULL,
             colorNA = NULL,
 #            constrast=c(0,0.6),
@@ -93,8 +97,8 @@ map.fisheries.data = function(
         tm_shape( managementlines, projection=crs ) +
           tm_lines( col="grey20", alpha=0.75, lwd=2) +
 
-        tm_compass() + 
-        tm_scale_bar() +
+        tm_compass( position=c( "right", "top")) + 
+        tm_scale_bar( position=c("left", "bottom" ) ) +
         tm_layout( frame=FALSE, legend.text.size= 0.7 )
         print(o)
       dev.off()

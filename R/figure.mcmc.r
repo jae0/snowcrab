@@ -5,7 +5,7 @@
     sb= res$p$fishery_model$standata
 
     ntacs = sb$nProj
-    yrs0 = res$p$assessment_years
+    yrs0 = res$p$assessment.years
     yrs = c( yrs0, (max(yrs0)+c(1:sb$M) ) )
     yrs.last = max(yrs0) + 0.5
     ndata = length(yrs0)

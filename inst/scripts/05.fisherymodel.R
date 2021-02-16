@@ -14,14 +14,17 @@ tag = "default"
 p$fishery_model = list( standata = snowcrab_tsdata( p=p, assessment_years=p$yrs ) )
 
 # later:::ensureInitialized()  # solve mode error
-p$fishery_model$standata$Kmu = c(3, 30, 1)
+p$fishery_model$standata$Kmu = c(4, 40, 1)
 p$fishery_model$standata$rmu = c(1, 1, 1)
 p$fishery_model$standata$qmu = c(1, 1, 1)
-p$fishery_model$standata$Ksd = c(0.25, 0.25, 0.25) * p$fishery_model$standata$Kmu  # c( 2, 20, 0.5)
-p$fishery_model$standata$rsd = c(0.25, 0.25, 0.25) * p$fishery_model$standata$rmu  # rep( 0.3, 3)
-p$fishery_model$standata$qsd = c(0.25, 0.25, 0.25) * p$fishery_model$standata$qmu  # rep( 0.3, 3)
+p$fishery_model$standata$Ksd = c(0.5, 0.5, 0.5) * p$fishery_model$standata$Kmu  # c( 2, 20, 0.5)
+p$fishery_model$standata$rsd = c(0.5, 0.5, 0.5) * p$fishery_model$standata$rmu  # rep( 0.3, 3)
+p$fishery_model$standata$qsd = c(0.5, 0.5, 0.5) * p$fishery_model$standata$qmu  # rep( 0.3, 3)
 
 p = fishery_model( p=p, DS="logistic_parameters", tag=tag )
+
+p$fishery_model$stancode = fishery_model( p=p, DS="stan_surplus_production" )
+p$fishery_model$stancode_compiled = rstan::stan_model( model_code=p$fishery_model$stancode )
 
 str( p$fishery_model)
 
