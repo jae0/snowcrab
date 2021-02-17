@@ -68,14 +68,8 @@
   res$dyear
 
 
-  require(aegis.coastline)
-  coastline = coastline_db( p=p, DS="eastcoast_gadm" )
-  coastline = st_transform( coastline, st_crs(p$aegis_proj4string_planar_km) )
-
-  # depth contours
-  require(aegis.polygons)
-  isobaths = aegis.bathymetry::isobath_db( p=p, depths=c(50, 100, 200, 400, 800)  )
-  isobaths = st_transform( isobaths, st_crs(p$aegis_proj4string_planar_km) )
+  coastline=aegis.coastline::coastline_db( DS="eastcoast_gadm", project_to=plot_crs )
+  isobaths=aegis.bathymetry::isobath_db( depths=c(50, 100, 200, 400, 800), project_to=plot_crs  )
 
   time_match = list( year=as.character(2020)  )
 
@@ -97,16 +91,18 @@
 
       time_match = list( year=as.character(y)  )
       fn_root = paste("Predicted_abundance", paste0(time_match, collapse="-"), sep="_")
-      fn = file.path( outputdir, paste(fn_root, "pdf", sep=".") )
+      fn = file.path( outputdir, paste(fn_root, "svg", sep=".") )
 
-      pdf( file=fn, width=8, height=6, bg='white', pointsize=10 )
         carstm_map(  res=res, vn=vn, time_match=time_match, 
-#          breaks = seq(-0.5, 0.5, by=0.1),
+          breaks =brks,
+          palette="viridis",
           coastline=coastline,
           isobaths=isobaths,
-          main=paste("Predicted abundance", paste0(time_match, collapse="-") )
+          managementlines=managementlines,
+          main=paste("Predicted abundance", paste0(time_match, collapse="-") ),
+          outfilename=fn
         )  
-      dev.off()
+
   }
   
 
@@ -135,47 +131,41 @@
   lines( cfa4x_ub ~ yrs, data=RES, lty="dotted", lwd=2, col="slategray" )
 
 
-  p$boundingbox = list( xlim=p$corners$lon, ylim=p$corners$lat) # bounding box for plots using spplot
 
-  p$coastLayout = aegis.coastline::coastline_layout(p=p)
-  p$mypalette=RColorBrewer::brewer.pal(9, "YlOrRd")
-    sppoly = areal_units( p=p )  # to reload
 
 
   # map it ..mean density
 
-  vn = paste(p$variabletomodel, "predicted", sep=".")
+  sppoly = areal_units( p=p )  # to reload
+
+  plot_crs = p$aegis_proj4string_planar_km
+  coastline=aegis.coastline::coastline_db( DS="eastcoast_gadm", project_to=plot_crs )
+  isobaths=aegis.bathymetry::isobath_db( depths=c(50, 100, 200, 400, 800), project_to=plot_crs  )
+  managementlines = aegis.polygons::area_lines.db( DS="cfa.regions", returntype="sf", project_to=plot_crs )
+ 
+  vn = paste("biomass", "predicted", sep=".")
 
   outputdir = file.path( p$modeldir, p$carstm_model_label, "predicted.biomass.densitites" )
 
   if ( !file.exists(outputdir)) dir.create( outputdir, recursive=TRUE, showWarnings=FALSE )
 
-  brks = interval_break(X=bio[,"2020"], n=length(p$mypalette), style="quantile") * 10^6
-  sppoly = areal_units( p=p )  # to reload
+  brks = signif( interval_break(X=bio[], n=9, style="quantile") * 10^6, 2)
 
   for (i in 1:length(p$yrs) ){
     y = as.character( p$yrs[i] )
     sppoly[,vn] = bio[,y] * 10^6
-    fn = file.path( outputdir , paste( "biomass", y, "pdf", sep=".") )
+    fn = file.path( outputdir , paste( "biomass", y, "svg", sep=".") )
 
-    pdf( file=fn, width=8, height=6, bg='white', pointsize=10 )
-
-      plot( sppoly[vn], 
-          border = "lightslateblue", 
-          lwd = 0.8, 
-          breaks = brks,
-          coastline=coastline,
-          isobaths=isobaths,
-          main=paste("Predicted abundance density", y ),
-          reset = FALSE
+      carstm_map(  sppoly=sppoly, vn=vn,    
+        breaks=brks, 
+        coastline=coastline,
+        isobaths=isobaths,
+        managementlines=managementlines,
+        palette="-viridis",
+        main=paste("Predicted abundance density", y ),  
+        outfilename=fn
       )
-
-      plot( st_transform( coastline, crs=st_crs(sppoly) ), col="whitesmoke", lwd=1.0, add=TRUE)
-      plot( st_transform( isobaths,  crs=st_crs(sppoly) ), col="lightgray", lwd=0.3, add=TRUE) 
-
-    dev.off()
   }
-
 
   plot( fit, plot.prior=TRUE, plot.hyperparameters=TRUE, plot.fixed.effects=FALSE )
   plot( fit$marginals.hyperpar$"Phi for auid", type="l")  # posterior distribution of phi nonspatial dominates

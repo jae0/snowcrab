@@ -5,8 +5,9 @@ map.fisheries.data = function(
   FUN = c(sum, mean, sum),
   probs=c(0.025, 0.975), 
   pres = 10,
-  crs = st_crs( projection_proj4string("lonlat_wgs84"))  ,
-  outformat="pdf"
+  plot_crs = st_crs( projection_proj4string("lonlat_wgs84"))  ,
+  outformat="pdf",
+  ...
   ) {
 
   require(sf)
@@ -32,23 +33,19 @@ map.fisheries.data = function(
   x$AUID = st_points_in_polygons( pts=x, polys=sppoly[, "AUID"], varname="AUID" )
 
 
-  coastline = aegis.coastline::coastline_db( p=p, DS="eastcoast_gadm", project_to=crs )
+  coastline = aegis.coastline::coastline_db( DS="eastcoast_gadm", project_to=plot_crs ) 
   
   # depth contours
-  isobaths = aegis.bathymetry::isobath_db( depths=c(50, 100, 200, 400, 800), project_to=crs  )
+  isobaths = aegis.bathymetry::isobath_db( depths=c(50, 100, 200, 400, 800), project_to=plot_crs  )
 
-
-  managementlines = aegis.polygons::area_lines.db( DS="cfa.regions" )
-  managementlines = st_sfc( st_multilinestring( sapply( managementlines, as.matrix) ) )
-  st_cast(managementlines, "MULTILINESTRING")
-  st_crs(managementlines) = st_crs( projection_proj4string("lonlat_wgs84")) 
+  managementlines = aegis.polygons::area_lines.db( DS="cfa.regions", returntype="sf", project_to=plot_crs )
   
-
+  ellps = list(...)
 
   for (v in 1: length(variables)) {
     vn =variables[v]
     er = quantile( x[[vn]], probs=probs, na.rm=TRUE )
-    datarange = seq( er[1], er[2], length.out=7) 
+    datarange = signif( seq( er[1], er[2], length.out=5), 2) 
     
     outloc = file.path( outdir, vn )
     dir.create (outloc, showWarnings=FALSE, recursive =TRUE)
@@ -73,13 +70,13 @@ map.fisheries.data = function(
 
       if (outformat=="pdf") pdf( file=fn, width=9, height=7, bg='white', pointsize=12 )
       if (outformat=="svg") svg( filename=fn, width=9, height=7, bg='white', pointsize=12   )
-      if (outformat=="png") png( filename=fn, width=3072, height=2304, pointsize=40, res=300 )
+      if (outformat=="png") png( filename=fn, width=3072, height=2304, pointsize=12, res=300 )
 
         tmap_mode("plot")
-        o = tm_shape( sppoly, projection=crs ) +
+        o = tm_shape( sppoly, projection=plot_crs ) +
           tm_polygons(
             "z",
-            style = "cont",
+            style = ifelse ( exists("style", ellps), ellps[["style"]], "cont" ) ,
             breaks = datarange,
             title= paste( vn, ":", yrs[i] ),
             border.col = NULL,
@@ -87,19 +84,21 @@ map.fisheries.data = function(
 #            constrast=c(0,0.6),
             showNA=FALSE,
             lwd = 0.5, 
-            palette = "YlOrRd",
+            palette = ifelse ( exists("palette", ellps), ellps[["palette"]], "YlOrRd"),
             border.alpha = 0.5,
             legend.is.portrait = FALSE ) +
-        tm_shape( coastline, projection=crs ) +
+        tm_shape( coastline, projection=plot_crs ) +
           tm_polygons( col="grey80" ) +
-        tm_shape( isobaths, projection=crs ) +
+        tm_shape( isobaths, projection=plot_crs ) +
           tm_lines( col="lightgray", alpha=0.5) +
-        tm_shape( managementlines, projection=crs ) +
-          tm_lines( col="grey20", alpha=0.75, lwd=2) +
+        tm_shape( managementlines, projection=plot_crs ) +
+          tm_lines( col="grey40", alpha=0.6, lwd=2) +
 
         tm_compass( position=c( "right", "top")) + 
-        tm_scale_bar( position=c("left", "bottom" ) ) +
-        tm_layout( frame=FALSE, legend.text.size= 0.7 )
+        tm_scale_bar( position=c("right", "bottom" ), width=0.2, text.size=0.7) +
+        tm_legend( position=c("left", "top") ,  frame=TRUE, scale = 1 , title.size=1.5, text.size=0.80, legend.width=0.75) +
+        tm_layout( frame=FALSE )
+
         print(o)
       dev.off()
       print(fn)
