@@ -81,8 +81,6 @@
 
   vn = paste(p$variabletomodel, "predicted", sep=".")
      carstm_map(  res=res, vn=vn, time_match=time_match , 
-          coastline=coastline,
-          isobaths=isobaths,
           main=paste("Predicted abundance", paste0(time_match, collapse="-") )  
      )
     

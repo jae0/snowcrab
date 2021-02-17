@@ -61,11 +61,11 @@ map.fisheries.data = function(
       toplot = x[[vn]] [iy]  
       auid = x[["AUID"]] [iy]
       oo = tapply( toplot, auid, FUN[[v]], na.rm=TRUE )
-      oo[ oo< er[1] ] = er[1]
-      oo[ oo> er[2] ] = er[2]
+ 
       sppoly$z = NA
       sppoly$z[ match( names(oo) , sppoly$AUID ) ] = oo
 
+      sppoly$z[ sppoly$z < er[1] ] = er[1] # set levels higher than max datarange to max datarange
       sppoly$z[ sppoly$z > er[2] ] = er[2] # set levels higher than max datarange to max datarange
 
       # do the map
@@ -81,7 +81,7 @@ map.fisheries.data = function(
             "z",
             style = "cont",
             breaks = datarange,
-            title= passte( vn, ":", yrs[i] ),
+            title= paste( vn, ":", yrs[i] ),
             border.col = NULL,
             colorNA = NULL,
 #            constrast=c(0,0.6),
