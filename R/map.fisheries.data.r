@@ -45,7 +45,7 @@ map.fisheries.data = function(
   for (v in 1: length(variables)) {
     vn =variables[v]
     er = quantile( x[[vn]], probs=probs, na.rm=TRUE )
-    datarange = signif( seq( er[1], er[2], length.out=5), 2) 
+    datarange = pretty( er  )  
     
     outloc = file.path( outdir, vn )
     dir.create (outloc, showWarnings=FALSE, recursive =TRUE)
@@ -68,9 +68,9 @@ map.fisheries.data = function(
       # do the map
       fn = file.path( outloc, paste(outfn, outformat, sep="." ) )
 
-      if (outformat=="pdf") pdf( file=fn, width=9, height=7, bg='white', pointsize=12 )
-      if (outformat=="svg") svg( filename=fn, width=9, height=7, bg='white', pointsize=12   )
-      if (outformat=="png") png( filename=fn, width=3072, height=2304, pointsize=12, res=300 )
+      if (outformat=="pdf") pdf( file=fn, width=8, height=6, bg='white', pointsize=20 )
+      if (outformat=="svg") svg( filename=fn, width=8, height=6, bg='white', pointsize=20   )
+      if (outformat=="png") png( filename=fn, width=1200, height=800, pointsize=20, res=100 )
 
         tmap_mode("plot")
         o = tm_shape( sppoly, projection=plot_crs ) +
@@ -86,6 +86,7 @@ map.fisheries.data = function(
             lwd = 0.5, 
             palette = ifelse ( exists("palette", ellps), ellps[["palette"]], "YlOrRd"),
             border.alpha = 0.5,
+            alpha = 0.95,
             legend.is.portrait = FALSE ) +
         tm_shape( coastline, projection=plot_crs ) +
           tm_polygons( col="grey80" ) +

@@ -68,8 +68,9 @@
   res$dyear
 
 
+  plot_crs = p$aegis_proj4string_planar_km
   coastline=aegis.coastline::coastline_db( DS="eastcoast_gadm", project_to=plot_crs )
-  isobaths=aegis.bathymetry::isobath_db( depths=c(50, 100, 200, 400, 800), project_to=plot_crs  )
+  isobaths=aegis.bathymetry::isobath_db( depths=c(50, 100, 200, 400, 800), project_to )
 
   time_match = list( year=as.character(2020)  )
 
@@ -91,7 +92,7 @@
 
       time_match = list( year=as.character(y)  )
       fn_root = paste("Predicted_abundance", paste0(time_match, collapse="-"), sep="_")
-      fn = file.path( outputdir, paste(fn_root, "svg", sep=".") )
+      fn = file.path( outputdir, paste(fn_root, "png", sep=".") )
 
         carstm_map(  res=res, vn=vn, time_match=time_match, 
           breaks =brks,
@@ -154,7 +155,7 @@
   for (i in 1:length(p$yrs) ){
     y = as.character( p$yrs[i] )
     sppoly[,vn] = bio[,y] * 10^6
-    fn = file.path( outputdir , paste( "biomass", y, "svg", sep=".") )
+    fn = file.path( outputdir , paste( "biomass", y, "png", sep=".") )
 
       carstm_map(  sppoly=sppoly, vn=vn,    
         breaks=brks, 
