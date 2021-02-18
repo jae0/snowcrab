@@ -375,7 +375,7 @@ snowcrab_parameters = function( p=list(), year.assessment=NULL, project_name="bi
       areal_units_overlay = "snowcrab_managementareas", # currently: "snowcrab_managementareas",  "groundfish_strata" .. additional polygon layers for subsequent analysis for now ..
       areal_units_resolution_km = 25, # km dim of lattice ~ 1 hr
       areal_units_constraint = "snowcrab",  # locations of data as constraint .. "snowcrab" loads these automatically, otherwise a xy matrix of positions
-      areal_units_constraint_nmin = 3,
+      areal_units_constraint_nmin = 10,
       areal_units_proj4string_planar_km = aegis::projection_proj4string("utm20"),  # coord system to use for areal estimation and gridding for carstm
       areal_units_timeperiod = "none",
       tus="yr",
@@ -399,14 +399,22 @@ snowcrab_parameters = function( p=list(), year.assessment=NULL, project_name="bi
       ranged_data="len"
     )
 
+    ### survey data source can be variable depending upon what is being modelled
+    if (p$selection$type %in% c("presence_absence") ) {
+      p$data.source = c("snowcrab", "groundfish" )
+    } else (p$selection$type %in% c("biomass", "number") ) {
+      p$data.source =  "snowcrab" 
+    }
+
     if ( !exists("survey", p$selection) ) p$selection$survey = list(
-      data.source = ifelse (p$selection$type %in% c("number", "biomass"), c("snowcrab"), c("snowcrab", "groundfish")),
+      data.source = "snowcrab",
       yr = p$yrs,      # time frame for comparison specified above
       settype = 1, # same as geartype in groundfish_survey_db
       polygon_enforce=TRUE,  # make sure mis-classified stations or incorrectly entered positions get filtered out
       strata_toremove = NULL #,  # emphasize that all data enters analysis initially ..
       # ranged_data = c("dyear")  # not used .. just to show how to use range_data
     )
+
 
     if ( !exists("carstm_inputdata_model_source", p))  p$carstm_inputdata_model_source = list()
     p$carstm_inputdata_model_source = parameters_add_without_overwriting( p$carstm_inputdata_model_source,

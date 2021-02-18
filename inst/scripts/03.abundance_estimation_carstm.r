@@ -15,13 +15,13 @@
 # Part 2 -- polygon structure
   if (0) {
     # adjust based upon RAM requirements and ncores
-    require(INLA)
-    inla.setOption(num.threads= floor( parallel::detectCores() / 2) )
-    inla.setOption(blas.num.threads= 2 )
+    
+    p$areal_units_constraint_nmin = 3
 
     # create if not yet made
     for (au in c("cfanorth", "cfasouth", "cfa4x", "cfaall" )) plot(polygon_managementareas( species="snowcrab", au))
     xydata = snowcrab.db( p=p, DS="areal_units_input", redo=TRUE )
+
     sppoly = areal_units( p=p, redo=TRUE )  # create constrained polygons with neighbourhood as an attribute
     MS = NULL
 
@@ -70,23 +70,25 @@
 
   plot_crs = p$aegis_proj4string_planar_km
   coastline=aegis.coastline::coastline_db( DS="eastcoast_gadm", project_to=plot_crs )
-  isobaths=aegis.bathymetry::isobath_db( depths=c(50, 100, 200, 400, 800), project_to )
-
-  time_match = list( year=as.character(2020)  )
-
-  vn = paste(p$variabletomodel, "predicted", sep=".")
-     carstm_map(  res=res, vn=vn, time_match=time_match , 
-          main=paste("Predicted abundance", paste0(time_match, collapse="-") )  
-     )
+  isobaths=aegis.bathymetry::isobath_db( depths=c(50, 100, 200, 400, 800), project_to=plot_crs )
+  managementlines = aegis.polygons::area_lines.db( DS="cfa.regions", returntype="sf", project_to=plot_crs )
+ 
+  carstm_map(  res=res, 
+      vn=paste(p$variabletomodel, "predicted", sep="."), 
+      time_match=list( year=as.character(2020)  ) , 
+      coastline=coastline,
+      managementlines=managementlines,
+      isobaths=isobaths,
+      main=paste("Predicted abundance", paste0(time_match, collapse="-") )  
+  )
     
-    
-
 
   # map all :
   vn = paste(p$variabletomodel, "predicted", sep=".")
   outputdir = file.path( gsub( ".rdata", "", dirname(res$fn_res) ), "figures", vn )
   if ( !file.exists(outputdir)) dir.create( outputdir, recursive=TRUE, showWarnings=FALSE )
 
+  brks = pretty(  res[[vn]]  )
 
   for (y in res$year ){
 
@@ -150,7 +152,7 @@
 
   if ( !file.exists(outputdir)) dir.create( outputdir, recursive=TRUE, showWarnings=FALSE )
 
-  brks = signif( interval_break(X=bio[], n=9, style="quantile") * 10^6, 2)
+  brks = pretty(  bio[] * 10^6 )
 
   for (i in 1:length(p$yrs) ){
     y = as.character( p$yrs[i] )
