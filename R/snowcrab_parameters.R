@@ -373,21 +373,32 @@ snowcrab_parameters = function( p=list(), year.assessment=NULL, project_name="bi
       areal_units_xydata = "snowcrab.db(p=p, DS='areal_units_input')",
       areal_units_type = "lattice", # "stmv_lattice" to use ageis fields instead of carstm fields ... note variables are not the same
       areal_units_overlay = "snowcrab_managementareas", # currently: "snowcrab_managementareas",  "groundfish_strata" .. additional polygon layers for subsequent analysis for now ..
-      areal_units_resolution_km = 25, # km dim of lattice ~ 1 hr
       areal_units_constraint = "snowcrab",  # locations of data as constraint .. "snowcrab" loads these automatically, otherwise a xy matrix of positions
       areal_units_constraint_nmin = 10,
       areal_units_proj4string_planar_km = aegis::projection_proj4string("utm20"),  # coord system to use for areal estimation and gridding for carstm
       areal_units_timeperiod = "none",
       tus="yr",
-      fraction_todrop = 1/5,
-      fraction_cv = 1.0,
-      fraction_good_bad = 0.9,
-      nAU_min = 30,
       carstm_modelengine = "inla",  # {model engine}.{label to use to store}
       carstm_model_label = "default",
       carstm_inputs_aggregated = FALSE
     )
 
+    if ( p$areal_units_type =="lattice" ) {
+      p = parameters_add_without_overwriting( p,
+        sa_threshold_km2 = 10,    # drop AU's smaller than this in km2
+        areal_units_resolution_km = 25 #  
+      )
+    }
+
+    if ( p$areal_units_type =="tessilation" ) {
+      p = parameters_add_without_overwriting( p,
+        areal_units_resolution_km = 1, # km  
+        fraction_todrop = 1/5,  # control tessilation
+        fraction_cv = 1.0,
+        fraction_good_bad = 0.9,
+        nAU_min = 30
+      )
+    }
 
     if ( !exists("selection", p)) p$selection=list()
     if ( !exists("type", p$selection) ) p$selection$type = "number"
@@ -402,7 +413,7 @@ snowcrab_parameters = function( p=list(), year.assessment=NULL, project_name="bi
     ### survey data source can be variable depending upon what is being modelled
     if (p$selection$type %in% c("presence_absence") ) {
       p$data.source = c("snowcrab", "groundfish" )
-    } else (p$selection$type %in% c("biomass", "number") ) {
+    } else if (p$selection$type %in% c("biomass", "number") ) {
       p$data.source =  "snowcrab" 
     }
 
