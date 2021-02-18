@@ -349,6 +349,8 @@ snowcrab_parameters = function( p=list(), year.assessment=NULL, project_name="bi
   }
 
 
+  # ------------------------------------------------------
+
 
   if (project_class %in% c("carstm") ) {
 
@@ -388,10 +390,11 @@ snowcrab_parameters = function( p=list(), year.assessment=NULL, project_name="bi
       p = parameters_add_without_overwriting( p, sa_threshold_km2 = 0.1 * p$areal_units_resolution_km^2 )    # drop AU's smaller than 10% of this in km2
     }
 
-    if ( p$areal_units_type =="tessilation" ) {
+    if ( p$areal_units_type =="tesselation" ) {
       p = parameters_add_without_overwriting( p,
         areal_units_resolution_km = 1, # km  
-        fraction_todrop = 1/5,  # control tessilation
+        sa_threshold_km2 = 0,
+        fraction_todrop = 1/5,  # control tesselation
         fraction_cv = 1.0,
         fraction_good_bad = 0.9,
         nAU_min = 30

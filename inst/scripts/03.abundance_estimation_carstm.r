@@ -16,7 +16,7 @@
   if (0) {
     # adjust based upon RAM requirements and ncores
     
-    p$areal_units_constraint_nmin = 3
+    p$areal_units_constraint_nmin = 10
 
     # create if not yet made
     for (au in c("cfanorth", "cfasouth", "cfa4x", "cfaall" )) plot(polygon_managementareas( species="snowcrab", au))
