@@ -384,10 +384,8 @@ snowcrab_parameters = function( p=list(), year.assessment=NULL, project_name="bi
     )
 
     if ( p$areal_units_type =="lattice" ) {
-      p = parameters_add_without_overwriting( p,
-        sa_threshold_km2 = 10,    # drop AU's smaller than this in km2
-        areal_units_resolution_km = 25 #  
-      )
+      p = parameters_add_without_overwriting( p, areal_units_resolution_km = 25  )
+      p = parameters_add_without_overwriting( p, sa_threshold_km2 = 0.1 * p$areal_units_resolution_km^2 )    # drop AU's smaller than 10% of this in km2
     }
 
     if ( p$areal_units_type =="tessilation" ) {
