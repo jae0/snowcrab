@@ -32,7 +32,7 @@
   )
   p$variabletomodel = "pa"
   
-  p$carstm_model_label = "nonseparable_space-time_pa_fishable_zeroinflatedbinomial1"
+  p$carstm_model_label = "nonseparable_space-time_pa_fishable_binomial"
   p$carstm_modelengine = "inla"
   p$carstm_model_formula = as.formula( paste(
     p$variabletomodel, ' ~ 1 ',
@@ -58,8 +58,8 @@
 
 
   M = snowcrab.db( p=p, DS="carstm_inputs", redo=TRUE )  # will redo if not found
-  M = NULL; gc()
-  fit = carstm_model( p=p, M=p$modeldata )
+
+  fit = carstm_model( p=p, M=M )
 
 
 
@@ -85,10 +85,11 @@
   coastline=aegis.coastline::coastline_db( DS="eastcoast_gadm", project_to=plot_crs )
   isobaths=aegis.bathymetry::isobath_db( depths=c(50, 100, 200, 400, 800), project_to=plot_crs )
   managementlines = aegis.polygons::area_lines.db( DS="cfa.regions", returntype="sf", project_to=plot_crs )
- 
+
+  time_match = list( year=as.character(2020)  )
   carstm_map(  res=res, 
       vn=paste(p$variabletomodel, "predicted", sep="."), 
-      time_match=list( year=as.character(2020)  ) , 
+      time_match=time_match , 
       coastline=coastline,
       managementlines=managementlines,
       isobaths=isobaths,
@@ -105,13 +106,16 @@
 
   for (y in res$year ){
 
-      time_match = list( year=as.character(y)  )
+      time_match = list( year=y  )
       fn_root = paste("Predicted_abundance", paste0(time_match, collapse="-"), sep="_")
       fn = file.path( outputdir, paste(fn_root, "png", sep=".") )
 
-        carstm_map(  res=res, vn=vn, time_match=time_match, 
+        carstm_map(  
+          res=res, 
+          vn=vn, 
+          time_match=time_match, 
           breaks =brks,
-          palette="viridis",
+#          palette="-RdYlBu",
           coastline=coastline,
           isobaths=isobaths,
           managementlines=managementlines,
@@ -131,7 +135,7 @@
 
 # plots with 95% PI
 
-    plot( cfaall ~ yrs, data=RES, lty="solid", lwd=4, pch=20, col="slateblue", type="b", ylab="Prob of observing snow crab", xlab="", ylim=c(0.2,0.4))
+    plot( cfaall ~ yrs, data=RES, lty="solid", lwd=4, pch=20, col="slateblue", type="b", ylab="Prob of observing snow crab", xlab="", ylim=c(0,1))
     lines( cfaall_lb ~ yrs, data=RES, lty="dotted", lwd=2, col="slategray" )
     lines( cfaall_ub ~ yrs, data=RES, lty="dotted", lwd=2, col="slategray" )
 
@@ -148,44 +152,6 @@
     lines( cfa4x_ub ~ yrs, data=RES, lty="dotted", lwd=2, col="slategray" )
 
  
-
-  # map it ..mean density
-
-  sppoly = areal_units( p=p )  # to reload
-
-  plot_crs = p$aegis_proj4string_planar_km
-  coastline=aegis.coastline::coastline_db( DS="eastcoast_gadm", project_to=plot_crs )
-  isobaths=aegis.bathymetry::isobath_db( depths=c(50, 100, 200, 400, 800), project_to=plot_crs  )
-  managementlines = aegis.polygons::area_lines.db( DS="cfa.regions", returntype="sf", project_to=plot_crs )
- 
-  vn = paste("pa", "predicted", sep=".")
-
-  outputdir = file.path( p$modeldir, p$carstm_model_label, "predicted.biomass.densitites" )
-
-  if ( !file.exists(outputdir)) dir.create( outputdir, recursive=TRUE, showWarnings=FALSE )
-
-  brks = pretty(  pa[]   )
-
-  for (i in 1:length(p$yrs) ){
-    y = as.character( p$yrs[i] )
-    sppoly[,vn] = pa[,y] 
-    fn = file.path( outputdir , paste( "biomass", y, "png", sep=".") )
-
-      carstm_map(  sppoly=sppoly, vn=vn,    
-        breaks=brks, 
-        coastline=coastline,
-        isobaths=isobaths,
-        managementlines=managementlines,
-        palette="-viridis",
-        main=paste("Predicted habitat probability", y ),  
-        outfilename=fn
-      )
-  }
-
-  plot( fit, plot.prior=TRUE, plot.hyperparameters=TRUE, plot.fixed.effects=FALSE )
-  plot( fit$marginals.hyperpar$"Phi for auid", type="l")  # posterior distribution of phi nonspatial dominates
-  plot( fit$marginals.hyperpar$"Precision for auid", type="l")
-  plot( fit$marginals.hyperpar$"Precision for setno", type="l")
 
 
 

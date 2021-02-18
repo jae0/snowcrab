@@ -1247,11 +1247,12 @@ snowcrab.db = function( DS, p=NULL, yrs=NULL, fn.root=NULL, redo=FALSE, extrapol
 
     if (!redo)  {
       if (file.exists(fn)) {
+        message( "Loading previously saved carstm_inputs ... ", fn)
         load( fn )
         return( M )
       }
     }
-    message( "Generating carstm_inputs ... ")
+    message( "Generating carstm_inputs ... ", fn)
 
 
     # do this immediately to reduce storage for sppoly (before adding other variables)
