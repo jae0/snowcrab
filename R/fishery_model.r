@@ -46,11 +46,11 @@ fishery_model = function(  p,  DS="logistic", assessment_years=2000:p$year.asses
     p$fishery_model$standata$CAT[ which(!is.finite(p$fishery_model$standata$CAT)) ] = p$fishery_model$standata$eps  # remove NA's
 
     # priors
-    if (!exists("Kmu", p$fishery_model$standata)) p$fishery_model$standata$Kmu =  c( 5, 50, 1 )
+    if (!exists("Kmu", p$fishery_model$standata)) p$fishery_model$standata$Kmu =  c( 4, 40, 1 )
     if (!exists("rmu", p$fishery_model$standata)) p$fishery_model$standata$rmu = c(1, 1, 1)
-    if (!exists("qmu", p$fishery_model$standata)) p$fishery_model$standata$qmu = c(1, 1, 1)
-    if (!exists("Ksd", p$fishery_model$standata)) p$fishery_model$standata$Ksd =  c(0.5, 0.5, 0.5) * p$fishery_model$standata$Kmu  # c( 2, 20, 0.5)
-    if (!exists("rsd", p$fishery_model$standata)) p$fishery_model$standata$rsd =  c(0.5, 0.5, 0.5) * p$fishery_model$standata$rmu  # rep( 0.3, 3)
+    if (!exists("qmu", p$fishery_model$standata)) p$fishery_model$standata$qmu = c(2, 2, 2)
+    if (!exists("Ksd", p$fishery_model$standata)) p$fishery_model$standata$Ksd =  c(0.25, 0.25, 0.25) * p$fishery_model$standata$Kmu  # c( 2, 20, 0.5)
+    if (!exists("rsd", p$fishery_model$standata)) p$fishery_model$standata$rsd =  c(0.25, 0.25, 0.25) * p$fishery_model$standata$rmu  # rep( 0.3, 3)
     if (!exists("qsd", p$fishery_model$standata)) p$fishery_model$standata$qsd =  c(0.5, 0.5, 0.5) * p$fishery_model$standata$qmu  # rep( 0.3, 3)
     
     if (!exists("stancode", p$fishery_model )) p$fishery_model$stancode = fishery_model( p=p, DS="stan_surplus_production" )
