@@ -1,13 +1,13 @@
 
-fishery_model = function(  p,  DS="logistic", assessment_years=2000:p$year.assessment, plotresults=TRUE, tag="default", areas=c("cfanorth", "cfasouth", "cfa4x"), ... ) {
+fishery_model = function(  p,  DS="logistic_model", assessment_years=2000:p$year.assessment, plotresults=TRUE, tag="default", areas=c("cfanorth", "cfasouth", "cfa4x"), ... ) {
 
 #     sb = bio.snowcrab::fishery_model( DS="data_aggregated_timeseries", p=p, assessment_years=p$yrs )
 
   if (tag=="default") {
-    if (exists("tag", p)) tag = p$tag 
+    if (exists("tag", p)) tag = p$tag
   }
 
-  
+
   if (0) {
     year.assessment=2016
     p = bio.snowcrab::load.environment( year.assessment=year.assessment)
@@ -17,46 +17,46 @@ fishery_model = function(  p,  DS="logistic", assessment_years=2000:p$year.asses
 
 
   if (DS=="logistic_parameters") {
-    
-    if (!exists("fishery_model", p)) p$fishery_model = list()
-    
-    if (!exists("method", p$fishery_model)) p$fishery_model$method = "stan"  # "jags", etc.
-    if (!exists("outdir", p$fishery_model)) p$fishery_model$outdir = file.path( p$modeldir, "fishery_model_results"  )
-    if (!exists("fnres", p$fishery_model)) p$fishery_model$fnres  = file.path( p$fishery_model$outdir, paste( "surplus.prod.mcmc", p$year.assessment, p$fishery_model$method, tag, "rdata", sep=".") )
-    
-    message( "Results will be saved to:", p$fishery_model$outdir)
+
+    out = list()
+
+    if (!exists("method", out)) out$method = "stan"  # "jags", etc.
+    if (!exists("outdir", out)) out$outdir = file.path( p$modeldir, "fishery_model_results"  )
+    if (!exists("fnres", out)) out$fnres  = file.path( out$outdir, paste( "surplus.prod.mcmc", p$year.assessment, out$method, tag, "rdata", sep=".") )
+
+    message( "Results will be saved to:", out$outdir)
 
     # observations
-    if (!exists("standata", p$fishery_model)) p$fishery_model$standata = fishery_model( DS="data_aggregated_timeseries", p=p, assessment_years=p$yrs )     
-      
-    if (!exists("er", p$fishery_model$standata)) p$fishery_model$standata$er = 0.2  # target exploitation rate
-    if (!exists("U", p$fishery_model$standata))  p$fishery_model$standata$U = ncol( p$fishery_model$standata$B)  # number of regions
-    if (!exists("N", p$fishery_model$standata))  p$fishery_model$standata$N = nrow( p$fishery_model$standata$B)  # no years with data
-    if (!exists("M", p$fishery_model$standata))  p$fishery_model$standata$M = 3 # no years for projections
-    if (!exists("ty", p$fishery_model$standata)) p$fishery_model$standata$ty = which(p$assessment_years == 2004)  # index of the transition year (2004) between spring and fall surveys
-    if (!exists("cfa4x", p$fishery_model$standata))  p$fishery_model$standata$cfa4x = 3 # column index of cfa4x
-    if (!exists("eps",   p$fishery_model$standata))  p$fishery_model$standata$eps = 1e-6  # small non-zero number
+    if (!exists("standata", out)) out$standata = fishery_model( DS="data_aggregated_timeseries", p=p, assessment_years=p$yrs )
 
-    p$fishery_model$standata$missing = ifelse( is.finite(p$fishery_model$standata$IOA), 0, 1)
-    p$fishery_model$standata$missing_n = colSums(p$fishery_model$standata$missing)
-    p$fishery_model$standata$missing_ntot = sum(p$fishery_model$standata$missing_n)
+    if (!exists("er", out$standata)) out$standata$er = 0.2  # target exploitation rate
+    if (!exists("U", out$standata))  out$standata$U = ncol( out$standata$IOA)  # number of regions
+    if (!exists("N", out$standata))  out$standata$N = nrow( out$standata$IOA)  # no years with data
+    if (!exists("M", out$standata))  out$standata$M = 3 # no years for projections
+    if (!exists("ty", out$standata)) out$standata$ty = which(p$assessment_years == 2004)  # index of the transition year (2004) between spring and fall surveys
+    if (!exists("cfa4x", out$standata))  out$standata$cfa4x = 3 # column index of cfa4x
+    if (!exists("eps",   out$standata))  out$standata$eps = 1e-6  # small non-zero number
+
+    out$standata$missing = ifelse( is.finite(out$standata$IOA), 0, 1)
+    out$standata$missing_n = colSums(out$standata$missing)
+    out$standata$missing_ntot = sum(out$standata$missing_n)
 
     # this must be done last
-    p$fishery_model$standata$IOA[ which(!is.finite(p$fishery_model$standata$IOA)) ] = 0 # reset NAs to 0 as stan does not take NAs
-    p$fishery_model$standata$CAT[ which(!is.finite(p$fishery_model$standata$CAT)) ] = p$fishery_model$standata$eps  # remove NA's
+    out$standata$IOA[ which(!is.finite(out$standata$IOA)) ] = 0 # reset NAs to 0 as stan does not take NAs
+    out$standata$CAT[ which(!is.finite(out$standata$CAT)) ] = out$standata$eps  # remove NA's
 
     # priors
-    if (!exists("Kmu", p$fishery_model$standata)) p$fishery_model$standata$Kmu =  c( 4, 40, 1 )
-    if (!exists("rmu", p$fishery_model$standata)) p$fishery_model$standata$rmu = c(1, 1, 1)
-    if (!exists("qmu", p$fishery_model$standata)) p$fishery_model$standata$qmu = c(2, 2, 2)
-    if (!exists("Ksd", p$fishery_model$standata)) p$fishery_model$standata$Ksd =  c(0.25, 0.25, 0.25) * p$fishery_model$standata$Kmu  # c( 2, 20, 0.5)
-    if (!exists("rsd", p$fishery_model$standata)) p$fishery_model$standata$rsd =  c(0.25, 0.25, 0.25) * p$fishery_model$standata$rmu  # rep( 0.3, 3)
-    if (!exists("qsd", p$fishery_model$standata)) p$fishery_model$standata$qsd =  c(0.5, 0.5, 0.5) * p$fishery_model$standata$qmu  # rep( 0.3, 3)
-    
-    if (!exists("stancode", p$fishery_model )) p$fishery_model$stancode = fishery_model( p=p, DS="stan_surplus_production" )
-    if (!exists("stancode_compiled", p$fishery_model )) p$fishery_model$stancode_compiled = rstan::stan_model( model_code=p$fishery_model$stancode )
+    if (!exists("Kmu", out$standata)) out$standata$Kmu =  c( 4, 40, 1 )
+    if (!exists("rmu", out$standata)) out$standata$rmu = c(1, 1, 1)
+    if (!exists("qmu", out$standata)) out$standata$qmu = c(2, 2, 2)
+    if (!exists("Ksd", out$standata)) out$standata$Ksd =  c(0.25, 0.25, 0.25) * out$standata$Kmu  # c( 2, 20, 0.5)
+    if (!exists("rsd", out$standata)) out$standata$rsd =  c(0.25, 0.25, 0.25) * out$standata$rmu  # rep( 0.3, 3)
+    if (!exists("qsd", out$standata)) out$standata$qsd =  c(0.5, 0.5, 0.5) * out$standata$qmu  # rep( 0.3, 3)
 
-    return(p)
+    if (!exists("stancode", out )) out$stancode = fishery_model( p=p, DS="stan_surplus_production" )
+    if (!exists("stancode_compiled", out )) out$stancode_compiled = rstan::stan_model( model_code=out$stancode )
+
+    return(out)
   }
 
 
@@ -315,7 +315,7 @@ fishery_model = function(  p,  DS="logistic", assessment_years=2000:p$year.asses
       IOA = as.matrix(B), # observed index of abundance
       CAT = as.matrix(L)  # catches  , assume 20% handling mortality and illegal landings
     )
-    
+
     return(sb)
   }
 
