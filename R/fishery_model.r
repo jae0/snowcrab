@@ -8,13 +8,6 @@ fishery_model = function(  p,  DS="logistic_model", assessment_years=2000:p$year
   }
 
 
-  if (0) {
-    year.assessment=2016
-    p = bio.snowcrab::load.environment( year.assessment=year.assessment)
-    p$fishery_model = list()
-    p$fishery_model$outdir = file.path(project.datadirectory('bio.snowcrab'), "assessments", p$year.assessment )
-  }
-
 
   if (DS=="logistic_parameters") {
 
@@ -33,7 +26,7 @@ fishery_model = function(  p,  DS="logistic_model", assessment_years=2000:p$year
     if (!exists("U", out$standata))  out$standata$U = ncol( out$standata$IOA)  # number of regions
     if (!exists("N", out$standata))  out$standata$N = nrow( out$standata$IOA)  # no years with data
     if (!exists("M", out$standata))  out$standata$M = 3 # no years for projections
-    if (!exists("ty", out$standata)) out$standata$ty = which(p$assessment_years == 2004)  # index of the transition year (2004) between spring and fall surveys
+    if (!exists("ty", out$standata)) out$standata$ty = which(p$yrs == 2004)  # index of the transition year (2004) between spring and fall surveys
     if (!exists("cfa4x", out$standata))  out$standata$cfa4x = 3 # column index of cfa4x
     if (!exists("eps",   out$standata))  out$standata$eps = 1e-6  # small non-zero number
 

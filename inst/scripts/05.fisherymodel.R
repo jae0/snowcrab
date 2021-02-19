@@ -5,18 +5,19 @@
 year.assessment = 2020   # NOTE: for 4X, the season 2019-2020 -> 2019
 
 
-p = bio.snowcrab::snowcrab_parameters( 
-  project_class="carstm",  
-  assessment.years=2000:year.assessment, 
+p = bio.snowcrab::snowcrab_parameters(
+  project_class="carstm",
+  assessment.years=2000:year.assessment,
  # carstm_model_label="nonseparable_simple",  # to choose alt carstm models
-  tag="default"  
+  tag="default"
 )
 
-p$fishery_model = bio.snowcrab::fishery_model( DS = "logistic_parameters", p=p, tag=p$tag ) 
+p$fishery_model = fishery_model( DS = "logistic_parameters", p=p, tag=p$tag )
 
 if (0) {
   # testing:
   # later:::ensureInitialized()  # solve mode error
+  str( p$fishery_model$standata )
   p$fishery_model$standata$Kmu = c(4, 40, 1)
   p$fishery_model$standata$rmu = c(1, 1, 1)
   p$fishery_model$standata$qmu = c(1, 1, 1)
@@ -31,9 +32,9 @@ if (0) {
 
 str( p$fishery_model)
 
-res = fishery_model( p=p, DS="logistic_model", tag=tag, 
-  chains=3, iter=15000, warmup=10000, refresh=1000, 
-  control=list(adapt_delta=0.99, max_treedepth=18) 
+res = fishery_model( p=p, DS="logistic_model", tag=p$tag,
+  chains=3, iter=15000, warmup=10000, refresh=1000,
+  control=list(adapt_delta=0.99, max_treedepth=18)
 )
 # res = fishery_model( p=p, DS="logistic_samples", tag=tag )  # to get samples
 
