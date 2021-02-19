@@ -379,7 +379,7 @@ snowcrab_parameters = function( p=list(), year.assessment=NULL, project_name="bi
       areal_units_constraint_nmin = 10,
       areal_units_proj4string_planar_km = aegis::projection_proj4string("utm20"),  # coord system to use for areal estimation and gridding for carstm
       areal_units_timeperiod = "none",
-      tus="yr",
+      tus = "yr",
       carstm_modelengine = "inla",  # {model engine}.{label to use to store}
       carstm_model_label = "default",
       carstm_inputs_aggregated = FALSE

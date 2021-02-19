@@ -34,7 +34,29 @@
       robustify_quantiles=p$quantile_bounds # high upper bounds are more dangerous
     )
 
+    # -------------- tesselation based parameters:
+
+     p = bio.snowcrab::snowcrab_parameters( 
+        project_class="carstm", 
+        assessment.years=2000:year.assessment,
+        carstm_model_label = "tesselation",
+        carstm_inputs_aggregated = FALSE,
+        areal_units_type = "tesselation", # "stmv_lattice" to use ageis fields instead of carstm fields ... note variables are not the same
+        areal_units_resolution_km = 1, # with tesselation, this si the starting resolution km  
+        areal_units_constraint = "snowcrab",  # locations of data as constraint .. "snowcrab" loads these automatically, otherwise a xy matrix of positions
+        areal_units_constraint_nmin = 10,
+        sa_threshold_km2 = 0,
+        fraction_todrop = 1/11,  # control tesselation
+        fraction_cv = 1.0,
+        fraction_good_bad = 0.9,
+        nAU_min = 30
+      )
+
+    # ---------------------------------------------
+
+
   }
+
   sppoly = areal_units( p=p )  # to reload
   plot( sppoly[, "au_sa_km2"]  )
 
@@ -89,7 +111,7 @@
   outputdir = file.path( gsub( ".rdata", "", dirname(res$fn_res) ), "figures", vn )
   if ( !file.exists(outputdir)) dir.create( outputdir, recursive=TRUE, showWarnings=FALSE )
 
-  brks = pretty(  res[[vn]]  )
+  brks = pretty(  quantile(res[[vn]], probs=c(0,0.975))  )
 
   for (y in res$year ){
 
@@ -99,11 +121,10 @@
 
         carstm_map(  res=res, vn=vn, time_match=time_match, 
           breaks =brks,
-          palette="viridis",
           coastline=coastline,
           isobaths=isobaths,
           managementlines=managementlines,
-          main=paste("Predicted abundance", paste0(time_match, collapse="-") ),
+          main=paste("Predicted numerial abundance", paste0(time_match, collapse="-") ),
           outfilename=fn
         )  
 
@@ -153,7 +174,7 @@
 
   if ( !file.exists(outputdir)) dir.create( outputdir, recursive=TRUE, showWarnings=FALSE )
 
-  brks = pretty(  bio[] * 10^6 )
+  brks = pretty(  quantile( bio[], probs=c(0,0.975) )* 10^6 )
 
   for (i in 1:length(p$yrs) ){
     y = as.character( p$yrs[i] )
@@ -165,7 +186,6 @@
         coastline=coastline,
         isobaths=isobaths,
         managementlines=managementlines,
-        palette="-viridis",
         main=paste("Predicted abundance density", y ),  
         outfilename=fn
       )

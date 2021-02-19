@@ -1266,25 +1266,30 @@ p = bio.snowcrab::load.environment(
 
 #Choose one of the below  model runs
 ##stmv biomass estimates only
-p$fishery_model = list()
-p$fishery_model$method = "stan"  # "jags", etc.
-# p$fishery_model$outdir = file.path(project.datadirectory('bio.snowcrab'), "assessments", p$year.assessment )
-# override output location
+
+p$fishery_model = bio.snowcrab::fishery_model( DS = "logistic_parameters", p=p, tag=p$tag ) 
+
+# override : 
 p$fishery_model$outdir = file.path(project.datadirectory('bio.snowcrab'), "assessments", p$year.assessment, "nonseparable_simple" )
 
-p$fishery_model$standata = snowcrab_tsdata( p=p, assessment_years=p$assessment_years, carstm_model_label="nonseparable_simple" )
+# force use of specific carstm results
+p$carstm_model_label = "nonseparable_simple"
+p$fishery_model$standata = bio.snowcrab::fishery_model( DS="data_aggregated_timeseries", p=p, assessment_years=p$assessment_years )
 
-p$fishery_model$standata$Kmu =  c( 5, 60, 1)
-p$fishery_model$standata$rmu = c(1, 1, 1)
-p$fishery_model$standata$qmu = c(1, 1, 1)
-p$fishery_model$standata$Ksd =  c(0.25, 0.25, 0.25) * p$fishery_model$standata$Kmu  # c( 2, 20, 0.5)
-p$fishery_model$standata$rsd =  c(0.25, 0.25, 0.25) * p$fishery_model$standata$rmu  # rep( 0.3, 3)
-p$fishery_model$standata$qsd =  c(0.25, 0.25, 0.25) * p$fishery_model$standata$qmu  # rep( 0.3, 3)
+if (0) {
+  # more over-rides
+  p$fishery_model$standata$Kmu =  c( 5, 60, 1)
+  p$fishery_model$standata$rmu = c(1, 1, 1)
+  p$fishery_model$standata$qmu = c(1, 1, 1)
+  p$fishery_model$standata$Ksd =  c(0.25, 0.25, 0.25) * p$fishery_model$standata$Kmu  # c( 2, 20, 0.5)
+  p$fishery_model$standata$rsd =  c(0.25, 0.25, 0.25) * p$fishery_model$standata$rmu  # rep( 0.3, 3)
+  p$fishery_model$standata$qsd =  c(0.25, 0.25, 0.25) * p$fishery_model$standata$qmu  # rep( 0.3, 3)
 
-p$fishery_model$stancode = fishery_model( p=p, DS="stan_surplus_production" )
-p$fishery_model$stancode_compiled = rstan::stan_model( model_code=p$fishery_model$stancode )
+  p$fishery_model$stancode = fishery_model( p=p, DS="stan_surplus_production" )
+  p$fishery_model$stancode_compiled = rstan::stan_model( model_code=p$fishery_model$stancode )
 
 # later:::ensureInitialized()  # solve mode error
+}
 
 res = fishery_model( p=p, DS="stan",
   chains=4,

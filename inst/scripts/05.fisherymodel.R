@@ -5,31 +5,38 @@
 year.assessment = 2020   # NOTE: for 4X, the season 2019-2020 -> 2019
 
 
-p = bio.snowcrab::snowcrab_parameters( project_class="carstm",  assessment.years=1999:year.assessment  )
+p = bio.snowcrab::snowcrab_parameters( 
+  project_class="carstm",  
+  assessment.years=2000:year.assessment, 
+ # carstm_model_label="nonseparable_simple",  # to choose alt carstm models
+  tag="default"  
+)
 
+p$fishery_model = bio.snowcrab::fishery_model( DS = "logistic_parameters", p=p, tag=p$tag ) 
 
-tag = "default"
-# tag = "zeroinflated"
+if (0) {
+  # testing:
+  # later:::ensureInitialized()  # solve mode error
+  p$fishery_model$standata$Kmu = c(4, 40, 1)
+  p$fishery_model$standata$rmu = c(1, 1, 1)
+  p$fishery_model$standata$qmu = c(1, 1, 1)
+  p$fishery_model$standata$Ksd = c(0.5, 0.5, 0.5) * p$fishery_model$standata$Kmu  # c( 2, 20, 0.5)
+  p$fishery_model$standata$rsd = c(0.5, 0.5, 0.5) * p$fishery_model$standata$rmu  # rep( 0.3, 3)
+  p$fishery_model$standata$qsd = c(0.5, 0.5, 0.5) * p$fishery_model$standata$qmu  # rep( 0.3, 3)
 
-p$fishery_model = list( standata = snowcrab_tsdata( p=p, assessment_years=p$yrs ) )
+  # to recompile
+  p$fishery_model$stancode_compiled = rstan::stan_model( model_code=p$fishery_model$stancode )
+}
 
-# later:::ensureInitialized()  # solve mode error
-p$fishery_model$standata$Kmu = c(4, 40, 1)
-p$fishery_model$standata$rmu = c(1, 1, 1)
-p$fishery_model$standata$qmu = c(1, 1, 1)
-p$fishery_model$standata$Ksd = c(0.5, 0.5, 0.5) * p$fishery_model$standata$Kmu  # c( 2, 20, 0.5)
-p$fishery_model$standata$rsd = c(0.5, 0.5, 0.5) * p$fishery_model$standata$rmu  # rep( 0.3, 3)
-p$fishery_model$standata$qsd = c(0.5, 0.5, 0.5) * p$fishery_model$standata$qmu  # rep( 0.3, 3)
-
-p = fishery_model( p=p, DS="logistic_parameters", tag=tag )
-
-p$fishery_model$stancode = fishery_model( p=p, DS="stan_surplus_production" )
-p$fishery_model$stancode_compiled = rstan::stan_model( model_code=p$fishery_model$stancode )
 
 str( p$fishery_model)
 
-res = fishery_model( p=p, DS="logistic", tag=tag, chains=3, iter=15000, warmup=10000, refresh=1000, control=list(adapt_delta=0.99, max_treedepth=18) )
-# res = fishery_model( p=p, DS="logistic_samples", tag=tag )
+res = fishery_model( p=p, DS="logistic_model", tag=tag, 
+  chains=3, iter=15000, warmup=10000, refresh=1000, 
+  control=list(adapt_delta=0.99, max_treedepth=18) 
+)
+# res = fishery_model( p=p, DS="logistic_samples", tag=tag )  # to get samples
+
 
 # frequency density of key parameters
 figure.mcmc( "K", res=res, fn=file.path(p$fishery_model$outdir, "K.density.png" ) )
