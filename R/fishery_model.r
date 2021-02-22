@@ -88,7 +88,6 @@ fishery_model = function(  p,  DS="logistic_model", assessment_years=2000:p$year
         vector <lower=eps> [U] K;
         vector <lower=eps, upper=2> [U] r;
         vector <lower=eps, upper=6> [U] q;
-        vector <lower=eps, upper=6> [U] qs;
         vector <lower=eps, upper=(1-eps)> [U] bosd;  // observation error
         vector <lower=eps, upper=(1-eps)> [U] bpsd;  // process error
         vector <lower=eps, upper=(1-eps)> [U] b0;
@@ -152,9 +151,9 @@ fishery_model = function(  p,  DS="logistic_model", assessment_years=2000:p$year
 
         // spring surveys
         for (j in 1:2) {
-          log(Y[1, j]) ~ normal( log( K[j] * fmax( qs[j] * bm[1,j]  - CAT[1,j]/K[j], eps) ), bosd[j] ) ;
+          log(Y[1, j]) ~ normal( log( K[j] * fmax( q[j] * bm[1,j]  - CAT[1,j]/K[j], eps) ), bosd[j] ) ;
           for (i in 2:(ty-1) ){
-            log(Y[i, j]) ~ normal( log( K[j] * fmax( qs[j] * bm[i,j]  - CAT[i-1,j]/K[j], eps) ), bosd[j] ) ;
+            log(Y[i, j]) ~ normal( log( K[j] * fmax( q[j] * bm[i,j]  - CAT[i-1,j]/K[j], eps) ), bosd[j] ) ;
           }
         }
 
