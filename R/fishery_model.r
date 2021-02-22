@@ -87,7 +87,7 @@ fishery_model = function(  p,  DS="logistic_model", assessment_years=2000:p$year
       parameters {
         vector <lower=eps> [U] K;
         vector <lower=eps, upper=2> [U] r;
-        vector <lower=eps, upper=4> [U] q;
+        vector <lower=eps, upper=6> [U] q;
         vector <lower=eps, upper=(1-eps)> [U] bosd;  // observation error
         vector <lower=eps, upper=(1-eps)> [U] bpsd;  // process error
         vector <lower=eps, upper=(1-eps)> [U] b0;
@@ -97,7 +97,7 @@ fishery_model = function(  p,  DS="logistic_model", assessment_years=2000:p$year
 
       transformed parameters {
         matrix[N,U] Y;  // index of abundance
-        matrix[MN,U] rem;  // observed catch
+//        matrix[MN,U] rem;  // observed catch
 
         // copy parameters to a new variable (Y) with imputed missing values
         {
@@ -267,7 +267,7 @@ fishery_model = function(  p,  DS="logistic_model", assessment_years=2000:p$year
 
 
 
-  if (DS=="stan_surplus_productionworking") {
+  if (DS=="stan_surplus_production_previously_working") {
     return( "
       data {
 

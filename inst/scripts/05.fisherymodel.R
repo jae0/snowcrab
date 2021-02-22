@@ -33,7 +33,7 @@ if (0) {
 str( p$fishery_model)
 
 res = fishery_model( p=p, DS="logistic_model", tag=p$tag,
-  chains=3, cores=3, iter=15000, warmup=10000, refresh=1000,
+  chains=3, cores=6, iter=15000, warmup=10000, refresh=1000,
   control=list(adapt_delta=0.99, max_treedepth=18)
 )
 # res = fishery_model( p=p, DS="logistic_samples", tag=tag )  # to get samples
@@ -42,7 +42,7 @@ res = fishery_model( p=p, DS="logistic_model", tag=p$tag,
 # frequency density of key parameters
 figure.mcmc( "K", res=res, fn=file.path(p$fishery_model$outdir, "K.density.png" ) )
 figure.mcmc( "r", res=res, fn=file.path(p$fishery_model$outdir, "r.density.png" ) )
-figure.mcmc( "q", res=res, fn=file.path(p$fishery_model$outdir, "q.density.png" ) ,xrange=c(0,3))
+figure.mcmc( "q", res=res, fn=file.path(p$fishery_model$outdir, "q.density.png" ) ,xrange=c(0,5))
 figure.mcmc( "FMSY", res=res, fn=file.path(p$fishery_model$outdir, "FMSY.density.png" ) )
 # figure.mcmc( "bosd", res=res, fn=file.path(p$fishery_model$outdir, "bosd.density.png" ) )
 # figure.mcmc( "bpsd", res=res, fn=file.path(p$fishery_model$outdir, "bpsd.density.png" ) )
