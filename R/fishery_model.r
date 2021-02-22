@@ -88,6 +88,7 @@ fishery_model = function(  p,  DS="logistic_model", assessment_years=2000:p$year
         vector <lower=eps> [U] K;
         vector <lower=eps, upper=2> [U] r;
         vector <lower=eps, upper=6> [U] q;
+        vector <lower=eps, upper=3> [U] qs;
         vector <lower=eps, upper=(1-eps)> [U] bosd;  // observation error
         vector <lower=eps, upper=(1-eps)> [U] bpsd;  // process error
         vector <lower=eps, upper=(1-eps)> [U] b0;
@@ -149,21 +150,16 @@ fishery_model = function(  p,  DS="logistic_model", assessment_years=2000:p$year
         // Cfa 4X -- fall/winter fishery
         //    Btot(t) = Bsurveyed(t) + removals(t)  ## .. 2018-2019 -> 2018
 
-        // starting year approximation
-        for (j in 1:U) {
-          log(Y[1,j]) ~ normal( log( K[j] * fmax( q[j] * bm[1,j]  - CAT[1,j]/K[j], eps) ), bosd[j] ) ;
-        }
-
         // spring surveys
         for (j in 1:2) {
-          for (i in 2:(ty-1) ){
-            log(Y[i, j]) ~ normal( log( K[j] * fmax( q[j] * bm[i,j]  - CAT[i-1,j]/K[j], eps) ), bosd[j] ) ;
+          for (i in 1:(ty-1) ){
+            log(Y[i, j]) ~ normal( log( K[j] * fmax( qs[j] * bm[i,j]  - CAT[i-1,j]/K[j], eps) ), bosd[j] ) ;
           }
         }
 
-          for (i in 2:(ty-1) ){
-            log(Y[i, 3]) ~ normal( log( K[3] * fmax( q[3] * bm[i,3]  - CAT[i,3]/K[3], eps) ), bosd[3] ) ;
-          }
+        for (i in 1:(ty-1) ){
+          log(Y[i, 3]) ~ normal( log( K[3] * fmax( q[3] * bm[i,3]  - CAT[i,3]/K[3], eps) ), bosd[3] ) ;
+        }
 
 
         //  transition year (ty)
