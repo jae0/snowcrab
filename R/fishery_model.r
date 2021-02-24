@@ -51,7 +51,7 @@ fishery_model = function(  p,  DS="logistic_model", assessment_years=2000:p$year
     if (!exists("qsd", out$standata)) out$standata$qsd =  c(0.5, 0.5, 0.5) * out$standata$qmu  
 
     if (!exists("stancode", out )) out$stancode = fishery_model( p=p, DS="stan_surplus_production" )
-    if (!exists("stancode_compiled", out )) out$stancode_compiled = rstan::stan_model( model_code=out$stancode )
+    # if (!exists("stancode_compiled", out )) out$stancode_compiled = rstan::stan_model( model_code=out$stancode )
 
     return(out)
   }
