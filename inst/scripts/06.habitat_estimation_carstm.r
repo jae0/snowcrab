@@ -99,7 +99,9 @@
 
   # map all :
   vn = paste(p$variabletomodel, "predicted", sep=".")
-  outputdir = file.path( gsub( ".rdata", "", dirname(res$fn_res) ), "figures", vn )
+
+  outputdir = file.path( p$modeldir, p$carstm_model_label, "predicted.probability.observation" )
+
   if ( !file.exists(outputdir)) dir.create( outputdir, recursive=TRUE, showWarnings=FALSE )
 
   brks = pretty(  res[[vn]]  )
@@ -135,23 +137,39 @@
 
 # plots with 95% PI
 
-    plot( cfaall ~ yrs, data=RES, lty="solid", lwd=4, pch=20, col="slateblue", type="b", ylab="Prob of observing snow crab", xlab="", ylim=c(0,1))
+  outputdir = file.path( p$modeldir, p$carstm_model_label, "aggregated_biomass_timeseries" )
+
+  if ( !file.exists(outputdir)) dir.create( outputdir, recursive=TRUE, showWarnings=FALSE )
+
+
+  png( filename=file.path( outputdir, "cfa_all.png"), width=3072, height=2304, pointsize=12, res=300 )
+    plot( cfaall ~ yrs, data=RES, lty="solid", lwd=4, pch=20, col="slateblue", type="b", ylab="Prob of observing snow crab", xlab="",  ylim=c(0,1))
     lines( cfaall_lb ~ yrs, data=RES, lty="dotted", lwd=2, col="slategray" )
     lines( cfaall_ub ~ yrs, data=RES, lty="dotted", lwd=2, col="slategray" )
+  dev.off()
 
-    plot( cfasouth ~ yrs, data=RES, lty="solid", lwd=4, pch=20, col="slateblue", type="b", ylab="Prob of observing snow crab", xlab="", ylim=c(0,1))
+
+  png( filename=file.path( outputdir, "cfa_south.png"), width=3072, height=2304, pointsize=12, res=300 )
+    plot( cfasouth ~ yrs, data=RES, lty="solid", lwd=4, pch=20, col="slateblue", type="b", ylab="Prob of observing snow crab", xlab="",  ylim=c(0,1))
     lines( cfasouth_lb ~ yrs, data=RES, lty="dotted", lwd=2, col="slategray" )
     lines( cfasouth_ub ~ yrs, data=RES, lty="dotted", lwd=2, col="slategray" )
+  dev.off()
 
-    plot( cfanorth ~ yrs, data=RES, lty="solid", lwd=4, pch=20, col="slateblue", type="b", ylab="Prob of observing snow crab", xlab="", ylim=c(0,1))
+
+  png( filename=file.path( outputdir, "cfa_north.png"), width=3072, height=2304, pointsize=12, res=300 )
+    plot( cfanorth ~ yrs, data=RES, lty="solid", lwd=4, pch=20, col="slateblue", type="b", ylab="Prob of observing snow crab", xlab="",  ylim=c(0,1))
     lines( cfanorth_lb ~ yrs, data=RES, lty="dotted", lwd=2, col="slategray" )
     lines( cfanorth_ub ~ yrs, data=RES, lty="dotted", lwd=2, col="slategray" )
+  dev.off()
 
-    plot( cfa4x ~ yrs, data=RES, lty="solid", lwd=4, pch=20, col="slateblue", type="b", ylab="Prob of observing snow crab", xlab="", ylim=c(0,1))
+
+  png( filename=file.path( outputdir, "cfa_4x.png"), width=3072, height=2304, pointsize=12, res=300 )
+    plot( cfa4x ~ yrs, data=RES, lty="solid", lwd=4, pch=20, col="slateblue", type="b", ylab="Prob of observing snow crab", xlab="",  ylim=c(0,1))
     lines( cfa4x_lb ~ yrs, data=RES, lty="dotted", lwd=2, col="slategray" )
     lines( cfa4x_ub ~ yrs, data=RES, lty="dotted", lwd=2, col="slategray" )
+  dev.off()
 
- 
+
 
 
 

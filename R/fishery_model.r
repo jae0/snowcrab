@@ -14,7 +14,11 @@ fishery_model = function(  p,  DS="logistic_model", assessment_years=2000:p$year
     out = list()
 
     if (!exists("method", out)) out$method = "stan"  # "jags", etc.
-    if (!exists("outdir", out)) out$outdir = file.path( p$modeldir, "fishery_model_results"  )
+
+    if (!exists("carstm_model_label", p)) p$carstm_model_label = "default"   
+
+    if (!exists("outdir", out)) out$outdir = file.path( p$modeldir, p$carstm_model_label, "fishery_model_results" )
+
     if (!exists("fnres", out)) out$fnres  = file.path( out$outdir, paste( "surplus.prod.mcmc", p$year.assessment, out$method, tag, "rdata", sep=".") )
 
     message( "Results will be saved to:", out$outdir)
@@ -39,12 +43,12 @@ fishery_model = function(  p,  DS="logistic_model", assessment_years=2000:p$year
     out$standata$CAT[ which(!is.finite(out$standata$CAT)) ] = out$standata$eps  # remove NA's
 
     # priors
-    if (!exists("Kmu", out$standata)) out$standata$Kmu =  c( 4, 40, 0.5 )
+    if (!exists("Kmu", out$standata)) out$standata$Kmu =  c( 3, 30, 0.5 )
     if (!exists("rmu", out$standata)) out$standata$rmu = c(1, 1, 1)
     if (!exists("qmu", out$standata)) out$standata$qmu = c(2, 2, 2)
-    if (!exists("Ksd", out$standata)) out$standata$Ksd =  c(0.25, 0.25, 0.25) * out$standata$Kmu  # c( 2, 20, 0.5)
-    if (!exists("rsd", out$standata)) out$standata$rsd =  c(0.25, 0.25, 0.25) * out$standata$rmu  # rep( 0.3, 3)
-    if (!exists("qsd", out$standata)) out$standata$qsd =  c(0.5, 0.5, 0.5) * out$standata$qmu  # rep( 0.3, 3)
+    if (!exists("Ksd", out$standata)) out$standata$Ksd =  c(0.5, 0.5, 0.5) * out$standata$Kmu   
+    if (!exists("rsd", out$standata)) out$standata$rsd =  c(0.2, 0.2, 0.2) * out$standata$rmu  
+    if (!exists("qsd", out$standata)) out$standata$qsd =  c(0.5, 0.5, 0.5) * out$standata$qmu  
 
     if (!exists("stancode", out )) out$stancode = fishery_model( p=p, DS="stan_surplus_production" )
     if (!exists("stancode_compiled", out )) out$stancode_compiled = rstan::stan_model( model_code=out$stancode )

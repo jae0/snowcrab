@@ -39,6 +39,10 @@ res = fishery_model( p=p, DS="logistic_model", tag=p$tag,
 # res = fishery_model( p=p, DS="logistic_samples", tag=tag )  # to get samples
 
 
+
+p$fishery_model$outdir = file.path( p$modeldir, p$carstm_model_label, "fishery_model_results" )
+
+
 # frequency density of key parameters
 figure.mcmc( "K", res=res, fn=file.path(p$fishery_model$outdir, "K.density.png" ) )
 figure.mcmc( "r", res=res, fn=file.path(p$fishery_model$outdir, "r.density.png" ) )

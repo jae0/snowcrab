@@ -108,7 +108,8 @@
 
   # map all :
   vn = paste(p$variabletomodel, "predicted", sep=".")
-  outputdir = file.path( gsub( ".rdata", "", dirname(res$fn_res) ), "figures", vn )
+
+  outputdir = file.path( p$modeldir, p$carstm_model_label, "predicted.numerical.densitites" )
   if ( !file.exists(outputdir)) dir.create( outputdir, recursive=TRUE, showWarnings=FALSE )
 
   brks = pretty(  quantile(res[[vn]], probs=c(0,0.975))  )
@@ -139,21 +140,37 @@
   bio = snowcrab.db(p=p, DS="carstm_output_spacetime_biomass" )
   num = snowcrab.db(p=p, DS="carstm_output_spacetime_number" )
 
-  plot( cfaall ~ yrs, data=RES, lty="solid", lwd=4, pch=20, col="slateblue", type="b", ylab="Biomass (kt)", xlab="")
-  lines( cfaall_lb ~ yrs, data=RES, lty="dotted", lwd=2, col="slategray" )
-  lines( cfaall_ub ~ yrs, data=RES, lty="dotted", lwd=2, col="slategray" )
+  outputdir = file.path( p$modeldir, p$carstm_model_label, "aggregated_biomass_timeseries" )
 
-  plot( cfasouth ~ yrs, data=RES, lty="solid", lwd=4, pch=20, col="slateblue", type="b", ylab="Biomass (kt)", xlab="")
-  lines( cfasouth_lb ~ yrs, data=RES, lty="dotted", lwd=2, col="slategray" )
-  lines( cfasouth_ub ~ yrs, data=RES, lty="dotted", lwd=2, col="slategray" )
+  if ( !file.exists(outputdir)) dir.create( outputdir, recursive=TRUE, showWarnings=FALSE )
 
-  plot( cfanorth ~ yrs, data=RES, lty="solid", lwd=4, pch=20, col="slateblue", type="b", ylab="Biomass (kt)", xlab="")
-  lines( cfanorth_lb ~ yrs, data=RES, lty="dotted", lwd=2, col="slategray" )
-  lines( cfanorth_ub ~ yrs, data=RES, lty="dotted", lwd=2, col="slategray" )
 
-  plot( cfa4x ~ yrs, data=RES, lty="solid", lwd=4, pch=20, col="slateblue", type="b", ylab="Biomass (kt)", xlab="")
-  lines( cfa4x_lb ~ yrs, data=RES, lty="dotted", lwd=2, col="slategray" )
-  lines( cfa4x_ub ~ yrs, data=RES, lty="dotted", lwd=2, col="slategray" )
+  png( filename=file.path( outputdir, "cfa_all.png"), width=3072, height=2304, pointsize=12, res=300 )
+    plot( cfaall ~ yrs, data=RES, lty="solid", lwd=4, pch=20, col="slateblue", type="b", ylab="Biomass index (kt)", xlab="")
+    lines( cfaall_lb ~ yrs, data=RES, lty="dotted", lwd=2, col="slategray" )
+    lines( cfaall_ub ~ yrs, data=RES, lty="dotted", lwd=2, col="slategray" )
+  dev.off()
+
+
+  png( filename=file.path( outputdir, "cfa_south.png"), width=3072, height=2304, pointsize=12, res=300 )
+    plot( cfasouth ~ yrs, data=RES, lty="solid", lwd=4, pch=20, col="slateblue", type="b", ylab="Biomass index (kt)", xlab="")
+    lines( cfasouth_lb ~ yrs, data=RES, lty="dotted", lwd=2, col="slategray" )
+    lines( cfasouth_ub ~ yrs, data=RES, lty="dotted", lwd=2, col="slategray" )
+  dev.off()
+
+
+  png( filename=file.path( outputdir, "cfa_north.png"), width=3072, height=2304, pointsize=12, res=300 )
+    plot( cfanorth ~ yrs, data=RES, lty="solid", lwd=4, pch=20, col="slateblue", type="b", ylab="Biomass index (kt)", xlab="")
+    lines( cfanorth_lb ~ yrs, data=RES, lty="dotted", lwd=2, col="slategray" )
+    lines( cfanorth_ub ~ yrs, data=RES, lty="dotted", lwd=2, col="slategray" )
+  dev.off()
+
+
+  png( filename=file.path( outputdir, "cfa_4x.png"), width=3072, height=2304, pointsize=12, res=300 )
+    plot( cfa4x ~ yrs, data=RES, lty="solid", lwd=4, pch=20, col="slateblue", type="b", ylab="Biomass index (kt)", xlab="")
+    lines( cfa4x_lb ~ yrs, data=RES, lty="dotted", lwd=2, col="slategray" )
+    lines( cfa4x_ub ~ yrs, data=RES, lty="dotted", lwd=2, col="slategray" )
+  dev.off()
 
 
 
@@ -197,6 +214,8 @@
   plot( fit$marginals.hyperpar$"Precision for setno", type="l")
 
 
+
+(res$summary)
 
 
 Fixed effects:
