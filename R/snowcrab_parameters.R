@@ -376,7 +376,8 @@ snowcrab_parameters = function( p=list(), year.assessment=NULL, project_name="bi
       areal_units_type = "lattice", # "stmv_lattice" to use ageis fields instead of carstm fields ... note variables are not the same
       areal_units_overlay = "snowcrab_managementareas", # currently: "snowcrab_managementareas",  "groundfish_strata" .. additional polygon layers for subsequent analysis for now ..
       areal_units_constraint = "snowcrab",  # locations of data as constraint .. "snowcrab" loads these automatically, otherwise a xy matrix of positions
-      areal_units_constraint_nmin = 10,
+      areal_units_constraint_ntarget = 10,  
+      areal_units_constraint_nmin = 3 ,
       areal_units_proj4string_planar_km = aegis::projection_proj4string("utm20"),  # coord system to use for areal estimation and gridding for carstm
       areal_units_timeperiod = "none",
       tus = "yr",

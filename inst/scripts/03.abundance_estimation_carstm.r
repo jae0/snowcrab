@@ -20,7 +20,8 @@
       # polygon structure:: create if not yet made
       # adjust based upon RAM requirements and ncores
       
-      p$areal_units_constraint_nmin = 10
+      p$areal_units_constraint_nmin = 3
+      p$areal_units_constraint_ntarget = 10
 
       for (au in c("cfanorth", "cfasouth", "cfa4x", "cfaall" )) plot(polygon_managementareas( species="snowcrab", au))
       xydata = snowcrab.db( p=p, DS="areal_units_input", redo=TRUE )

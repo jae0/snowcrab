@@ -18,14 +18,18 @@
     areal_units_type = "tesselation", # "stmv_lattice" to use ageis fields instead of carstm fields ... note variables are not the same
     areal_units_resolution_km = 1, # with tesselation, this si the starting resolution km  
     areal_units_constraint = "snowcrab",  # locations of data as constraint .. "snowcrab" loads these automatically, otherwise a xy matrix of positions
-    areal_units_constraint_nmin = 10,
-    sa_threshold_km2 = 0,
-    fraction_todrop = 1/11,  # control tesselation
-    fraction_cv = 1.0,
+    areal_units_constraint_ntarget = 10,
+    areal_units_constraint_nmin = 3,
+    sa_threshold_km2 = 5,
+    fraction_todrop = 1/5,  # control tesselation rate of convergence
+    fraction_cv = 0.9,   # ie. stop if essentially a poisson distribution
     fraction_good_bad = 0.9,
     nAU_min = 30
   )
 
+        sppoly = areal_units( p=p, hull_alpha=16, redo=TRUE, verbose=TRUE )  # create constrained polygons with neighbourhood as an attribute
+        plot( sppoly[, "npts"]  )
+   
 
 # ------------------------------------------------
 # Part 2 -- spatiotemporal statistical model 
@@ -35,20 +39,18 @@
       if (0) {
       # polygon structure:: create if not yet made
       # adjust based upon RAM requirements and ncores
-
-        p$areal_units_constraint_nmin = 10
-
         # create if not yet made
         for (au in c("cfanorth", "cfasouth", "cfa4x", "cfaall" )) plot(polygon_managementareas( species="snowcrab", au))
         xydata = snowcrab.db( p=p, DS="areal_units_input", redo=TRUE )
 
-        sppoly = areal_units( p=p, redo=TRUE )  # create constrained polygons with neighbourhood as an attribute
+        sppoly = areal_units( p=p, hull_alpha=16, redo=TRUE, verbose=TRUE )  # create constrained polygons with neighbourhood as an attribute
+        plot( sppoly[, "npts"]  )
+        
         MS = NULL
 
       }
 
       sppoly = areal_units( p=p )  # to reload
-      plot( sppoly[, "au_sa_km2"]  )
 
     
       # -------------------------------------------------
@@ -85,7 +87,7 @@
           coastline=coastline,
           managementlines=managementlines,
           isobaths=isobaths,
-          main=paste("Predicted abundance", paste0(time_match, collapse="-") )  
+          main=paste("Predicted numerical abundance", paste0(time_match, collapse="-") )  
       )
         
 
@@ -101,7 +103,7 @@
       for (y in res$year ){
 
           time_match = list( year=as.character(y)  )
-          fn_root = paste("Predicted_abundance", paste0(time_match, collapse="-"), sep="_")
+          fn_root = paste("Predicted_numerical_abundance", paste0(time_match, collapse="-"), sep="_")
           fn = file.path( outputdir, paste(fn_root, "png", sep=".") )
 
             carstm_map(  res=res, vn=vn, time_match=time_match, 
