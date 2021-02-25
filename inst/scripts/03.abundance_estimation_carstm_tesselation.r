@@ -27,14 +27,12 @@
     nAU_min = 30
   )
 
-        sppoly = areal_units( p=p, hull_alpha=16, redo=TRUE, verbose=TRUE )  # create constrained polygons with neighbourhood as an attribute
-        plot( sppoly[, "npts"]  )
-   
+  
 
 # ------------------------------------------------
 # Part 2 -- spatiotemporal statistical model 
 
-  if ( spataiotemporal_model ) {
+  if ( spatiotemporal_model ) {
 
       if (0) {
       # polygon structure:: create if not yet made
@@ -132,28 +130,30 @@
       if ( !file.exists(outputdir)) dir.create( outputdir, recursive=TRUE, showWarnings=FALSE )
 
 
-      png( filename=file.path( outputdir, "cfa_all.png"), width=3072, height=2304, pointsize=12, res=300 )
+      ( fn = file.path( outputdir, "cfa_all.png") )
+      png( filename=fn, width=3072, height=2304, pointsize=12, res=300 )
         plot( cfaall ~ yrs, data=RES, lty="solid", lwd=4, pch=20, col="slateblue", type="b", ylab="Biomass index (kt)", xlab="")
         lines( cfaall_lb ~ yrs, data=RES, lty="dotted", lwd=2, col="slategray" )
         lines( cfaall_ub ~ yrs, data=RES, lty="dotted", lwd=2, col="slategray" )
       dev.off()
 
-
-      png( filename=file.path( outputdir, "cfa_south.png"), width=3072, height=2304, pointsize=12, res=300 )
+      
+      ( fn = file.path( outputdir, "cfa_south.png") )
+      png( filename=fn, width=3072, height=2304, pointsize=12, res=300 )
         plot( cfasouth ~ yrs, data=RES, lty="solid", lwd=4, pch=20, col="slateblue", type="b", ylab="Biomass index (kt)", xlab="")
         lines( cfasouth_lb ~ yrs, data=RES, lty="dotted", lwd=2, col="slategray" )
         lines( cfasouth_ub ~ yrs, data=RES, lty="dotted", lwd=2, col="slategray" )
       dev.off()
 
-
-      png( filename=file.path( outputdir, "cfa_north.png"), width=3072, height=2304, pointsize=12, res=300 )
+      ( fn = file.path( outputdir, "cfa_north.png") )
+      png( filename=fn, width=3072, height=2304, pointsize=12, res=300 )
         plot( cfanorth ~ yrs, data=RES, lty="solid", lwd=4, pch=20, col="slateblue", type="b", ylab="Biomass index (kt)", xlab="")
         lines( cfanorth_lb ~ yrs, data=RES, lty="dotted", lwd=2, col="slategray" )
         lines( cfanorth_ub ~ yrs, data=RES, lty="dotted", lwd=2, col="slategray" )
       dev.off()
 
-
-      png( filename=file.path( outputdir, "cfa_4x.png"), width=3072, height=2304, pointsize=12, res=300 )
+      ( fn = file.path( outputdir, "cfa_4x.png") ) 
+      png( filename=fn, width=3072, height=2304, pointsize=12, res=300 )
         plot( cfa4x ~ yrs, data=RES, lty="solid", lwd=4, pch=20, col="slateblue", type="b", ylab="Biomass index (kt)", xlab="")
         lines( cfa4x_lb ~ yrs, data=RES, lty="dotted", lwd=2, col="slategray" )
         lines( cfa4x_ub ~ yrs, data=RES, lty="dotted", lwd=2, col="slategray" )
@@ -188,7 +188,7 @@
             coastline=coastline,
             isobaths=isobaths,
             managementlines=managementlines,
-            main=paste("Predicted abundance density", y ),  
+            main=paste("Predicted biomass density", y ),  
             outfilename=fn
           )
       }
@@ -201,67 +201,74 @@
 
     (res$summary)
 
+Number of fn-calls= 784 with 8.496 sec/fn-call
+Parallel efficiency for 'Preparations' and 'Approx inference':
+    Accumulated CPU-time is equivalent to 5.93 threads running at 100%
+    Efficiency using 12 threads = 49.42%
 
+Saving carstm fit (this can be slow): /home/jae/bio.data/bio.snowcrab/modelled/tesselation/bio.snowcrab|snowcrab|tesselation|1|snowcrab|10|3|snowcrab_managementareas.rdata|carstm_modelled_fit|totno|inla|1000|30.rdata
+Computing summaries ...
+carstm summary saved as: /home/jae/bio.data/bio.snowcrab/modelled/tesselation/bio.snowcrab|snowcrab|tesselation|1|snowcrab|10|3|snowcrab_managementareas.rdata|carstm_modelled_summary|totno|inla|1000|30.rdata
 
-    Call:
-      c("inla(formula = p$carstm_model_formula, family = p$carstm_model_family, ", " data = M, verbose = TRUE, 
-      control.compute = list(dic = TRUE, ", " waic = TRUE, cpo = FALSE, config = TRUE), control.predictor = 
-      list(compute = TRUE, ", " link = 1), control.family = p$options.control.family, ", " control.inla = 
-      p$options.control.inla[[civ]], control.results = list(return.marginals.random = TRUE, ", " 
-      return.marginals.predictor = TRUE))") 
-    Time used:
-        Pre = 2.97, Running = 3860, Post = 5.93, Total = 3869 
-    Fixed effects:
-                mean    sd 0.025quant 0.5quant 0.975quant  mode kld
-    (Intercept) 6.985 0.101      6.787    6.985      7.183 6.985   0
+Call:
+   c("inla(formula = p$carstm_model_formula, family = p$carstm_model_family, ", " data = M, verbose = TRUE, 
+   control.compute = list(dic = TRUE, ", " waic = TRUE, cpo = FALSE, config = TRUE), control.predictor = 
+   list(compute = TRUE, ", " link = 1), control.family = p$options.control.family, ", " control.inla = 
+   p$options.control.inla[[civ]], control.results = list(return.marginals.random = TRUE, ", " 
+   return.marginals.predictor = TRUE))") 
+Time used:
+    Pre = 4.36, Running = 6664, Post = 5.65, Total = 6674 
+Fixed effects:
+             mean    sd 0.025quant 0.5quant 0.975quant  mode kld
+(Intercept) 7.035 0.106      6.827    7.035      7.244 7.035   0
 
-    Random effects:
-      Name	  Model
-        dyri AR1 model
-      inla.group(t, method = "quantile", n = 11) RW2 model
-      inla.group(z, method = "quantile", n = 11) RW2 model
-      inla.group(substrate.grainsize, method = "quantile", n = 11) RW2 model
-      inla.group(pca1, method = "quantile", n = 11) RW2 model
-      inla.group(pca2, method = "quantile", n = 11) RW2 model
-      auid BYM2 model
+Random effects:
+  Name	  Model
+    dyri AR1 model
+   inla.group(t, method = "quantile", n = 11) RW2 model
+   inla.group(z, method = "quantile", n = 11) RW2 model
+   inla.group(substrate.grainsize, method = "quantile", n = 11) RW2 model
+   inla.group(pca1, method = "quantile", n = 11) RW2 model
+   inla.group(pca2, method = "quantile", n = 11) RW2 model
+   auid BYM2 model
 
-    Model hyperparameters:
-                                                                                mean    sd 0.025quant 0.5quant 0.975quant
-    Precision for dyri                                                         58.060 0.117     57.901   58.039     58.335
-    Rho for dyri                                                                0.746 0.001      0.744    0.746      0.747
-    Precision for inla.group(t, method = "quantile", n = 11)                   61.147 0.191     60.866   61.123     61.528
-    Precision for inla.group(z, method = "quantile", n = 11)                   58.251 0.201     57.908   58.240     58.606
-    Precision for inla.group(substrate.grainsize, method = "quantile", n = 11) 56.272 0.397     55.731   56.198     57.209
-    Precision for inla.group(pca1, method = "quantile", n = 11)                56.719 0.148     56.496   56.702     57.004
-    Precision for inla.group(pca2, method = "quantile", n = 11)                54.790 0.200     54.462   54.781     55.137
-    Precision for auid                                                         26.664 0.006     26.654   26.663     26.679
-    Phi for auid                                                                0.059 0.000      0.059    0.059      0.060
-    GroupRho for auid                                                           0.877 0.000      0.877    0.877      0.879
-                                                                                mode
-    Precision for dyri                                                         57.937
-    Rho for dyri                                                                0.745
-    Precision for inla.group(t, method = "quantile", n = 11)                   60.899
-    Precision for inla.group(z, method = "quantile", n = 11)                   58.060
-    Precision for inla.group(substrate.grainsize, method = "quantile", n = 11) 55.865
-    Precision for inla.group(pca1, method = "quantile", n = 11)                56.533
-    Precision for inla.group(pca2, method = "quantile", n = 11)                54.542
-    Precision for auid                                                         26.658
-    Phi for auid                                                                0.059
-    GroupRho for auid                                                           0.877
+Model hyperparameters:
+                                                                             mean    sd 0.025quant 0.5quant 0.975quant
+Precision for dyri                                                         53.187 0.109     53.038   53.167     53.440
+Rho for dyri                                                                0.754 0.000      0.753    0.754      0.755
+Precision for inla.group(t, method = "quantile", n = 11)                   58.617 0.184     58.300   58.613     58.926
+Precision for inla.group(z, method = "quantile", n = 11)                   55.026 0.389     54.505   54.952     55.948
+Precision for inla.group(substrate.grainsize, method = "quantile", n = 11) 58.669 0.213     58.307   58.665     59.024
+Precision for inla.group(pca1, method = "quantile", n = 11)                55.032 0.393     54.505   54.957     55.964
+Precision for inla.group(pca2, method = "quantile", n = 11)                56.259 0.251     55.894   56.224     56.772
+Precision for auid                                                         58.480 0.002     58.475   58.479     58.985
+Phi for auid                                                                0.048 0.000      0.048    0.048      0.049
+GroupRho for auid                                                           0.785 0.000      0.785    0.785      0.785
+                                                                             mode
+Precision for dyri                                                         53.066
+Rho for dyri                                                                0.753
+Precision for inla.group(t, method = "quantile", n = 11)                   58.417
+Precision for inla.group(z, method = "quantile", n = 11)                   54.624
+Precision for inla.group(substrate.grainsize, method = "quantile", n = 11) 58.418
+Precision for inla.group(pca1, method = "quantile", n = 11)                54.624
+Precision for inla.group(pca2, method = "quantile", n = 11)                55.943
+Precision for auid                                                         58.480
+Phi for auid                                                                0.048
+GroupRho for auid                                                           0.785
 
-    Expected number of effective parameters(stdev): 768.32(0.73)
-    Number of equivalent replicates : 10.00 
+Expected number of effective parameters(stdev): 608.49(1.62)
+Number of equivalent replicates : 11.88 
 
-    Deviance Information Criterion (DIC) ...............: 54592.46
-    Deviance Information Criterion (DIC, saturated) ....: 35554.35
-    Effective number of parameters .....................: -715.73
+Deviance Information Criterion (DIC) ...............: 56306.57
+Deviance Information Criterion (DIC, saturated) ....: 38406.06
+Effective number of parameters .....................: -1193.28
 
-    Watanabe-Akaike information criterion (WAIC) ...: 62761.35
-    Effective number of parameters .................: 5162.85
+Watanabe-Akaike information criterion (WAIC) ...: 65141.77
+Effective number of parameters .................: 5098.54
 
-    Marginal log-Likelihood:  -30994.73 
-    Posterior marginals for the linear predictor and
-    the fitted values are computed
+Marginal log-Likelihood:  -31355.14 
+Posterior marginals for the linear predictor and
+ the fitted values are computed
 
 
 
@@ -274,23 +281,23 @@
 
   if (fishery_model) {
 
-    p$fishery_model = fishery_model( DS = "logistic_parameters", p=p, tag=p$tag )
-    
-    p$fishery_model$stancode_compiled = rstan::stan_model( model_code=p$fishery_model$stancode )
+      p$fishery_model = fishery_model( DS = "logistic_parameters", p=p, tag=p$tag )
+      
+      p$fishery_model$stancode_compiled = rstan::stan_model( model_code=p$fishery_model$stancode )
 
-    if (0) {
-      # testing:
-      # later:::ensureInitialized()  # solve mode error
-      str( p$fishery_model$standata )
-      p$fishery_model$standata$Kmu = c(4, 40, 1)
-      p$fishery_model$standata$rmu = c(1, 1, 1)
-      p$fishery_model$standata$qmu = c(1, 1, 1)
-      p$fishery_model$standata$Ksd = c(0.5, 0.5, 0.5) * p$fishery_model$standata$Kmu  # c( 2, 20, 0.5)
-      p$fishery_model$standata$rsd = c(0.5, 0.5, 0.5) * p$fishery_model$standata$rmu  # rep( 0.3, 3)
-      p$fishery_model$standata$qsd = c(0.5, 0.5, 0.5) * p$fishery_model$standata$qmu  # rep( 0.3, 3)
+      if (0) {
+        # testing:
+        # later:::ensureInitialized()  # solve mode error
+        str( p$fishery_model$standata )
+        p$fishery_model$standata$Kmu = c(4, 40, 1)
+        p$fishery_model$standata$rmu = c(1, 1, 1)
+        p$fishery_model$standata$qmu = c(1, 1, 1)
+        p$fishery_model$standata$Ksd = c(0.5, 0.5, 0.5) * p$fishery_model$standata$Kmu  # c( 2, 20, 0.5)
+        p$fishery_model$standata$rsd = c(0.5, 0.5, 0.5) * p$fishery_model$standata$rmu  # rep( 0.3, 3)
+        p$fishery_model$standata$qsd = c(0.5, 0.5, 0.5) * p$fishery_model$standata$qmu  # rep( 0.3, 3)
 
-      # to recompile
-    }
+        # to recompile
+      }
 
 
       str( p$fishery_model)

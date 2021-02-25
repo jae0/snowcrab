@@ -169,7 +169,7 @@
           coastline=coastline,
           isobaths=isobaths,
           managementlines=managementlines,
-          main=paste("Predicted abundance density", y ),  
+          main=paste("Predicted biomass density", y ),  
           outfilename=fn
         )
     }
