@@ -9,7 +9,12 @@
 
   year.assessment = 2020
 
-  p = bio.snowcrab::snowcrab_parameters( project_class="carstm", assessment.years=2000:year.assessment, tag="lattice" )
+  p = bio.snowcrab::snowcrab_parameters( 
+    project_class="carstm", 
+    assessment.years=2000:year.assessment, 
+    areal_units_type="lattice",
+    selection = list(type = "number")
+ )
 
 # ------------------------------------------------
 # Part 2 -- spatiotemporal statistical model 
@@ -247,7 +252,7 @@
 
   if (fishery_model) {
 
-    p$fishery_model = fishery_model( DS = "logistic_parameters", p=p, tag=p$tag )
+    p$fishery_model = fishery_model( DS = "logistic_parameters", p=p, tag=p$areal_units_type )
     
     p$fishery_model$stancode_compiled = rstan::stan_model( model_code=p$fishery_model$stancode )
 
@@ -268,11 +273,11 @@
 
       str( p$fishery_model)
 
-      res = fishery_model( p=p, DS="logistic_model", tag=p$tag,
+      res = fishery_model( p=p, DS="logistic_model", tag=p$areal_units_type,
         chains=3, cores=3, iter=20000, warmup=12000, refresh=1000,
         control=list(adapt_delta=0.99, max_treedepth=18)
       )
-      # res = fishery_model( p=p, DS="logistic_samples", tag=tag )  # to get samples
+      # res = fishery_model( p=p, DS="logistic_samples", tag=p$areal_units_type )  # to get samples
 
 
 

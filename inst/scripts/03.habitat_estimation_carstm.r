@@ -11,45 +11,51 @@
   p = bio.snowcrab::snowcrab_parameters( 
     project_class="carstm", 
     assessment.years=2000:year.assessment,  
-    areal_units_type="tesselation"
+    areal_units_type="tesselation", 
+    arstm_model_label = "nonseparable_space-time_pa_fishable_binomial",
+    selection = list(type = "presence_absence")
   )
 
-  p$selection$type = "presence_absence"
-  p$selection$biologicals=list(
-    spec_bio=bio.taxonomy::taxonomy.recode( from="spec", to="parsimonious", tolookup=p$groundfish_species_code ),
-    sex=0, # male
-    mat=1, # do not use maturity status in groundfish data as it is suspect ..
-    len= c( 95, 200 )/10, #  mm -> cm ; aegis_db in cm
-    ranged_data="len"
-  )
-  p$selection$survey=list(
-    data.source = c("snowcrab", "groundfish", "logbook"),
-    yr = p$assessment.years,      # time frame for comparison specified above
-    settype = 1, # same as geartype in groundfish_survey_db
-    polygon_enforce=TRUE,  # make sure mis-classified stations or incorrectly entered positions get filtered out
-    strata_toremove = NULL #,  # emphasize that all data enters analysis initially ..
-    # ranged_data = c("dyear")  # not used .. just to show how to use range_data
-  )
-  p$variabletomodel = "pa"
-  
-  p$carstm_model_label = "nonseparable_space-time_pa_fishable_binomial"
-  p$carstm_modelengine = "inla"
-  p$carstm_model_formula = as.formula( paste(
-    p$variabletomodel, ' ~ 1 ',
-      ' + f( dyri, model="ar1", hyper=H$ar1 ) ',
-      ' + f( inla.group( t, method="quantile", n=11 ), model="rw2", scale.model=TRUE, hyper=H$rw2) ',
-      ' + f( inla.group( z, method="quantile", n=11 ), model="rw2", scale.model=TRUE, hyper=H$rw2) ',
-      ' + f( inla.group( substrate.grainsize, method="quantile", n=11 ), model="rw2", scale.model=TRUE, hyper=H$rw2) ',
-      ' + f( inla.group( pca1, method="quantile", n=11 ), model="rw2", scale.model=TRUE, hyper=H$rw2) ',
-      ' + f( inla.group( pca2, method="quantile", n=11 ), model="rw2", scale.model=TRUE, hyper=H$rw2) ',
-      ' + f( auid, model="bym2", graph=slot(sppoly, "nb"), group=year_factor, scale.model=TRUE, constr=TRUE, hyper=H$bym2, control.group=list(model="ar1", hyper=H$ar1_group)) '
-  ) )
+  if (0) {
 
-  p$carstm_model_family = "binomial"  # "nbinomial", "betabinomial", "zeroinflatedbinomial0" , "zeroinflatednbinomial0"
-  p$carstm_model_inla_control_familiy = list(control.link=list(model='logit'))
+      p$selection$type = "presence_absence"
+      p$selection$biologicals=list(
+        spec_bio=bio.taxonomy::taxonomy.recode( from="spec", to="parsimonious", tolookup=p$groundfish_species_code ),
+        sex=0, # male
+        mat=1, # do not use maturity status in groundfish data as it is suspect ..
+        len= c( 95, 200 )/10, #  mm -> cm ; aegis_db in cm
+        ranged_data="len"
+      )
+      p$selection$survey=list(
+        data.source = c("snowcrab", "groundfish", "logbook"),
+        yr = p$assessment.years,      # time frame for comparison specified above
+        settype = 1, # same as geartype in groundfish_survey_db
+        polygon_enforce=TRUE,  # make sure mis-classified stations or incorrectly entered positions get filtered out
+        strata_toremove = NULL #,  # emphasize that all data enters analysis initially ..
+        # ranged_data = c("dyear")  # not used .. just to show how to use range_data
+      )
+      p$variabletomodel = "pa"
+      
+      p$carstm_model_label = "nonseparable_space-time_pa_fishable_binomial"
+      p$carstm_modelengine = "inla"
+      p$carstm_model_formula = as.formula( paste(
+        p$variabletomodel, ' ~ 1 ',
+          ' + f( dyri, model="ar1", hyper=H$ar1 ) ',
+          ' + f( inla.group( t, method="quantile", n=11 ), model="rw2", scale.model=TRUE, hyper=H$rw2) ',
+          ' + f( inla.group( z, method="quantile", n=11 ), model="rw2", scale.model=TRUE, hyper=H$rw2) ',
+          ' + f( inla.group( substrate.grainsize, method="quantile", n=11 ), model="rw2", scale.model=TRUE, hyper=H$rw2) ',
+          ' + f( inla.group( pca1, method="quantile", n=11 ), model="rw2", scale.model=TRUE, hyper=H$rw2) ',
+          ' + f( inla.group( pca2, method="quantile", n=11 ), model="rw2", scale.model=TRUE, hyper=H$rw2) ',
+          ' + f( auid, model="bym2", graph=slot(sppoly, "nb"), group=year_factor, scale.model=TRUE, constr=TRUE, hyper=H$bym2, control.group=list(model="ar1", hyper=H$ar1_group)) '
+      ) )
 
-#  p$carstm_model_family  = "zeroinflatedbinomial1", #  "binomial",  # "nbinomial", "betabinomial", "zeroinflatedbinomial0" , "zeroinflatednbinomial0"
-#  p$carstm_model_inla_control_familiy = NULL
+      p$carstm_model_family = "binomial"  # "nbinomial", "betabinomial", "zeroinflatedbinomial0" , "zeroinflatednbinomial0"
+      p$carstm_model_inla_control_familiy = list(control.link=list(model='logit'))
+
+    #  p$carstm_model_family  = "zeroinflatedbinomial1", #  "binomial",  # "nbinomial", "betabinomial", "zeroinflatedbinomial0" , "zeroinflatednbinomial0"
+    #  p$carstm_model_inla_control_familiy = NULL
+
+  }
 
 
 
@@ -59,8 +65,8 @@
 
   M = snowcrab.db( p=p, DS="carstm_inputs", redo=TRUE )  # will redo if not found
 
-  fit = carstm_model( p=p, M=M )
-
+  fit = carstm_model( p=p, M='snowcrab.db( p=p, DS="carstm_inputs" )' ) # 151 configs and long optim .. 19 hrs
+ 
 
 
 
@@ -141,29 +147,29 @@
 
   if ( !file.exists(outputdir)) dir.create( outputdir, recursive=TRUE, showWarnings=FALSE )
 
-
-  png( filename=file.path( outputdir, "cfa_all.png"), width=3072, height=2304, pointsize=12, res=300 )
+  (fn = file.path( outputdir, "cfa_all.png"))
+  png( filename=fn, width=3072, height=2304, pointsize=12, res=300 )
     plot( cfaall ~ yrs, data=RES, lty="solid", lwd=4, pch=20, col="slateblue", type="b", ylab="Prob of observing snow crab", xlab="",  ylim=c(0,1))
     lines( cfaall_lb ~ yrs, data=RES, lty="dotted", lwd=2, col="slategray" )
     lines( cfaall_ub ~ yrs, data=RES, lty="dotted", lwd=2, col="slategray" )
   dev.off()
 
-
-  png( filename=file.path( outputdir, "cfa_south.png"), width=3072, height=2304, pointsize=12, res=300 )
+  (fn = file.path( outputdir, "cfa_south.png") )
+  png( filename=fn, width=3072, height=2304, pointsize=12, res=300 )
     plot( cfasouth ~ yrs, data=RES, lty="solid", lwd=4, pch=20, col="slateblue", type="b", ylab="Prob of observing snow crab", xlab="",  ylim=c(0,1))
     lines( cfasouth_lb ~ yrs, data=RES, lty="dotted", lwd=2, col="slategray" )
     lines( cfasouth_ub ~ yrs, data=RES, lty="dotted", lwd=2, col="slategray" )
   dev.off()
 
-
-  png( filename=file.path( outputdir, "cfa_north.png"), width=3072, height=2304, pointsize=12, res=300 )
+  (fn = file.path( outputdir, "cfa_north.png"))
+  png( filename=fn, width=3072, height=2304, pointsize=12, res=300 )
     plot( cfanorth ~ yrs, data=RES, lty="solid", lwd=4, pch=20, col="slateblue", type="b", ylab="Prob of observing snow crab", xlab="",  ylim=c(0,1))
     lines( cfanorth_lb ~ yrs, data=RES, lty="dotted", lwd=2, col="slategray" )
     lines( cfanorth_ub ~ yrs, data=RES, lty="dotted", lwd=2, col="slategray" )
   dev.off()
 
-
-  png( filename=file.path( outputdir, "cfa_4x.png"), width=3072, height=2304, pointsize=12, res=300 )
+  (fn = file.path( outputdir, "cfa_4x.png"))
+  png( filename=fn, width=3072, height=2304, pointsize=12, res=300 )
     plot( cfa4x ~ yrs, data=RES, lty="solid", lwd=4, pch=20, col="slateblue", type="b", ylab="Prob of observing snow crab", xlab="",  ylim=c(0,1))
     lines( cfa4x_lb ~ yrs, data=RES, lty="dotted", lwd=2, col="slategray" )
     lines( cfa4x_ub ~ yrs, data=RES, lty="dotted", lwd=2, col="slategray" )

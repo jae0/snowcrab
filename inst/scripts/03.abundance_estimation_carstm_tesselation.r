@@ -11,22 +11,11 @@
 
   p = bio.snowcrab::snowcrab_parameters( 
     project_class="carstm", 
-    assessment.years=2000:year.assessment,
-    tag =  "tesselation",   # id used for fishery model
-    carstm_model_label = "tesselation",
-    carstm_inputs_aggregated = FALSE,
-    areal_units_type = "tesselation", # "stmv_lattice" to use ageis fields instead of carstm fields ... note variables are not the same
-    areal_units_resolution_km = 1, # with tesselation, this si the starting resolution km  
-    areal_units_constraint = "snowcrab",  # locations of data as constraint .. "snowcrab" loads these automatically, otherwise a xy matrix of positions
-    areal_units_constraint_ntarget = 10,
-    areal_units_constraint_nmin = 3,
-    sa_threshold_km2 = 5,
-    fraction_todrop = 1/5,  # control tesselation rate of convergence
-    fraction_cv = 0.9,   # ie. stop if essentially a poisson distribution
-    fraction_good_bad = 0.9,
-    nAU_min = 30
-  )
-
+    assessment.years=2000:year.assessment, 
+    areal_units_type="tesselation",
+    carstm_model_label = "tesselation",   # default is the name of areal_units_type  
+    selection = list(type = "number")
+ )
   
 
 # ------------------------------------------------
@@ -281,7 +270,7 @@ Posterior marginals for the linear predictor and
 
   if (fishery_model) {
 
-      p$fishery_model = fishery_model( DS = "logistic_parameters", p=p, tag=p$tag )
+      p$fishery_model = fishery_model( DS = "logistic_parameters", p=p, tag=p$areal_units_type )
       
       p$fishery_model$stancode_compiled = rstan::stan_model( model_code=p$fishery_model$stancode )
 
@@ -302,11 +291,11 @@ Posterior marginals for the linear predictor and
 
       str( p$fishery_model)
 
-      res = fishery_model( p=p, DS="logistic_model", tag=p$tag,
+      res = fishery_model( p=p, DS="logistic_model", tag=p$areal_units_type,
         chains=3, cores=3, iter=20000, warmup=12000, refresh=1000,
         control=list(adapt_delta=0.99, max_treedepth=18)
       )
-      # res = fishery_model( p=p, DS="logistic_samples", tag=p$tag )  # to get samples
+      # res = fishery_model( p=p, DS="logistic_samples", tag=p$areal_units_type )  # to get samples
 
 
 
