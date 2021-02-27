@@ -31,7 +31,6 @@ snowcrab_parameters = function( p=list(), year.assessment=NULL, project_name="bi
   p$project.outputdir = project.datadirectory( p$project_name, "output" ) #required for interpolations and mapping
   p$transform_lookup = file.path( p$project.outputdir, "transform.lookup.rdata" ) # local storage of transforms for timeseries plots
 
-  if (!exists( "variabletomodel", p)) p$variabletomodel = "totno"
 
 
   # ---------------------
@@ -113,6 +112,7 @@ snowcrab_parameters = function( p=list(), year.assessment=NULL, project_name="bi
 
   if (project_class=="core") {
     p$project_class = "core"
+    if (!exists( "variabletomodel", p)) p$variabletomodel = "totno"
     return(p)  # minimal specifications
   }
 
@@ -123,7 +123,8 @@ snowcrab_parameters = function( p=list(), year.assessment=NULL, project_name="bi
     p$libs = unique( c( p$libs, project.library ( "stmv" ) ) )
     p$stmv_model_label="default"
 
-    if (!exists("varstomodel", p) ) p$varstomodel = c( "pca1", "pca2", "ca1", "ca2" )
+    if (!exists( "variabletomodel", p)) p$variabletomodel = "totmass"
+  
     if (!exists("stmv_variables", p)) p$stmv_variables = list()
     if (!exists("LOCS", p$stmv_variables)) p$stmv_variables$LOCS=c("plon", "plat")
     if (!exists("TIME", p$stmv_variables)) p$stmv_variables$TIME="tiyr"
