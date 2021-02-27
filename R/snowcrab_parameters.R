@@ -397,8 +397,8 @@ snowcrab_parameters = function( p=list(), year.assessment=NULL, project_name="bi
     if ( p$areal_units_type =="tesselation" ) {
       p = parameters_add_without_overwriting( p,
         areal_units_resolution_km = 1, # km  
-        areal_units_constraint_ntarget = 20,
-        areal_units_constraint_nmin = 5,
+        areal_units_constraint_ntarget = 15,
+        areal_units_constraint_nmin = 3,
         sa_threshold_km2 = 5,
         fraction_cv = 0.9,   # ie. stop if essentially a poisson distribution
         fraction_todrop = 1/7  # control tesselation
