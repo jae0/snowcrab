@@ -63,7 +63,7 @@
 
     plot_crs = p$aegis_proj4string_planar_km
     coastline=aegis.coastline::coastline_db( DS="eastcoast_gadm", project_to=plot_crs )
-    isobaths=aegis.bathymetry::isobath_db( depths=c(50, 100, 200, 400, 800), project_to=plot_crs )
+    isobaths=aegis.bathymetry::isobath_db( depths=c(50, 100, 200, 400 ), project_to=plot_crs )
     managementlines = aegis.polygons::area_lines.db( DS="cfa.regions", returntype="sf", project_to=plot_crs )
   
     time_match = list( year=as.character(2020)  )
@@ -285,27 +285,27 @@
 
 
       # frequency density of key parameters
-      figure.mcmc( "K", res=res, fn=file.path(p$fishery_model$outdir, "K.density.png" ) )
-      figure.mcmc( "r", res=res, fn=file.path(p$fishery_model$outdir, "r.density.png" ) )
-      figure.mcmc( "q", res=res, fn=file.path(p$fishery_model$outdir, "q.density.png" ) ,xrange=c(0,5.5))
-      figure.mcmc( "FMSY", res=res, fn=file.path(p$fishery_model$outdir, "FMSY.density.png" ) )
-      # figure.mcmc( "bosd", res=res, fn=file.path(p$fishery_model$outdir, "bosd.density.png" ) )
-      # figure.mcmc( "bpsd", res=res, fn=file.path(p$fishery_model$outdir, "bpsd.density.png" ) )
+      fishery_model( DS="plot", vname="K", res=res, fn=file.path(p$fishery_model$outdir, "K.density.png" ) )
+      fishery_model( DS="plot", vname="r", res=res, fn=file.path(p$fishery_model$outdir, "r.density.png" ) )
+      fishery_model( DS="plot", vname="q", res=res, fn=file.path(p$fishery_model$outdir, "q.density.png" ) ,xrange=c(0,5.5))
+      fishery_model( DS="plot", vname="FMSY", res=res, fn=file.path(p$fishery_model$outdir, "FMSY.density.png" ) )
+      # fishery_model( DS="plot", vname="bosd", res=res, fn=file.path(p$fishery_model$outdir, "bosd.density.png" ) )
+      # fishery_model( DS="plot", vname="bpsd", res=res, fn=file.path(p$fishery_model$outdir, "bpsd.density.png" ) )
 
       # timeseries
-      figure.mcmc( type="timeseries", vname="biomass", res=res, fn=file.path(p$fishery_model$outdir, "biomass.timeseries.png" ), save.plot=T )
-      figure.mcmc( type="timeseries", vname="fishingmortality", res=res, fn=file.path(p$fishery_model$outdir, "fishingmortality.timeseries.png" ) )
+      fishery_model( DS="plot", type="timeseries", vname="biomass", res=res, fn=file.path(p$fishery_model$outdir, "biomass.timeseries.png" ), save.plot=T )
+      fishery_model( DS="plot", type="timeseries", vname="fishingmortality", res=res, fn=file.path(p$fishery_model$outdir, "fishingmortality.timeseries.png" ) )
 
       # Summary table of mean values for inclusion in document
       biomass.summary.table(x)
 
       # Harvest control rules
-      figure.mcmc( type="hcr", vname="default", res=res, fn=file.path(p$fishery_model$outdir, "hcr.default.png" ), save.plot=T  )
-      figure.mcmc( type="hcr", vname="simple", res=res, fn=file.path(p$fishery_model$outdir, "hcr.simple.png" ) )
+      fishery_model( DS="plot", type="hcr", vname="default", res=res, fn=file.path(p$fishery_model$outdir, "hcr.default.png" ), save.plot=T  )
+      fishery_model( DS="plot", type="hcr", vname="simple", res=res, fn=file.path(p$fishery_model$outdir, "hcr.simple.png" ) )
 
       # diagnostics
-      # figure.mcmc( type="diagnostic.errors", res=res, fn=file.path(p$fishery_model$outdir, "diagnostic.errors.png" ) )
-      # figure.mcmc( type="diagnostic.phase", res=res, fn=file.path(p$fishery_model$outdir, "diagnostic.phase.png" ) )
+      # fishery_model( DS="plot", type="diagnostic.errors", res=res, fn=file.path(p$fishery_model$outdir, "diagnostic.errors.png" ) )
+      # fishery_model( DS="plot", type="diagnostic.phase", res=res, fn=file.path(p$fishery_model$outdir, "diagnostic.phase.png" ) )
 
       
       NN = res$p$fishery_model$standata$N

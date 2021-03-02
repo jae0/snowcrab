@@ -18,15 +18,16 @@
  )
   
 
+
 # ------------------------------------------------
 # Part 2 -- spatiotemporal statistical model 
 
   if ( spatiotemporal_model ) {
 
       if (0) {
-      # polygon structure:: create if not yet made
-      # adjust based upon RAM requirements and ncores
-        # create if not yet made
+        # polygon structure:: create if not yet made
+        # adjust based upon RAM requirements and ncores
+          # create if not yet made
         for (au in c("cfanorth", "cfasouth", "cfa4x", "cfaall" )) plot(polygon_managementareas( species="snowcrab", au))
         xydata = snowcrab.db( p=p, DS="areal_units_input", redo=TRUE )
 
@@ -34,6 +35,12 @@
         plot( sppoly[, "npts"]  )
         
         MS = NULL
+
+
+
+        p$carstm_model_label = "tesselation_overdispersed"   # default is the name of areal_units_type  
+        p$carstm_model_family  = "zeroinflatedpoisson0" #  "binomial",  # "nbinomial", "betabinomial", "zeroinflatedbinomial0" , "zeroinflatednbinomial0"
+        p$carstm_model_inla_control_familiy = NULL
 
       }
 
@@ -156,7 +163,7 @@
 
       plot_crs = p$aegis_proj4string_planar_km
       coastline=aegis.coastline::coastline_db( DS="eastcoast_gadm", project_to=plot_crs )
-      isobaths=aegis.bathymetry::isobath_db( depths=c(50, 100, 200, 400, 800), project_to=plot_crs  )
+      isobaths=aegis.bathymetry::isobath_db( depths=c(50, 100, 200, 400), project_to=plot_crs  )
       managementlines = aegis.polygons::area_lines.db( DS="cfa.regions", returntype="sf", project_to=plot_crs )
     
       vn = paste("biomass", "predicted", sep=".")
@@ -292,7 +299,7 @@ Posterior marginals for the linear predictor and
       str( p$fishery_model)
 
       res = fishery_model( p=p, DS="logistic_model", tag=p$areal_units_type,
-        chains=3, cores=3, iter=20000, warmup=12000, refresh=1000,
+        chains=3, cores=3, iter=1000, warmup=500, refresh=100,
         control=list(adapt_delta=0.99, max_treedepth=18)
       )
       # res = fishery_model( p=p, DS="logistic_samples", tag=p$areal_units_type )  # to get samples
@@ -303,27 +310,27 @@ Posterior marginals for the linear predictor and
 
 
       # frequency density of key parameters
-      figure.mcmc( "K", res=res, fn=file.path(p$fishery_model$outdir, "K.density.png" ) )
-      figure.mcmc( "r", res=res, fn=file.path(p$fishery_model$outdir, "r.density.png" ) )
-      figure.mcmc( "q", res=res, fn=file.path(p$fishery_model$outdir, "q.density.png" ) ,xrange=c(0,5.5))
-      figure.mcmc( "FMSY", res=res, fn=file.path(p$fishery_model$outdir, "FMSY.density.png" ) )
-      # figure.mcmc( "bosd", res=res, fn=file.path(p$fishery_model$outdir, "bosd.density.png" ) )
-      # figure.mcmc( "bpsd", res=res, fn=file.path(p$fishery_model$outdir, "bpsd.density.png" ) )
+      fishery_model( DS="plot", vname="K", res=res, fn=file.path(p$fishery_model$outdir, "K.density.png" ) )
+      fishery_model( DS="plot", vname="r", res=res, fn=file.path(p$fishery_model$outdir, "r.density.png" ) )
+      fishery_model( DS="plot", vname="q", res=res, fn=file.path(p$fishery_model$outdir, "q.density.png" ) ,xrange=c(0,5.5))
+      fishery_model( DS="plot", vname="FMSY", res=res, fn=file.path(p$fishery_model$outdir, "FMSY.density.png" ) )
+      # fishery_model( DS="plot", vname="bosd", res=res, fn=file.path(p$fishery_model$outdir, "bosd.density.png" ) )
+      # fishery_model( DS="plot", vname="bpsd", res=res, fn=file.path(p$fishery_model$outdir, "bpsd.density.png" ) )
 
       # timeseries
-      figure.mcmc( type="timeseries", vname="biomass", res=res, fn=file.path(p$fishery_model$outdir, "biomass.timeseries.png" ), save.plot=T )
-      figure.mcmc( type="timeseries", vname="fishingmortality", res=res, fn=file.path(p$fishery_model$outdir, "fishingmortality.timeseries.png" ) )
+      fishery_model( DS="plot", type="timeseries", vname="biomass", res=res, fn=file.path(p$fishery_model$outdir, "biomass.timeseries.png" ), save.plot=T )
+      fishery_model( DS="plot", type="timeseries", vname="fishingmortality", res=res, fn=file.path(p$fishery_model$outdir, "fishingmortality.timeseries.png" ) )
 
       # Summary table of mean values for inclusion in document
       biomass.summary.table(x)
 
       # Harvest control rules
-      figure.mcmc( type="hcr", vname="default", res=res, fn=file.path(p$fishery_model$outdir, "hcr.default.png" ), save.plot=T  )
-      figure.mcmc( type="hcr", vname="simple", res=res, fn=file.path(p$fishery_model$outdir, "hcr.simple.png" ) )
+      fishery_model( DS="plot", type="hcr", vname="default", res=res, fn=file.path(p$fishery_model$outdir, "hcr.default.png" ), save.plot=T  )
+      fishery_model( DS="plot", type="hcr", vname="simple", res=res, fn=file.path(p$fishery_model$outdir, "hcr.simple.png" ) )
 
       # diagnostics
-      # figure.mcmc( type="diagnostic.errors", res=res, fn=file.path(p$fishery_model$outdir, "diagnostic.errors.png" ) )
-      # figure.mcmc( type="diagnostic.phase", res=res, fn=file.path(p$fishery_model$outdir, "diagnostic.phase.png" ) )
+      # fishery_model( DS="plot", type="diagnostic.errors", res=res, fn=file.path(p$fishery_model$outdir, "diagnostic.errors.png" ) )
+      # fishery_model( DS="plot", type="diagnostic.phase", res=res, fn=file.path(p$fishery_model$outdir, "diagnostic.phase.png" ) )
 
 
       NN = res$p$fishery_model$standata$N
