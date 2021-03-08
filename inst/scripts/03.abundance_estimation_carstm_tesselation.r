@@ -278,36 +278,19 @@ Posterior marginals for the linear predictor and
   if (fishery_model) {
 
       p$fishery_model = fishery_model( DS = "logistic_parameters", p=p, tag=p$areal_units_type )
-      
+      p$fishery_model$stancode = fishery_model( p=p, DS="stan_surplus_production" )
       p$fishery_model$stancode_compiled = rstan::stan_model( model_code=p$fishery_model$stancode )
-
-      if (0) {
-        # testing:
-        # later:::ensureInitialized()  # solve mode error
-        str( p$fishery_model$standata )
-        p$fishery_model$standata$Kmu = c(4, 40, 1)
-        p$fishery_model$standata$rmu = c(1, 1, 1)
-        p$fishery_model$standata$qmu = c(1, 1, 1)
-        p$fishery_model$standata$Ksd = c(0.5, 0.5, 0.5) * p$fishery_model$standata$Kmu  # c( 2, 20, 0.5)
-        p$fishery_model$standata$rsd = c(0.5, 0.5, 0.5) * p$fishery_model$standata$rmu  # rep( 0.3, 3)
-        p$fishery_model$standata$qsd = c(0.5, 0.5, 0.5) * p$fishery_model$standata$qmu  # rep( 0.3, 3)
-
-        # to recompile
-      }
-
 
       str( p$fishery_model)
 
       res = fishery_model( p=p, DS="logistic_model", tag=p$areal_units_type,
-        chains=3, cores=3, iter=10000, warmup=5000, refresh=100,
-        control=list(adapt_delta=0.9, max_treedepth=16)
+        chains=3, cores=3, iter=1000, warmup=500, refresh=100,
+        control=list(adapt_delta=0.9, max_treedepth=15)
       )
       # res = fishery_model( p=p, DS="logistic_samples", tag=p$areal_units_type )  # to get samples
 
 
-
       p$fishery_model$outdir = file.path( p$modeldir, p$carstm_model_label, "fishery_model_results" )
-
 
       # frequency density of key parameters
       fishery_model( DS="plot", vname="K", res=res, fn=file.path(p$fishery_model$outdir, "K.density.png" ) )
@@ -335,6 +318,47 @@ Posterior marginals for the linear predictor and
 
       NN = res$p$fishery_model$standata$N
 
+      # bosd
+      plot.new()
+      layout( matrix(c(1,2,3), 3, 1 ))
+      par(mar = c(4.4, 4.4, 0.65, 0.75))
+      for (i in 1:3) plot(density(res$mcmc$bosd[,i] ), main="")
+      ( qs = apply(  res$mcmc$bosd[,], 2, quantile, probs=c(0.025, 0.5, 0.975) ) )
+
+
+      # bpsd
+      plot.new()
+      layout( matrix(c(1,2,3), 3, 1 ))
+      par(mar = c(4.4, 4.4, 0.65, 0.75))
+      for (i in 1:3) plot(density(res$mcmc$bpsd[,i] ), main="")
+      ( qs = apply(  res$mcmc$bpsd[,], 2, quantile, probs=c(0.025, 0.5, 0.975) ) )
+
+      # rem_sd
+      plot.new()
+      layout( matrix(c(1,2,3), 3, 1 ))
+      par(mar = c(4.4, 4.4, 0.65, 0.75))
+      for (i in 1:3) plot(density(res$mcmc$rem_sd[,i] ), main="")
+      ( qs = apply(  res$mcmc$rem_sd[,], 2, quantile, probs=c(0.025, 0.5, 0.975) ) )
+
+
+
+----
+      # Yoffset
+      plot.new()
+      layout( matrix(c(1,2,3), 3, 1 ))
+      par(mar = c(4.4, 4.4, 0.65, 0.75))
+      for (i in 1:3) plot(density(res$mcmc$Yoffset[,i] ), main="")
+      ( qs = apply(  res$mcmc$Yoffset[,], 2, quantile, probs=c(0.025, 0.5, 0.975) ) )
+
+  ---
+     # b0
+      plot.new()
+      layout( matrix(c(1,2,3), 3, 1 ))
+      par(mar = c(4.4, 4.4, 0.65, 0.75))
+      for (i in 1:3) plot(density(res$mcmc$b0[,i] ), main="")
+      ( qs = apply(  res$mcmc$b0[,], 2, quantile, probs=c(0.025, 0.5, 0.975) ) )
+
+  
       # K
       plot.new()
       layout( matrix(c(1,2,3), 3, 1 ))

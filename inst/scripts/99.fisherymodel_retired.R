@@ -14,7 +14,10 @@ p = bio.snowcrab::snowcrab_parameters(
 
 p$tag = "tesselation"
 
-p$fishery_model = fishery_model( DS = "logistic_parameters", p=p, tag=p$tag )
+p$fishery_model = fishery_model( DS = "logistic_parameters", p=p, tag=p$areal_units_type )
+p$fishery_model$stancode = fishery_model( p=p, DS="stan_surplus_production" )
+p$fishery_model$stancode_compiled = rstan::stan_model( model_code=p$fishery_model$stancode )
+
 
 if (0) {
   # testing:

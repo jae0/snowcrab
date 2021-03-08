@@ -1267,7 +1267,10 @@ p = bio.snowcrab::load.environment(
 #Choose one of the below  model runs
 ##stmv biomass estimates only
 
-p$fishery_model = bio.snowcrab::fishery_model( DS = "logistic_parameters", p=p, tag=p$tag ) 
+
+p$fishery_model = fishery_model( DS = "logistic_parameters", p=p, tag=p$areal_units_type )
+p$fishery_model$stancode = fishery_model( p=p, DS="stan_surplus_production" )
+p$fishery_model$stancode_compiled = rstan::stan_model( model_code=p$fishery_model$stancode )
 
 # override : 
 p$fishery_model$outdir = file.path(project.datadirectory('bio.snowcrab'), "assessments", p$year.assessment, "nonseparable_simple" )
