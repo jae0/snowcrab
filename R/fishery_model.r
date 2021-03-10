@@ -30,9 +30,11 @@ fishery_model = function(  p=NULL, DS="plot", assessment_years=2000:p$year.asses
     # observations
     if (!exists("standata", out)) {
       out$standata = fishery_model( DS="data_aggregated_timeseries", p=p, assessment_years=p$yrs )
+      oo = apply( out$standata$IOA, 2, range, na.rm=TRUE )
+      for (i in 1:ncol(oo)) {
+        out$standata$IOA[,i] = (out$standata$IOA[,i] - oo[1,i] )/ diff(oo[,i])  # force median 0.5 with most data inside 0,1
+      }
       # out$standata$IOA_min = apply( out$standata$IOA, 2, min, na.rm=TRUE ) 
-      # out$standata$IOA_datarange = apply( apply( out$standata$IOA, 2, range, na.rm=TRUE ), 2, diff )
-      # out$standata$IOA_datarange =  apply( out$standata$IOA, 2, max, na.rm=TRUE ) 
     }
 
     if (!exists("er", out$standata)) out$standata$er = 0.2  # target exploitation rate
@@ -52,13 +54,17 @@ fishery_model = function(  p=NULL, DS="plot", assessment_years=2000:p$year.asses
     out$standata$CAT[ which(!is.finite(out$standata$CAT)) ] = out$standata$eps  # remove NA's
 
     # priors
-    if (!exists("Kmu", out$standata)) out$standata$Kmu =  c( 5.0, 50, 0.5 )
-    if (!exists("rmu", out$standata)) out$standata$rmu =  c(1.0, 1.0, 1.0)
-    if (!exists("Ksd", out$standata)) out$standata$Ksd =  c(0.1, 0.1, 0.1) * out$standata$Kmu   
-    if (!exists("rsd", out$standata)) out$standata$rsd =  c(0.1, 0.1, 0.1) * out$standata$rmu  
+    if (!exists("Kmu", out$standata)) out$standata$Kmu =  c( 5.0, 60.0, 1.5 )
+    if (!exists("rmu", out$standata)) out$standata$rmu =  c( 1.0, 1.0, 1.0 )
+
+    if (!exists("Ksd", out$standata)) out$standata$Ksd =  c( 0.1, 0.1, 0.1 ) * out$standata$Kmu   
+    if (!exists("rsd", out$standata)) out$standata$rsd =  c( 0.1, 0.1, 0.1 ) * out$standata$rmu  
 
     if (!exists("qmu", out$standata)) out$standata$qmu =  c(1.0, 1.0, 1.0)
     if (!exists("qsd", out$standata)) out$standata$qsd =  c(0.1, 0.1, 0.1)
+ 
+    if (!exists("Yoffset_mu", out$standata)) out$standata$Yoffset_mu =  c(0.5, 0.5, 0.5)
+    if (!exists("Yoffset_sd", out$standata)) out$standata$Yoffset_sd =  c(0.1, 0.1, 0.1)
  
     return(out)
   }
@@ -81,8 +87,8 @@ fishery_model = function(  p=NULL, DS="plot", assessment_years=2000:p$year.asses
         vector[U] rmu ;
         vector[U] qmu ;
         vector[U] qsd ;
-        // vector[U] IOA_min; 
-        // vector[U] IOA_datarange; 
+        vector[U] Yoffset_mu ;
+        vector[U] Yoffset_sd ;
         matrix[N,U] CAT;
         matrix[N,U] IOA;
         matrix[N,U] missing;
@@ -99,22 +105,19 @@ fishery_model = function(  p=NULL, DS="plot", assessment_years=2000:p$year.asses
 
       parameters {
         vector <lower=eps> [U] K;
-        vector <lower=eps, upper=2.0> [U] r;
-        vector <lower=eps, upper=3.0> [U] q;
-        vector <lower=0, upper=0.75> [U] Yoffset;  //  offset
-        
+        vector <lower=0.25, upper=2.0> [U] r;
+        vector <lower=eps, upper=2.0> [U] q;
+        vector <lower=eps, upper=(1-eps)> [U] Yoffset;  //  offset
         vector <lower=eps, upper=0.5> [U] bosd;  // observation error
         vector <lower=eps, upper=0.5> [U] bpsd;  // process error
         vector <lower=eps, upper=0.5> [U] rem_sd;  // catch error
         vector <lower=eps, upper=(1-eps)> [U] b0;
         vector <lower=eps> [missing_ntot] IOAmissing;
         matrix <lower=0> [M+N,U] bm;
-        matrix <lower=0> [N,U] rem;
       }
 
       transformed parameters {
         matrix[N,U] Y;  // index of abundance
-//        matrix[MN,U] rem;  // observed catch
 
         // copy parameters to a new variable (Y) with imputed missing values
         {
@@ -130,7 +133,8 @@ fishery_model = function(  p=NULL, DS="plot", assessment_years=2000:p$year.asses
             }
           }
         }
-        
+
+
       }
 
       model {
@@ -140,20 +144,13 @@ fishery_model = function(  p=NULL, DS="plot", assessment_years=2000:p$year.asses
         K ~ normal( Kmu, Ksd )  ;
         r ~ normal( rmu, rsd )  ;
         b0 ~ normal( 0.5, 0.1 ) ; // starting b prior to first catch event
-        bosd ~ cauchy( 0, 0.01 ) ;  // slightly informative .. center of mass between (0,1)
-        bpsd ~ cauchy( 0, 0.01 ) ;
+        bosd ~ cauchy( 0, 0.1 ) ;  // slightly informative .. center of mass between (0,1)
+        bpsd ~ cauchy( 0, 0.1 ) ;
 
-        Yoffset ~ cauchy( 0.0, 0.01 ) ; // i.e., offset  
-        
-        q ~ cauchy( qmu, qsd ) ; // i.e., offset  
+        Yoffset ~ normal( Yoffset_mu, Yoffset_sd ) ; // i.e., offset  
+         
+        q ~ normal( qmu, qsd ) ; // i.e., offset  
 
-
-        // -------------------
-        // removals (catch) observation model, standardized to K (assuming some errors in observation of catch!)
-        rem_sd ~ cauchy( 0, 0.01 ) ;
-        for (j in 1:U) {
-          rem[,j] ~ normal( CAT[,j]/K[j], rem_sd[j] ) ;
-        }
 
         // -------------------
         // biomass observation model
@@ -171,29 +168,30 @@ fishery_model = function(  p=NULL, DS="plot", assessment_years=2000:p$year.asses
         // Cfa 4X -- fall/winter fishery
         //    Btot(t) = Bsurveyed(t) + removals(t)  ## .. 2018-2019 -> 2018
 
+
         // spring surveys
         for (j in 1:2) {
-          Y[1, j] ~ normal( (q[j] * K[j]* ( fmax( bm[1,j]  - rem[1,j] + Yoffset[j], eps) )) , bosd[j] ) ;
+          ( Y[1, j] / q[j] )+  Yoffset[j] ~ normal( ( ( fmax( bm[1,j] - CAT[1,j]/K[j]  , eps) )) , bosd[j] ) ;
           for (i in 2:(ty-1) ){
-            Y[i, j] ~ normal( (q[j] * K[j]*(  fmax( bm[i,j]  - rem[i-1,j] + Yoffset[j], eps) )), bosd[j] ) ;
+            ( Y[i, j] / q[j] ) +  Yoffset[j]   ~ normal( ( (  fmax( bm[i,j] - CAT[i-1,j]/K[j] , eps) )), bosd[j] ) ;
           }
         }
 
         for (i in 1:(ty-1) ){
-          Y[i, 3] ~ normal( (q[3] * K[3]* ( fmax( bm[i,3]  - rem[i,3] + Yoffset[3], eps) )) , bosd[3] ) ;
+          ( Y[i, 3] / q[3] ) +  Yoffset[3]  ~ normal( ( ( fmax( bm[i,3] - CAT[i,3]/K[3]  , eps) )) , bosd[3] ) ;
         }
 
 
         //  transition year (ty)
         for (j in 1:2) {
-          Y[ty,j] ~ normal( (q[j] * K[j]* ( fmax( bm[ty,j]  - (rem[ty-1,j] + rem[ty,j]) / 2.0 + Yoffset[j], eps) ) ) , bosd[j] ) ; //NENS and SENS
+          ( Y[ty,j] / q[j] ) +  Yoffset[j]  ~ normal( ( ( fmax( bm[ty,j]  - (CAT[ty-1,j]/K[j]  + CAT[ty,j]/K[j] ) / 2.0 , eps) ) ) , bosd[j] ) ; //NENS and SENS
         }
-        Y[ty,3] ~ normal( (q[3] * K[3]* ( fmax( bm[ty,3]  - rem[ty,3] + Yoffset[3], eps) ) ) , bosd[3] ) ; //SENS
+        ( Y[ty,3] / q[3] ) +  Yoffset[3]  ~ normal( (  ( fmax( bm[ty,3]  - CAT[ty,3]/K[3] , eps) ) ) , bosd[3] ) ; //SENS
 
         // fall surveys
         for (j in 1:3) {
           for (i in (ty+1):N) {
-            Y[i,j] ~ normal( (q[j] * K[j]* ( fmax( bm[i,j] - rem[i,j] + Yoffset[j], eps) ) ) , bosd[j] ) ; //   fall surveys
+            ( Y[i,j] / q[j] ) +  Yoffset[j] ~ normal( ( ( fmax( bm[i,j] - CAT[i,j]/K[j]   , eps) ) ) , bosd[j] ) ; //   fall surveys
           }
         }
 
@@ -206,17 +204,13 @@ fishery_model = function(  p=NULL, DS="plot", assessment_years=2000:p$year.asses
 
         for (j in 1:U) {
           for (i in 2:N) {
-            (bm[i,j]) ~ normal( (fmax( bm[i-1,j] * ( 1.0 + r[j]*(1-bm[i-1,j]) ) - rem[i-1,j] , eps)), bpsd[j] ) ;
+            (bm[i,j]) ~ normal( ( ( bm[i-1,j] * ( 1.0 + r[j]*(1-bm[i-1,j]) ) - CAT[i-1,j]/K[j]  )), bpsd[j] ) ;
           }
           for (i in N1:MN) {
-            (bm[i,j]) ~ normal( (fmax( bm[i-1,j] * ( 1.0 + r[j]*(1-bm[i-1,j]) ) - er*bm[(i-1),j], eps)), bpsd[j] ) ;
+            (bm[i,j]) ~ normal( ( ( bm[i-1,j] * ( 1.0 + r[j]*(1-bm[i-1,j]) ) - er*bm[(i-1),j]  )), bpsd[j] ) ;
           }
 
         }
-
-        // could have used lognormal but this parameterization is 10X faster and more stable
-        //target += - log( Y ) ;  // required due to log transf above
-        //target += - log( bm );
 
       }
 
@@ -235,7 +229,7 @@ fishery_model = function(  p=NULL, DS="plot", assessment_years=2000:p$year.asses
 
          for (j in 1:U) {
            for (i in 1:N) {
-             F[i,j] =  -log( fmax( 1.0 - rem[i,j] / bm[i,j], eps) )  ;
+             F[i,j] =  -log( fmax( 1.0 - CAT[i,j]/K[j]  / bm[i,j], eps) )  ;
            }
            for (i in N1:MN) {
              F[i,j] =  -log( fmax( 1.0 - er * bm[i-1,j] / bm[i,j], eps) )  ;
@@ -255,8 +249,8 @@ fishery_model = function(  p=NULL, DS="plot", assessment_years=2000:p$year.asses
         // recaled estimates
          for (j in 1:U) {
            for(i in 1:N) {
-             B[i,j] = (bm[i,j]  - rem[i,j] ) * K[j] ;
-             C[i,j] = rem[i,j] * K[j];
+             B[i,j] = bm[i,j] * K[j] - CAT[i,j] ;
+             C[i,j] = CAT[i,j] ;
            }
 
            for (i in N1:MN) {

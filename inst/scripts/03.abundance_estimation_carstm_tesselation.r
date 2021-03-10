@@ -284,8 +284,8 @@ Posterior marginals for the linear predictor and
       str( p$fishery_model)
 
       res = fishery_model( p=p, DS="logistic_model", tag=p$areal_units_type,
-        chains=3, cores=3, iter=1000, warmup=500, refresh=100,
-        control=list(adapt_delta=0.9, max_treedepth=15)
+        chains=3, cores=3, iter=5000, warmup=2000, refresh=100,
+        control=list(adapt_delta=0.975, max_treedepth=18 )
       )
       # res = fishery_model( p=p, DS="logistic_samples", tag=p$areal_units_type )  # to get samples
 
@@ -295,7 +295,7 @@ Posterior marginals for the linear predictor and
       # frequency density of key parameters
       fishery_model( DS="plot", vname="K", res=res, fn=file.path(p$fishery_model$outdir, "K.density.png" ) )
       fishery_model( DS="plot", vname="r", res=res, fn=file.path(p$fishery_model$outdir, "r.density.png" ) )
-      fishery_model( DS="plot", vname="q", res=res, fn=file.path(p$fishery_model$outdir, "q.density.png" ) ,xrange=c(0, 3))
+      fishery_model( DS="plot", vname="q", res=res, fn=file.path(p$fishery_model$outdir, "q.density.png" ) ,xrange=c(0.5, 2))
       fishery_model( DS="plot", vname="FMSY", res=res, fn=file.path(p$fishery_model$outdir, "FMSY.density.png" ) )
       # fishery_model( DS="plot", vname="bosd", res=res, fn=file.path(p$fishery_model$outdir, "bosd.density.png" ) )
       # fishery_model( DS="plot", vname="bpsd", res=res, fn=file.path(p$fishery_model$outdir, "bpsd.density.png" ) )
@@ -341,16 +341,13 @@ Posterior marginals for the linear predictor and
       ( qs = apply(  res$mcmc$rem_sd[,], 2, quantile, probs=c(0.025, 0.5, 0.975) ) )
 
 
-
-----
-      # Yoffset
+    # Yoffset
       plot.new()
       layout( matrix(c(1,2,3), 3, 1 ))
       par(mar = c(4.4, 4.4, 0.65, 0.75))
       for (i in 1:3) plot(density(res$mcmc$Yoffset[,i] ), main="")
       ( qs = apply(  res$mcmc$Yoffset[,], 2, quantile, probs=c(0.025, 0.5, 0.975) ) )
 
-  ---
      # b0
       plot.new()
       layout( matrix(c(1,2,3), 3, 1 ))
