@@ -110,7 +110,7 @@ fishery_model = function(  p=NULL, DS="plot", assessment_years=2000:p$year.asses
       parameters {
         vector <lower=eps> [U] K;
         vector <lower=0.25, upper=2.0> [U] r;
-        vector <lower=eps, upper=5.0> [U] q;
+        vector <lower=eps, upper=2.0> [U] q;
         vector <lower=eps, upper=(1-eps)> [U] Yoffset;  //  offset
         vector <lower=eps, upper=0.5> [U] bosd;  // observation error
         vector <lower=eps, upper=0.5> [U] bpsd;  // process error
