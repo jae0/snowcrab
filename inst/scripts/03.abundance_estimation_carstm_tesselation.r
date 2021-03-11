@@ -197,74 +197,74 @@
 
     (res$summary)
 
-Number of fn-calls= 784 with 8.496 sec/fn-call
-Parallel efficiency for 'Preparations' and 'Approx inference':
-    Accumulated CPU-time is equivalent to 5.93 threads running at 100%
-    Efficiency using 12 threads = 49.42%
+# Number of fn-calls= 784 with 8.496 sec/fn-call
+# Parallel efficiency for 'Preparations' and 'Approx inference':
+#     Accumulated CPU-time is equivalent to 5.93 threads running at 100%
+#     Efficiency using 12 threads = 49.42%
 
-Saving carstm fit (this can be slow): /home/jae/bio.data/bio.snowcrab/modelled/tesselation/bio.snowcrab|snowcrab|tesselation|1|snowcrab|10|3|snowcrab_managementareas.rdata|carstm_modelled_fit|totno|inla|1000|30.rdata
-Computing summaries ...
-carstm summary saved as: /home/jae/bio.data/bio.snowcrab/modelled/tesselation/bio.snowcrab|snowcrab|tesselation|1|snowcrab|10|3|snowcrab_managementareas.rdata|carstm_modelled_summary|totno|inla|1000|30.rdata
+# Saving carstm fit (this can be slow): /home/jae/bio.data/bio.snowcrab/modelled/tesselation/bio.snowcrab|snowcrab|tesselation|1|snowcrab|10|3|snowcrab_managementareas.rdata|carstm_modelled_fit|totno|inla|1000|30.rdata
+# Computing summaries ...
+# carstm summary saved as: /home/jae/bio.data/bio.snowcrab/modelled/tesselation/bio.snowcrab|snowcrab|tesselation|1|snowcrab|10|3|snowcrab_managementareas.rdata|carstm_modelled_summary|totno|inla|1000|30.rdata
 
-Call:
-   c("inla(formula = p$carstm_model_formula, family = p$carstm_model_family, ", " data = M, verbose = TRUE, 
-   control.compute = list(dic = TRUE, ", " waic = TRUE, cpo = FALSE, config = TRUE), control.predictor = 
-   list(compute = TRUE, ", " link = 1), control.family = p$options.control.family, ", " control.inla = 
-   p$options.control.inla[[civ]], control.results = list(return.marginals.random = TRUE, ", " 
-   return.marginals.predictor = TRUE))") 
-Time used:
-    Pre = 4.36, Running = 6664, Post = 5.65, Total = 6674 
-Fixed effects:
-             mean    sd 0.025quant 0.5quant 0.975quant  mode kld
-(Intercept) 7.035 0.106      6.827    7.035      7.244 7.035   0
+# Call:
+#    c("inla(formula = p$carstm_model_formula, family = p$carstm_model_family, ", " data = M, verbose = TRUE, 
+#    control.compute = list(dic = TRUE, ", " waic = TRUE, cpo = FALSE, config = TRUE), control.predictor = 
+#    list(compute = TRUE, ", " link = 1), control.family = p$options.control.family, ", " control.inla = 
+#    p$options.control.inla[[civ]], control.results = list(return.marginals.random = TRUE, ", " 
+#    return.marginals.predictor = TRUE))") 
+# Time used:
+#     Pre = 4.36, Running = 6664, Post = 5.65, Total = 6674 
+# Fixed effects:
+#              mean    sd 0.025quant 0.5quant 0.975quant  mode kld
+# (Intercept) 7.035 0.106      6.827    7.035      7.244 7.035   0
 
-Random effects:
-  Name	  Model
-    dyri AR1 model
-   inla.group(t, method = "quantile", n = 11) RW2 model
-   inla.group(z, method = "quantile", n = 11) RW2 model
-   inla.group(substrate.grainsize, method = "quantile", n = 11) RW2 model
-   inla.group(pca1, method = "quantile", n = 11) RW2 model
-   inla.group(pca2, method = "quantile", n = 11) RW2 model
-   auid BYM2 model
+# Random effects:
+#   Name	  Model
+#     dyri AR1 model
+#    inla.group(t, method = "quantile", n = 11) RW2 model
+#    inla.group(z, method = "quantile", n = 11) RW2 model
+#    inla.group(substrate.grainsize, method = "quantile", n = 11) RW2 model
+#    inla.group(pca1, method = "quantile", n = 11) RW2 model
+#    inla.group(pca2, method = "quantile", n = 11) RW2 model
+#    auid BYM2 model
 
-Model hyperparameters:
-                                                                             mean    sd 0.025quant 0.5quant 0.975quant
-Precision for dyri                                                         53.187 0.109     53.038   53.167     53.440
-Rho for dyri                                                                0.754 0.000      0.753    0.754      0.755
-Precision for inla.group(t, method = "quantile", n = 11)                   58.617 0.184     58.300   58.613     58.926
-Precision for inla.group(z, method = "quantile", n = 11)                   55.026 0.389     54.505   54.952     55.948
-Precision for inla.group(substrate.grainsize, method = "quantile", n = 11) 58.669 0.213     58.307   58.665     59.024
-Precision for inla.group(pca1, method = "quantile", n = 11)                55.032 0.393     54.505   54.957     55.964
-Precision for inla.group(pca2, method = "quantile", n = 11)                56.259 0.251     55.894   56.224     56.772
-Precision for auid                                                         58.480 0.002     58.475   58.479     58.985
-Phi for auid                                                                0.048 0.000      0.048    0.048      0.049
-GroupRho for auid                                                           0.785 0.000      0.785    0.785      0.785
-                                                                             mode
-Precision for dyri                                                         53.066
-Rho for dyri                                                                0.753
-Precision for inla.group(t, method = "quantile", n = 11)                   58.417
-Precision for inla.group(z, method = "quantile", n = 11)                   54.624
-Precision for inla.group(substrate.grainsize, method = "quantile", n = 11) 58.418
-Precision for inla.group(pca1, method = "quantile", n = 11)                54.624
-Precision for inla.group(pca2, method = "quantile", n = 11)                55.943
-Precision for auid                                                         58.480
-Phi for auid                                                                0.048
-GroupRho for auid                                                           0.785
+# Model hyperparameters:
+#                                                                              mean    sd 0.025quant 0.5quant 0.975quant
+# Precision for dyri                                                         53.187 0.109     53.038   53.167     53.440
+# Rho for dyri                                                                0.754 0.000      0.753    0.754      0.755
+# Precision for inla.group(t, method = "quantile", n = 11)                   58.617 0.184     58.300   58.613     58.926
+# Precision for inla.group(z, method = "quantile", n = 11)                   55.026 0.389     54.505   54.952     55.948
+# Precision for inla.group(substrate.grainsize, method = "quantile", n = 11) 58.669 0.213     58.307   58.665     59.024
+# Precision for inla.group(pca1, method = "quantile", n = 11)                55.032 0.393     54.505   54.957     55.964
+# Precision for inla.group(pca2, method = "quantile", n = 11)                56.259 0.251     55.894   56.224     56.772
+# Precision for auid                                                         58.480 0.002     58.475   58.479     58.985
+# Phi for auid                                                                0.048 0.000      0.048    0.048      0.049
+# GroupRho for auid                                                           0.785 0.000      0.785    0.785      0.785
+#                                                                              mode
+# Precision for dyri                                                         53.066
+# Rho for dyri                                                                0.753
+# Precision for inla.group(t, method = "quantile", n = 11)                   58.417
+# Precision for inla.group(z, method = "quantile", n = 11)                   54.624
+# Precision for inla.group(substrate.grainsize, method = "quantile", n = 11) 58.418
+# Precision for inla.group(pca1, method = "quantile", n = 11)                54.624
+# Precision for inla.group(pca2, method = "quantile", n = 11)                55.943
+# Precision for auid                                                         58.480
+# Phi for auid                                                                0.048
+# GroupRho for auid                                                           0.785
 
-Expected number of effective parameters(stdev): 608.49(1.62)
-Number of equivalent replicates : 11.88 
+# Expected number of effective parameters(stdev): 608.49(1.62)
+# Number of equivalent replicates : 11.88 
 
-Deviance Information Criterion (DIC) ...............: 56306.57
-Deviance Information Criterion (DIC, saturated) ....: 38406.06
-Effective number of parameters .....................: -1193.28
+# Deviance Information Criterion (DIC) ...............: 56306.57
+# Deviance Information Criterion (DIC, saturated) ....: 38406.06
+# Effective number of parameters .....................: -1193.28
 
-Watanabe-Akaike information criterion (WAIC) ...: 65141.77
-Effective number of parameters .................: 5098.54
+# Watanabe-Akaike information criterion (WAIC) ...: 65141.77
+# Effective number of parameters .................: 5098.54
 
-Marginal log-Likelihood:  -31355.14 
-Posterior marginals for the linear predictor and
- the fitted values are computed
+# Marginal log-Likelihood:  -31355.14 
+# Posterior marginals for the linear predictor and
+#  the fitted values are computed
 
 
 
@@ -278,42 +278,59 @@ Posterior marginals for the linear predictor and
   if (fishery_model) {
 
       p$fishery_model = fishery_model( DS = "logistic_parameters", p=p, tag=p$areal_units_type )
-      p$fishery_model$stancode = fishery_model( p=p, DS="stan_surplus_production" )
-      p$fishery_model$stancode_compiled = rstan::stan_model( model_code=p$fishery_model$stancode )
+      p$fishery_model$stancode = stan_initialize( stan_code=fishery_model( p=p, DS="stan_surplus_production" ) )
 
       str( p$fishery_model)
 
-      res = fishery_model( p=p, DS="logistic_model", tag=p$areal_units_type,
-        chains=3, cores=3, iter=5000, warmup=2000, refresh=100,
-        control=list(adapt_delta=0.975, max_treedepth=18 )
+      res = fishery_model( 
+        DS="logistic_model", 
+        p=p, 
+        tag=p$areal_units_type,
+        # from here down are params for cmdstanr::sample()
+        data=p$fishery_model$standata, 
+        iter_warmup = 2000,
+        iter_sampling = 1000,
+        seed = 123,
+        chains = 4,
+        parallel_chains = 4,  # The maximum number of MCMC chains to run in parallel.
+        max_treedepth = 18,
+        adapt_delta = 0.975,
+        refresh = 500
       )
-      # res = fishery_model( p=p, DS="logistic_samples", tag=p$areal_units_type )  # to get samples
 
-
-      p$fishery_model$outdir = file.path( p$modeldir, p$carstm_model_label, "fishery_model_results" )
+      # res = fishery_model( p=p, DS="samples", tag=p$areal_units_type )  # to get samples
+      
+      print( res$fit, max_rows=30 )
+      # res$fit$summary("K", "r", "q")
+      
+      res$fit$cmdstan_diagnose()
+      res$fit$cmdstan_summary()
+ 
+      mcmc_hist(res$fit$draws("K"))
+  
 
       # frequency density of key parameters
-      fishery_model( DS="plot", vname="K", res=res, fn=file.path(p$fishery_model$outdir, "K.density.png" ) )
-      fishery_model( DS="plot", vname="r", res=res, fn=file.path(p$fishery_model$outdir, "r.density.png" ) )
-      fishery_model( DS="plot", vname="q", res=res, fn=file.path(p$fishery_model$outdir, "q.density.png" ) ,xrange=c(0.5, 2))
-      fishery_model( DS="plot", vname="FMSY", res=res, fn=file.path(p$fishery_model$outdir, "FMSY.density.png" ) )
-      # fishery_model( DS="plot", vname="bosd", res=res, fn=file.path(p$fishery_model$outdir, "bosd.density.png" ) )
-      # fishery_model( DS="plot", vname="bpsd", res=res, fn=file.path(p$fishery_model$outdir, "bpsd.density.png" ) )
+      fishery_model( DS="plot", vname="K", res=res )
+      fishery_model( DS="plot", vname="r", res=res )
+      fishery_model( DS="plot", vname="q", res=res, xrange=c(0.5, 2))
+      fishery_model( DS="plot", vname="FMSY", res=res  )
+      # fishery_model( DS="plot", vname="bosd", res=res  )
+      # fishery_model( DS="plot", vname="bpsd", res=res  )
 
       # timeseries
-      fishery_model( DS="plot", type="timeseries", vname="biomass", res=res, fn=file.path(p$fishery_model$outdir, "biomass.timeseries.png" ), save.plot=T )
-      fishery_model( DS="plot", type="timeseries", vname="fishingmortality", res=res, fn=file.path(p$fishery_model$outdir, "fishingmortality.timeseries.png" ) )
+      fishery_model( DS="plot", type="timeseries", vname="biomass", res=res  )
+      fishery_model( DS="plot", type="timeseries", vname="fishingmortality", res=res)
 
       # Summary table of mean values for inclusion in document
       biomass.summary.table(x)
 
       # Harvest control rules
-      fishery_model( DS="plot", type="hcr", vname="default", res=res, fn=file.path(p$fishery_model$outdir, "hcr.default.png" ), save.plot=T  )
-      fishery_model( DS="plot", type="hcr", vname="simple", res=res, fn=file.path(p$fishery_model$outdir, "hcr.simple.png" ) )
+      fishery_model( DS="plot", type="hcr", vname="default", res=res  )
+      fishery_model( DS="plot", type="hcr", vname="simple", res=res  )
 
       # diagnostics
-      # fishery_model( DS="plot", type="diagnostic.errors", res=res, fn=file.path(p$fishery_model$outdir, "diagnostic.errors.png" ) )
-      # fishery_model( DS="plot", type="diagnostic.phase", res=res, fn=file.path(p$fishery_model$outdir, "diagnostic.phase.png" ) )
+      # fishery_model( DS="plot", type="diagnostic.errors", res=res )
+      # fishery_model( DS="plot", type="diagnostic.phase", res=res  )
 
 
       NN = res$p$fishery_model$standata$N

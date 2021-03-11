@@ -277,7 +277,7 @@
         chains=3, cores=3, iter=20000, warmup=12000, refresh=1000,
         control=list(adapt_delta=0.99, max_treedepth=18)
       )
-      # res = fishery_model( p=p, DS="logistic_samples", tag=p$areal_units_type )  # to get samples
+      # res = fishery_model( p=p, DS="samples", tag=p$areal_units_type )  # to get samples
 
 
 
