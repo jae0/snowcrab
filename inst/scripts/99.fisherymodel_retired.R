@@ -12,64 +12,62 @@ p = bio.snowcrab::snowcrab_parameters(
   tag="default"
 )
 
-p$tag = "tesselation"
-
 p$fishery_model = fishery_model( DS = "logistic_parameters", p=p, tag=p$areal_units_type )
-p$fishery_model$stancode = fishery_model( p=p, DS="stan_surplus_production" )
-p$fishery_model$stancode_compiled = rstan::stan_model( model_code=p$fishery_model$stancode )
+p$fishery_model$stancode = stan_initialize( stan_code=fishery_model( p=p, DS="stan_surplus_production" ) )
 
 
-if (0) {
-  # testing:
-  # later:::ensureInitialized()  # solve mode error
-  str( p$fishery_model$standata )
-  p$fishery_model$standata$Kmu = c(4, 40, 1)
-  p$fishery_model$standata$rmu = c(1, 1, 1)
-  p$fishery_model$standata$qmu = c(1, 1, 1)
-  p$fishery_model$standata$Ksd = c(0.5, 0.5, 0.5) * p$fishery_model$standata$Kmu  # c( 2, 20, 0.5)
-  p$fishery_model$standata$rsd = c(0.5, 0.5, 0.5) * p$fishery_model$standata$rmu  # rep( 0.3, 3)
-  p$fishery_model$standata$qsd = c(0.5, 0.5, 0.5) * p$fishery_model$standata$qmu  # rep( 0.3, 3)
-
-  # to recompile
-  p$fishery_model$stancode_compiled = rstan::stan_model( model_code=p$fishery_model$stancode )
-}
-
-
-str( p$fishery_model)
-
-res = fishery_model( p=p, DS="logistic_model", tag=p$tag,
-  chains=3, cores=3, iter=20000, warmup=12000, refresh=1000,
-  control=list(adapt_delta=0.99, max_treedepth=18)
+res = fishery_model( 
+  DS="logistic_model", 
+  p=p, 
+  tag=p$areal_units_type,
+  # from here down are params for cmdstanr::sample()
+  data=p$fishery_model$standata, 
+  iter_warmup = 2000,
+  iter_sampling = 1000,
+  seed = 123,
+  chains = 4,
+  parallel_chains = 4,  # The maximum number of MCMC chains to run in parallel.
+  max_treedepth = 18,
+  adapt_delta = 0.975,
+  refresh = 500
 )
-# res = fishery_model( p=p, DS="samples", tag=tag )  # to get samples
+
+# res = fishery_model( p=p, DS="samples", tag=p$areal_units_type )  # to get samples
+
+  if (0) {
+    fit = fishery_model( p=p, DS="fit", tag=p$areal_units_type )  # to get samples
+  
+    print( fit, max_rows=30 )
+    # fit$summary("K", "r", "q")
+    
+    fit$cmdstan_diagnose()
+    fit$cmdstan_summary()
+  }
 
 
+      # frequency density of key parameters
+      fishery_model( DS="plot", vname="K", res=res )
+      fishery_model( DS="plot", vname="r", res=res )
+      fishery_model( DS="plot", vname="q", res=res, xrange=c(0.5, 2))
+      fishery_model( DS="plot", vname="FMSY", res=res  )
+      # fishery_model( DS="plot", vname="bosd", res=res  )
+      # fishery_model( DS="plot", vname="bpsd", res=res  )
 
-p$fishery_model$outdir = file.path( p$modeldir, p$carstm_model_label, "fishery_model_results" )
+      # timeseries
+      fishery_model( DS="plot", type="timeseries", vname="biomass", res=res  )
+      fishery_model( DS="plot", type="timeseries", vname="fishingmortality", res=res)
 
+      # Summary table of mean values for inclusion in document
+      biomass.summary.table(x)
 
-# frequency density of key parameters
-fishery_model( DS="plot", type="K", res=res, fn=file.path(p$fishery_model$outdir, "K.density.png" ) )
-fishery_model( DS="plot", type="r", res=res, fn=file.path(p$fishery_model$outdir, "r.density.png" ) )
-fishery_model( DS="plot", type="q", res=res, fn=file.path(p$fishery_model$outdir, "q.density.png" ) ,xrange=c(0,5.5))
-fishery_model( DS="plot", type="FMSY", res=res, fn=file.path(p$fishery_model$outdir, "FMSY.density.png" ) )
-# fishery_model( DS="plot", type="bosd", res=res, fn=file.path(p$fishery_model$outdir, "bosd.density.png" ) )
-# fishery_model( DS="plot", type="bpsd", res=res, fn=file.path(p$fishery_model$outdir, "bpsd.density.png" ) )
+      # Harvest control rules
+      fishery_model( DS="plot", type="hcr", vname="default", res=res  )
+      fishery_model( DS="plot", type="hcr", vname="simple", res=res  )
 
-# timeseries
-fishery_model( DS="plot", type="timeseries", vname="biomass", res=res, fn=file.path(p$fishery_model$outdir, "biomass.timeseries.png" ), save.plot=T )
-fishery_model( DS="plot", type="timeseries", vname="fishingmortality", res=res, fn=file.path(p$fishery_model$outdir, "fishingmortality.timeseries.png" ) )
+      # diagnostics
+      # fishery_model( DS="plot", type="diagnostic.errors", res=res )
+      # fishery_model( DS="plot", type="diagnostic.phase", res=res  )
 
-# Summary table of mean values for inclusion in document
-biomass.summary.table(x)
-
-# Harvest control rules
-fishery_model( DS="plot", type="hcr", vname="default", res=res, fn=file.path(p$fishery_model$outdir, "hcr.default.png" ), save.plot=T  )
-fishery_model( DS="plot", type="hcr", vname="simple", res=res, fn=file.path(p$fishery_model$outdir, "hcr.simple.png" ) )
-
-# diagnostics
-# fishery_model( DS="plot", type="diagnostic.errors", res=res, fn=file.path(p$fishery_model$outdir, "diagnostic.errors.png" ) )
-# fishery_model( DS="plot", type="diagnostic.phase", res=res, fn=file.path(p$fishery_model$outdir, "diagnostic.phase.png" ) )
 
 
 NN = res$p$fishery_model$standata$N

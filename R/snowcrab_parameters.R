@@ -9,7 +9,7 @@ snowcrab_parameters = function( p=list(), year.assessment=NULL, project_name="bi
   # ---------------------
   # create/update library list
   p$libs = unique( c( p$libs, RLibrary ( "colorspace",  "geosphere", "lattice", "GADMTools",
-    "maps", "mapdata", "maptools", "parallel",  "rgdal", "rgeos",  "sp", "spdep", "sf" ,
+    "maps", "mapdata", "maptools", "parallel",  "rgdal", "rgeos",  "sp", "spdep", "sf" , "term", 
     "rgeos", "bigmemory", "numDeriv", "lubridate", "parallel", "fields", "mgcv" ) ) )
   p$libs = unique( c( p$libs, project.library (
     "aegis", "bio.taxonomy", "stmv",

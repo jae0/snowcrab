@@ -299,18 +299,40 @@
       )
 
       # res = fishery_model( p=p, DS="samples", tag=p$areal_units_type )  # to get samples
-      # fit = fishery_model( p=p, DS="fit", tag=p$areal_units_type )  # to get samples
       
-      print( fit, max_rows=30 )
-      # fit$summary("K", "r", "q")
+      if (0) {
+        fit = fishery_model( p=p, DS="fit", tag=p$areal_units_type )  # to get samples
       
-      fit$cmdstan_diagnose()
-      fit$cmdstan_summary()
- 
-      color_scheme_set("gray")
-   
-      mcmc_dens(res$mcmc, regex_pars="K",  facet_args = list(nrow = 3, labeller = ggplot2::label_parsed ) ) + facet_text(size = 14 )   
-      # mcmc_hist( fit$draws("K"))
+        print( fit, max_rows=30 )
+        # fit$summary("K", "r", "q")
+        
+        fit$cmdstan_diagnose()
+        fit$cmdstan_summary()
+  
+          # (penalized) maximum likelihood estimate (MLE) 
+        fit_mle =  p$fishery_model$stancode$optimize(data =p$fishery_model$standata, seed = 123)
+        fit_mle$summary( c("K", "r", "q") )
+
+        mcmc_hist(fit$draws("K")) +
+          vline_at(fit_mle$mle(), size = 1.5)
+
+        # Variational Bayes  
+        fit_vb = p$fishery_model$stancode$variational(data =p$fishery_model$standata, seed = 123, output_samples = 4000)
+        fit_vb$summary(c("K", "r", "q"))
+
+        bayesplot_grid(
+          mcmc_hist(fit$draws("K"), binwidth = 0.025),
+          mcmc_hist(fit_vb$draws("K"), binwidth = 0.025),
+          titles = c("Posterior distribution from MCMC", "Approximate posterior from VB")
+        )
+
+        color_scheme_set("gray")
+        mcmc_dens(fit$draws("K"), facet_args = list(nrow = 3, labeller = ggplot2::label_parsed ) ) + facet_text(size = 14 )   
+        # mcmc_hist( fit$draws("K"))
+
+      }
+
+
 
 
       # frequency density of key parameters
