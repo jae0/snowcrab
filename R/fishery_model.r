@@ -28,6 +28,7 @@ fishery_model = function(  p=NULL, DS="plot", assessment_years=2000:p$year.asses
 
     if (!exists("fnfit", out)) out$fnfit  = file.path( out$outdir, paste( "logistics_model_fit", p$year.assessment, out$method, tag, "rdata", sep=".") )
     
+    dir.create( out$outdir, showWarnings = FALSE, recursive = TRUE  )
 
     message( "Results will be saved to:", out$outdir)
 
@@ -790,7 +791,7 @@ fishery_model = function(  p=NULL, DS="plot", assessment_years=2000:p$year.asses
 
     }
 
-    fit$save_object( file = p$fishery_model$fnfit )
+    fit$save_object( file = p$fishery_model$fnfit )   #  save this way due to R-lazy loading
 
     res = list( mcmc=as_draws_df(fit$draws() ), p=p )
 
@@ -819,6 +820,12 @@ fishery_model = function(  p=NULL, DS="plot", assessment_years=2000:p$year.asses
 
     y = res$mcmc
     sb= res$p$fishery_model$standata
+    
+    if (is.null(fn)) {
+      outdir = res$p$fishery_model$outdir
+    } else{
+      outdir = dirname(fn)
+    }
 
     ntacs = sb$nProj
     yrs0 = res$p$assessment.years
@@ -830,7 +837,7 @@ fishery_model = function(  p=NULL, DS="plot", assessment_years=2000:p$year.asses
 
     if (vname =="r.ts") {
       # catch this first as the layout is different
-        if (is.null(fn)) fn=file.path(p$fishery_model$outdir, "r.ts.density.png" )
+        if (is.null(fn)) fn=file.path(outdir, "r.ts.density.png" )
 
         br = 75
 
@@ -838,12 +845,13 @@ fishery_model = function(  p=NULL, DS="plot", assessment_years=2000:p$year.asses
         layout( matrix(c(1:(sb$N*3)), ncol=3, nrow=sb$N ))
         par(mar = c(1., 1., 0.65, 0.75))
 
+        u = apply( extract_stan(y, "r")[["r"]], c(2, 3), median, na.rm=T  )
+
         for (i in 1:3) {
         for (yr in 1:sb$N) {
-          dta = y$r[yr,i]
-          qs = apply( dta, 2, quantile, probs=c(0.025, 0.5, 0.975) )
+          qs = apply( u, 2, quantile, probs=c(0.025, 0.5, 0.975) )
           qs = signif( qs, 3 )
-          pdat = as.vector( dta)
+          pdat = u[ yr,i ]
           xrange = range( pdat, na.rm=T )
           postdat = hist( pdat, breaks=br, plot=FALSE )
           yrange = range( 0, postdat$density, na.rm=T ) * 1.02
@@ -870,12 +878,13 @@ fishery_model = function(  p=NULL, DS="plot", assessment_years=2000:p$year.asses
 
       if ( vname=="K" ) {
         
-        if (is.null(fn)) fn=file.path(p$fishery_model$outdir, "K.density.png" )
+        if (is.null(fn)) fn=file.path(outdir, "K.density.png" )
+        u = extract_stan(y, vname)[[vname]]
 
-        qs = apply( y$K, 2, quantile, probs=c(0.025, 0.5, 0.975) )
+        qs = apply( u, 2, quantile, probs=c(0.025, 0.5, 0.975) )
         qs = signif( qs, 3 )
         for (i in 1:3) {
-          pdat = as.vector(y$K[,i])
+           pdat = u[,i]
            prr=NULL
            prr$class="normal"
 
@@ -887,7 +896,7 @@ fishery_model = function(  p=NULL, DS="plot", assessment_years=2000:p$year.asses
           #  or   = CV * E(X)
 
            prr$mean= sb$Kmu[i]
-           prr$sd = sqrt(sb$Ksd[i])
+           prr$sd =  sb$Ksd[i]
           plot.freq.distribution.prior.posterior( prior=prr, posterior=pdat, ... )
 
           legend( "topright", bty="n", legend=paste( aulabels[i], "\n", vname, " = ", qs[2,i], " {", qs[1,i], ", ",  qs[3,i], "}  ", sep="" ))
@@ -895,15 +904,17 @@ fishery_model = function(  p=NULL, DS="plot", assessment_years=2000:p$year.asses
     }
 
       if ( vname=="r" ) {
-        if (is.null(fn)) fn=file.path(p$fishery_model$outdir, "r.density.png" )
-        qs = apply( y$r, 2, quantile, probs=c(0.025, 0.5, 0.975) )
+        if (is.null(fn)) fn=file.path(outdir, "r.density.png" )
+
+        u = extract_stan(y, vname)[[vname]]
+        qs = apply( u, 2, quantile, probs=c(0.025, 0.5, 0.975) )
         qs = signif( qs, 3 )
         for (i in 1:3) {    prr=NULL
           prr=NULL
           prr$class='normal'
           prr$mean=sb$rmu[i]
-          prr$sd=sqrt(sb$rsd[i])
-          pdat = as.vector(y$r[,i])
+          prr$sd= sb$rsd[i]
+          pdat = u[,i]
           plot.freq.distribution.prior.posterior( prior=prr, posterior=pdat, ...  )
           legend( "topright", bty="n", legend=paste( aulabels[i], "\n", vname, " = ", qs[2,i], " {", qs[1,i], ", ",  qs[3,i], "}  ", sep="" ) )
       }}
@@ -911,11 +922,13 @@ fishery_model = function(  p=NULL, DS="plot", assessment_years=2000:p$year.asses
 
 
       if ( vname=="q" ) {
-        if (is.null(fn)) fn=file.path(p$fishery_model$outdir, "q.density.png" )
-        qs = apply( y$q, 2, quantile, probs=c(0.025, 0.5, 0.975) )
+        if (is.null(fn)) fn=file.path(outdir, "q.density.png" )
+
+        u = extract_stan(y, vname)[[vname]]
+        qs = apply( u, 2, quantile, probs=c(0.025, 0.5, 0.975) )
         qs = signif( qs, 3 )
         for (i in 1:3) {
-          pdat = as.vector(y$q[,i])
+          pdat = u[,i]
           prr=NULL
           prr$class="normal"
           prr$mean=sb$qmu[i]
@@ -924,27 +937,29 @@ fishery_model = function(  p=NULL, DS="plot", assessment_years=2000:p$year.asses
           legend( "topright", bty="n", legend=paste( aulabels[i], "\n", vname, " = ", qs[2,i], " {", qs[1,i], ", ",  qs[3,i], "}  ", sep="" )
       )}}
 
+
       if ( vname=="qs" ) {
-        if (is.null(fn)) fn=file.path(p$fishery_model$outdir, "qs.density.png" )
-        QQ = apply( y$q, 2, quantile, probs=c(0.025, 0.5, 0.975) )
-        QQ = signif( QQ, 3 )
+        if (is.null(fn)) fn=file.path(outdir, "qs.density.png" )
+        u = extract_stan(y, vname)[[vname]]
+        qs = apply( u, 2, quantile, probs=c(0.025, 0.5, 0.975) )
         for (i in 1:3) {
-          pdat = as.vector(y$qs[,i])
+          pdat = u[,i]
           # prr=NULL
           # prr$class="normal"
           # prr$mean=sb$q0x[i]
           # prr$sd=sb$q0x[i]*sb$cv
           plot.freq.distribution.prior.posterior( prior=prr, posterior=pdat, ...  )
-          legend( "topright", bty="n", legend=paste( aulabels[i], "\n", vname, " = ", QQ[2,i], " {", QQ[1,i], ", ",  QQ[3,i], "}  ", sep="" )
+          legend( "topright", bty="n", legend=paste( aulabels[i], "\n", vname, " = ", qs[2,i], " {", qs[1,i], ", ",  qs[3,i], "}  ", sep="" )
       )}}
 
 
       if ( vname=="BMSY" ) {
-        if (is.null(fn)) fn=file.path(p$fishery_model$outdir, "BMSY.density.png" )
-        qs = apply( y$BMSY, 2, quantile, probs=c(0.025, 0.5, 0.975) )
+        if (is.null(fn)) fn=file.path(outdir, "BMSY.density.png" )
+        u = extract_stan(y, vname)[[vname]]
+        qs = apply( u, 2, quantile, probs=c(0.025, 0.5, 0.975) )
         qs = signif( qs, 3 )
         for (i in 1:3) {
-          pdat = as.vector(y$BMSY[,i])
+          pdat = u[,i]
           prr=NULL
           prr$class="none"
           plot.freq.distribution.prior.posterior( prior=prr, posterior=pdat, ...  )
@@ -953,11 +968,12 @@ fishery_model = function(  p=NULL, DS="plot", assessment_years=2000:p$year.asses
       )}}
 
       if ( vname=="FMSY" ) {
-        if (is.null(fn)) fn=file.path(p$fishery_model$outdir, "FMSY.density.png" )
-        qs = apply( y$FMSY, 2, quantile, probs=c(0.025, 0.5, 0.975) )
+        if (is.null(fn)) fn=file.path(outdir, "FMSY.density.png" )
+        u = extract_stan(y, vname)[[vname]]
+        qs = apply( u, 2, quantile, probs=c(0.025, 0.5, 0.975) )
         qs = signif( qs, 3 )
         for (i in 1:3) {
-          pdat = as.vector(y$FMSY[,i])
+          pdat = u[,i]
           prr=NULL
           prr$class="none"
           plot.freq.distribution.prior.posterior( prior=prr, posterior=pdat, ...  )
@@ -967,11 +983,12 @@ fishery_model = function(  p=NULL, DS="plot", assessment_years=2000:p$year.asses
 
 
       if ( vname=="bosd" ) {
-        if (is.null(fn)) fn=file.path(p$fishery_model$outdir, "bosd.density.png" )
-        qs = apply( y$bosd, 2, quantile, probs=c(0.025, 0.5, 0.975) )
+        if (is.null(fn)) fn=file.path(outdir, "bosd.density.png" )
+        u = extract_stan(y, vname)[[vname]]
+        qs = apply( u, 2, quantile, probs=c(0.025, 0.5, 0.975) )
         qs = signif( qs, 3 )
         for (i in 1:3) {
-          pdat = as.vector(y$bosd[,i])
+          pdat = u[,i]
           prr=NULL
           prr$class='uniform'
           prr$max=3
@@ -985,11 +1002,12 @@ fishery_model = function(  p=NULL, DS="plot", assessment_years=2000:p$year.asses
       )}}
 
       if ( vname=="bpsd" ) {
-        if (is.null(fn)) fn=file.path(p$fishery_model$outdir, "bpsd.density.png" )
-        qs = apply( y$bpsd, 2, quantile, probs=c(0.025, 0.5, 0.975) )
+        if (is.null(fn)) fn=file.path(outdir, "bpsd.density.png" )
+        u = extract_stan(y, vname)[[vname]]
+        qs = apply( u, 2, quantile, probs=c(0.025, 0.5, 0.975) )
         qs = signif( qs, 3 )
         for (i in 1:3) {
-          pdat = as.vector(y$bpsd[,i])
+          pdat = u[,i]
           prr=NULL
           prr$class='uniform'
           prr$max=3
@@ -1015,16 +1033,15 @@ fishery_model = function(  p=NULL, DS="plot", assessment_years=2000:p$year.asses
 
       if (vname=="biomass") {
         
-        if (is.null(fn))  fn=file.path(p$fishery_model$outdir, "biomass.timeseries.png" )
-        # SI =  apply( y$q, 2, median, na.rm=T  )
+        if (is.null(fn))  fn=file.path(outdir, "biomass.timeseries.png" )
+
+        u = extract_stan(y, "B")[["B"]]
 
         for (i in 1:3) {
-          #qIOA = sb$IOA[,i] / SI[i]
-          #IOA = sb$IOA[,i]
-          meanval = apply( y$B[,,i], 2, mean, na.rm=T  )
+          meanval = apply( u[,,i], 2, mean, na.rm=T  )
 
           prs = seq( from=0.025, to=0.975, length.out=600)
-          Bq =  apply( y$B[,,i], 2, quantile, probs=prs, na.rm=T  )
+          Bq =  apply( u[,,i], 2, quantile, probs=prs, na.rm=T  )
 
           #yran = range(c(0, Bq, sb$IOA[,i] ), na.rm=T )*1.01
           yran = range(c(0, Bq ), na.rm=T )*1.01
@@ -1049,13 +1066,15 @@ fishery_model = function(  p=NULL, DS="plot", assessment_years=2000:p$year.asses
 
       if (vname=="rem") {
 
-        if (is.null(fn))  fn=file.path(p$fishery_model$outdir, "rem.timeseries.png" ) 
+        if (is.null(fn))  fn=file.path(outdir, "rem.timeseries.png" ) 
         
+        u = extract_stan(y, vname)[[vname]]
+
         for (i in 1:3) {
-          meanval = apply( y$rem[,,i], 2, mean, na.rm=T  )
+          meanval = apply( u[,,i], 2, mean, na.rm=T  )
 
           prs = seq( from=0.025, to=0.975, length.out=600)
-          Bq =  apply( y$rem[,,i], 2, quantile, probs=prs, na.rm=T  )
+          Bq =  apply( u[,,i], 2, quantile, probs=prs, na.rm=T  )
 
           #yran = range(c(0, Bq, sb$IOA[,i] ), na.rm=T )*1.01
           yran = range(c(0, Bq ), na.rm=T )*1.01
@@ -1080,12 +1099,17 @@ fishery_model = function(  p=NULL, DS="plot", assessment_years=2000:p$year.asses
 
       if (vname=="fishingmortality") {
 
-        if (is.null(fn))  fn=file.path(p$fishery_model$outdir, "fishingmortality.timeseries.png" ) 
+        if (is.null(fn))  fn=file.path(outdir, "fishingmortality.timeseries.png" ) 
 
-        Fmsy = apply( y$FMSY, 2, mean, na.rm=T )
+        Fmsy = apply( extract_stan(y, "FMSY")[["FMSY"]], 2, mean, na.rm=T )
+      
+        prs = seq( from=0.025, to=0.975, length.out=600)
+
+        F = extract_stan(y, "F")[["F"]]
+   
+        Fi = apply( F[, 1:sb$N, ] , 2, quantile, probs=prs, na.rm=T )
+        
         for (i in 1:3) {
-          prs = seq( from=0.025, to=0.975, length.out=600)
-          Fi = apply( y$F[,1:sb$N,i], 2, quantile, probs=prs, na.rm=T )
           yran = range(c(0, max(c(Fi,Fmsy))), na.rm=T )*1.01
           yran = pmin( yran, 1.2 )
           plot( yrs0, Fi[1,], type="n", ylim=yran, xlab="", ylab="" )
@@ -1112,13 +1136,13 @@ fishery_model = function(  p=NULL, DS="plot", assessment_years=2000:p$year.asses
     if (type=="hcr") {
       if (vname=="default") {
 
-        if (is.null(fn))  fn=file.path(p$fishery_model$outdir, "hcr.default.png" )
+        if (is.null(fn))  fn=file.path(outdir, "hcr.default.png" )
         
-        B =  apply( y$B, c(2,3), median, na.rm=T  )
-        F =  apply( y$F, c(2,3), median, na.rm=T  )
-        K =  apply( y$K, c(2), median, na.rm=T  )
-        FMSY = apply( y$FMSY, c(2), median, na.rm=T  )
-        BMSY = apply( y$BMSY, c(2), median, na.rm=T  )
+        B =  apply(  extract_stan(y, "B")[["B"]], c(2,3), median, na.rm=T  )
+        F =  apply( extract_stan(y, "F")[["F"]], c(2,3), median, na.rm=T  )
+        K =  apply( extract_stan(y, "K")[["K"]], c(2), median, na.rm=T  )
+        FMSY = apply( extract_stan(y, "FMSY")[["FMSY"]], c(2), median, na.rm=T  )
+        BMSY = apply( extract_stan(y, "BMSY")[["BMSY"]], c(2), median, na.rm=T  )
 
         for (i in 1:3 ) {
           ylims = c(0, min( 1, max( FMSY[i] * 1.25, F[hdat,i] ) ) )
@@ -1210,19 +1234,21 @@ fishery_model = function(  p=NULL, DS="plot", assessment_years=2000:p$year.asses
 
       if (vname=="default.unmodelled") {
 
-        if (is.null(fn))  fn=file.path(p$fishery_model$outdir, "hcr.default.unmodelled.png" )
+        if (is.null(fn))  fn=file.path(outdir, "hcr.default.unmodelled.png" )
+
 
         B =  sb$IOA
-        F =  apply( y$F, c(2,3), median, na.rm=T  )
+        F =  apply( extract_stan(y, "F")[["F"]], c(2,3), median, na.rm=T  )
 
         areas = c("cfa4x", "cfasouth", "cfanorth" )
         regions = c("4X", "S-ENS", "N-ENS")
 
         td = exploitationrates(p=p, areas=areas, labels=regions, CFA4X.exclude.year.assessment=FALSE )
 
-        K =  apply( y$K, c(2), median, na.rm=T  )
-        FMSY = apply( y$FMSY, c(2), median, na.rm=T  )
-        BMSY = apply( y$BMSY, c(2), median, na.rm=T  )
+
+        K =  apply( extract_stan(y, "K")[["K"]], c(2), median, na.rm=T  )
+        FMSY = apply( extract_stan(y, "FMSY")[["FMSY"]], c(2), median, na.rm=T  )
+        BMSY = apply( extract_stan(y, "BMSY")[["BMSY"]], c(2), median, na.rm=T  )
 
         for (i in 1:3 ) {
           ylims = c(0, FMSY[i] * 1.25)
@@ -1290,19 +1316,18 @@ fishery_model = function(  p=NULL, DS="plot", assessment_years=2000:p$year.asses
 
       if (vname=="simple") {
 
-        if (is.null(fn))  fn=file.path(p$fishery_model$outdir, "hcr.simple.png" )
+        if (is.null(fn))  fn=file.path(outdir, "hcr.simple.png" )
 
         require(car)
 
-          B =  apply( y$B, c(2,3), median, na.rm=T  )
-          F =  apply( y$F, c(2,3), median, na.rm=T  )
-          C =  apply( y$C, c(2,3), median, na.rm=T  )
-          K =  apply( y$K, c(2), median, na.rm=T  )
-#          for (i in 1:3) C[,i] = C[,i]  * K[i]
-          FMSY = apply( y$FMSY, c(2), median, na.rm=T  )
-          BMSY = apply( y$BMSY, c(2), median, na.rm=T  )
+        B =  apply(  extract_stan(y, "B")[["B"]], c(2,3), median, na.rm=T  )
+        F =  apply( extract_stan(y, "F")[["F"]], c(2,3), median, na.rm=T  )
+        C =  apply( extract_stan(y, "C")[["C"]], c(2,3), median, na.rm=T  )
+        K =  apply( extract_stan(y, "K")[["K"]], c(2), median, na.rm=T  )
+        FMSY = apply( extract_stan(y, "FMSY")[["FMSY"]], c(2), median, na.rm=T  )
+        BMSY = apply( extract_stan(y, "BMSY")[["BMSY"]], c(2), median, na.rm=T  )
 
-          aulabels = c("N-ENS", "S-ENS", "4X")
+        aulabels = c("N-ENS", "S-ENS", "4X")
 
         for (i in 1:3 ) {
           ylims = max(C[,i] )* c(0, 1.1)
@@ -1369,10 +1394,10 @@ fishery_model = function(  p=NULL, DS="plot", assessment_years=2000:p$year.asses
 
     if (type=="diagnostic.phase") {
       
-      if (is.null(fn))  fn=file.path(p$fishery_model$outdir, "diagnostic.phase.png" )
+      if (is.null(fn))  fn=file.path(outdir, "diagnostic.phase.png" )
 
-      B =  apply( y$B, c(2,), mean, na.rm=T  )
-      K =  apply( y$K, c(2), mean, na.rm=T  )
+        B =  apply(  extract_stan(y, "B")[["B"]], c(2,3), median, na.rm=T  )
+        K =  apply( extract_stan(y, "K")[["K"]], c(2), median, na.rm=T  )
 
       for (i in 1:3 ) {
         plot( B[1:ndata-1,i], B[2:ndata,i],  type="b", xlab="t", ylab="t+1",
@@ -1387,7 +1412,7 @@ fishery_model = function(  p=NULL, DS="plot", assessment_years=2000:p$year.asses
 
     if (type=="diagnostic.errors") {
 
-       if (is.null(fn))  fn=file.path(p$fishery_model$outdir, "diagnostic.errors.png" )
+       if (is.null(fn))  fn=file.path(outdir, "diagnostic.errors.png" )
 
       # observation vs process error
       graphics.off()
@@ -1395,8 +1420,8 @@ fishery_model = function(  p=NULL, DS="plot", assessment_years=2000:p$year.asses
       par(mar = c(5, 4, 0, 2))
       require(car)
 
-      eP = y$bpsd
-      eO = y$bosd
+      eP = extract_stan(y, "bpsd")[["bpsd"]]  
+      eO = extract_stan(y, "bosd")[["bosd"]]
       for (i in 1:3 ) {
           plot( eP[,,i], eO[,,i],  type="p", pch=22 )
           if (i==2) title( ylab="Process error (SD)" )
@@ -1409,15 +1434,16 @@ fishery_model = function(  p=NULL, DS="plot", assessment_years=2000:p$year.asses
 
 
     if (type=="diagnostic.production") {
+     
 
-      B =  apply( y$B, c(2,3), mean, na.rm=T  )
-      P =  apply( y$P, c(2,3), mean, na.rm=T  )
+      B =  apply(  extract_stan(y, "B")[["B"]], c(2,3), median, na.rm=T  )
+      P =  apply( extract_stan(y, "P")[["P"]], c(2,3), median, na.rm=T  )
+      C =  apply( extract_stan(y, "C")[["C"]], c(2,3), median, na.rm=T  )
+      K =  apply( extract_stan(y, "K")[["K"]], c(2), median, na.rm=T  )
+      FMSY = apply( extract_stan(y, "FMSY")[["FMSY"]], c(2), median, na.rm=T  )
+      BMSY = apply( extract_stan(y, "BMSY")[["BMSY"]], c(2), median, na.rm=T  )
+      MSY = apply( extract_stan(y, "MSY")[["MSY"]], c(2), median, na.rm=T  )
 
-      MSY = apply( y$MSY, c(2), mean, na.rm=T  )
-      FMSY = apply( y$FMSY, c(2), mean, na.rm=T  )
-      BMSY = apply( y$BMSY, c(2), mean, na.rm=T  )
-      C =  apply( y$C, c(2,3), mean, na.rm=T  )
-      K =  apply( y$K, c(2), mean, na.rm=T  )
 
       # production vs biomass
       plot.new()
@@ -1435,8 +1461,7 @@ fishery_model = function(  p=NULL, DS="plot", assessment_years=2000:p$year.asses
 
     }
 
-
-    if (is.null(fn)) fn = paste(vname, "tmp", ".png", sep="" )
+    if (is.null(fn)) fn=file.path(outdir, "diagnostic.production.png" )
   
     if(save.plot) savePlot( filename=fn, type="png" )
     return( fn)

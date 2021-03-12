@@ -299,15 +299,19 @@
       )
 
       # res = fishery_model( p=p, DS="samples", tag=p$areal_units_type )  # to get samples
+      # fit = fishery_model( p=p, DS="fit", tag=p$areal_units_type )  # to get samples
       
-      print( res$fit, max_rows=30 )
-      # res$fit$summary("K", "r", "q")
+      print( fit, max_rows=30 )
+      # fit$summary("K", "r", "q")
       
-      res$fit$cmdstan_diagnose()
-      res$fit$cmdstan_summary()
+      fit$cmdstan_diagnose()
+      fit$cmdstan_summary()
  
-      mcmc_hist(res$fit$draws("K"))
-  
+      color_scheme_set("gray")
+   
+      mcmc_dens(res$mcmc, regex_pars="K",  facet_args = list(nrow = 3, labeller = ggplot2::label_parsed ) ) + facet_text(size = 14 )   
+      # mcmc_hist( fit$draws("K"))
+
 
       # frequency density of key parameters
       fishery_model( DS="plot", vname="K", res=res )
