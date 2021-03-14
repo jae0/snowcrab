@@ -1445,26 +1445,6 @@ fishery_model = function(  p=NULL, DS="plot", assessment_years=2000:p$year.asses
   }
 
 
-
-  if (0) {
-
-      plot(f)
-      print(f)
-      traceplot(f)
-
-      # extract samples
-      e = rstan::extract(f, permuted = TRUE) # return a list of arrays
-      m2 = as.array(f)
-
-      traceplot(f, pars=c("K"))
-      pred=rstan::extract(f)
-
-      est=colMeans(pred)
-
-      prob=apply(pred,2,function(x) I(length(x[x>0.10])/length(x) > 0.8)*1)
-  }
-
-
 }
 
 

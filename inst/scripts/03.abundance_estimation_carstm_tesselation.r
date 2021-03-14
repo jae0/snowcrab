@@ -317,7 +317,7 @@
           vline_at(fit_mle$mle(), size = 1.5)
 
         # Variational Bayes  
-        fit_vb = p$fishery_model$stancode$variational(data =p$fishery_model$standata, seed = 123, output_samples = 4000)
+        fit_vb = p$fishery_model$stancode$variational( data =p$fishery_model$standata, seed = 123, output_samples = 4000)
         fit_vb$summary(c("K", "r", "q"))
 
         bayesplot_grid(
