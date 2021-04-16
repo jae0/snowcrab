@@ -1,7 +1,7 @@
 
 fishery_model = function(  p=NULL, DS="plot", assessment_years=2000:p$year.assessment, 
   plotresults=TRUE, tag="default", areas=c("cfanorth", "cfasouth", "cfa4x"),   
-  vname="", type="density", res=NULL, fn=NULL, aulabels=c("N-ENS","S-ENS","4X"), save.plot=TRUE, ... ) {
+  vname="", type="density", res=NULL, fit=NULL, fn=NULL, aulabels=c("N-ENS","S-ENS","4X"), save.plot=TRUE, ... ) {
 
 #     sb = bio.snowcrab::fishery_model( DS="data_aggregated_timeseries", p=p, assessment_years=p$yrs )
 
@@ -305,7 +305,7 @@ fishery_model = function(  p=NULL, DS="plot", assessment_years=2000:p$year.asses
       parameters {
         vector <lower=eps> [U] K;
         vector <lower=eps, upper=2> [U] r;
-         vector <lower=eps, upper=(1-eps)> [U] bosd;  // observation error
+        vector <lower=eps, upper=(1-eps)> [U] bosd;  // observation error
         vector <lower=eps, upper=(1-eps)> [U] bpsd;  // process error
         vector <lower=eps, upper=(1-eps)> [U] b0;
         vector <lower=eps> [missing_ntot] IOAmissing;
@@ -741,9 +741,11 @@ fishery_model = function(  p=NULL, DS="plot", assessment_years=2000:p$year.asses
     message( "Output location is: ", p$fishery_model$outdir )
     dir.create( p$fishery_model$outdir, recursive=T, showWarnings=F )
 
-    p$fishery_model$stancode$compile()
 
-    fit = p$fishery_model$stancode$sample( ... )
+    if (is.null(fit)) {
+      p$fishery_model$stancode$compile()
+      fit = p$fishery_model$stancode$sample( ... )
+    }
 
     if (0) {
         # Posterior summary statistics .. the $sample() method creates R6 CmdStanMCMC objects,

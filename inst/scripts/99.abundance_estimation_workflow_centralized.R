@@ -219,7 +219,7 @@ if (0) {
 
       # map it ..mean density
       vn = "pred"
-      slot(sppoly, "data")[,vn] = bio[,"2019"]
+      sppoly[,vn] = bio[,"2019"]
       brks = interval_break(X= sppoly[[vn]], n=length(p$mypalette), style="quantile")
       spplot( sppoly, vn, col.regions=p$mypalette, main=vn, at=brks, sp.layout=p$coastLayout, col="transparent" )
 

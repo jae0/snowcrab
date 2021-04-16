@@ -1370,7 +1370,7 @@ snowcrab.db = function( DS, p=NULL, yrs=NULL, fn.root=NULL, redo=FALSE, extrapol
     if (!(exists(pPC2$variabletomodel, M ))) M[,pPC2$variabletomodel] = NA
     iM = which(!is.finite( M[, pPC2$variabletomodel] ))
     if (length(iM > 0)) {
-      M[iM, pPC2$variabletomodel] = speciescomposition_lookup( LOCS=M[ iM, c("lon", "lat", "timestamp")],lookup_from="core", lookup_to="points", lookup_from_class="aggregated_data", tz="America/Halifax" ,
+      M[iM, pPC2$variabletomodel] = speciescomposition_lookup( LOCS=M[ iM, c("lon", "lat", "timestamp")], lookup_from="core", lookup_to="points", lookup_from_class="aggregated_data", tz="America/Halifax" ,
           year.assessment=p$year.assessment,
           vnames=pPC2$variabletomodel
         )
@@ -1384,6 +1384,8 @@ snowcrab.db = function( DS, p=NULL, yrs=NULL, fn.root=NULL, redo=FALSE, extrapol
     M$lon = NULL
     M$lat = NULL
  
+    # AUID is character; auid is factor -> numeric 
+
     M = M[ which(!is.na(M$AUID)),]
     M$AUID = as.character( M$AUID )  # match each datum to an area
 
@@ -1474,6 +1476,8 @@ snowcrab.db = function( DS, p=NULL, yrs=NULL, fn.root=NULL, redo=FALSE, extrapol
 
     M$AUID  = as.character(M$AUID)  # revert to factors
     M$auid  = as.numeric( factor(M$AUID) )
+  
+    M$auid_main = M$auid
 
     M$zi  = discretize_data( M[, pB$variabletomodel], p$discretization[[pB$variabletomodel]] )
     M$ti  = discretize_data( M[, pT$variabletomodel], p$discretization[[pT$variabletomodel]] )
@@ -1485,7 +1489,6 @@ snowcrab.db = function( DS, p=NULL, yrs=NULL, fn.root=NULL, redo=FALSE, extrapol
     M$tiyr  = aegis_floor( M$tiyr / p$tres )*p$tres    # discretize for inla .. midpoints
 
     M$yr = aegis_floor( M$tiyr)
-    M$year_factor = as.numeric( factor( M$yr, levels=p$yrs))
 
     M$dyear =  M$tiyr - M$yr   # revert dyear to non-discretized form
 

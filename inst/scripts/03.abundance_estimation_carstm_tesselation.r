@@ -267,6 +267,59 @@
 #  the fitted values are computed
 
 
+if (0) {
+  # testing alt parameterizations
+          
+  year.assessment = 2020
+
+  p = bio.snowcrab::snowcrab_parameters( 
+    project_class="carstm", 
+    assessment.years=2000:year.assessment, 
+    areal_units_type="tesselation",
+    carstm_model_label = "tesselation_with_main_effects",   # default is the name of areal_units_type  
+    selection = list(type = "number")
+  )
+  
+  sppoly = areal_units( p=p )  # to reload
+
+  M = snowcrab.db( p=p, DS="carstm_inputs"  )  # will redo if not found
+  M$auid_main = M$auid
+  M$year_factor_main = M$year_factor
+
+  # override
+  p$carstm_model_formula = as.formula( paste(
+  p$variabletomodel, ' ~ 1',
+      ' + offset( log(data_offset)) ',
+      ' + f( dyri, model="ar1", hyper=H$ar1 ) ',
+      ' + f( inla.group( t, method="quantile", n=11 ), model="rw2", scale.model=TRUE, hyper=H$rw2) ',
+      ' + f( inla.group( z, method="quantile", n=11 ), model="rw2", scale.model=TRUE, hyper=H$rw2) ',
+      ' + f( inla.group( substrate.grainsize, method="quantile", n=11 ), model="rw2", scale.model=TRUE, hyper=H$rw2) ',
+      ' + f( inla.group( pca1, method="quantile", n=11 ), model="rw2", scale.model=TRUE, hyper=H$rw2) ',
+      ' + f( inla.group( pca2, method="quantile", n=11 ), model="rw2", scale.model=TRUE, hyper=H$rw2) ',
+      ' + f( inla.group( yr, method="quantile", n=14 ), model="rw2", scale.model=TRUE, hyper=H$rw2 ) ',
+      ' + f( auid_main, model="bym2", graph=slot(sppoly, "nb"), scale.model=TRUE, constr=TRUE, hyper=H$bym2 ) ',
+      ' + f( auid, model="bym2", graph=slot(sppoly, "nb"), group=year_factor, scale.model=TRUE, constr=TRUE, hyper=H$bym2, control.group=list(model="ar1", hyper=H$ar1_group)) '
+  ) )
+
+ 
+}
+
+
+  fit = carstm_model( p=p, M=M ) # 151 configs and long optim .. 19 hrs
+  
+  if (0) {
+    # very large files .. slow 
+    fit = carstm_model( p=p, DS="carstm_modelled_fit" )  # extract currently saved model fit
+    plot(fit)
+    plot(fit, plot.prior=TRUE, plot.hyperparameters=TRUE, plot.fixed.effects=FALSE )
+  }
+
+  res = carstm_model( p=p, DS="carstm_modelled_summary"  ) # to load currently saved results
+  res$summary$dic$dic
+  res$summary$dic$p.eff
+  res$dyear
+  
+}
 
 
   }
@@ -282,20 +335,27 @@
 
       str( p$fishery_model)
 
+      p$fishery_model$stancode$compile()
+
+      fit = p$fishery_model$stancode$sample(         
+        data=p$fishery_model$standata, 
+        iter_warmup = 4000,
+        iter_sampling = 2000,
+        seed = 123,
+        chains = 3,
+        parallel_chains = 3,  # The maximum number of MCMC chains to run in parallel.
+        max_treedepth = 18,
+        adapt_delta = 0.99,
+        refresh = 500
+      )
+
+      # save fit and get draws
       res = fishery_model( 
         DS="logistic_model", 
         p=p, 
         tag=p$areal_units_type,
+        fit = fit
         # from here down are params for cmdstanr::sample()
-        data=p$fishery_model$standata, 
-        iter_warmup = 2000,
-        iter_sampling = 1000,
-        seed = 123,
-        chains = 4,
-        parallel_chains = 4,  # The maximum number of MCMC chains to run in parallel.
-        max_treedepth = 18,
-        adapt_delta = 0.975,
-        refresh = 500
       )
 
       # res = fishery_model( p=p, DS="samples", tag=p$areal_units_type )  # to get samples
@@ -313,12 +373,16 @@
         fit_mle =  p$fishery_model$stancode$optimize(data =p$fishery_model$standata, seed = 123)
         fit_mle$summary( c("K", "r", "q") )
 
+        u = stan_extract( as_draws_df(fit_mle$draws() ) )
+
         mcmc_hist(fit$draws("K")) +
           vline_at(fit_mle$mle(), size = 1.5)
 
         # Variational Bayes  
         fit_vb = p$fishery_model$stancode$variational( data =p$fishery_model$standata, seed = 123, output_samples = 4000)
         fit_vb$summary(c("K", "r", "q"))
+
+        u = stan_extract( as_draws_df(fit_vb$draws() ) )
 
         bayesplot_grid(
           mcmc_hist(fit$draws("K"), binwidth = 0.025),
@@ -330,6 +394,14 @@
         mcmc_dens(fit$draws("K"), facet_args = list(nrow = 3, labeller = ggplot2::label_parsed ) ) + facet_text(size = 14 )   
         # mcmc_hist( fit$draws("K"))
 
+        res = fishery_model( 
+          DS="logistic_model", 
+          p=p, 
+          tag=p$areal_units_type,
+          fit = fit_vb
+          # from here down are params for cmdstanr::sample()
+        )
+        
       }
 
 

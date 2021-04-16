@@ -556,7 +556,7 @@
 
   vn = "pred"
   dev.new()
-  slot(sppoly, "data")[,vn] = bio[,yrc]
+  sppoly[,vn] = bio[,yrc]
   brks = interval_break(X= sppoly[[vn]], n=length(p$mypalette), style="quantile")
   spplot( sppoly, vn, col.regions=p$mypalette, main=vn, at=brks, sp.layout=p$coastLayout, col="transparent" )
 
@@ -1031,7 +1031,7 @@
 
   # map it ..mean density
   vn = "pred"
-  slot(sppoly, "data")[,vn] = pa[,"2017"]
+  sppoly[,vn] = pa[,"2017"]
   brks = interval_break(X= sppoly[[vn]], n=length(p$mypalette), style="quantile")
   spplot( sppoly, vn, col.regions=p$mypalette, main=vn, at=brks, sp.layout=p$coastLayout, col="transparent", sub= p$carstm_model_label )
 

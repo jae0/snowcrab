@@ -53,6 +53,9 @@ p = bio.snowcrab::load.environment( year.assessment=year.assessment )
   figure.timeseries.bycatch(p=p, species=species, plotyears=2004:p$year.assessment, outdir=file.path(p$annual.results,"timeseries", "survey"))
 
 
+
+
+
   # ------------------------------------------
   # Map:  Interpolated mean/geometric mean of various variables in the set data table
 #  p$do.parallel=F
