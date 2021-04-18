@@ -60,6 +60,7 @@
           fit = carstm_model( p=p, DS="carstm_modelled_fit" )  # extract currently saved model fit
           plot(fit)
           plot(fit, plot.prior=TRUE, plot.hyperparameters=TRUE, plot.fixed.effects=FALSE )
+        
         }
 
 
@@ -197,131 +198,68 @@
 
     (res$summary)
 
-# Number of fn-calls= 784 with 8.496 sec/fn-call
-# Parallel efficiency for 'Preparations' and 'Approx inference':
-#     Accumulated CPU-time is equivalent to 5.93 threads running at 100%
-#     Efficiency using 12 threads = 49.42%
-
-# Saving carstm fit (this can be slow): /home/jae/bio.data/bio.snowcrab/modelled/tesselation/bio.snowcrab|snowcrab|tesselation|1|snowcrab|10|3|snowcrab_managementareas.rdata|carstm_modelled_fit|totno|inla|1000|30.rdata
-# Computing summaries ...
-# carstm summary saved as: /home/jae/bio.data/bio.snowcrab/modelled/tesselation/bio.snowcrab|snowcrab|tesselation|1|snowcrab|10|3|snowcrab_managementareas.rdata|carstm_modelled_summary|totno|inla|1000|30.rdata
-
-# Call:
-#    c("inla(formula = p$carstm_model_formula, family = p$carstm_model_family, ", " data = M, verbose = TRUE, 
-#    control.compute = list(dic = TRUE, ", " waic = TRUE, cpo = FALSE, config = TRUE), control.predictor = 
-#    list(compute = TRUE, ", " link = 1), control.family = p$options.control.family, ", " control.inla = 
-#    p$options.control.inla[[civ]], control.results = list(return.marginals.random = TRUE, ", " 
-#    return.marginals.predictor = TRUE))") 
-# Time used:
-#     Pre = 4.36, Running = 6664, Post = 5.65, Total = 6674 
+#     Pre = 12.5, Running = 12242, Post = 12.4, Total = 12267 
 # Fixed effects:
 #              mean    sd 0.025quant 0.5quant 0.975quant  mode kld
-# (Intercept) 7.035 0.106      6.827    7.035      7.244 7.035   0
+# (Intercept) 6.762 0.106      6.554    6.762      6.971 6.762   0
 
 # Random effects:
 #   Name	  Model
 #     dyri AR1 model
+#    inla.group(yr, method = "quantile", n = 14) RW2 model
 #    inla.group(t, method = "quantile", n = 11) RW2 model
 #    inla.group(z, method = "quantile", n = 11) RW2 model
 #    inla.group(substrate.grainsize, method = "quantile", n = 11) RW2 model
 #    inla.group(pca1, method = "quantile", n = 11) RW2 model
 #    inla.group(pca2, method = "quantile", n = 11) RW2 model
+#    auid_main BYM2 model
 #    auid BYM2 model
 
 # Model hyperparameters:
 #                                                                              mean    sd 0.025quant 0.5quant 0.975quant
-# Precision for dyri                                                         53.187 0.109     53.038   53.167     53.440
-# Rho for dyri                                                                0.754 0.000      0.753    0.754      0.755
-# Precision for inla.group(t, method = "quantile", n = 11)                   58.617 0.184     58.300   58.613     58.926
-# Precision for inla.group(z, method = "quantile", n = 11)                   55.026 0.389     54.505   54.952     55.948
-# Precision for inla.group(substrate.grainsize, method = "quantile", n = 11) 58.669 0.213     58.307   58.665     59.024
-# Precision for inla.group(pca1, method = "quantile", n = 11)                55.032 0.393     54.505   54.957     55.964
-# Precision for inla.group(pca2, method = "quantile", n = 11)                56.259 0.251     55.894   56.224     56.772
-# Precision for auid                                                         58.480 0.002     58.475   58.479     58.985
-# Phi for auid                                                                0.048 0.000      0.048    0.048      0.049
-# GroupRho for auid                                                           0.785 0.000      0.785    0.785      0.785
+# Precision for dyri                                                         54.606 0.295     54.188   54.555     55.295
+# Rho for dyri                                                                0.758 0.001      0.757    0.758      0.759
+# Precision for inla.group(yr, method = "quantile", n = 14)                  54.542 0.195     54.244   54.513     54.987
+# Precision for inla.group(t, method = "quantile", n = 11)                   54.813 0.281     54.430   54.764     55.441
+# Precision for inla.group(z, method = "quantile", n = 11)                   54.063 0.190     53.730   54.061     54.377
+# Precision for inla.group(substrate.grainsize, method = "quantile", n = 11) 53.928 0.027     53.874   53.928     53.982
+# Precision for inla.group(pca1, method = "quantile", n = 11)                54.011 0.217     53.649   53.998     54.397
+# Precision for inla.group(pca2, method = "quantile", n = 11)                54.876 0.175     54.596   54.867     55.180
+# Precision for auid_main                                                    30.719 0.040     30.633   30.723     30.788
+# Phi for auid_main                                                           0.047 0.000      0.046    0.047      0.047
+# Precision for auid                                                            Inf   NaN      0.000    0.000        Inf
+# Phi for auid                                                                  NaN   NaN      0.000    0.000        NaN
+# GroupRho for auid                                                           0.809 0.000      0.809    0.809      0.809
 #                                                                              mode
-# Precision for dyri                                                         53.066
-# Rho for dyri                                                                0.753
-# Precision for inla.group(t, method = "quantile", n = 11)                   58.417
-# Precision for inla.group(z, method = "quantile", n = 11)                   54.624
-# Precision for inla.group(substrate.grainsize, method = "quantile", n = 11) 58.418
-# Precision for inla.group(pca1, method = "quantile", n = 11)                54.624
-# Precision for inla.group(pca2, method = "quantile", n = 11)                55.943
-# Precision for auid                                                         58.480
-# Phi for auid                                                                0.048
-# GroupRho for auid                                                           0.785
+# Precision for dyri                                                         54.350
+# Rho for dyri                                                                0.757
+# Precision for inla.group(yr, method = "quantile", n = 14)                  54.398
+# Precision for inla.group(t, method = "quantile", n = 11)                   54.453
+# Precision for inla.group(z, method = "quantile", n = 11)                   53.863
+# Precision for inla.group(substrate.grainsize, method = "quantile", n = 11) 53.928
+# Precision for inla.group(pca1, method = "quantile", n = 11)                53.779
+# Precision for inla.group(pca2, method = "quantile", n = 11)                54.639
+# Precision for auid_main                                                    30.737
+# Phi for auid_main                                                           0.047
+# Precision for auid                                                            NaN
+# Phi for auid                                                                  NaN
+# GroupRho for auid                                                           0.809
 
-# Expected number of effective parameters(stdev): 608.49(1.62)
-# Number of equivalent replicates : 11.88 
+# Expected number of effective parameters(stdev): 874.09(0.619)
+# Number of equivalent replicates : 8.27 
 
-# Deviance Information Criterion (DIC) ...............: 56306.57
-# Deviance Information Criterion (DIC, saturated) ....: 38406.06
-# Effective number of parameters .....................: -1193.28
+# Deviance Information Criterion (DIC) ...............: 45884.47
+# Deviance Information Criterion (DIC, saturated) ....: 87745.01
+# Effective number of parameters .....................: 127.06
 
-# Watanabe-Akaike information criterion (WAIC) ...: 65141.77
-# Effective number of parameters .................: 5098.54
+# Watanabe-Akaike information criterion (WAIC) ...: 51967.33
+# Effective number of parameters .................: 4607.16
 
-# Marginal log-Likelihood:  -31355.14 
+# Marginal log-Likelihood:  -23439.66 
 # Posterior marginals for the linear predictor and
 #  the fitted values are computed
 
-
-if (0) {
-  # testing alt parameterizations
-          
-  year.assessment = 2020
-
-  p = bio.snowcrab::snowcrab_parameters( 
-    project_class="carstm", 
-    assessment.years=2000:year.assessment, 
-    areal_units_type="tesselation",
-    carstm_model_label = "tesselation_with_main_effects",   # default is the name of areal_units_type  
-    selection = list(type = "number")
-  )
   
-  sppoly = areal_units( p=p )  # to reload
-
-  M = snowcrab.db( p=p, DS="carstm_inputs"  )  # will redo if not found
-  M$auid_main = M$auid
-  M$year_factor_main = M$year_factor
-
-  # override
-  p$carstm_model_formula = as.formula( paste(
-  p$variabletomodel, ' ~ 1',
-      ' + offset( log(data_offset)) ',
-      ' + f( dyri, model="ar1", hyper=H$ar1 ) ',
-      ' + f( inla.group( t, method="quantile", n=11 ), model="rw2", scale.model=TRUE, hyper=H$rw2) ',
-      ' + f( inla.group( z, method="quantile", n=11 ), model="rw2", scale.model=TRUE, hyper=H$rw2) ',
-      ' + f( inla.group( substrate.grainsize, method="quantile", n=11 ), model="rw2", scale.model=TRUE, hyper=H$rw2) ',
-      ' + f( inla.group( pca1, method="quantile", n=11 ), model="rw2", scale.model=TRUE, hyper=H$rw2) ',
-      ' + f( inla.group( pca2, method="quantile", n=11 ), model="rw2", scale.model=TRUE, hyper=H$rw2) ',
-      ' + f( inla.group( yr, method="quantile", n=14 ), model="rw2", scale.model=TRUE, hyper=H$rw2 ) ',
-      ' + f( auid_main, model="bym2", graph=slot(sppoly, "nb"), scale.model=TRUE, constr=TRUE, hyper=H$bym2 ) ',
-      ' + f( auid, model="bym2", graph=slot(sppoly, "nb"), group=year_factor, scale.model=TRUE, constr=TRUE, hyper=H$bym2, control.group=list(model="ar1", hyper=H$ar1_group)) '
-  ) )
-
- 
-}
-
-
-  fit = carstm_model( p=p, M=M ) # 151 configs and long optim .. 19 hrs
-  
-  if (0) {
-    # very large files .. slow 
-    fit = carstm_model( p=p, DS="carstm_modelled_fit" )  # extract currently saved model fit
-    plot(fit)
-    plot(fit, plot.prior=TRUE, plot.hyperparameters=TRUE, plot.fixed.effects=FALSE )
-  }
-
-  res = carstm_model( p=p, DS="carstm_modelled_summary"  ) # to load currently saved results
-  res$summary$dic$dic
-  res$summary$dic$p.eff
-  res$dyear
-  
-}
-
-
   }
 
 
@@ -337,31 +275,11 @@ if (0) {
 
       p$fishery_model$stancode$compile()
 
-      fit = p$fishery_model$stancode$sample(         
-        data=p$fishery_model$standata, 
-        iter_warmup = 4000,
-        iter_sampling = 2000,
-        seed = 123,
-        chains = 3,
-        parallel_chains = 3,  # The maximum number of MCMC chains to run in parallel.
-        max_treedepth = 18,
-        adapt_delta = 0.99,
-        refresh = 500
-      )
-
-      # save fit and get draws
-      res = fishery_model( 
-        DS="logistic_model", 
-        p=p, 
-        tag=p$areal_units_type,
-        fit = fit
-        # from here down are params for cmdstanr::sample()
-      )
-
       # res = fishery_model( p=p, DS="samples", tag=p$areal_units_type )  # to get samples
       
       if (0) {
-        fit = fishery_model( p=p, DS="fit", tag=p$areal_units_type )  # to get samples
+      
+        fit = fishery_model( p=p,   DS="fit", tag=p$areal_units_type )  # to get samples
       
         print( fit, max_rows=30 )
         # fit$summary("K", "r", "q")
@@ -404,6 +322,28 @@ if (0) {
         
       }
 
+
+
+      fit = p$fishery_model$stancode$sample(         
+        data=p$fishery_model$standata, 
+        iter_warmup = 4000,
+        iter_sampling = 2000,
+        seed = 123,
+        chains = 3,
+        parallel_chains = 3,  # The maximum number of MCMC chains to run in parallel.
+        max_treedepth = 18,
+        adapt_delta = 0.99,
+        refresh = 500
+      )
+
+      # save fit and get draws
+      res = fishery_model( 
+        DS="logistic_model", 
+        p=p, 
+        tag=p$areal_units_type,
+        fit = fit
+        # from here down are params for cmdstanr::sample()
+      )
 
 
 

@@ -1475,8 +1475,8 @@ snowcrab.db = function( DS, p=NULL, yrs=NULL, fn.root=NULL, redo=FALSE, extrapol
 
 
     M$AUID  = as.character(M$AUID)  # revert to factors
-    M$auid  = as.numeric( factor(M$AUID) )
-  
+    M$auid = match( M$AUID, region.id )
+
     M$auid_main = M$auid
 
     M$zi  = discretize_data( M[, pB$variabletomodel], p$discretization[[pB$variabletomodel]] )
@@ -1489,6 +1489,7 @@ snowcrab.db = function( DS, p=NULL, yrs=NULL, fn.root=NULL, redo=FALSE, extrapol
     M$tiyr  = aegis_floor( M$tiyr / p$tres )*p$tres    # discretize for inla .. midpoints
 
     M$yr = aegis_floor( M$tiyr)
+    M$year_factor = as.numeric( factor( M$yr, levels=p$yrs))
 
     M$dyear =  M$tiyr - M$yr   # revert dyear to non-discretized form
 
@@ -1743,6 +1744,8 @@ snowcrab.db = function( DS, p=NULL, yrs=NULL, fn.root=NULL, redo=FALSE, extrapol
 
     M$AUID  = as.character(M$AUID)  # revert to factors
     M$auid = match( M$AUID, region.id )
+  
+    M$auid_main = M$auid
 
     M$zi  = discretize_data( M[, pB$variabletomodel], p$discretization[[pB$variabletomodel]] )
     M$ti  = discretize_data( M[, pT$variabletomodel], p$discretization[[pT$variabletomodel]] )
