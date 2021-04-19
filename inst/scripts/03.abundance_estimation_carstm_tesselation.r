@@ -198,15 +198,18 @@
 
     (res$summary)
 
-#     Pre = 12.5, Running = 12242, Post = 12.4, Total = 12267 
+
+
+# Time used:
+#     Pre = 12.9, Running = 12289, Post = 26.3, Total = 12328 
 # Fixed effects:
 #              mean    sd 0.025quant 0.5quant 0.975quant  mode kld
-# (Intercept) 6.762 0.106      6.554    6.762      6.971 6.762   0
+# (Intercept) 7.383 0.129       7.13    7.383      7.636 7.383   0
 
 # Random effects:
 #   Name	  Model
 #     dyri AR1 model
-#    inla.group(yr, method = "quantile", n = 14) RW2 model
+#    yr AR1 model
 #    inla.group(t, method = "quantile", n = 11) RW2 model
 #    inla.group(z, method = "quantile", n = 11) RW2 model
 #    inla.group(substrate.grainsize, method = "quantile", n = 11) RW2 model
@@ -217,49 +220,53 @@
 
 # Model hyperparameters:
 #                                                                              mean    sd 0.025quant 0.5quant 0.975quant
-# Precision for dyri                                                         54.606 0.295     54.188   54.555     55.295
-# Rho for dyri                                                                0.758 0.001      0.757    0.758      0.759
-# Precision for inla.group(yr, method = "quantile", n = 14)                  54.542 0.195     54.244   54.513     54.987
-# Precision for inla.group(t, method = "quantile", n = 11)                   54.813 0.281     54.430   54.764     55.441
-# Precision for inla.group(z, method = "quantile", n = 11)                   54.063 0.190     53.730   54.061     54.377
-# Precision for inla.group(substrate.grainsize, method = "quantile", n = 11) 53.928 0.027     53.874   53.928     53.982
-# Precision for inla.group(pca1, method = "quantile", n = 11)                54.011 0.217     53.649   53.998     54.397
-# Precision for inla.group(pca2, method = "quantile", n = 11)                54.876 0.175     54.596   54.867     55.180
-# Precision for auid_main                                                    30.719 0.040     30.633   30.723     30.788
-# Phi for auid_main                                                           0.047 0.000      0.046    0.047      0.047
-# Precision for auid                                                            Inf   NaN      0.000    0.000        Inf
-# Phi for auid                                                                  NaN   NaN      0.000    0.000        NaN
-# GroupRho for auid                                                           0.809 0.000      0.809    0.809      0.809
+# zero-probability parameter for zero-inflated poisson_0                      0.266 0.000      0.266    0.266      0.267
+# Precision for dyri                                                         53.357 0.151     53.084   53.354     53.611
+# Rho for dyri                                                                0.761 0.001      0.759    0.760      0.762
+# Precision for yr                                                           55.778 0.159     55.568   55.748     56.156
+# Rho for yr                                                                  0.762 0.001      0.761    0.762      0.764
+# Precision for inla.group(t, method = "quantile", n = 11)                   55.875 0.163     55.589   55.876     56.138
+# Precision for inla.group(z, method = "quantile", n = 11)                   53.039 0.285     52.574   53.036     53.515
+# Precision for inla.group(substrate.grainsize, method = "quantile", n = 11) 53.832 0.023     53.786   53.832     53.878
+# Precision for inla.group(pca1, method = "quantile", n = 11)                56.114 0.150     55.872   56.110     56.366
+# Precision for inla.group(pca2, method = "quantile", n = 11)                52.180 0.132     51.964   52.177     52.402
+# Precision for auid_main                                                    55.098 0.045     55.010   55.098     55.186
+# Phi for auid_main                                                           0.047 0.000      0.047    0.047      0.047
+# Precision for auid                                                         56.217 0.001     56.213   56.216     56.577
+# Phi for auid                                                                0.049 0.000      0.049    0.049      0.049
+# GroupRho for auid                                                           0.771 0.000      0.771    0.771      0.771
 #                                                                              mode
-# Precision for dyri                                                         54.350
-# Rho for dyri                                                                0.757
-# Precision for inla.group(yr, method = "quantile", n = 14)                  54.398
-# Precision for inla.group(t, method = "quantile", n = 11)                   54.453
-# Precision for inla.group(z, method = "quantile", n = 11)                   53.863
-# Precision for inla.group(substrate.grainsize, method = "quantile", n = 11) 53.928
-# Precision for inla.group(pca1, method = "quantile", n = 11)                53.779
-# Precision for inla.group(pca2, method = "quantile", n = 11)                54.639
-# Precision for auid_main                                                    30.737
+# zero-probability parameter for zero-inflated poisson_0                      0.267
+# Precision for dyri                                                         53.228
+# Rho for dyri                                                                0.760
+# Precision for yr                                                           55.596
+# Rho for yr                                                                  0.762
+# Precision for inla.group(t, method = "quantile", n = 11)                   56.147
+# Precision for inla.group(z, method = "quantile", n = 11)                   52.558
+# Precision for inla.group(substrate.grainsize, method = "quantile", n = 11) 53.832
+# Precision for inla.group(pca1, method = "quantile", n = 11)                55.898
+# Precision for inla.group(pca2, method = "quantile", n = 11)                51.991
+# Precision for auid_main                                                    55.099
 # Phi for auid_main                                                           0.047
-# Precision for auid                                                            NaN
-# Phi for auid                                                                  NaN
-# GroupRho for auid                                                           0.809
+# Precision for auid                                                         56.217
+# Phi for auid                                                                0.049
+# GroupRho for auid                                                           0.771
 
-# Expected number of effective parameters(stdev): 874.09(0.619)
-# Number of equivalent replicates : 8.27 
+# Expected number of effective parameters(stdev): 718.67(5.99)
+# Number of equivalent replicates : 10.06 
 
-# Deviance Information Criterion (DIC) ...............: 45884.47
-# Deviance Information Criterion (DIC, saturated) ....: 87745.01
-# Effective number of parameters .....................: 127.06
+# Deviance Information Criterion (DIC) ...............: 46288.97
+# Deviance Information Criterion (DIC, saturated) ....: 105639.30
+# Effective number of parameters .....................: 154.96
 
-# Watanabe-Akaike information criterion (WAIC) ...: 51967.33
-# Effective number of parameters .................: 4607.16
+# Watanabe-Akaike information criterion (WAIC) ...: 51197.44
+# Effective number of parameters .................: 3786.81
 
-# Marginal log-Likelihood:  -23439.66 
+# Marginal log-Likelihood:  -22172.38 
 # Posterior marginals for the linear predictor and
 #  the fitted values are computed
 
-  
+
   }
 
 
@@ -326,8 +333,8 @@
 
       fit = p$fishery_model$stancode$sample(         
         data=p$fishery_model$standata, 
-        iter_warmup = 4000,
-        iter_sampling = 2000,
+        iter_warmup = 5000,
+        iter_sampling = 3000,
         seed = 123,
         chains = 3,
         parallel_chains = 3,  # The maximum number of MCMC chains to run in parallel.

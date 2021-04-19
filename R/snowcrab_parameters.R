@@ -456,7 +456,7 @@ snowcrab_parameters = function( p=list(), year.assessment=NULL, project_name="bi
         if ( !exists("carstm_model_formula", p)  ) {
           
           p$carstm_model_formula = as.formula( paste(
-          p$variabletomodel, ' ~ -1',
+          p$variabletomodel, ' ~ 1',
               ' + offset( log(data_offset)) ',
               ' + f( dyri, model="ar1", hyper=H$ar1 ) ',
               ' + f( yr, model="ar1",  hyper=H$ar1 ) ',
@@ -479,7 +479,7 @@ snowcrab_parameters = function( p=list(), year.assessment=NULL, project_name="bi
         if ( !exists("carstm_model_formula", p)  ) {
           
           p$carstm_model_formula = as.formula( paste(
-          p$variabletomodel, ' ~ -1',
+          p$variabletomodel, ' ~ 1',
               ' + offset( log(data_offset)) ',
               ' + f( dyri, model="ar1", hyper=H$ar1 ) ',
               ' + f( yr, model="ar1",  hyper=H$ar1 ) ',
@@ -502,7 +502,7 @@ snowcrab_parameters = function( p=list(), year.assessment=NULL, project_name="bi
         if ( !exists("carstm_model_formula", p)  ) {
 
           p$carstm_model_formula = as.formula( paste(
-            p$variabletomodel, ' ~ -1 ',
+            p$variabletomodel, ' ~ 1 ',
               ' + f( dyri, model="ar1", hyper=H$ar1 ) ',
               ' + f( yr, model="ar1",  hyper=H$ar1 ) ',
               ' + f( inla.group( t, method="quantile", n=11 ), model="rw2", scale.model=TRUE, hyper=H$rw2) ',
