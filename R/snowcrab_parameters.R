@@ -469,7 +469,14 @@ snowcrab_parameters = function( p=list(), year.assessment=NULL, project_name="bi
               ' + f( auid, model="bym2", graph=slot(sppoly, "nb"), group=year_factor, scale.model=TRUE, constr=TRUE, hyper=H$bym2, control.group=list(model="ar1", hyper=H$ar1_group)) '
           ) )
         }
-        if ( !exists("carstm_model_family", p)  )  p$carstm_model_family =  "poisson"  
+        
+        if ( !exists("carstm_model_family", p)  )  {
+          # p$carstm_model_family =  "poisson"  
+          p$carstm_model_label = "tesselation_overdispersed"   # default is the name of areal_units_type  
+          p$carstm_model_family  = "zeroinflatedpoisson0" #  "binomial",  # "nbinomial", "betabinomial", "zeroinflatedbinomial0" , "zeroinflatednbinomial0"
+          p$carstm_model_inla_control_familiy = NULL
+        }
+
       } 
 
       if (p$selection$type =="biomass") {
