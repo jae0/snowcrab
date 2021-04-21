@@ -471,10 +471,10 @@ snowcrab_parameters = function( p=list(), year.assessment=NULL, project_name="bi
         }
         
         if ( !exists("carstm_model_family", p)  )  {
-          # p$carstm_model_family =  "poisson"  
-          p$carstm_model_label = "tesselation_overdispersed"   # default is the name of areal_units_type  
-          p$carstm_model_family  = "zeroinflatedpoisson0" #  "binomial",  # "nbinomial", "betabinomial", "zeroinflatedbinomial0" , "zeroinflatednbinomial0"
-          p$carstm_model_inla_control_familiy = NULL
+          p$carstm_model_family =  "poisson"  
+          # p$carstm_model_label = "tesselation_overdispersed"   # default is the name of areal_units_type  
+          # p$carstm_model_family  = "zeroinflatedpoisson0" #  "binomial",  # "nbinomial", "betabinomial", "zeroinflatedbinomial0" , "zeroinflatednbinomial0"
+          # p$carstm_model_inla_control_familiy = NULL
         }
 
       } 
