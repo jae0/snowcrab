@@ -59,7 +59,7 @@ fishery_model = function(  p=NULL, DS="plot", assessment_years=2000:p$year.asses
     out$standata$CAT[ which(!is.finite(out$standata$CAT)) ] = out$standata$eps  # remove NA's
 
     # priors
-    if (!exists("Kmu", out$standata)) out$standata$Kmu =  c( 5.0, 50.0, 1.5 )
+    if (!exists("Kmu", out$standata)) out$standata$Kmu =  c( 5.0, 50.0, 1.0 )
     if (!exists("rmu", out$standata)) out$standata$rmu =  c( 1.0, 1.0, 1.0 )
 
     if (!exists("Ksd", out$standata)) out$standata$Ksd =  c( 0.5, 0.5, 0.5 ) * out$standata$Kmu   
@@ -111,7 +111,7 @@ fishery_model = function(  p=NULL, DS="plot", assessment_years=2000:p$year.asses
       parameters {
         vector <lower=eps> [U] K;
         vector <lower=0.25, upper=2.0> [U] r;
-        vector <lower=eps, upper=2.0> [U] q;
+        vector <lower=eps, upper=3.0> [U] q;
         vector <lower=eps, upper=(1-eps)> [U] Yoffset;  //  offset
         vector <lower=eps, upper=0.5> [U] bosd;  // observation error
         vector <lower=eps, upper=0.5> [U] bpsd;  // process error

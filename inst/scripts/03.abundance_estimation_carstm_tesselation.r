@@ -116,7 +116,6 @@ TODO --- meansize as a bym --
 
 
 
-
       snowcrab.db(p=p, DS="carstm_output_compute" )
       
       RES = snowcrab.db(p=p, DS="carstm_output_timeseries" )
@@ -357,7 +356,7 @@ Posterior marginals for the linear predictor and
       # frequency density of key parameters
       fishery_model( DS="plot", vname="K", res=res )
       fishery_model( DS="plot", vname="r", res=res )
-      fishery_model( DS="plot", vname="q", res=res, xrange=c(0.5, 2))
+      fishery_model( DS="plot", vname="q", res=res, xrange=c(0.5, 2.5))
       fishery_model( DS="plot", vname="FMSY", res=res  )
       # fishery_model( DS="plot", vname="bosd", res=res  )
       # fishery_model( DS="plot", vname="bpsd", res=res  )
