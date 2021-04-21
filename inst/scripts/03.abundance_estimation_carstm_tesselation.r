@@ -112,6 +112,11 @@
       
 
 
+TODO --- meansize as a bym --
+
+
+
+
       snowcrab.db(p=p, DS="carstm_output_compute" )
       
       RES = snowcrab.db(p=p, DS="carstm_output_timeseries" )
@@ -301,6 +306,14 @@ Posterior marginals for the linear predictor and
         fit_vb = p$fishery_model$stancode$variational( data =p$fishery_model$standata, seed = 123, output_samples = 4000)
         fit_vb$summary(c("K", "r", "q"))
 
+        res = fishery_model( 
+          DS="logistic_model", 
+          p=p, 
+          tag=p$areal_units_type,
+          fit = fit_vb
+          # from here down are params for cmdstanr::sample()
+        )
+
         u = stan_extract( as_draws_df(fit_vb$draws() ) )
 
         bayesplot_grid(
@@ -313,13 +326,6 @@ Posterior marginals for the linear predictor and
         mcmc_dens(fit$draws("K"), facet_args = list(nrow = 3, labeller = ggplot2::label_parsed ) ) + facet_text(size = 14 )   
         # mcmc_hist( fit$draws("K"))
 
-        res = fishery_model( 
-          DS="logistic_model", 
-          p=p, 
-          tag=p$areal_units_type,
-          fit = fit_vb
-          # from here down are params for cmdstanr::sample()
-        )
         
       }
 
@@ -327,20 +333,20 @@ Posterior marginals for the linear predictor and
 
       fit = p$fishery_model$stancode$sample(         
         data=p$fishery_model$standata, 
-        iter_warmup = 5000,
-        iter_sampling = 3000,
+        iter_warmup = 10000,
+        iter_sampling = 5000,
         seed = 123,
         chains = 3,
         parallel_chains = 3,  # The maximum number of MCMC chains to run in parallel.
-        max_treedepth = 18,
-        adapt_delta = 0.99,
-        refresh = 500
+        max_treedepth = 16,
+        adapt_delta = 0.975,
+        refresh = 1000
       )
 
       # save fit and get draws
       res = fishery_model( 
-        DS="logistic_model", 
         p=p, 
+        DS="logistic_model", 
         tag=p$areal_units_type,
         fit = fit
         # from here down are params for cmdstanr::sample()

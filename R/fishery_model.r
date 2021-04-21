@@ -59,17 +59,17 @@ fishery_model = function(  p=NULL, DS="plot", assessment_years=2000:p$year.asses
     out$standata$CAT[ which(!is.finite(out$standata$CAT)) ] = out$standata$eps  # remove NA's
 
     # priors
-    if (!exists("Kmu", out$standata)) out$standata$Kmu =  c( 5.0, 60.0, 1.5 )
+    if (!exists("Kmu", out$standata)) out$standata$Kmu =  c( 5.0, 50.0, 1.5 )
     if (!exists("rmu", out$standata)) out$standata$rmu =  c( 1.0, 1.0, 1.0 )
 
-    if (!exists("Ksd", out$standata)) out$standata$Ksd =  c( 0.1, 0.1, 0.1 ) * out$standata$Kmu   
-    if (!exists("rsd", out$standata)) out$standata$rsd =  c( 0.1, 0.1, 0.1 ) * out$standata$rmu  
+    if (!exists("Ksd", out$standata)) out$standata$Ksd =  c( 0.5, 0.5, 0.5 ) * out$standata$Kmu   
+    if (!exists("rsd", out$standata)) out$standata$rsd =  c( 0.25, 0.25, 0.25 ) * out$standata$rmu  
 
     if (!exists("qmu", out$standata)) out$standata$qmu =  c(1.0, 1.0, 1.0)
-    if (!exists("qsd", out$standata)) out$standata$qsd =  c(0.1, 0.1, 0.1)
+    if (!exists("qsd", out$standata)) out$standata$qsd =  c(0.25, 0.25, 0.25) * out$standata$qmu   
  
-    if (!exists("Yoffset_mu", out$standata)) out$standata$Yoffset_mu =  c(0.5, 0.5, 0.5)
-    if (!exists("Yoffset_sd", out$standata)) out$standata$Yoffset_sd =  c(0.1, 0.1, 0.1)
+    if (!exists("Yoffset_mu", out$standata)) out$standata$Yoffset_mu =  c(0.25, 0.25, 0.25)
+    if (!exists("Yoffset_sd", out$standata)) out$standata$Yoffset_sd =  c(0.25, 0.25, 0.25) * out$standata$Yoffset_mu
  
     return(out)
   }
@@ -176,7 +176,7 @@ fishery_model = function(  p=NULL, DS="plot", assessment_years=2000:p$year.asses
 
         // spring surveys
         for (j in 1:2) {
-          ( Y[1, j] / q[j] )+  Yoffset[j] ~ normal( ( ( fmax( bm[1,j] - CAT[1,j]/K[j]  , eps) )) , bosd[j] ) ;
+          ( Y[1, j] / q[j] ) +  Yoffset[j] ~ normal( ( ( fmax( bm[1,j] - CAT[1,j]/K[j]  , eps) )) , bosd[j] ) ;
           for (i in 2:(ty-1) ){
             ( Y[i, j] / q[j] ) +  Yoffset[j]   ~ normal( ( (  fmax( bm[i,j] - CAT[i-1,j]/K[j] , eps) )), bosd[j] ) ;
           }
