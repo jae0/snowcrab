@@ -1883,15 +1883,17 @@ snowcrab.db = function( DS, p=NULL, yrs=NULL, fn.root=NULL, redo=FALSE, extrapol
       M = res$M
       M$yr = M$year  # req for meanweights
 
-      wgts = meanweights_by_arealunit(
-        set=M[M$tag=="observations",],
-        AUID=as.character( sppoly$AUID ),
-        yrs=p$yrs,
-        fillall=TRUE,
-        annual_breakdown=TRUE,
-        robustify_quantiles=p$quantile_bounds  # high upper bounds are more dangerous
-      )
+      # wgts = meanweights_by_arealunit(
+      #   set=M[M$tag=="observations",],
+      #   AUID=as.character( sppoly$AUID ),
+      #   yrs=p$yrs,
+      #   fillall=TRUE,
+      #   annual_breakdown=TRUE,
+      #   robustify_quantiles=p$quantile_bounds  # high upper bounds are more dangerous
+      # )
 
+      wgts = meanweights_by_arealunit_modelled( p=p ) 
+      
       if (p$selection$type == "biomass") {
         biom = res[[ paste( p$variabletomodel, "predicted", sep=".")]]
         biom[!is.finite(biom)] = NA

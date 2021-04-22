@@ -132,6 +132,11 @@ if (0) {
 
   M = snowcrab.db( p=p, DS="carstm_inputs_hybrid", redo=TRUE )  # will redo if not found
   fit = carstm_model( p=p, M='snowcrab.db( p=p, DS="carstm_inputs_hybrid" )' ) # 151 configs and long optim .. 19 hrs
+  
+
+  weight_year = meanweights_by_arealunit_modelled( p=p, redo=TRUE )  ## needed in carstm_output_compute
+
+  
   RES = snowcrab.db(p=p, DS="carstm_output_compute" )
 
   if (0) {
@@ -393,8 +398,10 @@ p$lookupvars = c("t", "tsd", "tmax", "tmin", "degreedays", "z",  "dZ", "ddZ", "s
   )
 
 
-# construct meanweights matrix
-weight_year = meanweights_by_arealunit( set=set, AUID=as.character( sppoly$AUID ), yrs=p$yrs, fillall=TRUE, annual_breakdown=TRUE )
+# construct meanweights matrix -- not used ?
+# weight_year = meanweights_by_arealunit( set=set, AUID=as.character( sppoly$AUID ), yrs=p$yrs, fillall=TRUE, annual_breakdown=TRUE )
+# weight_year = meanweights_by_arealunit_modelled( p=p, redo=TRUE )  -- note: data passing of M needs to be modularized 
+
 # weight_year = weight_year[, match(as.character(p$yrs), colnames(weight_year) )]
 # weight_year = weight_year[ match(as.character(sppoly$AUID), rownames(weight_year) )]
 

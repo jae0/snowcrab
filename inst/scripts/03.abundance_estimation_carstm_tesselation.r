@@ -111,10 +111,29 @@
       }
       
 
+      res = meanweights_by_arealunit_modelled( p=p, redo=TRUE, returntype="all" )  ## used in carstm_output_compute
 
-TODO --- meansize as a bym --
+         if (0) {
 
+          res = meanweights_by_arealunit_modelled( p=p, returntype="all" )  ## used in carstm_output_compute
 
+          plot_crs = p_mw$aegis_proj4string_planar_km
+          coastline=aegis.coastline::coastline_db( DS="eastcoast_gadm", project_to=plot_crs )
+          isobaths=aegis.bathymetry::isobath_db( depths=c(50, 100, 200, 400, 800), project_to=plot_crs )
+          managementlines = aegis.polygons::area_lines.db( DS="cfa.regions", returntype="sf", project_to=plot_crs )
+        
+          time_match = list( year=as.character(2020)  )
+
+          carstm_map(  res=res, 
+              vn=paste(p_mw$variabletomodel, "predicted", sep="."), 
+              time_match=time_match, 
+              coastline=coastline,
+              managementlines=managementlines,
+              isobaths=isobaths,
+              main=paste("Predicted mean weight of indivudual (kg)", paste0(time_match, collapse="-") )  
+          )
+            
+        }
 
       snowcrab.db(p=p, DS="carstm_output_compute" )
       
@@ -332,26 +351,18 @@ Posterior marginals for the linear predictor and
 
       fit = p$fishery_model$stancode$sample(         
         data=p$fishery_model$standata, 
-        iter_warmup = 10000,
-        iter_sampling = 5000,
+        iter_warmup = 15000,
+        iter_sampling = 6000,
         seed = 123,
         chains = 3,
         parallel_chains = 3,  # The maximum number of MCMC chains to run in parallel.
-        max_treedepth = 16,
-        adapt_delta = 0.975,
+        max_treedepth = 18,
+        adapt_delta = 0.99,
         refresh = 1000
       )
 
       # save fit and get draws
-      res = fishery_model( 
-        p=p, 
-        DS="logistic_model", 
-        tag=p$areal_units_type,
-        fit = fit
-        # from here down are params for cmdstanr::sample()
-      )
-
-
+      res = fishery_model( p=p, DS="logistic_model", tag=p$areal_units_type, fit=fit )       # from here down are params for cmdstanr::sample()
 
       # frequency density of key parameters
       fishery_model( DS="plot", vname="K", res=res )

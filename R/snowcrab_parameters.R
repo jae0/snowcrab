@@ -384,6 +384,8 @@ snowcrab_parameters = function( p=list(), year.assessment=NULL, project_name="bi
       nAU_min = 30
     )
     
+    if ( !p$areal_units_type %in% c("lattice", "tesselation")) stop("areal_units_type not defined")
+
     if ( p$areal_units_type == "lattice" ) {
       p = parameters_add_without_overwriting( p,
         areal_units_resolution_km = 25 ,

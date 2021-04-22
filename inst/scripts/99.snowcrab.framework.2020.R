@@ -521,6 +521,9 @@
 
   # aggregate time series
 
+
+  weight_year = meanweights_by_arealunit_modelled( p=p, redo=TRUE )  ## needed in carstm_output_compute
+
   RES = snowcrab.db(p=p, DS="carstm_output_compute"   )
 
   RES = snowcrab.db(p=p, DS="carstm_output_timeseries"  )
