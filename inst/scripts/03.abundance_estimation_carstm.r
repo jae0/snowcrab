@@ -346,7 +346,7 @@ Posterior marginals for the linear predictor and
       # frequency density of key parameters
       fishery_model( DS="plot", vname="K", res=res )
       fishery_model( DS="plot", vname="r", res=res )
-      fishery_model( DS="plot", vname="q", res=res, xrange=c(0.5, 2))
+      fishery_model( DS="plot", vname="q", res=res, xrange=c(0.5, 3))
       fishery_model( DS="plot", vname="FMSY", res=res  )
       # fishery_model( DS="plot", vname="bosd", res=res  )
       # fishery_model( DS="plot", vname="bpsd", res=res  )

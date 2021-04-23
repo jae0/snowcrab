@@ -299,12 +299,14 @@ Posterior marginals for the linear predictor and
 
       p$fishery_model$stancode$compile()
 
+
       # res = fishery_model( p=p, DS="samples", tag=p$areal_units_type )  # to get samples
       
       if (0) {
-      
+
         fit = fishery_model( p=p,   DS="fit", tag=p$areal_units_type )  # to get samples
-      
+        fit$summary(c("K", "r", "q", "qc"))
+
         print( fit, max_rows=30 )
         # fit$summary("K", "r", "q")
         
@@ -322,7 +324,7 @@ Posterior marginals for the linear predictor and
 
         # Variational Bayes  
         fit_vb = p$fishery_model$stancode$variational( data =p$fishery_model$standata, seed = 123, output_samples = 4000)
-        fit_vb$summary(c("K", "r", "q"))
+        fit_vb$summary(c("K", "r", "q", "qc"))
 
         res = fishery_model( 
           DS="logistic_model", 
@@ -351,15 +353,17 @@ Posterior marginals for the linear predictor and
 
       fit = p$fishery_model$stancode$sample(         
         data=p$fishery_model$standata, 
-        iter_warmup = 15000,
-        iter_sampling = 6000,
+        iter_warmup = 5000,
+        iter_sampling = 2000,
         seed = 123,
         chains = 3,
         parallel_chains = 3,  # The maximum number of MCMC chains to run in parallel.
-        max_treedepth = 18,
+        max_treedepth = 16,
         adapt_delta = 0.99,
         refresh = 1000
       )
+      
+      fit$summary(c("K", "r", "q", "qc"))
 
       # save fit and get draws
       res = fishery_model( p=p, DS="logistic_model", tag=p$areal_units_type, fit=fit )       # from here down are params for cmdstanr::sample()
@@ -413,12 +417,12 @@ Posterior marginals for the linear predictor and
       ( qs = apply(  res$mcmc$rem_sd[,], 2, quantile, probs=c(0.025, 0.5, 0.975) ) )
 
 
-    # Yoffset
+    # qc
       plot.new()
       layout( matrix(c(1,2,3), 3, 1 ))
       par(mar = c(4.4, 4.4, 0.65, 0.75))
-      for (i in 1:3) plot(density(res$mcmc$Yoffset[,i] ), main="")
-      ( qs = apply(  res$mcmc$Yoffset[,], 2, quantile, probs=c(0.025, 0.5, 0.975) ) )
+      for (i in 1:3) plot(density(res$mcmc$qc[,i] ), main="")
+      ( qs = apply(  res$mcmc$qc[,], 2, quantile, probs=c(0.025, 0.5, 0.975) ) )
 
      # b0
       plot.new()

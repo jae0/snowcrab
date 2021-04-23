@@ -59,17 +59,13 @@ fishery_model = function(  p=NULL, DS="plot", assessment_years=2000:p$year.asses
     out$standata$CAT[ which(!is.finite(out$standata$CAT)) ] = out$standata$eps  # remove NA's
 
     # priors
-    if (!exists("Kmu", out$standata)) out$standata$Kmu =  c( 5.0, 50.0, 1.0 )
+    if (!exists("Kmu", out$standata)) out$standata$Kmu =  c( 4.0, 40.0, 1.0 )
     if (!exists("rmu", out$standata)) out$standata$rmu =  c( 1.0, 1.0, 1.0 )
+    if (!exists("qmu", out$standata)) out$standata$qmu =  c(1.0, 1.0, 1.0)
 
     if (!exists("Ksd", out$standata)) out$standata$Ksd =  c( 0.5, 0.5, 0.5 ) * out$standata$Kmu   
-    if (!exists("rsd", out$standata)) out$standata$rsd =  c( 0.25, 0.25, 0.25 ) * out$standata$rmu  
-
-    if (!exists("qmu", out$standata)) out$standata$qmu =  c(1.0, 1.0, 1.0)
-    if (!exists("qsd", out$standata)) out$standata$qsd =  c(0.25, 0.25, 0.25) * out$standata$qmu   
- 
-    if (!exists("Yoffset_mu", out$standata)) out$standata$Yoffset_mu =  c(0.25, 0.25, 0.25)
-    if (!exists("Yoffset_sd", out$standata)) out$standata$Yoffset_sd =  c(0.25, 0.25, 0.25) * out$standata$Yoffset_mu
+    if (!exists("rsd", out$standata)) out$standata$rsd =  c( 0.3, 0.3, 0.3 ) * out$standata$rmu  
+    if (!exists("qsd", out$standata)) out$standata$qsd =  c(0.3, 0.3, 0.3) * out$standata$qmu   
  
     return(out)
   }
@@ -92,8 +88,6 @@ fishery_model = function(  p=NULL, DS="plot", assessment_years=2000:p$year.asses
         vector[U] rmu ;
         vector[U] qmu ;
         vector[U] qsd ;
-        vector[U] Yoffset_mu ;
-        vector[U] Yoffset_sd ;
         matrix[N,U] CAT;
         matrix[N,U] IOA;
         matrix[N,U] missing;
@@ -112,7 +106,7 @@ fishery_model = function(  p=NULL, DS="plot", assessment_years=2000:p$year.asses
         vector <lower=eps> [U] K;
         vector <lower=0.25, upper=2.0> [U] r;
         vector <lower=eps, upper=3.0> [U] q;
-        vector <lower=eps, upper=(1-eps)> [U] Yoffset;  //  offset
+        vector <lower=eps, upper=(1-eps)> [U] qc;  //  offset
         vector <lower=eps, upper=0.5> [U] bosd;  // observation error
         vector <lower=eps, upper=0.5> [U] bpsd;  // process error
         vector <lower=eps, upper=0.5> [U] rem_sd;  // catch error
@@ -152,9 +146,8 @@ fishery_model = function(  p=NULL, DS="plot", assessment_years=2000:p$year.asses
         bosd ~ cauchy( 0, 0.1 ) ;  // slightly informative .. center of mass between (0,1)
         bpsd ~ cauchy( 0, 0.1 ) ;
 
-        Yoffset ~ normal( Yoffset_mu, Yoffset_sd ) ; // i.e., offset  
-         
-        q ~ normal( qmu, qsd ) ; // i.e., offset  
+        q ~ normal( qmu, qsd ) ; // i.e., Y:b scaling coeeficient
+        qc ~ beta( 2, 5 ) ; // i.e., Y:b offset constant  
 
 
         // -------------------
@@ -176,27 +169,27 @@ fishery_model = function(  p=NULL, DS="plot", assessment_years=2000:p$year.asses
 
         // spring surveys
         for (j in 1:2) {
-          ( Y[1, j] / q[j] ) +  Yoffset[j] ~ normal( ( ( fmax( bm[1,j] - CAT[1,j]/K[j]  , eps) )) , bosd[j] ) ;
+          ( Y[1, j] / q[j] ) +  qc[j] ~ normal( ( ( fmax( bm[1,j] - CAT[1,j]/K[j]  , eps) )) , bosd[j] ) ;
           for (i in 2:(ty-1) ){
-            ( Y[i, j] / q[j] ) +  Yoffset[j]   ~ normal( ( (  fmax( bm[i,j] - CAT[i-1,j]/K[j] , eps) )), bosd[j] ) ;
+            ( Y[i, j] / q[j] ) +  qc[j]   ~ normal( ( (  fmax( bm[i,j] - CAT[i-1,j]/K[j] , eps) )), bosd[j] ) ;
           }
         }
 
         for (i in 1:(ty-1) ){
-          ( Y[i, 3] / q[3] ) +  Yoffset[3]  ~ normal( ( ( fmax( bm[i,3] - CAT[i,3]/K[3]  , eps) )) , bosd[3] ) ;
+          ( Y[i, 3] / q[3] ) +  qc[3]  ~ normal( ( ( fmax( bm[i,3] - CAT[i,3]/K[3]  , eps) )) , bosd[3] ) ;
         }
 
 
         //  transition year (ty)
         for (j in 1:2) {
-          ( Y[ty,j] / q[j] ) +  Yoffset[j]  ~ normal( ( ( fmax( bm[ty,j]  - (CAT[ty-1,j]/K[j]  + CAT[ty,j]/K[j] ) / 2.0 , eps) ) ) , bosd[j] ) ; //NENS and SENS
+          ( Y[ty,j] / q[j] ) +  qc[j]  ~ normal( ( ( fmax( bm[ty,j]  - (CAT[ty-1,j]/K[j]  + CAT[ty,j]/K[j] ) / 2.0 , eps) ) ) , bosd[j] ) ; //NENS and SENS
         }
-        ( Y[ty,3] / q[3] ) +  Yoffset[3]  ~ normal( (  ( fmax( bm[ty,3]  - CAT[ty,3]/K[3] , eps) ) ) , bosd[3] ) ; //SENS
+        ( Y[ty,3] / q[3] ) +  qc[3]  ~ normal( (  ( fmax( bm[ty,3]  - CAT[ty,3]/K[3] , eps) ) ) , bosd[3] ) ; //SENS
 
         // fall surveys
         for (j in 1:3) {
           for (i in (ty+1):N) {
-            ( Y[i,j] / q[j] ) +  Yoffset[j] ~ normal( ( ( fmax( bm[i,j] - CAT[i,j]/K[j]   , eps) ) ) , bosd[j] ) ; //   fall surveys
+            ( Y[i,j] / q[j] ) +  qc[j] ~ normal( ( ( fmax( bm[i,j] - CAT[i,j]/K[j]   , eps) ) ) , bosd[j] ) ; //   fall surveys
           }
         }
 
