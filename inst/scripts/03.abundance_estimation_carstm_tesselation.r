@@ -353,8 +353,8 @@ Posterior marginals for the linear predictor and
 
       fit = p$fishery_model$stancode$sample(         
         data=p$fishery_model$standata, 
-        iter_warmup = 5000,
-        iter_sampling = 2000,
+        iter_warmup = 10000,
+        iter_sampling = 4000,
         seed = 123,
         chains = 3,
         parallel_chains = 3,  # The maximum number of MCMC chains to run in parallel.
