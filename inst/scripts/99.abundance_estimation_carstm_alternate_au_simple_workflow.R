@@ -193,10 +193,10 @@ if (0) {
     vn = paste(pB$variabletomodel, "predicted_se", sep=".")
     carstm_map( res=res, vn=vn )
     
-    vn = paste(pB$variabletomodel, "random_auid_nonspatial", sep=".")
+    vn = paste(pB$variabletomodel, "random_space_time_nonspatial", sep=".")
     carstm_map( res=res, vn=vn )
 
-    vn = paste(pB$variabletomodel, "random_auid_spatial", sep=".")
+    vn = paste(pB$variabletomodel, "random_space_time_spatial", sep=".")
     carstm_map( res=res, vn=vn )
 
     plot(fit, plot.prior=TRUE, plot.hyperparameters=TRUE, plot.fixed.effects=FALSE, single=TRUE )
@@ -232,10 +232,10 @@ if (0) {
     vn = paste(pS$variabletomodel, "predicted_se", sep=".")
     carstm_map( res=res, vn=vn )
 
-    vn = paste(pS$variabletomodel, "random_auid_nonspatial", sep=".")
+    vn = paste(pS$variabletomodel, "random_space_time_nonspatial", sep=".")
     carstm_map( res=res, vn=vn )
 
-    vn = paste(pS$variabletomodel, "random_auid_spatial", sep=".")
+    vn = paste(pS$variabletomodel, "random_space_time_spatial", sep=".")
     carstm_map( res=res, vn=vn )
 
     plot(fit, plot.prior=TRUE, plot.hyperparameters=TRUE, plot.fixed.effects=FALSE, single=TRUE )
@@ -272,9 +272,9 @@ if (0) {
     vn = paste(pT$variabletomodel, "predicted_se", sep=".")
     carstm_map( res=res, vn=vn, time_match=time_match )       # maps of some of the results
 
-    vn = paste(pT$variabletomodel, "random_auid_nonspatial", sep=".")
+    vn = paste(pT$variabletomodel, "random_space_time_nonspatial", sep=".")
     carstm_map( res=res, vn=vn, time_match=time_match )       # maps of some of the results
-    vn = paste(pT$variabletomodel, "random_auid_spatial", sep=".")
+    vn = paste(pT$variabletomodel, "random_space_time_spatial", sep=".")
     carstm_map( res=res, vn=vn, time_match=time_match )       # maps of some of the results
 
 
@@ -325,10 +325,10 @@ if (0) {
       vn = paste(pPC1$variabletomodel, "predicted_se", sep=".")
       carstm_map( res=res, vn=vn, time_match=time_match ) # maps of some of the results
 
-      vn = paste(pPC1$variabletomodel, "random_auid_nonspatial", sep=".")
+      vn = paste(pPC1$variabletomodel, "random_space_time_nonspatial", sep=".")
       carstm_map( res=res, vn=vn, time_match=time_match )       # maps of some of the results , dyear="0.65"
       
-      vn = paste(pPC1$variabletomodel, "random_auid_spatial", sep=".")
+      vn = paste(pPC1$variabletomodel, "random_space_time_spatial", sep=".")
       carstm_map( res=res, vn=vn, time_match=time_match )       # maps of some of the results , dyear="0.65"
   }
 
@@ -364,10 +364,10 @@ if (0) {
     vn = paste(pPC2$variabletomodel, "predicted_se", sep=".")
     carstm_map( res=res, vn=vn, time_match=time_match ) # maps of some of the results
 
-    vn = paste(pPC2$variabletomodel, "random_auid_nonspatial", sep=".")
+    vn = paste(pPC2$variabletomodel, "random_space_time_nonspatial", sep=".")
     carstm_map( res=res, vn=vn, time_match=time_match )       # maps of some of the results , dyear="0.65"
     
-    vn = paste(pPC2$variabletomodel, "random_auid_spatial", sep=".")
+    vn = paste(pPC2$variabletomodel, "random_space_time_spatial", sep=".")
     carstm_map( res=res, vn=vn, time_match=time_match )       # maps of some of the results , dyear="0.65"
 
   }
@@ -392,7 +392,7 @@ if (0) {
           ' + f( inla.group( substrate.grainsize, method="quantile", n=9 ), model="rw2", scale.model=TRUE, hyper=H$rw2)',
           ' + f( inla.group( pca1, method="quantile", n=9 ), model="rw2", scale.model=TRUE, hyper=H$rw2)',
           ' + f( inla.group( pca2, method="quantile", n=9 ), model="rw2", scale.model=TRUE, hyper=H$rw2)',
-          ' + f( auid, model="bym2", graph=slot(sppoly, "nb"), group=year_factor, scale.model=TRUE, constr=TRUE, hyper=H$bym2, control.group=list(model="ar1", hyper=H$ar1_group))'
+          ' + f( space_time, model="bym2", graph=slot(sppoly, "nb"), group=time_space, scale.model=TRUE, constr=TRUE, hyper=H$bym2, control.group=list(model="ar1", hyper=H$ar1_group))'
       ) )
       p$carstm_model_family = "zeroinflatedpoisson1"
 
@@ -431,10 +431,10 @@ if (0) {
       vn = paste(p$variabletomodel, "random_sample_iid", sep=".")
       carstm_map(  res=res, vn=vn, time_match=time_match )
 
-      vn = paste(p$variabletomodel, "random_auid_nonspatial", sep=".")
+      vn = paste(p$variabletomodel, "random_space_time_nonspatial", sep=".")
       carstm_map( res=res, vn=vn, time_match=time_match )
 
-      vn = paste(p$variabletomodel, "random_auid_spatial", sep=".")
+      vn = paste(p$variabletomodel, "random_space_time_spatial", sep=".")
       carstm_map( res=res, vn=vn, time_match=time_match )
 
 
@@ -475,8 +475,8 @@ if (0) {
 
 
       plot( fit, plot.prior=TRUE, plot.hyperparameters=TRUE, plot.fixed.effects=FALSE )
-      plot( fit$marginals.hyperpar$"Phi for auid", type="l")  # posterior distribution of phi nonspatial dominates
-      plot( fit$marginals.hyperpar$"Precision for auid", type="l")
+      plot( fit$marginals.hyperpar$"Phi for space_time", type="l")  # posterior distribution of phi nonspatial dominates
+      plot( fit$marginals.hyperpar$"Precision for space_time", type="l")
       plot( fit$marginals.hyperpar$"Precision for setno", type="l")
   }
 

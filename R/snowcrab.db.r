@@ -1384,7 +1384,7 @@ snowcrab.db = function( DS, p=NULL, yrs=NULL, fn.root=NULL, redo=FALSE, extrapol
     M$lon = NULL
     M$lat = NULL
  
-    # AUID is character; auid is factor -> numeric 
+    # AUID is character; space is factor -> numeric  
 
     M = M[ which(!is.na(M$AUID)),]
     M$AUID = as.character( M$AUID )  # match each datum to an area
@@ -1466,7 +1466,7 @@ snowcrab.db = function( DS, p=NULL, yrs=NULL, fn.root=NULL, redo=FALSE, extrapol
     varstoadd = c( "totwgt", "totno", "sa", "data_offset",  "zn", "qn" )
 
     for (vn in varstoadd) if (!exists( vn, APS)) APS[,vn] = NA
-    APS$data_offset = 1  # force to solve for unit area
+    APS$data_offset = 1  # force to solve for unit area (1 km^2)
 
 
     M = rbind( M[, names(APS)], APS )
@@ -1474,11 +1474,8 @@ snowcrab.db = function( DS, p=NULL, yrs=NULL, fn.root=NULL, redo=FALSE, extrapol
     APS = NULL
 
 
-    M$AUID  = as.character(M$AUID)  # revert to factors
-    M$auid = match( M$AUID, region.id )
-
-    M$auid_main = M$auid
-
+    M$AUID  = as.character(M$AUID)  # revert to factors -- should always be a character
+    
     M$zi  = discretize_data( M[, pB$variabletomodel], p$discretization[[pB$variabletomodel]] )
     M$ti  = discretize_data( M[, pT$variabletomodel], p$discretization[[pT$variabletomodel]] )
     M$gsi = discretize_data( M[, pS$variabletomodel], p$discretization[[pS$variabletomodel]] )
@@ -1489,13 +1486,18 @@ snowcrab.db = function( DS, p=NULL, yrs=NULL, fn.root=NULL, redo=FALSE, extrapol
     M$tiyr  = aegis_floor( M$tiyr / p$tres )*p$tres    # discretize for inla .. midpoints
 
     M$yr = aegis_floor( M$tiyr)
-    M$year_factor = as.numeric( factor( M$yr, levels=p$yrs))
+
 
     M$dyear =  M$tiyr - M$yr   # revert dyear to non-discretized form
 
     M$dyri = discretize_data( M[, "dyear"], p$discretization[["dyear"]] )
 
-    # M$seasonal = (as.numeric(M$year_factor) - 1) * length(p$dyears)  + as.numeric(M$dyear)
+    #required for carstm formulae
+    M$space = as.character( M$AUID) 
+    M$time = as.character( M$yr )  # copy for INLA
+    M$season = as.character( M$dyri )  # copy for INLA
+    M$uid = 1:nrow(M)  # seems to require an iid model for each obs for stability .. use this for iid
+
 
     save( M, file=fn, compress=TRUE )
 
@@ -1743,10 +1745,8 @@ snowcrab.db = function( DS, p=NULL, yrs=NULL, fn.root=NULL, redo=FALSE, extrapol
 
 
     M$AUID  = as.character(M$AUID)  # revert to factors
-    M$auid = match( M$AUID, region.id )
+    M$space = region.id[ match( M$AUID, region.id ) ]  # should be identical but in case areas are removed or resorted
   
-    M$auid_main = M$auid
-
     M$zi  = discretize_data( M[, pB$variabletomodel], p$discretization[[pB$variabletomodel]] )
     M$ti  = discretize_data( M[, pT$variabletomodel], p$discretization[[pT$variabletomodel]] )
     M$gsi = discretize_data( M[, pS$variabletomodel], p$discretization[[pS$variabletomodel]] )
@@ -1757,13 +1757,12 @@ snowcrab.db = function( DS, p=NULL, yrs=NULL, fn.root=NULL, redo=FALSE, extrapol
     M$tiyr  = aegis_floor( M$tiyr / p$tres )*p$tres    # discretize for inla .. midpoints
 
     M$yr = aegis_floor( M$tiyr)
-    M$year_factor = as.numeric( factor( M$yr, levels=p$yrs))
 
+    M$time =  as.character( M$yr ) 
+    
     M$dyear =  M$tiyr - M$yr   # revert dyear to non-discretized form
 
     M$dyri = discretize_data( M[, "dyear"], p$discretization[["dyear"]] )
-
-    # M$seasonal = (as.numeric(M$year_factor) - 1) * length(p$dyears)  + as.numeric(M$dyear)
 
     save( M, file=fn, compress=TRUE )
 

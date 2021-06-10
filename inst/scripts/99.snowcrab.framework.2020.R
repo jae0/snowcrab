@@ -75,7 +75,7 @@
   p$carstm_modelengine = "inla"
 
   p$carstm_model_formula = as.formula( paste(
-    p$variabletomodel, ' ~ year_factor:auid '))
+    p$variabletomodel, ' ~ time:space '))
 
   p$carstm_model_family = "gaussian"
 
@@ -88,8 +88,9 @@
   todrop = which( ! M$uid[ preds] %in% withdata )
   M = M[ - preds[todrop]]
 
-  M$year_factor = factor(M$year)
-  M$auid = factor( M$auid)
+  M$time = factor(M$year)
+  region.id = slot( slot(sppoly, "nb"), "region.id" )
+  M$space = factor( match( M$AUID, region.id ) )
   M[,p$variabletomodel] = M[,p$variabletomodel] / M$data_offset  # cannot do offsets in gaussian linear model
 
   fit = carstm_model( p=p, M=M )
@@ -105,7 +106,7 @@
 
   p$carstm_model_formula = as.formula( paste(
     p$variabletomodel, ' ~ -1',
-       ' + year_factor:auid ',
+       ' + time:space ',
        ' + offset( log(data_offset)) ' ))
 
   p$carstm_model_family = "poisson"
@@ -119,11 +120,9 @@
   todrop = which( ! M$uid[ preds] %in% withdata )
   M = M[ - preds[todrop]]
 
-  M$year_factor = factor(M$year)
-  M$auid = factor( M$auid)
-
+  M$time = factor(M$year)
   region.id = slot( slot(sppoly, "nb"), "region.id" )
-  M$auid = match( M$AUID, region.id )
+  M$space = factor( match( M$AUID, region.id ) )
 
   M[,p$variabletomodel] = floor( M[,p$variabletomodel] )  # poisson wants integers
 
@@ -140,9 +139,9 @@
 
   p$carstm_model_formula = as.formula( paste(
     p$variabletomodel, ' ~ -1',
-       ' + year_factor',
-       ' + auid',
-       ' + year_factor:auid ',
+       ' + time',
+       ' + space',
+       ' + time:space ',
        ' + offset( log(data_offset)) '
   ))
 
@@ -157,8 +156,10 @@
   todrop = which( ! M$uid[ preds] %in% withdata )
   M = M[ - preds[todrop]]
 
-  M$year_factor = factor(M$year)
-  M$auid = factor( M$auid)
+  M$time = factor(M$year)
+  region.id = slot( slot(sppoly, "nb"), "region.id" )
+  M$space = factor( match( M$AUID, region.id ) )
+
   M[,p$variabletomodel] = floor( M[,p$variabletomodel] )  # poisson wants integers
 
 
@@ -173,9 +174,9 @@
 
   p$carstm_model_formula = as.formula( paste(
     p$variabletomodel, ' ~ -1 ',
-       ' + year_factor',
-       ' + auid',
-       ' + year_factor:auid',
+       ' + time',
+       ' + space',
+       ' + time:space',
        ' + f( dyri, model="ar1", hyper=H$ar1 )',
        ' + f( inla.group( z, method="quantile", n=9 ), model="rw2", scale.model=TRUE, hyper=H$rw2)',
        ' + f( inla.group( substrate.grainsize, method="quantile", n=9 ), model="rw2", scale.model=TRUE, hyper=H$rw2)',
@@ -194,8 +195,10 @@
   todrop = which( ! M$uid[ preds] %in% withdata )
   M = M[ - preds[todrop]]
 
-  M$year_factor = factor(M$year)
-  M$auid = factor( M$auid)
+  M$time = factor(M$year)
+  region.id = slot( slot(sppoly, "nb"), "region.id" )
+  M$space = factor( match( M$AUID, region.id ) )
+
   M[,p$variabletomodel] = floor( M[,p$variabletomodel] )  # poisson wants integers
 
   fit = carstm_model( p=p, M=M )
@@ -229,8 +232,10 @@
   todrop = which( ! M$uid[ preds] %in% withdata )
   M = M[ - preds[todrop]]
 
-  M$year_factor = factor(M$year)
-  M$auid = factor( M$auid)
+  M$time = factor(M$year)
+  
+  region.id = slot( slot(sppoly, "nb"), "region.id" )
+  M$space = factor( match( M$AUID, region.id ) )
   M[,p$variabletomodel] = floor( M[,p$variabletomodel] )  # poisson wants integers
 
 
@@ -249,14 +254,17 @@
   p$carstm_model_formula = as.formula( paste(
     p$variabletomodel, ' ~ 1 ',
       ' + offset( log(data_offset)) ',
-      ' + year_factor',
-      ' + f( auid, model="bym2", graph=slot(sppoly, "nb"), scale.model=TRUE, constr=TRUE, hyper=H$bym2)'
+      ' + time',
+      ' + f( space, model="bym2", graph=slot(sppoly, "nb"), scale.model=TRUE, constr=TRUE, hyper=H$bym2)'
   ))
 
   p$carstm_model_family = "poisson"
 
   M = snowcrab.db( p=p, DS="carstm_inputs", redo=FALSE )  # will redo if not found
-  M$year_factor = factor(M$year)
+  M$time = factor(M$year)
+  region.id = slot( slot(sppoly, "nb"), "region.id" )
+  M$space = factor( match( M$AUID, region.id ) )
+
   M[,p$variabletomodel] = floor( M[,p$variabletomodel] )  # poisson wants integers
   fit = carstm_model( p=p, M=M )
 
@@ -270,16 +278,18 @@
   p$carstm_model_formula = as.formula( paste(
     p$variabletomodel, ' ~ 1 ',
       ' + offset( log(data_offset)) ',
-      ' + year_factor',
+      ' + time',
       ' + f( inla.group( z, method="quantile", n=9 ), model="rw2", scale.model=TRUE, hyper=H$rw2)' ,
       ' + f( inla.group( substrate.grainsize, method="quantile", n=9 ), model="rw2", scale.model=TRUE, hyper=H$rw2) ',
-      ' + f( auid, model="bym2", graph=slot(sppoly, "nb"), scale.model=TRUE, constr=TRUE, hyper=H$bym2) '
+      ' + f( space, model="bym2", graph=slot(sppoly, "nb"), scale.model=TRUE, constr=TRUE, hyper=H$bym2) '
   ))
   p$carstm_model_family = "poisson"
 
   M = snowcrab.db( p=p, DS="carstm_inputs", redo=FALSE )  # will redo if not found
-  M$year_factor = factor(M$year)
-  # M$auid = factor( M$auid)
+  M$time = factor(M$year)
+  region.id = slot( slot(sppoly, "nb"), "region.id" )
+  M$space = factor( match( M$AUID, region.id ) )
+
   M[,p$variabletomodel] = floor( M[,p$variabletomodel] )  # poisson wants integers
   fit = carstm_model( p=p, M=M )
 
@@ -293,19 +303,22 @@
   p$carstm_model_formula = as.formula( paste(
     p$variabletomodel, ' ~ 1 ',
       ' + offset( log(data_offset)) ',
-      ' + year_factor',
+      ' + time',
       ' + f( inla.group( z, method="quantile", n=9 ), model="rw2", scale.model=TRUE, hyper=H$rw2)',
       ' + f( inla.group( substrate.grainsize, method="quantile", n=9 ), model="rw2", scale.model=TRUE, hyper=H$rw2)',
       ' + f( inla.group( t, method="quantile", n=9 ), model="rw2", scale.model=TRUE, hyper=H$rw2)',
       ' + f( inla.group( pca1, method="quantile", n=9 ), model="rw2", scale.model=TRUE, hyper=H$rw2)',
       ' + f( inla.group( pca2, method="quantile", n=9 ), model="rw2", scale.model=TRUE, hyper=H$rw2)',
-      ' + f( auid, model="bym2", graph=slot(sppoly, "nb"), scale.model=TRUE, constr=TRUE, hyper=H$bym2)'
+      ' + f( space, model="bym2", graph=slot(sppoly, "nb"), scale.model=TRUE, constr=TRUE, hyper=H$bym2)'
   ))
 
   p$carstm_model_family = "poisson"
 
   M = snowcrab.db( p=p, DS="carstm_inputs", redo=FALSE )  # will redo if not found
-  M$year_factor = factor(M$year)
+  M$time = factor(M$year)
+  region.id = slot( slot(sppoly, "nb"), "region.id" )
+  M$space = factor( match( M$AUID, region.id ) )
+
   M[,p$variabletomodel] = floor( M[,p$variabletomodel] )  # poisson wants integers
   fit = carstm_model( p=p, M=M )
 
@@ -317,13 +330,13 @@
   p$carstm_model_formula = as.formula( paste(
     p$variabletomodel, ' ~ 1 ',
       ' + offset( log(data_offset)) ',
-      ' + f( year_factor, model="ar1", hyper=H$ar1 )',
+      ' + f( time, model="ar1", hyper=H$ar1 )',
       ' + f( inla.group( z, method="quantile", n=9 ), model="rw2", scale.model=TRUE, hyper=H$rw2)',
       ' + f( inla.group( substrate.grainsize, method="quantile", n=9 ), model="rw2", scale.model=TRUE, hyper=H$rw2)',
       ' + f( inla.group( t, method="quantile", n=9 ), model="rw2", scale.model=TRUE, hyper=H$rw2)',
       ' + f( inla.group( pca1, method="quantile", n=9 ), model="rw2", scale.model=TRUE, hyper=H$rw2)',
       ' + f( inla.group( pca2, method="quantile", n=9 ), model="rw2", scale.model=TRUE, hyper=H$rw2)',
-      ' + f( auid, model="bym2", graph=slot(sppoly, "nb"), scale.model=TRUE, constr=TRUE, hyper=H$bym2)'
+      ' + f( space, model="bym2", graph=slot(sppoly, "nb"), scale.model=TRUE, constr=TRUE, hyper=H$bym2)'
   ))
 
   p$carstm_model_family = "poisson"
@@ -339,8 +352,8 @@
   p$carstm_model_formula = as.formula( paste(
     p$variabletomodel, ' ~ 1 ',
       ' + offset( log(data_offset)) ',
-      ' + f( year_factor, model="ar1", hyper=H$ar1 ) ',
-      ' + f( auid, model="bym2", graph=slot(sppoly, "nb"), scale.model=TRUE, constr=TRUE, hyper=H$bym2) '
+      ' + f( time, model="ar1", hyper=H$ar1 ) ',
+      ' + f( space, model="bym2", graph=slot(sppoly, "nb"), scale.model=TRUE, constr=TRUE, hyper=H$bym2) '
   ))
 
   p$carstm_model_family = "poisson"
@@ -355,7 +368,7 @@
   p$carstm_model_formula = as.formula( paste(
     p$variabletomodel, ' ~ 1 ',
       ' + offset( log(data_offset)) ',
-      ' + f( auid, model="bym2", graph=slot(sppoly, "nb"), group=year_factor, scale.model=TRUE, constr=TRUE, hyper=H$bym2, control.group=list(model="ar1", hyper=H$ar1_group)) '
+      ' + f( space_time, model="bym2", graph=slot(sppoly, "nb"), group=time_space, scale.model=TRUE, constr=TRUE, hyper=H$bym2, control.group=list(model="ar1", hyper=H$ar1_group)) '
   ))
 
   p$carstm_model_family = "poisson"
@@ -377,7 +390,7 @@
       ' + f( inla.group( substrate.grainsize, method="quantile", n=9 ), model="rw2", scale.model=TRUE, hyper=H$rw2) ',
       ' + f( inla.group( pca1, method="quantile", n=9 ), model="rw2", scale.model=TRUE, hyper=H$rw2) ',
       ' + f( inla.group( pca2, method="quantile", n=9 ), model="rw2", scale.model=TRUE, hyper=H$rw2) ',
-      ' + f( auid, model="bym2", graph=slot(sppoly, "nb"), group=year_factor, scale.model=TRUE, constr=TRUE, hyper=H$bym2, control.group=list(model="ar1", hyper=H$ar1_group)) '
+      ' + f( space_time, model="bym2", graph=slot(sppoly, "nb"), group=time_space, scale.model=TRUE, constr=TRUE, hyper=H$bym2, control.group=list(model="ar1", hyper=H$ar1_group)) '
   ))
 
   p$carstm_model_family = "poisson"
@@ -397,7 +410,7 @@
       ' + f( inla.group( t, method="quantile", n=9 ), model="rw2", scale.model=TRUE, hyper=H$rw2) ',
       ' + f( inla.group( z, method="quantile", n=9 ), model="rw2", scale.model=TRUE, hyper=H$rw2) ',
       ' + f( inla.group( substrate.grainsize, method="quantile", n=9 ), model="rw2", scale.model=TRUE, hyper=H$rw2) ',
-      ' + f( auid, model="bym2", graph=slot(sppoly, "nb"), group=year_factor, scale.model=TRUE, constr=TRUE, hyper=H$bym2, control.group=list(model="ar1", hyper=H$ar1_group)) '
+      ' + f( space_time, model="bym2", graph=slot(sppoly, "nb"), group=time_space, scale.model=TRUE, constr=TRUE, hyper=H$bym2, control.group=list(model="ar1", hyper=H$ar1_group)) '
   ))
 
   p$carstm_model_family = "poisson"
@@ -411,7 +424,7 @@
   p$carstm_model_formula = as.formula( paste(
     p$variabletomodel, ' ~ 1 ',
       ' + offset( log(data_offset)) ',
-      ' + f( year_factor, model="ar1", hyper=H$ar1, group=auid, control.group=list(model="besag", graph=slot(sppoly, "nb"), scale.model=TRUE ) ) ',
+      ' + f( time_space, model="ar1", hyper=H$ar1, group=space, control.group=list(model="besag", graph=slot(sppoly, "nb"), scale.model=TRUE ) ) ',
       ' + f( dyri, model="ar1", hyper=H$ar1 ) ',
       ' + f( inla.group( t, method="quantile", n=9 ), model="rw2", scale.model=TRUE, hyper=H$rw2) ',
       ' + f( inla.group( z, method="quantile", n=9 ), model="rw2", scale.model=TRUE, hyper=H$rw2) ',
@@ -438,7 +451,7 @@
       ' + f( inla.group( substrate.grainsize, method="quantile", n=9 ), model="rw2", scale.model=TRUE, hyper=H$rw2) ',
       ' + f( inla.group( pca1, method="quantile", n=9 ), model="rw2", scale.model=TRUE, hyper=H$rw2) ',
       ' + f( inla.group( pca2, method="quantile", n=9 ), model="rw2", scale.model=TRUE, hyper=H$rw2) ',
-      ' + f( auid, model="bym2", graph=slot(sppoly, "nb"), group=year_factor, scale.model=TRUE, constr=TRUE, hyper=H$bym2, control.group=list(model="ar1", hyper=H$ar1_group)) '
+      ' + f( space_time, model="bym2", graph=slot(sppoly, "nb"), group=time_space, scale.model=TRUE, constr=TRUE, hyper=H$bym2, control.group=list(model="ar1", hyper=H$ar1_group)) '
   ))
   p$carstm_model_family =  "zeroinflatedpoisson0"
     fit = carstm_model( p=p, M=p$modeldata )
@@ -458,7 +471,7 @@
       ' + f( inla.group( substrate.grainsize, method="quantile", n=9 ), model="rw2", scale.model=TRUE, hyper=H$rw2) ',
       ' + f( inla.group( pca1, method="quantile", n=9 ), model="rw2", scale.model=TRUE, hyper=H$rw2) ',
       ' + f( inla.group( pca2, method="quantile", n=9 ), model="rw2", scale.model=TRUE, hyper=H$rw2) ',
-      ' + f( auid, model="bym2", graph=slot(sppoly, "nb"), group=year_factor, scale.model=TRUE, constr=TRUE, hyper=H$bym2, control.group=list(model="ar1", hyper=H$ar1_group)) '
+      ' + f( space_time, model="bym2", graph=slot(sppoly, "nb"), group=time_space, scale.model=TRUE, constr=TRUE, hyper=H$bym2, control.group=list(model="ar1", hyper=H$ar1_group)) '
   ))
 
   p$carstm_model_family =  "zeroinflatedpoisson1"
@@ -498,8 +511,8 @@
 
   if (0) {
     plot( fit, plot.prior=TRUE, plot.hyperparameters=TRUE, plot.fixed.effects=FALSE )
-    plot( fit$marginals.hyperpar$"Phi for auid", type="l")  # posterior distribution of phi nonspatial dominates
-    plot( fit$marginals.hyperpar$"Precision for auid", type="l")
+    plot( fit$marginals.hyperpar$"Phi for space_time", type="l")  # posterior distribution of phi nonspatial dominates
+    plot( fit$marginals.hyperpar$"Precision for space_time", type="l")
     plot( fit$marginals.hyperpar$"Precision for setno", type="l")
   }
 
@@ -508,7 +521,7 @@
   # M = snowcrab.db( p=p, DS="carstm_inputs" )
   # M$yr = M$year  # req for meanweights
 
-  # # mean weight by auidxyear
+  # # mean weight by space x year
   # wgts = meanweights_by_arealunit(
   #   set=M[M$tag=="observations",],
   #   AUID=as.character( sppoly$AUID ),
@@ -576,7 +589,7 @@
     main=paste( vn, paste0(time_match, collapse="-") )  )
 
 
-  vn = paste(p$variabletomodel, "random_auid_nonspatial", sep=".")
+  vn = paste(p$variabletomodel, "random_space_time_nonspatial", sep=".")
   carstm_map( res=res, vn=vn,  time_match=time_match, 
     # at=seq(-2, 10, by=2),          
     sp.layout = p$coastLayout, 
@@ -584,7 +597,7 @@
     main=paste( vn, paste0(time_match, collapse="-") )  )
 
   
-  vn = paste(p$variabletomodel, "random_auid_spatial", sep=".")
+  vn = paste(p$variabletomodel, "random_space_time_spatial", sep=".")
   carstm_map( res=res, vn=vn,  time_match=time_match, 
     # at=seq(-2, 10, by=2),          
     sp.layout = p$coastLayout, 
@@ -697,7 +710,7 @@
       ' + f( inla.group( substrate.grainsize, method="quantile", n=9 ), model="rw2", scale.model=TRUE, hyper=H$rw2) ',
       ' + f( inla.group( pca1, method="quantile", n=9 ), model="rw2", scale.model=TRUE, hyper=H$rw2) ',
       ' + f( inla.group( pca2, method="quantile", n=9 ), model="rw2", scale.model=TRUE, hyper=H$rw2) ',
-      ' + f( auid, model="bym2", graph=slot(sppoly, "nb"), group=year_factor, scale.model=TRUE, constr=TRUE, hyper=H$bym2, control.group=list(model="ar1", hyper=H$ar1_group)) '
+      ' + f( space_time, model="bym2", graph=slot(sppoly, "nb"), group=time_space, scale.model=TRUE, constr=TRUE, hyper=H$bym2, control.group=list(model="ar1", hyper=H$ar1_group)) '
   ))
 
   p$carstm_model_family = "binomial"  # "nbinomial", "betabinomial", "zeroinflatedbinomial0" , "zeroinflatednbinomial0"
@@ -741,7 +754,7 @@
       ' + f( inla.group( substrate.grainsize, method="quantile", n=9 ), model="rw2", scale.model=TRUE, hyper=H$rw2) ',
       ' + f( inla.group( pca1, method="quantile", n=9 ), model="rw2", scale.model=TRUE, hyper=H$rw2) ',
       ' + f( inla.group( pca2, method="quantile", n=9 ), model="rw2", scale.model=TRUE, hyper=H$rw2) ',
-      ' + f( auid, model="bym2", graph=slot(sppoly, "nb"), group=year_factor, scale.model=TRUE, constr=TRUE, hyper=H$bym2, control.group=list(model="ar1", hyper=H$ar1_group)) '
+      ' + f( space_time, model="bym2", graph=slot(sppoly, "nb"), group=time_space, scale.model=TRUE, constr=TRUE, hyper=H$bym2, control.group=list(model="ar1", hyper=H$ar1_group)) '
   ))
 
   p$carstm_model_family = "binomial"  # "nbinomial", "betabinomial", "zeroinflatedbinomial0" , "zeroinflatednbinomial0"
@@ -783,7 +796,7 @@
       ' + f( inla.group( substrate.grainsize, method="quantile", n=9 ), model="rw2", scale.model=TRUE, hyper=H$rw2) ',
       ' + f( inla.group( pca1, method="quantile", n=9 ), model="rw2", scale.model=TRUE, hyper=H$rw2) ',
       ' + f( inla.group( pca2, method="quantile", n=9 ), model="rw2", scale.model=TRUE, hyper=H$rw2) ',
-      ' + f( auid, model="bym2", graph=slot(sppoly, "nb"), group=year_factor, scale.model=TRUE, constr=TRUE, hyper=H$bym2, control.group=list(model="ar1", hyper=H$ar1_group)) '
+      ' + f( space_time, model="bym2", graph=slot(sppoly, "nb"), group=time_space, scale.model=TRUE, constr=TRUE, hyper=H$bym2, control.group=list(model="ar1", hyper=H$ar1_group)) '
   ) )
 
   p$carstm_model_family = "binomial"  # "nbinomial", "betabinomial", "zeroinflatedbinomial0" , "zeroinflatednbinomial0"
@@ -826,7 +839,7 @@
       ' + f( inla.group( substrate.grainsize, method="quantile", n=9 ), model="rw2", scale.model=TRUE, hyper=H$rw2) ',
       ' + f( inla.group( pca1, method="quantile", n=9 ), model="rw2", scale.model=TRUE, hyper=H$rw2) ',
       ' + f( inla.group( pca2, method="quantile", n=9 ), model="rw2", scale.model=TRUE, hyper=H$rw2) ',
-      ' + f( auid, model="bym2", graph=slot(sppoly, "nb"), group=year_factor, scale.model=TRUE, constr=TRUE, hyper=H$bym2, control.group=list(model="ar1", hyper=H$ar1_group)) '
+      ' + f( space_time, model="bym2", graph=slot(sppoly, "nb"), group=time_space, scale.model=TRUE, constr=TRUE, hyper=H$bym2, control.group=list(model="ar1", hyper=H$ar1_group)) '
   ) )
 
   p$carstm_model_family = "binomial"  # "nbinomial", "betabinomial", "zeroinflatedbinomial0" , "zeroinflatednbinomial0"
@@ -868,7 +881,7 @@
         + f( inla.group( substrate.grainsize, method="quantile", n=9 ), model="rw2", scale.model=TRUE, hyper=H$rw2)
         + f( inla.group( pca1, method="quantile", n=9 ), model="rw2", scale.model=TRUE, hyper=H$rw2)
         + f( inla.group( pca2, method="quantile", n=9 ), model="rw2", scale.model=TRUE, hyper=H$rw2)
-        + f( auid, model="bym2", graph=slot(sppoly, "nb"), group=year_factor, scale.model=TRUE, constr=TRUE, hyper=H$bym2, control.group=list(model="ar1", hyper=H$ar1_group)),
+        + f( space_time, model="bym2", graph=slot(sppoly, "nb"), group=time_space, scale.model=TRUE, constr=TRUE, hyper=H$bym2, control.group=list(model="ar1", hyper=H$ar1_group)),
   ) )
 
   p$carstm_model_family = "nbinomial"  # "nbinomial", "betabinomial", "zeroinflatedbinomial0" , "zeroinflatednbinomial0"
@@ -911,7 +924,7 @@
       ' + f( inla.group( substrate.grainsize, method="quantile", n=9 ), model="rw2", scale.model=TRUE, hyper=H$rw2) ',
       ' + f( inla.group( pca1, method="quantile", n=9 ), model="rw2", scale.model=TRUE, hyper=H$rw2) ',
       ' + f( inla.group( pca2, method="quantile", n=9 ), model="rw2", scale.model=TRUE, hyper=H$rw2) ',
-      ' + f( auid, model="bym2", graph=slot(sppoly, "nb"), group=year_factor, scale.model=TRUE, constr=TRUE, hyper=H$bym2, control.group=list(model="ar1", hyper=H$ar1_group))  '
+      ' + f( space_time, model="bym2", graph=slot(sppoly, "nb"), group=time_space, scale.model=TRUE, constr=TRUE, hyper=H$bym2, control.group=list(model="ar1", hyper=H$ar1_group))  '
   ) )
 
   p$carstm_model_family  = "zeroinflatedbinomial0", #  "binomial",  # "nbinomial", "betabinomial", "zeroinflatedbinomial0" , "zeroinflatednbinomial0"
@@ -954,7 +967,7 @@
       ' + f( inla.group( substrate.grainsize, method="quantile", n=9 ), model="rw2", scale.model=TRUE, hyper=H$rw2) ',
       ' + f( inla.group( pca1, method="quantile", n=9 ), model="rw2", scale.model=TRUE, hyper=H$rw2) ',
       ' + f( inla.group( pca2, method="quantile", n=9 ), model="rw2", scale.model=TRUE, hyper=H$rw2) ',
-      ' + f( auid, model="bym2", graph=slot(sppoly, "nb"), group=year_factor, scale.model=TRUE, constr=TRUE, hyper=H$bym2, control.group=list(model="ar1", hyper=H$ar1_group)) '
+      ' + f( space_time, model="bym2", graph=slot(sppoly, "nb"), group=time_space, scale.model=TRUE, constr=TRUE, hyper=H$bym2, control.group=list(model="ar1", hyper=H$ar1_group)) '
   ) )
 
   p$carstm_model_family  = "zeroinflatedbinomial1", #  "binomial",  # "nbinomial", "betabinomial", "zeroinflatedbinomial0" , "zeroinflatednbinomial0"
@@ -986,8 +999,8 @@
 
   if (0) {
     plot( fit, plot.prior=TRUE, plot.hyperparameters=TRUE, plot.fixed.effects=FALSE )
-    plot( fit$marginals.hyperpar$"Phi for auid", type="l")  # posterior distribution of phi nonspatial dominates
-    plot( fit$marginals.hyperpar$"Precision for auid", type="l")
+    plot( fit$marginals.hyperpar$"Phi for space_time", type="l")  # posterior distribution of phi nonspatial dominates
+    plot( fit$marginals.hyperpar$"Precision for space_time", type="l")
     plot( fit$marginals.hyperpar$"Precision for setno", type="l")
   }
 
@@ -1054,7 +1067,7 @@
     main=paste( vn, paste0(time_match, collapse="-") )  )
 
 
-  vn = paste(p$variabletomodel, "random_auid_nonspatial", sep=".")
+  vn = paste(p$variabletomodel, "random_space_time_nonspatial", sep=".")
   carstm_map( res=res, vn=vn, time_match=time_match, 
     # at=seq(-2, 10, by=2),          
     sp.layout = p$coastLayout, 
@@ -1062,7 +1075,7 @@
     main=paste( vn, paste0(time_match, collapse="-") )  )
 
   
-  vn = paste(p$variabletomodel, "random_auid_spatial", sep=".")
+  vn = paste(p$variabletomodel, "random_space_time_spatial", sep=".")
   carstm_map( res=res, vn=vn, time_match=time_match, 
     # at=seq(-2, 10, by=2),          
     sp.layout = p$coastLayout, 
@@ -1208,11 +1221,9 @@ year.assessment = 2018
   rr$AUID = as.character( rr$AUID)
 
 
-region.id = slot( slot(sppoly, "nb"), "region.id" )
-rr$auid = match( rr$AUID, region.id )
-
-rr$AUID_character = rr$AUID
-rr$AUID = rr$auid  -- temp fix to get numbers to match bym geometry
+  region.id = slot( slot(sppoly, "nb"), "region.id" )
+  rr$space = match( rr$AUID, region.id )
+  rr$AUID = rr$space
 
 
   rr$year = as.numeric( as.character( rr$year) )

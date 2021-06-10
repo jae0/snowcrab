@@ -56,8 +56,8 @@ map.fisheries.data = function(
       iy = which(x$year == yrs[i] )
 
       toplot = x[[vn]] [iy]  
-      auid = x[["AUID"]] [iy]
-      oo = tapply( toplot, auid, FUN[[v]], na.rm=TRUE )
+
+      oo = tapply( toplot, x[["AUID"]] [iy], FUN[[v]], na.rm=TRUE )
  
       sppoly$z = NA
       sppoly$z[ match( names(oo) , sppoly$AUID ) ] = oo

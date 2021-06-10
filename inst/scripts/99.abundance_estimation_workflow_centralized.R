@@ -119,7 +119,7 @@ if (0) {
         ' + f( inla.group( substrate.grainsize, method="quantile", n=9 ), model="rw2", scale.model=TRUE, hyper=H$rw2)',
         ' + f( inla.group( pca1, method="quantile", n=9 ), model="rw2", scale.model=TRUE, hyper=H$rw2)',
         ' + f( inla.group( pca2, method="quantile", n=9 ), model="rw2", scale.model=TRUE, hyper=H$rw2)',
-        ' + f( auid, model="bym2", graph=slot(sppoly, "nb"), group=year_factor, scale.model=TRUE, constr=TRUE, hyper=H$bym2, control.group=list(model="ar1", hyper=H$ar1_group))'
+        ' + f( space_time, model="bym2", graph=slot(sppoly, "nb"), group=time_space, scale.model=TRUE, constr=TRUE, hyper=H$bym2, control.group=list(model="ar1", hyper=H$ar1_group))'
     ) )
     p$carstm_model_family = "zeroinflatedpoisson1"
 
@@ -175,7 +175,7 @@ if (0) {
       )
 
 
-      vn = paste(p$variabletomodel, "random_auid_nonspatial", sep=".")
+      vn = paste(p$variabletomodel, "random_space_time_nonspatial", sep=".")
       carstm_map( res=res, vn=vn, time_match=time_match, 
         # at=seq(-2, 10, by=2),          
         sp.layout = p$coastLayout, 
@@ -184,7 +184,7 @@ if (0) {
       )
 
 
-      vn = paste(p$variabletomodel, "random_auid_spatial", sep=".")
+      vn = paste(p$variabletomodel, "random_space_time_spatial", sep=".")
       carstm_map( res=res, vn=vn, time_match=time_match, 
         # at=seq(-2, 10, by=2),          
         sp.layout = p$coastLayout, 
@@ -230,8 +230,8 @@ if (0) {
 
 
       plot( fit, plot.prior=TRUE, plot.hyperparameters=TRUE, plot.fixed.effects=FALSE )
-      plot( fit$marginals.hyperpar$"Phi for auid", type="l")  # posterior distribution of phi nonspatial dominates
-      plot( fit$marginals.hyperpar$"Precision for auid", type="l")
+      plot( fit$marginals.hyperpar$"Phi for space_time", type="l")  # posterior distribution of phi nonspatial dominates
+      plot( fit$marginals.hyperpar$"Precision for space_time", type="l")
       plot( fit$marginals.hyperpar$"Precision for setno", type="l")
   }
 
@@ -419,10 +419,7 @@ M$yr_factor = factor( as.character(M$yr) )
 # M$AUID  = factor( as.character(M$AUID), levels=levels( sppoly$AUID ) )
 
 region.id = slot( slot(sppoly, "nb"), "region.id" )
-M$auid = match( M$AUID, region.id )
-
-M$AUID_character = M$AUID
-M$AUID = set$auid  -- temp fix to get numbers to match bym geometry
+M$space = match( M$AUID, region.id )
 
 M$strata  = as.numeric( M$AUID)
 M$year  = as.numeric( M$yr_factor)

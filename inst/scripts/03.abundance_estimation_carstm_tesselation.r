@@ -212,8 +212,8 @@
       }
 
       plot( fit, plot.prior=TRUE, plot.hyperparameters=TRUE, plot.fixed.effects=FALSE )
-      plot( fit$marginals.hyperpar$"Phi for auid", type="l")  # posterior distribution of phi nonspatial dominates
-      plot( fit$marginals.hyperpar$"Precision for auid", type="l")
+      plot( fit$marginals.hyperpar$"Phi for space_time", type="l")  # posterior distribution of phi nonspatial dominates
+      plot( fit$marginals.hyperpar$"Precision for space_time", type="l")
       plot( fit$marginals.hyperpar$"Precision for setno", type="l")
 
 
@@ -234,8 +234,8 @@ Random effects:
    inla.group(substrate.grainsize, method = "quantile", n = 11) RW2 model
    inla.group(pca1, method = "quantile", n = 11) RW2 model
    inla.group(pca2, method = "quantile", n = 11) RW2 model
-   auid_main Besags ICAR model
-   auid BYM2 model
+   space Besags ICAR model
+   space_time BYM2 model
 
 Model hyperparameters:
                                                                              mean    sd 0.025quant 0.5quant 0.975quant
@@ -249,10 +249,10 @@ Precision for inla.group(z, method = "quantile", n = 11)                   55.76
 Precision for inla.group(substrate.grainsize, method = "quantile", n = 11) 53.831 0.179     53.542   53.826     54.131
 Precision for inla.group(pca1, method = "quantile", n = 11)                53.898 0.239     53.543   53.870     54.359
 Precision for inla.group(pca2, method = "quantile", n = 11)                55.105 0.235     54.733   55.090     55.520
-Precision for auid_main                                                    52.718 0.035     52.655   52.715     52.792
-Precision for auid                                                         56.221 0.035     56.153   56.222     56.288
-Phi for auid                                                                0.048 0.000      0.048    0.048      0.048
-GroupRho for auid                                                           0.772 0.000      0.772    0.772      0.773
+Precision for space                                                    52.718 0.035     52.655   52.715     52.792
+Precision for space_time                                                         56.221 0.035     56.153   56.222     56.288
+Phi for space_time                                                                0.048 0.000      0.048    0.048      0.048
+GroupRho for space_time                                                           0.772 0.000      0.772    0.772      0.773
                                                                              mode
 zero-probability parameter for zero-inflated poisson_0                      0.259
 Precision for dyri                                                         53.503
@@ -264,10 +264,10 @@ Precision for inla.group(z, method = "quantile", n = 11)                   55.65
 Precision for inla.group(substrate.grainsize, method = "quantile", n = 11) 53.562
 Precision for inla.group(pca1, method = "quantile", n = 11)                53.564
 Precision for inla.group(pca2, method = "quantile", n = 11)                54.779
-Precision for auid_main                                                    52.707
-Precision for auid                                                         56.223
-Phi for auid                                                                0.048
-GroupRho for auid                                                           0.772
+Precision for space                                                    52.707
+Precision for space_time                                                         56.223
+Phi for space_time                                                                0.048
+GroupRho for space_time                                                           0.772
 
 Expected number of effective parameters(stdev): 658.29(3.85)
 Number of equivalent replicates : 10.98 

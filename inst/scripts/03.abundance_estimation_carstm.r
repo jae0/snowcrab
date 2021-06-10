@@ -180,8 +180,8 @@
     }
 
     plot( fit, plot.prior=TRUE, plot.hyperparameters=TRUE, plot.fixed.effects=FALSE )
-    plot( fit$marginals.hyperpar$"Phi for auid", type="l")  # posterior distribution of phi nonspatial dominates
-    plot( fit$marginals.hyperpar$"Precision for auid", type="l")
+    plot( fit$marginals.hyperpar$"Phi for space", type="l")  # posterior distribution of phi nonspatial dominates
+    plot( fit$marginals.hyperpar$"Precision for space", type="l")
     plot( fit$marginals.hyperpar$"Precision for setno", type="l")
 
 
@@ -200,8 +200,8 @@ Random effects:
    inla.group(substrate.grainsize, method = "quantile", n = 11) RW2 model
    inla.group(pca1, method = "quantile", n = 11) RW2 model
    inla.group(pca2, method = "quantile", n = 11) RW2 model
-   auid_main BYM2 model
-   auid BYM2 model
+   space BYM2 model
+   space_time BYM2 model
 
 Model hyperparameters:
                                                                              mean    sd 0.025quant 0.5quant 0.975quant
@@ -214,11 +214,11 @@ Precision for inla.group(z, method = "quantile", n = 11)                   54.80
 Precision for inla.group(substrate.grainsize, method = "quantile", n = 11) 53.714 0.159     53.488   53.689     54.061
 Precision for inla.group(pca1, method = "quantile", n = 11)                54.755 0.140     54.556   54.732     55.068
 Precision for inla.group(pca2, method = "quantile", n = 11)                54.875 0.227     54.529   54.850     55.319
-Precision for auid_main                                                    54.589 0.049     54.488   54.588     54.700
-Phi for auid_main                                                           0.049 0.000      0.049    0.049      0.049
-Precision for auid                                                         56.525 0.036     56.452   56.525     56.595
-Phi for auid                                                                0.050 0.000      0.049    0.050      0.050
-GroupRho for auid                                                           0.773 0.000      0.773    0.773      0.773
+Precision for space                                                    54.589 0.049     54.488   54.588     54.700
+Phi for space                                                           0.049 0.000      0.049    0.049      0.049
+Precision for space_time                                                         56.525 0.036     56.452   56.525     56.595
+Phi for space_time                                                                0.050 0.000      0.049    0.050      0.050
+GroupRho for space_time                                                           0.773 0.000      0.773    0.773      0.773
                                                                              mode
 Precision for dyri                                                         52.338
 Rho for dyri                                                                0.765
@@ -229,11 +229,11 @@ Precision for inla.group(z, method = "quantile", n = 11)                   54.60
 Precision for inla.group(substrate.grainsize, method = "quantile", n = 11) 53.527
 Precision for inla.group(pca1, method = "quantile", n = 11)                54.601
 Precision for inla.group(pca2, method = "quantile", n = 11)                54.602
-Precision for auid_main                                                    54.590
-Phi for auid_main                                                           0.049
-Precision for auid                                                         56.527
-Phi for auid                                                                0.049
-GroupRho for auid                                                           0.773
+Precision for space                                                    54.590
+Phi for space                                                           0.049
+Precision for space_time                                                         56.527
+Phi for space_time                                                                0.049
+GroupRho for space_time                                                           0.773
 
 Expected number of effective parameters(stdev): 480.66(15.72)
 Number of equivalent replicates : 15.10 
