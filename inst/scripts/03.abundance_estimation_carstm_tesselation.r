@@ -9,18 +9,18 @@
 
   year.assessment = 2020
 
-  p = bio.snowcrab::snowcrab_parameters( 
-    project_class="carstm", 
-    assessment.years=2000:year.assessment, 
+  p = bio.snowcrab::snowcrab_parameters(
+    project_class="carstm",
+    assessment.years=2000:year.assessment,
     areal_units_type="tesselation",
-    carstm_model_label = "tesselation",   # default is the name of areal_units_type  
+    carstm_model_label = "tesselation",   # default is the name of areal_units_type
     selection = list(type = "number")
  )
-  
+
 
 
 # ------------------------------------------------
-# Part 2 -- spatiotemporal statistical model 
+# Part 2 -- spatiotemporal statistical model
 
   if ( spatiotemporal_model ) {
 
@@ -33,10 +33,10 @@
 
         sppoly = areal_units( p=p, hull_alpha=16, redo=TRUE, verbose=TRUE )  # create constrained polygons with neighbourhood as an attribute
         plot( sppoly[, "npts"]  )
-        
+
         MS = NULL
 
-        # p$carstm_model_label = "tesselation_overdispersed"   # default is the name of areal_units_type  
+        # p$carstm_model_label = "tesselation_overdispersed"   # default is the name of areal_units_type
         # p$carstm_model_family  = "zeroinflatedpoisson0" #  "binomial",  # "nbinomial", "betabinomial", "zeroinflatedbinomial0" , "zeroinflatednbinomial0"
         # p$carstm_model_inla_control_familiy = NULL
 
@@ -44,7 +44,7 @@
 
       sppoly = areal_units( p=p )  # to reload
 
-    
+
       # -------------------------------------------------
       M = snowcrab.db( p=p, DS="carstm_inputs", redo=TRUE )  # will redo if not found
       M = NULL; gc()
@@ -54,11 +54,11 @@
 
         # extract results
         if (0) {
-          # very large files .. slow 
+          # very large files .. slow
           fit = carstm_model( p=p, DS="carstm_modelled_fit" )  # extract currently saved model fit
           plot(fit)
           plot(fit, plot.prior=TRUE, plot.hyperparameters=TRUE, plot.fixed.effects=FALSE )
-        
+
         }
 
 
@@ -72,17 +72,17 @@
       coastline=aegis.coastline::coastline_db( DS="eastcoast_gadm", project_to=plot_crs )
       isobaths=aegis.bathymetry::isobath_db( depths=c(50, 100, 200, 400, 800), project_to=plot_crs )
       managementlines = aegis.polygons::area_lines.db( DS="cfa.regions", returntype="sf", project_to=plot_crs )
-    
+
       time_match = list( year=as.character(2020)  )
-      carstm_map(  res=res, 
-          vn=paste(p$variabletomodel, "predicted", sep="."), 
-          time_match=time_match, 
+      carstm_map(  res=res,
+          vn=paste(p$variabletomodel, "predicted", sep="."),
+          time_match=time_match,
           coastline=coastline,
           managementlines=managementlines,
           isobaths=isobaths,
-          main=paste("Predicted numerical abundance", paste0(time_match, collapse="-") )  
+          main=paste("Predicted numerical abundance", paste0(time_match, collapse="-") )
       )
-        
+
 
       # map all :
       vn = paste(p$variabletomodel, "predicted", sep=".")
@@ -99,17 +99,17 @@
           fn_root = paste("Predicted_numerical_abundance", paste0(time_match, collapse="-"), sep="_")
           fn = file.path( outputdir, paste(fn_root, "png", sep=".") )
 
-            carstm_map(  res=res, vn=vn, time_match=time_match, 
+            carstm_map(  res=res, vn=vn, time_match=time_match,
               breaks =brks,
               coastline=coastline,
               isobaths=isobaths,
               managementlines=managementlines,
               main=paste("Predicted numerial abundance", paste0(time_match, collapse="-") ),
               outfilename=fn
-            )  
+            )
 
       }
-      
+
 
       res = meanweights_by_arealunit_modelled( p=p, redo=TRUE, returntype="all" )  ## used in carstm_output_compute
 
@@ -121,22 +121,22 @@
           coastline=aegis.coastline::coastline_db( DS="eastcoast_gadm", project_to=plot_crs )
           isobaths=aegis.bathymetry::isobath_db( depths=c(50, 100, 200, 400, 800), project_to=plot_crs )
           managementlines = aegis.polygons::area_lines.db( DS="cfa.regions", returntype="sf", project_to=plot_crs )
-        
+
           time_match = list( year=as.character(2020)  )
 
-          carstm_map(  res=res, 
-              vn=paste(p_mw$variabletomodel, "predicted", sep="."), 
-              time_match=time_match, 
+          carstm_map(  res=res,
+              vn=paste(p_mw$variabletomodel, "predicted", sep="."),
+              time_match=time_match,
               coastline=coastline,
               managementlines=managementlines,
               isobaths=isobaths,
-              main=paste("Predicted mean weight of indivudual (kg)", paste0(time_match, collapse="-") )  
+              main=paste("Predicted mean weight of indivudual (kg)", paste0(time_match, collapse="-") )
           )
-            
+
         }
 
       snowcrab.db(p=p, DS="carstm_output_compute" )
-      
+
       RES = snowcrab.db(p=p, DS="carstm_output_timeseries" )
 
       bio = snowcrab.db(p=p, DS="carstm_output_spacetime_biomass" )
@@ -155,7 +155,7 @@
         lines( cfaall_ub ~ yrs, data=RES, lty="dotted", lwd=2, col="slategray" )
       dev.off()
 
-      
+
       ( fn = file.path( outputdir, "cfa_south.png") )
       png( filename=fn, width=3072, height=2304, pointsize=12, res=300 )
         plot( cfasouth ~ yrs, data=RES, lty="solid", lwd=4, pch=20, col="slateblue", type="b", ylab="Biomass index (kt)", xlab="")
@@ -170,7 +170,7 @@
         lines( cfanorth_ub ~ yrs, data=RES, lty="dotted", lwd=2, col="slategray" )
       dev.off()
 
-      ( fn = file.path( outputdir, "cfa_4x.png") ) 
+      ( fn = file.path( outputdir, "cfa_4x.png") )
       png( filename=fn, width=3072, height=2304, pointsize=12, res=300 )
         plot( cfa4x ~ yrs, data=RES, lty="solid", lwd=4, pch=20, col="slateblue", type="b", ylab="Biomass index (kt)", xlab="")
         lines( cfa4x_lb ~ yrs, data=RES, lty="dotted", lwd=2, col="slategray" )
@@ -187,7 +187,7 @@
       coastline=aegis.coastline::coastline_db( DS="eastcoast_gadm", project_to=plot_crs )
       isobaths=aegis.bathymetry::isobath_db( depths=c(50, 100, 200, 400), project_to=plot_crs  )
       managementlines = aegis.polygons::area_lines.db( DS="cfa.regions", returntype="sf", project_to=plot_crs )
-    
+
       vn = paste("biomass", "predicted", sep=".")
 
       outputdir = file.path( p$modeldir, p$carstm_model_label, "predicted.biomass.densitites" )
@@ -201,12 +201,12 @@
         sppoly[,vn] = bio[,y] * 10^6
         fn = file.path( outputdir , paste( "biomass", y, "png", sep=".") )
 
-          carstm_map(  sppoly=sppoly, vn=vn,    
-            breaks=brks, 
+          carstm_map(  sppoly=sppoly, vn=vn,
+            breaks=brks,
             coastline=coastline,
             isobaths=isobaths,
             managementlines=managementlines,
-            main=paste("Predicted biomass density", y ),  
+            main=paste("Predicted biomass density", y ),
             outfilename=fn
           )
       }
@@ -220,7 +220,7 @@
     (res$summary)
 
 Time used:
-    Pre = 6.84, Running = 12106, Post = 14.3, Total = 12127 
+    Pre = 6.84, Running = 12106, Post = 14.3, Total = 12127
 Fixed effects:
              mean   sd 0.025quant 0.5quant 0.975quant  mode kld
 (Intercept) 7.333 0.13      7.079    7.333      7.587 7.333   0
@@ -270,7 +270,7 @@ Phi for space_time                                                              
 GroupRho for space_time                                                           0.772
 
 Expected number of effective parameters(stdev): 658.29(3.85)
-Number of equivalent replicates : 10.98 
+Number of equivalent replicates : 10.98
 
 Deviance Information Criterion (DIC) ...............: 46260.72
 Deviance Information Criterion (DIC, saturated) ....: 105353.22
@@ -279,15 +279,15 @@ Effective number of parameters .....................: 39.98
 Watanabe-Akaike information criterion (WAIC) ...: 51091.12
 Effective number of parameters .................: 3606.46
 
-Marginal log-Likelihood:  -22329.74 
+Marginal log-Likelihood:  -22329.74
 Posterior marginals for the linear predictor and
  the fitted values are computed
 
- 
+
   }
 
 
-  ########## 
+  ##########
 
 
   if (fishery_model) {
@@ -301,7 +301,7 @@ Posterior marginals for the linear predictor and
 
 
       # res = fishery_model( p=p, DS="samples", tag=p$areal_units_type )  # to get samples
-      
+
       if (0) {
 
         fit = fishery_model( p=p,   DS="fit", tag=p$areal_units_type )  # to get samples
@@ -309,11 +309,11 @@ Posterior marginals for the linear predictor and
 
         print( fit, max_rows=30 )
         # fit$summary("K", "r", "q")
-        
+
         fit$cmdstan_diagnose()
         fit$cmdstan_summary()
-  
-          # (penalized) maximum likelihood estimate (MLE) 
+
+          # (penalized) maximum likelihood estimate (MLE)
         fit_mle =  p$fishery_model$stancode$optimize(data =p$fishery_model$standata, seed = 123)
         fit_mle$summary( c("K", "r", "q") )
 
@@ -322,13 +322,13 @@ Posterior marginals for the linear predictor and
         mcmc_hist(fit$draws("K")) +
           vline_at(fit_mle$mle(), size = 1.5)
 
-        # Variational Bayes  
+        # Variational Bayes
         fit_vb = p$fishery_model$stancode$variational( data =p$fishery_model$standata, seed = 123, output_samples = 4000)
         fit_vb$summary(c("K", "r", "q", "qc"))
 
-        res = fishery_model( 
-          DS="logistic_model", 
-          p=p, 
+        res = fishery_model(
+          DS="logistic_model",
+          p=p,
           tag=p$areal_units_type,
           fit = fit_vb
           # from here down are params for cmdstanr::sample()
@@ -343,16 +343,16 @@ Posterior marginals for the linear predictor and
         )
 
         color_scheme_set("gray")
-        mcmc_dens(fit$draws("K"), facet_args = list(nrow = 3, labeller = ggplot2::label_parsed ) ) + facet_text(size = 14 )   
+        mcmc_dens(fit$draws("K"), facet_args = list(nrow = 3, labeller = ggplot2::label_parsed ) ) + facet_text(size = 14 )
         # mcmc_hist( fit$draws("K"))
 
-        
+
       }
 
 
 
-      fit = p$fishery_model$stancode$sample(         
-        data=p$fishery_model$standata, 
+      fit = p$fishery_model$stancode$sample(
+        data=p$fishery_model$standata,
         iter_warmup = 10000,
         iter_sampling = 4000,
         seed = 123,
@@ -362,7 +362,7 @@ Posterior marginals for the linear predictor and
         adapt_delta = 0.99,
         refresh = 1000
       )
-      
+
       fit$summary(c("K", "r", "q", "qc"))
 
       # save fit and get draws
@@ -431,7 +431,7 @@ Posterior marginals for the linear predictor and
       for (i in 1:3) plot(density(res$mcmc$b0[,i] ), main="")
       ( qs = apply(  res$mcmc$b0[,], 2, quantile, probs=c(0.025, 0.5, 0.975) ) )
 
-  
+
       # K
       plot.new()
       layout( matrix(c(1,2,3), 3, 1 ))

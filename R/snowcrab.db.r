@@ -1015,7 +1015,7 @@ snowcrab.db = function( DS, p=NULL, yrs=NULL, fn.root=NULL, redo=FALSE, extrapol
     ii = which(!is.finite(set$z))
     if (length(ii)>0){
       set$z[ii] =  bathymetry_lookup( LOCS=set[ ii, c("lon", "lat")],  lookup_from="core", lookup_to="points" , lookup_from_class="aggregated_data" ) # core=="rawdata"
- 
+
     }
 
     set$z = log( set$z )
@@ -1101,8 +1101,8 @@ snowcrab.db = function( DS, p=NULL, yrs=NULL, fn.root=NULL, redo=FALSE, extrapol
 
   if ( DS=="biological_data") {
 
-    set = aegis.survey::survey_db( p=p, DS="filter" ) 
-    
+    set = aegis.survey::survey_db( p=p, DS="filter" )
+
     if ( p$selection$type=="number") {
       # should be snowcrab survey data only taken care of p$selection$survey = "snowcrab"
       # robustify input data: .. upper bound trim
@@ -1257,7 +1257,7 @@ snowcrab.db = function( DS, p=NULL, yrs=NULL, fn.root=NULL, redo=FALSE, extrapol
 
     # do this immediately to reduce storage for sppoly (before adding other variables)
     M = snowcrab.db( p=p, DS="biological_data" )  # will redo if not found .. not used here but used for data matching/lookup in other aegis projects that use bathymetry
-  
+
     # some survey timestamps extend into January (e.g., 2020) force them to be part of the correct "survey year", i.e., "yr"
     i = which(lubridate::month(M$timestamp)==1)
     if (length(i) > 0) M$timestamp[i] = M$timestamp[i] - lubridate::duration(month=1)
@@ -1268,236 +1268,22 @@ snowcrab.db = function( DS, p=NULL, yrs=NULL, fn.root=NULL, redo=FALSE, extrapol
     M = M[ which( M$lon > p$corners$lon[1] & M$lon < p$corners$lon[2]  & M$lat > p$corners$lat[1] & M$lat < p$corners$lat[2] ), ]
     # levelplot(z.mean~plon+plat, data=M, aspect="iso")
 
-    M$AUID = st_points_in_polygons(
-      pts = st_as_sf( M, coords=c("lon","lat"), crs=crs_lonlat ),
-      polys = sppoly[, "AUID"],
-      varname = "AUID"
-    )
-    M = M[!is.na(M$AUID),]
-    M$AUID = as.character( M$AUID )  # match each datum to an area
-
-
-    names(M)[which(names(M)=="yr") ] = "year"
-    # M = M[ which(M$year %in% p$yrs), ]
-    # M$tiyr = lubridate::decimal_date ( M$timestamp )
-    # M$dyear = M$tiyr - M$year
-
-
-
-    # --------------------------
-     # bathymetry lookup
-    pB = bathymetry_parameters( p=parameters_reset(p), project_class="carstm"  )
-    vnB = pB$variabletomodel
-    if ( !(exists(vnB, M ))) {
-      vnB2 = paste(vnB, "mean", sep=".")
-      if ((exists(vnB2, M ))) {
-        names(M)[which(names(M) == vnB2 )] = vnB
-      } else {
-        M[,vnB] = NA
-      }
-    }
-    iM = which(!is.finite( M[, vnB] ))
-    if (length(iM > 0)) {
-      M[iM, vnB] = bathymetry_lookup( LOCS=M[ iM, c("lon", "lat")],  lookup_from="core", lookup_to="points" , lookup_from_class="aggregated_data" ) # core=="rawdata"
- 
-    }
-
-    M = M[ is.finite(M[ , vnB]  ) , ]
-
-    if ( exists("spatial_domain", p)) {
-        M = M[ geo_subset( spatial_domain=p$spatial_domain, Z=M ) , ] # need to be careful with extrapolation ...  filter depths
-    }
-
-    if ( p$carstm_inputdata_model_source$bathymetry %in% c("stmv", "hybrid") ) {
-      pBD = bathymetry_parameters(  spatial_domain=p$spatial_domain, project_class=p$carstm_inputdata_model_source$bathymetry )  # full default
-      LU = bathymetry_db( p=pBD, DS="baseline", varnames="all" )
-      LU_map = array_map( "xy->1", LU[,c("plon","plat")], gridparams=p$gridparams )
-      M_map  = array_map( "xy->1", M[, c("plon","plat")], gridparams=p$gridparams )
-      iML = match( M_map, LU_map )
-      vns = intersect(  c( "z", "dZ", "ddZ", "b.sdSpatial", "b.sdObs", "b.phi", "b.nu", "b.localrange" ), names(LU) )
-      for (vn in setdiff( vns, "z") ) {
-        M[, vn] = LU[ iML, vn ]
-    }
-      M = M[ is.finite( rowSums( M[ , vns])  ) , ]
-    }
-
-
-  
-    # --------------------------
-   # substrate lookup
-    pS = substrate_parameters( p=parameters_reset(p), project_class="carstm"  )
-    if (!(exists(pS$variabletomodel, M ))) M[,pS$variabletomodel] = NA
-    iM = which(!is.finite( M[, pS$variabletomodel] ))
-    if (length(iM > 0)) {
-      M[iM, pS$variabletomodel] = substrate_lookup( LOCS=M[iM, c("lon", "lat")], lookup_from="core", lookup_to="points" , lookup_from_class="aggregated_data" ) # core=="rawdata"
-    }
-
-    M = M[ is.finite(M[ , pS$variabletomodel]  ) , ]
-
-
-
-    # --------------------------
-    # temperature observations lookup
-    pT = temperature_parameters( p=parameters_reset(p), project_class="carstm", year.assessment=p$year.assessment  )
-    if (!(exists(pT$variabletomodel, M ))) M[,pT$variabletomodel] = NA
-    iM = which(!is.finite( M[, pT$variabletomodel] ))
-    if (length(iM > 0)) {
-      M[iM, pT$variabletomodel] = temperature_lookup(  LOCS=M[ iM, c("lon", "lat", "timestamp")],lookup_from="core", lookup_to="points", lookup_from_class="aggregated_data", tz="America/Halifax",
-          year.assessment=p$year.assessment
-        )
-    }
-
-
-    M = M[ is.finite(M[ , pT$variabletomodel]  ) , ]
-    M = M[ which( M[, pT$variabletomodel]  < 14 ) , ]  #
-
-
-    pPC1 = speciescomposition_parameters( p=parameters_reset(p), project_class="carstm", variabletomodel="pca1" , year.assessment=p$year.assessment)
-    if (!(exists(pPC1$variabletomodel, M ))) M[,pPC1$variabletomodel] = NA
-    iM = which(!is.finite( M[, pPC1$variabletomodel] ))
-    if (length(iM > 0)) {
-      M[iM, pPC1$variabletomodel] = speciescomposition_lookup(  LOCS=M[ iM, c("lon", "lat", "timestamp")],lookup_from="core", lookup_to="points", lookup_from_class="aggregated_data", tz="America/Halifax" ,
-          year.assessment=p$year.assessment ,
-          vnames=pPC1$variabletomodel
-        )
-
-    }
-
-    M = M[ which(is.finite(M[, pPC1$variabletomodel] )),]
-
-
-    pPC2 = speciescomposition_parameters( p=parameters_reset(p), project_class="carstm", variabletomodel="pca2", year.assessment=p$year.assessment )
-    if (!(exists(pPC2$variabletomodel, M ))) M[,pPC2$variabletomodel] = NA
-    iM = which(!is.finite( M[, pPC2$variabletomodel] ))
-    if (length(iM > 0)) {
-      M[iM, pPC2$variabletomodel] = speciescomposition_lookup( LOCS=M[ iM, c("lon", "lat", "timestamp")], lookup_from="core", lookup_to="points", lookup_from_class="aggregated_data", tz="America/Halifax" ,
-          year.assessment=p$year.assessment,
-          vnames=pPC2$variabletomodel
-        )
-
-    }
-    M = M[ which(is.finite(M[, pPC2$variabletomodel] )),]
-
-
-    M$plon = NULL
-    M$plat = NULL
-    M$lon = NULL
-    M$lat = NULL
- 
-    # AUID is character; space is factor -> numeric  
-
-    M = M[ which(!is.na(M$AUID)),]
-    M$AUID = as.character( M$AUID )  # match each datum to an area
-
-    M$tag = "observations"
-
-
-
-      # end observations
-      # ----------
-
-      # predicted locations (APS)
-
-
-    region.id = slot( slot(sppoly, "nb"), "region.id" )
-    APS = st_drop_geometry(sppoly)
-
-    APS$AUID = as.character( APS$AUID )
-    APS$tag ="predictions"
-    APS[,p$variabletomodel] = NA
-    
-    APS[, pB$variabletomodel] = bathymetry_lookup(  LOCS=sppoly, 
-      lookup_from = p$carstm_inputdata_model_source$bathymetry,
-      lookup_to = "areal_units", 
-      vnames="z" 
-    ) 
-    
-    APS[, pS$variabletomodel] = substrate_lookup(  LOCS=sppoly, 
-      lookup_from = p$carstm_inputdata_model_source$substrate,
-      lookup_to = "areal_units", 
-      vnames="substrate.grainsize" 
-    ) 
-
-    # to this point APS is static, now add time dynamics (teperature)
-    # ---------------------
-
-    vn = c( p$variabletomodel, pB$variabletomodel,  pS$variabletomodel, "tag", "AUID" )
-    APS = APS[, vn]
-
-    # expand APS to all time slices
-    n_aps = nrow(APS)
-    APS = cbind( APS[ rep.int(1:n_aps, p$nt), ], rep.int( p$prediction_ts, rep(n_aps, p$nt )) )
-    names(APS) = c(vn, "tiyr")
-    APS$year = aegis_floor( APS$tiyr)
-    APS$dyear = APS$tiyr - APS$year
-    APS$timestamp = lubridate::date_decimal( APS$tiyr, tz=p$timezone )
-
-
-    APS[, pT$variabletomodel] = temperature_lookup(  LOCS=APS[ , c("AUID", "timestamp")], AU_target=sppoly, 
-      lookup_from = p$carstm_inputdata_model_source$temperature,
-      lookup_to = "areal_units", 
-      vnames_from= paste( pT$variabletomodel, "predicted", sep="."), 
-      vnames=pT$variabletomodel ,
-      year.assessment=p$year.assessment
+    M = carstm_prepare_inputdata( p=p, M=M, sppoly=sppoly,
+      lookup = c("bathymetry", "substrate", "temperature", "speciescomposition"),
+      varstoretain = c( "totwgt", "totno", "sa", "data_offset",  "zn", "qn" ),
+      APS_data_offset=1
     )
 
 
-    APS[, pPC1$variabletomodel] = speciescomposition_lookup(  LOCS=APS[ , c("AUID", "timestamp")], AU_target=sppoly, 
-      lookup_from = p$carstm_inputdata_model_source$speciescomposition,
-      lookup_to = "areal_units", 
-      vnames_from= paste( pPC1$variabletomodel, "predicted", sep="."), 
-      vnames=pPC1$variabletomodel ,
-      year.assessment=p$year.assessment
-    )
+    if (0) {
+      M$zi  = discretize_data( M[, pB$variabletomodel], p$discretization[[pB$variabletomodel]] )
+      M$ti  = discretize_data( M[, pT$variabletomodel], p$discretization[[pT$variabletomodel]] )
+      M$gsi = discretize_data( M[, pS$variabletomodel], p$discretization[[pS$variabletomodel]] )
 
+      M$pca1i = discretize_data( M[, pPC1$variabletomodel], p$discretization[[pPC1$variabletomodel]] )
+      M$pca2i = discretize_data( M[, pPC2$variabletomodel], p$discretization[[pPC2$variabletomodel]] )
 
-    APS[, pPC2$variabletomodel] = speciescomposition_lookup(  LOCS=APS[ , c("AUID", "timestamp")], AU_target=sppoly, 
-      lookup_from = p$carstm_inputdata_model_source$speciescomposition,
-      lookup_to = "areal_units", 
-      vnames_from= paste( pPC2$variabletomodel, "predicted", sep="."), 
-      vnames=pPC2$variabletomodel,
-      year.assessment=p$year.assessment
-    )
-
-
-
-
-    # useful vars to have for analyses outside of carstm_summary
-    varstoadd = c( "totwgt", "totno", "sa", "data_offset",  "zn", "qn" )
-
-    for (vn in varstoadd) if (!exists( vn, APS)) APS[,vn] = NA
-    APS$data_offset = 1  # force to solve for unit area (1 km^2)
-
-
-    M = rbind( M[, names(APS)], APS )
-
-    APS = NULL
-
-
-    M$AUID  = as.character(M$AUID)  # revert to factors -- should always be a character
-    
-    M$zi  = discretize_data( M[, pB$variabletomodel], p$discretization[[pB$variabletomodel]] )
-    M$ti  = discretize_data( M[, pT$variabletomodel], p$discretization[[pT$variabletomodel]] )
-    M$gsi = discretize_data( M[, pS$variabletomodel], p$discretization[[pS$variabletomodel]] )
-
-    M$pca1i = discretize_data( M[, pPC1$variabletomodel], p$discretization[[pPC1$variabletomodel]] )
-    M$pca2i = discretize_data( M[, pPC2$variabletomodel], p$discretization[[pPC2$variabletomodel]] )
-
-    M$tiyr  = aegis_floor( M$tiyr / p$tres )*p$tres    # discretize for inla .. midpoints
-
-    M$yr = aegis_floor( M$tiyr)
-
-
-    M$dyear =  M$tiyr - M$yr   # revert dyear to non-discretized form
-
-    M$dyri = discretize_data( M[, "dyear"], p$discretization[["dyear"]] )
-
-    #required for carstm formulae
-    M$space = as.character( M$AUID) 
-    M$time = as.character( M$yr )  # copy for INLA
-    M$season = as.character( M$dyri )  # copy for INLA
-    M$uid = 1:nrow(M)  # seems to require an iid model for each obs for stability .. use this for iid
-
+    }
 
     save( M, file=fn, compress=TRUE )
 
@@ -1559,210 +1345,21 @@ snowcrab.db = function( DS, p=NULL, yrs=NULL, fn.root=NULL, redo=FALSE, extrapol
     M = M[ which( M$lon > p$corners$lon[1] & M$lon < p$corners$lon[2]  & M$lat > p$corners$lat[1] & M$lat < p$corners$lat[2] ), ]
     # levelplot(z.mean~plon+plat, data=M, aspect="iso")
 
-    M$AUID = st_points_in_polygons(
-      pts = st_as_sf( M, coords=c("lon","lat"), crs=crs_lonlat ),
-      polys = sppoly[, "AUID"],
-      varname = "AUID"
+    M = carstm_prepare_inputdata( p=p, M=M, sppoly=sppoly,
+      lookup = c("bathymetry", "substrate", "temperature", "speciescomposition"),
+      varstoretain = c( "totwgt", "totno", "sa", "data_offset",  "zn", "qn" ),
+      APS_data_offset=1
     )
-    M = M[!is.na(M$AUID),]
-
-    # names(M)[which(names(M)=="yr") ] = "year"
-    # M = M[ which(M$year %in% p$yrs), ]
-    # M$tiyr = lubridate::decimal_date ( M$timestamp )
-    # M$dyear = M$tiyr - M$year
 
 
-  # --------------------------
-    # bathymetry observations  lookup
-    pB = bathymetry_parameters( project_class="core"  )
-    vnB = pB$variabletomodel
-    if ( !(exists(vnB, M ))) {
-      vnB2 = paste(vnB, "mean", sep=".")
-      if ((exists(vnB2, M ))) {
-        names(M)[which(names(M) == vnB2 )] = vnB
-      } else {
-        M[,vnB] = NA
-      }
+    if (0) {
+      M$zi  = discretize_data( M[, pB$variabletomodel], p$discretization[[pB$variabletomodel]] )
+      M$ti  = discretize_data( M[, pT$variabletomodel], p$discretization[[pT$variabletomodel]] )
+      M$gsi = discretize_data( M[, pS$variabletomodel], p$discretization[[pS$variabletomodel]] )
+
+      M$pca1i = discretize_data( M[, pPC1$variabletomodel], p$discretization[[pPC1$variabletomodel]] )
+      M$pca2i = discretize_data( M[, pPC2$variabletomodel], p$discretization[[pPC2$variabletomodel]] )
     }
-    iM = which(!is.finite( M[, vnB] ))
-    if (length(iM > 0)) {
-      M[iM, vnB] = bathymetry_lookup( LOCS=M[ iM, c("lon", "lat")], lookup_from="core", lookup_to="points" , lookup_from_class="aggregated_data" ) # core=="rawdata"
- 
-    }
-
-    M = M[ is.finite(M[ , vnB]  ) , ]
-
-
-    if (p$carstm_inputs_aggregated) {
-      if ( exists("spatial_domain", p)) {
-        M = M[ geo_subset( spatial_domain=p$spatial_domain, Z=M ) , ] # need to be careful with extrapolation ...  filter depths
-      }
-    }
-
-    if ( exists("spatial_domain", p)) {
-        M = M[ geo_subset( spatial_domain=p$spatial_domain, Z=M ) , ] # need to be careful with extrapolation ...  filter depths
-    }
-
-
-    # --------------------------
-    # substrate observations  lookup
-    pS = substrate_parameters( project_class="core"  )
-    if (!(exists(pS$variabletomodel, M ))) M[,pS$variabletomodel] = NA
-    iM = which(!is.finite( M[, pS$variabletomodel] ))
-    if (length(iM > 0)) {
-      M[iM, pS$variabletomodel] = substrate_lookup( LOCS=M[iM, c("lon", "lat")], lookup_from="core", lookup_to="points" , lookup_from_class="aggregated_data" ) # core=="rawdata"
-    }
-
-    # M = M[ is.finite(M[ , pS$variabletomodel]  ) , ]
-
-
-
-    # --------------------------
-    # temperature observations lookup
-    pT = temperature_parameters( project_class="core"  )
-    if (!(exists(pT$variabletomodel, M ))) M[,pT$variabletomodel] = NA
-    iM = which(!is.finite( M[, pT$variabletomodel] ))
-    if (length(iM > 0)) {
-      M[iM, pT$variabletomodel] = temperature_lookup( LOCS=M[ iM, c("lon", "lat", "timestamp")],lookup_from="core", lookup_to="points", lookup_from_class="aggregated_data", tz="America/Halifax" ,
-          year.assessment=p$year.assessment )
-    }
-
-    # M = M[ is.finite(M[ , pT$variabletomodel]  ) , ]
-    # M = M[ which( M[, pT$variabletomodel]  < 14 ) , ]  #
-
-
-    # --------------------------
-
-    pPC1 = speciescomposition_parameters(  project_class="core", variabletomodel="pca1" )
-    if (!(exists(pPC1$variabletomodel, M ))) M[,pPC1$variabletomodel] = NA
-    iM = which(!is.finite(M[, pPC1$variabletomodel]))
-    if (length(iM) > 0 ) {
-      M[iM, pPC1$variabletomodel] = speciescomposition_lookup( M=M[iM, c("lon", "lat", "timestamp")], sppoly=sppoly, vnames=pPC1$variabletomodel , lookup_from="core", lookup_to="points", lookup_from_class="aggregated_data", tz="America/Halifax" ,
-          year.assessment=p$year.assessment ,
-          vnames=pPC1$variabletomodel )
-    }
-    # M = M[ which(is.finite(M[, pPC1$variabletomodel] )),]
-
-    # --------------------------
-
-    pPC2 = speciescomposition_parameters(  project_class="core", variabletomodel="pca2" )
-    if (!(exists(pPC2$variabletomodel, M ))) M[,pPC2$variabletomodel] = NA
-    iM = which(!is.finite(M[, pPC2$variabletomodel]))
-    if (length(iM) > 0 ) {
-      M[iM, pPC2$variabletomodel] = speciescomposition_lookup( M=M[iM, c("lon", "lat", "timestamp")], sppoly=sppoly, vnames=pPC2$variabletomodel, lookup_from="core", lookup_to="points", lookup_from_class="aggregated_data", tz="America/Halifax" ,
-          year.assessment=p$year.assessment,
-          vnames=pPC2$variabletomodel  )
-    }
-    # M = M[ which(is.finite(M[, pPC2$variabletomodel] )),]
-
-    M$plon = NULL
-    M$plat = NULL
-    M$lon = NULL
-    M$lat = NULL
-
-
-    M = M[ which(!is.na(M$AUID)),]
-    M$AUID = as.character( M$AUID )  # match each datum to an area
-
-    M$tag = "observations"
-
-
-    # end observations
-    # ----------
-
-    # predicted locations (APS)
-
-
-    region.id = slot( slot(sppoly, "nb"), "region.id" )
-    APS = st_drop_geometry(sppoly)
-
-    APS$AUID = as.character( APS$AUID )
-    APS$tag ="predictions"
-    APS[,p$variabletomodel] = NA
-
-
-    APS[, pB$variabletomodel] = bathymetry_lookup(  LOCS=sppoly, 
-      lookup_from = p$carstm_inputdata_model_source$bathymetry,
-      lookup_to = "areal_units", 
-      vnames="z" 
-    ) 
-    
-    APS[, pS$variabletomodel] = substrate_lookup(  LOCS=sppoly, 
-      lookup_from = p$carstm_inputdata_model_source$substrate,
-      lookup_to = "areal_units", 
-      vnames="substrate.grainsize" 
-    ) 
-
-
-    # to this point APS is static, now add time dynamics (teperature)
-    # ---------------------
-
-    vn = c( p$variabletomodel, pB$variabletomodel,  pS$variabletomodel, "tag", "AUID" )
-    APS = APS[, vn]
-
-    # expand APS to all time slices
-    n_aps = nrow(APS)
-    APS = cbind( APS[ rep.int(1:n_aps, p$nt), ], rep.int( p$prediction_ts, rep(n_aps, p$nt )) )
-    names(APS) = c(vn, "tiyr")
-    APS$yr = aegis_floor( APS$tiyr)
-    APS$dyear = APS$tiyr - APS$yr
-
-
-    APS[, pT$variabletomodel] = temperature_lookup(  LOCS=APS[ , c("AUID", "timestamp")], AU_target=sppoly, 
-      lookup_from = p$carstm_inputdata_model_source$temperature,
-      lookup_to = "areal_units", 
-      vnames_from= paste(pT$variabletomodel, "predicted", sep="."),
-      vnames=pT$variabletomodel,
-      year.assessment=p$year.assessment 
-    ) 
-
-
-    APS[, pPC1$variabletomodel] = speiescomposition_lookup(  LOCS=APS[ , c("AUID", "timestamp")], AU_target=sppoly, 
-      lookup_from = p$carstm_inputdata_model_source$speciescomposition,
-      lookup_to = "areal_units", 
-      vnames_from= paste(pPC1$variabletomodel, "predicted", sep="."),
-      vnames=pPC1$variabletomodel,
-      year.assessment=p$year.assessment 
-    ) 
-
-
-    APS[, pPC2$variabletomodel] = speiescomposition_lookup(  LOCS=APS[ , c("AUID", "timestamp")], AU_target=sppoly, 
-      lookup_from = p$carstm_inputdata_model_source$speciescomposition,
-      lookup_to = "areal_units", 
-      vnames_from= paste(pPC2$variabletomodel, "predicted", sep="."),
-      vnames=pPC2$variabletomodel,
-      year.assessment=p$year.assessment 
-    ) 
-
-    # useful vars to have for analyses outside of carstm_summary
-    varstoadd = c( "totwgt", "totno", "sa", "data_offset",  "zn", "qn" )
-
-    for (vn in varstoadd) if (!exists( vn, APS)) APS[,vn] = NA
-    APS$data_offset = 1  # force to solve for unit area
-
-    M = rbind( M[, names(APS)], APS )
-    APS = NULL
-
-
-    M$AUID  = as.character(M$AUID)  # revert to factors
-    M$space = region.id[ match( M$AUID, region.id ) ]  # should be identical but in case areas are removed or resorted
-  
-    M$zi  = discretize_data( M[, pB$variabletomodel], p$discretization[[pB$variabletomodel]] )
-    M$ti  = discretize_data( M[, pT$variabletomodel], p$discretization[[pT$variabletomodel]] )
-    M$gsi = discretize_data( M[, pS$variabletomodel], p$discretization[[pS$variabletomodel]] )
-
-    M$pca1i = discretize_data( M[, pPC1$variabletomodel], p$discretization[[pPC1$variabletomodel]] )
-    M$pca2i = discretize_data( M[, pPC2$variabletomodel], p$discretization[[pPC2$variabletomodel]] )
-
-    M$tiyr  = aegis_floor( M$tiyr / p$tres )*p$tres    # discretize for inla .. midpoints
-
-    M$yr = aegis_floor( M$tiyr)
-
-    M$time =  as.character( M$yr ) 
-    
-    M$dyear =  M$tiyr - M$yr   # revert dyear to non-discretized form
-
-    M$dyri = discretize_data( M[, "dyear"], p$discretization[["dyear"]] )
 
     save( M, file=fn, compress=TRUE )
 
@@ -1788,10 +1385,10 @@ snowcrab.db = function( DS, p=NULL, yrs=NULL, fn.root=NULL, redo=FALSE, extrapol
 
     if ( !file.exists(outputdir)) dir.create( outputdir, recursive=TRUE, showWarnings=FALSE )
 
-    fn     =  paste( gsub(".rdata", "", aufns), "aggregated_timeseries", "rdata", sep="." )  
-    fn_no  =  paste( gsub(".rdata", "", aufns), "space_timeseries_number", "rdata", sep="." ) 
-    fn_bio =  paste( gsub(".rdata", "", aufns), "space_timeseries_biomass", "rdata", sep="." ) 
-    fn_pa  =  paste( gsub(".rdata", "", aufns), "space_timeseries_pa", "rdata", sep="." )  
+    fn     =  paste( gsub(".rdata", "", aufns), "aggregated_timeseries", "rdata", sep="." )
+    fn_no  =  paste( gsub(".rdata", "", aufns), "space_timeseries_number", "rdata", sep="." )
+    fn_bio =  paste( gsub(".rdata", "", aufns), "space_timeseries_biomass", "rdata", sep="." )
+    fn_pa  =  paste( gsub(".rdata", "", aufns), "space_timeseries_pa", "rdata", sep="." )
 
     if ( DS=="carstm_output_timeseries" ) {
       RES = NA
@@ -1891,8 +1488,8 @@ snowcrab.db = function( DS, p=NULL, yrs=NULL, fn.root=NULL, redo=FALSE, extrapol
       #   robustify_quantiles=p$quantile_bounds  # high upper bounds are more dangerous
       # )
 
-      wgts = meanweights_by_arealunit_modelled( p=p ) 
-      
+      wgts = meanweights_by_arealunit_modelled( p=p )
+
       if (p$selection$type == "biomass") {
         biom = res[[ paste( p$variabletomodel, "predicted", sep=".")]]
         biom[!is.finite(biom)] = NA
@@ -1910,7 +1507,7 @@ snowcrab.db = function( DS, p=NULL, yrs=NULL, fn.root=NULL, redo=FALSE, extrapol
           warning("\n Extreme-valued predictions were found, capping them to max observed rates .. \n you might want to have more informed priors, or otherwise set extrapolation_replacement=NA to replacement value \n")
         }
         biom[biom > extrapolation_limit ] = extrapolation_limit
-        
+
         biom = biom / 10^6  # kg / km^2 -> kt / km^2
 
         nums = biom / wgts   # (n * 10^6) / km^2
@@ -1932,7 +1529,7 @@ snowcrab.db = function( DS, p=NULL, yrs=NULL, fn.root=NULL, redo=FALSE, extrapol
 
             biom[!is.finite(biom)] = NA
             biom = biom / 10^6  # kg / km^2 -> kt / km^2
-            
+
             o = list()
             o$cfaall    = colSums( biom * sppoly$au_sa_km2, na.rm=TRUE )
             o$cfanorth  = colSums( biom * sppoly$cfanorth_surfacearea, na.rm=TRUE )
@@ -1962,7 +1559,7 @@ snowcrab.db = function( DS, p=NULL, yrs=NULL, fn.root=NULL, redo=FALSE, extrapol
           warning("\n Extreme-valued predictions were found, capping them to max observed rates .. \n you might want to have more informed priors, or otherwise set extrapolation=NA to replacement value \n")
         }
         nums[nums > extrapolation_limit] = extrapolation_limit
-        
+
         biom = nums * wgts / 10^6  # kg / km^2 -> kt / km^2
         nums = nums / 10^6  # n * 10^6 / km^2
 
