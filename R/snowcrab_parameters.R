@@ -366,8 +366,8 @@ snowcrab_parameters = function( p=list(), year.assessment=NULL, project_name="bi
         yrs = p$yrs,
         tus = "yr",
         carstm_modelengine = "inla",  # {model engine}.{label to use to store}
-        carstm_inputs_prefilter = "sampled",
-        carstm_inputs_prefilter_n = 10
+        carstm_inputs_prefilter = "rawdata",
+        carstm_inputs_prefilter_n = 10000, 
         trawlable_units = "sweptarea"  # <<<<<<<<<<<<<<<<<< also:  "standardtow", "sweptarea" (for groundfish surveys)
     )
 
