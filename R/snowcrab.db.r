@@ -1236,6 +1236,8 @@ snowcrab.db = function( DS, p=NULL, yrs=NULL, fn.root=NULL, redo=FALSE, extrapol
     crs_lonlat = st_crs(projection_proj4string("lonlat_wgs84"))
     sppoly = areal_units( p=p )  # will redo if not found
     sppoly = st_transform(sppoly, crs=crs_lonlat )
+    sppoly$data_offset = sppoly$sa
+    
     areal_units_fn = attributes(sppoly)[["areal_units_fn"]]
 
     fn = carstm_filenames( p=p, returntype="carstm_inputs", areal_units_fn=areal_units_fn )
@@ -1270,7 +1272,6 @@ snowcrab.db = function( DS, p=NULL, yrs=NULL, fn.root=NULL, redo=FALSE, extrapol
 
     M = carstm_prepare_inputdata( p=p, M=M, sppoly=sppoly,
       lookup = c("bathymetry", "substrate", "temperature", "speciescomposition"),
-      varstoretain = c( "totwgt", "totno", "sa", "data_offset",  "zn", "qn" ),
       APS_data_offset=1
     )
 
