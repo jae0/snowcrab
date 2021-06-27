@@ -1270,25 +1270,13 @@ snowcrab.db = function( DS, p=NULL, yrs=NULL, fn.root=NULL, redo=FALSE, extrapol
     M = M[ which( M$lon > p$corners$lon[1] & M$lon < p$corners$lon[2]  & M$lat > p$corners$lat[1] & M$lat < p$corners$lat[2] ), ]
     # levelplot(z.mean~plon+plat, data=M, aspect="iso")
 
+    # data_offset is SA in km^2
     M = carstm_prepare_inputdata( p=p, M=M, sppoly=sppoly,
       lookup = c("bathymetry", "substrate", "temperature", "speciescomposition"),
-      APS_data_offset=1
+      APS_data_offset=1  # predict to 1 km2
     )
 
-
-    if (0) {
-      M$zi  = discretize_data( M[, pB$variabletomodel], p$discretization[[pB$variabletomodel]] )
-      M$ti  = discretize_data( M[, pT$variabletomodel], p$discretization[[pT$variabletomodel]] )
-      M$gsi = discretize_data( M[, pS$variabletomodel], p$discretization[[pS$variabletomodel]] )
-
-      M$pca1i = discretize_data( M[, pPC1$variabletomodel], p$discretization[[pPC1$variabletomodel]] )
-      M$pca2i = discretize_data( M[, pPC2$variabletomodel], p$discretization[[pPC2$variabletomodel]] )
-
-    }
-
     save( M, file=fn, compress=TRUE )
-
-    if (redo) M=fn  # when redo'ing .. return file name aftert the save
 
     return( M )
   }
