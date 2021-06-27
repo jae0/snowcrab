@@ -1265,6 +1265,7 @@ snowcrab.db = function( DS, p=NULL, yrs=NULL, fn.root=NULL, redo=FALSE, extrapol
     if (length(i) > 0) M$timestamp[i] = M$timestamp[i] - lubridate::duration(month=1)
 
     M$tiyr = lubridate::decimal_date(M$timestamp)
+    M$dyear[ M$dyear > 1] = 0.99  # a survey year can run into the next year cap it at the calendar year for modellng 
 
     # reduce size
     M = M[ which( M$lon > p$corners$lon[1] & M$lon < p$corners$lon[2]  & M$lat > p$corners$lat[1] & M$lat < p$corners$lat[2] ), ]
@@ -1275,7 +1276,11 @@ snowcrab.db = function( DS, p=NULL, yrs=NULL, fn.root=NULL, redo=FALSE, extrapol
       lookup = c("bathymetry", "substrate", "temperature", "speciescomposition"),
       APS_data_offset=1  # predict to 1 km2
     )
-
+    
+    # IMPERATIVE: 
+    # M = M[ which(is.finite(M$z)), ]
+    
+    
     save( M, file=fn, compress=TRUE )
 
     return( M )
