@@ -1278,7 +1278,7 @@ snowcrab.db = function( DS, p=NULL, yrs=NULL, fn.root=NULL, redo=FALSE, extrapol
     )
     
     # IMPERATIVE: 
-    # M = M[ which(is.finite(M$z)), ]
+    M = M[ which(is.finite(M$t)), ]
     
     
     save( M, file=fn, compress=TRUE )
