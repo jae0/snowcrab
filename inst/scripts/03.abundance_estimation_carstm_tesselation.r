@@ -49,13 +49,16 @@
       M = snowcrab.db( p=p, DS="carstm_inputs", redo=TRUE )  # will redo if not found
       M = NULL; gc()
 
-      fit = carstm_model( p=p, M='snowcrab.db( p=p, DS="carstm_inputs" )' ) # 151 configs and long optim .. 19 hrs
+      res = carstm_model( p=p, M='snowcrab.db( p=p, DS="carstm_inputs" )' ) # 151 configs and long optim .. 19 hrs
       # fit = carstm_model( p=p, DS="carstm_modelled_fit")
 
         # extract results
         if (0) {
           # very large files .. slow
           fit = carstm_model( p=p, DS="carstm_modelled_fit" )  # extract currently saved model fit
+          fit$summary$dic$dic
+          fit$summary$dic$p.eff
+
           plot(fit)
           plot(fit, plot.prior=TRUE, plot.hyperparameters=TRUE, plot.fixed.effects=FALSE )
 
@@ -63,9 +66,6 @@
 
 
       res = carstm_model( p=p, DS="carstm_modelled_summary"  ) # to load currently saved results
-      res$summary$dic$dic
-      res$summary$dic$p.eff
-      res$dyear
 
 
       plot_crs = p$aegis_proj4string_planar_km
