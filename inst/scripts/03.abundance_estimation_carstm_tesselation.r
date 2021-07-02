@@ -75,7 +75,7 @@
 
       time_match = list( year=as.character(2020)  )
       carstm_map(  res=res,
-          vn=paste(p$variabletomodel, "predicted", sep="."),
+          vn=c("predictions", "mean"),
           time_match=time_match,
           coastline=coastline,
           managementlines=managementlines,

@@ -1014,8 +1014,14 @@ snowcrab.db = function( DS, p=NULL, yrs=NULL, fn.root=NULL, redo=FALSE, extrapol
     # bring in time invariant features:: depth
     ii = which(!is.finite(set$z))
     if (length(ii)>0){
-      set$z[ii] =  aegis_lookup( data_class="bathymetry", LOCS=set[ ii, c("lon", "lat")],  lookup_from="core", lookup_to="points" , lookup_from_class="aggregated_data" ) # core=="rawdata"
-
+      set$z[ii] =  aegis_lookup( 
+        data_class="bathymetry", 
+        LOCS=set[ ii, c("lon", "lat")],  
+        lookup_from="core", 
+        lookup_to="points" , 
+        lookup_from_class="aggregated_data", 
+        variable_name="z.mean"  
+      ) # core=="rawdata"
     }
 
     set$z = log( set$z )
@@ -1024,7 +1030,15 @@ snowcrab.db = function( DS, p=NULL, yrs=NULL, fn.root=NULL, redo=FALSE, extrapol
     # bring in time varing features:: temperature
     ii = which(!is.finite(set$t))
     if (length(ii)>0){
-      set$t[ii] = aegis_lookup( data_class="temperature", LOCS=set[ ii, c("lon", "lat", "timestamp")],lookup_from="core", lookup_to="points", lookup_from_class="aggregated_data", tz="America/Halifax"  )
+      set$t[ii] = aegis_lookup( 
+        data_class="temperature", 
+        LOCS=set[ ii, c("lon", "lat", "timestamp")],
+        lookup_from="core", 
+        lookup_to="points", 
+        lookup_from_class="aggregated_data", 
+        variable_name="t.mean", 
+        tz="America/Halifax"  
+      )
 
     }
 
@@ -1265,22 +1279,24 @@ snowcrab.db = function( DS, p=NULL, yrs=NULL, fn.root=NULL, redo=FALSE, extrapol
     if (length(i) > 0) M$timestamp[i] = M$timestamp[i] - lubridate::duration(month=1)
 
     M$tiyr = lubridate::decimal_date(M$timestamp)
-    M$dyear[ M$dyear > 1] = 0.99  # a survey year can run into the next year cap it at the calendar year for modellng 
+    M$dyear[ M$dyear > 1] = 0.99  # a survey year can run into the next year, cap the seasonal compenent at the calendar year for modellng 
 
     # reduce size
     M = M[ which( M$lon > p$corners$lon[1] & M$lon < p$corners$lon[2]  & M$lat > p$corners$lat[1] & M$lat < p$corners$lat[2] ), ]
     # levelplot(z.mean~plon+plat, data=M, aspect="iso")
 
     # data_offset is SA in km^2
-    M = carstm_prepare_inputdata( p=p, M=M, sppoly=sppoly,
+    M = carstm_prepare_inputdata( 
+      p=p, 
+      M=M, 
+      sppoly=sppoly,
       lookup = c("bathymetry", "substrate", "temperature", "speciescomposition"),
       APS_data_offset=1  # predict to 1 km2
     )
     
     # IMPERATIVE: 
     M = M[ which(is.finite(M$t)), ]
-    
-    
+        
     save( M, file=fn, compress=TRUE )
 
     return( M )
