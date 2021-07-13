@@ -1017,9 +1017,9 @@ snowcrab.db = function( DS, p=NULL, yrs=NULL, fn.root=NULL, redo=FALSE, extrapol
       set$z[ii] =  aegis_lookup( 
         data_class="bathymetry", 
         LOCS=set[ ii, c("lon", "lat")],  
-        lookup_from="core", 
-        lookup_to="points" , 
-        lookup_from_class="aggregated_data", 
+        project_class="core", 
+        output_format="points" , 
+        DS="aggregated_data", 
         variable_name="z.mean"  
       ) # core=="rawdata"
     }
@@ -1033,9 +1033,9 @@ snowcrab.db = function( DS, p=NULL, yrs=NULL, fn.root=NULL, redo=FALSE, extrapol
       set$t[ii] = aegis_lookup( 
         data_class="temperature", 
         LOCS=set[ ii, c("lon", "lat", "timestamp")],
-        lookup_from="core", 
-        lookup_to="points", 
-        lookup_from_class="aggregated_data", 
+        project_class="core", 
+        output_format="points", 
+        DS="aggregated_data", 
         variable_name="t.mean", 
         tz="America/Halifax"  
       )
